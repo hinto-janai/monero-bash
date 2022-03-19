@@ -1,0 +1,15 @@
+######################
+# monero-bash config #
+######################
+
+# first time prompt
+FIRST_TIME="true"
+
+# path
+BLOCKCHAIN_PATH=""
+MONERO_CLI_PATH=""
+WALLET_PATH=""
+
+# monero cli options
+Name=""
+OFFLINE=""

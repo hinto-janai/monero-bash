@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+################################################     START OF HEADER CODE     ################################################
+#
+#						Variables + Sources
+#
+scriptPath="$(realpath $0)"
+installDirectory="$(dirname "$scriptPath")" && cd $installDirectory
+# if not in /monero-bash/, exit
+if [[ $installDirectory != *"monero-bash"* ]]; then
+	printf "\033[1;31mPlease place monero-bash within /monero-bash/ folder!\n"
+	exit
+fi
+config="$installDirectory/config"
+defaultWallet="$installDirectory/wallets"
+defaultBlockchain="$installDirectory/.bitmonero"
+defaultCLI="$installDirectory/cli"
+source $config
+sha512="e9b9c222387fb1a0fd4ff672c78a2558b1ee642b3e318410e0a4ba5e7e7d7c12aa60f79d2fced3affcc9437af68e7f9b8166644102136daff42735c10fa19cba"
+walletList="$(ls | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
+walletCount="$(ls | grep -v ".keys" | wc -l)"
+
+#
+#                       Colors
+#
+# regular
+black="printf \033[0;30m"
+red="printf \033[0;31m"
+green="printf \033[0;32m"
+yellow="printf \033[0;33m"
+blue="printf \033[0;34m"
+purple="printf \033[0;35m"
+cyan="printf \033[0;36m"
+white="printf \033[0;37m"
+# bold
+bred="printf \033[1;31m"
+bgreen="printf \033[1;32m"
+bblue="printf \033[1;34m"
+bwhite="printf \033[1;37m"
+# high intensity
+ired="printf \033[0;91m"
+igreen="printf \033[0;92m"
+iblue="printf \033[0;94m"
+iwhite="printf \033[0;97m"
+# no color
+off="printf \033[0m"
+
+#
+#                       Prompt/Message Functions
+#
+YES_no()
+{
+    $off
+    read yn
+    if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
+        Yes
+    else
+        No
+    fi
+}
+yes_NO()
+{
+    $off
+    read yn
+    if [[ $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
+        Yes
+    elif [[ $yn = "" ]]; then
+        No
+    else
+        No
+    fi
+}
+Message()
+{
+    echo
+    $igreen; echo "#############     $1" ;$off
+}
+Message_Red()
+{
+    $ired; echo "#############    $1" ;$off
+}
+
+#
+#						Download Functions
+#
+Monero_CLI()
+{
+	cd $MONERO_CLI_PATH
+	moneroCLI_1="$(wget https://github.com/monero-project/monero/releases/latest -qO - | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*")"
+	moneroCLI_2="$(echo $moneroCLI_1 | awk '{print $1}' | sed 's/"//g')"
+	moneroCLI_3="$moneroCLI_2"
+	Message "downloading [Monero CLI]"
+	wget -q --show-progress $moneroCLI_3 && moneroCLI_tar="$(ls | grep -o "monero-linux-x64-v*.*.*.*.*.*.*")"
+	Message_Red "extracting [Monero CLI]"
+	tar -xf $moneroCLI_tar
+	rm -f $moneroCLI_tar
+	moneroCLI_fol="$(ls | grep "monero-x86_64-linux-gnu")"
+	mv "$moneroCLI_fol/*" "$MONERO_CLI_PATH/"
+	rm -rf $moneroCLI_fol
+}
+
+################################################          END OF HEADER CODE     ################################################
+################################################     START OF INITIAL CONFIG     ################################################
+
+#
+#						Initial Config
+#
+if [[ $FIRST_TIME = "true" ]]; then
+	$bred; echo "###################################################################"
+	$bred; echo "#                monero-bash initial configuration                #"
+	$bred; echo "###################################################################"
+### blockchain path
+	if [[ -d "$HOME/.bitmonero" ]]; then
+		$ired; echo "monero blockchain detected"
+		$white; echo -n "use $HOME/.bitmonero? (Y/n): "
+		Yes(){ sed -i "s@.*BLOCKCHAIN_PATH.*@BLOCKCHAIN_PATH=\""$HOME/.bitmonero"\"@" $config ;}
+		No(){ :;}
+		YES_no
+	else
+		$white; echo -n "monero blockchain path [Enter for default]: "
+		read inputBlockchain
+		if [[ $inputBlockchain = "" ]]; then
+			sed -i "s@.*BLOCKCHAIN_PATH.*@BLOCKCHAIN_PATH=\""$defaultBlockchain"\"@" $config
+		else
+			sed -i "s@.*BLOCKCHAIN_PATH.*@BLOCKCHAIN_PATH=\""$inputBlockchain"\"@" $config
+		fi
+	fi
+	source $config
+	$ired; echo "blockchain path: $BLOCKCHAIN_PATH"
+	echo
+
+### monero-cli path
+	$white; echo -n "monero-cli path [Enter for default]: "
+	read inputCLI
+	if [[ $inputCLI = "" ]]; then
+		sed -i "s@.*MONERO_CLI_PATH.*@MONERO_CLI_PATH=\""$defaultCLI"\"@" $config
+	else
+		sed -i "s@.*MONERO_CLI_PATH.*@MONERO_CLI_PATH=\""$inputCLI"\"@" $config
+	fi
+	source $config
+    $ired; echo "monero-cli path: $MONERO_CLI_PATH"
+	echo
+
+### wallet path
+	$white; echo -n "monero wallet path [Enter for default]: "
+	read inputWallet
+	if [[ $inputWallet = "" ]]; then
+		sed -i "s@.*WALLET_PATH.*@WALLET_PATH=\""$defaultWallet"\"@" $config
+	else
+		sed -i "s@.*WALLET_PATH.*@WALLET_PATH=\""$inputWallet"\"@" $config
+	fi
+	source $config
+	$ired; echo "wallet path: $WALLET_PATH"
+	echo
+fi
+
+# monero-cli installation
+if [[ $inputCLI = "" ]]; then
+	$white; echo -n "install latest monero-cli? (Y/n): "
+	Yes(){ Monero_CLI ;}
+	No(){ :;}
+	YES_no
+fi
+
+
+
+
+
+#$iwhite; echo "$walletCount"
+#$iwhite; echo "$walletList"
+#echo "export PATH="\$PATH:$installDirectory" #$sha512" >> $HOME/.bashrc
+
+
