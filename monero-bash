@@ -11,16 +11,18 @@ if [[ $installDirectory != *"monero-bash"* ]]; then
 	printf "\033[0;31mExiting for safety...\n"
 	exit
 fi
+
+randomHash="$(cat /dev/random | head -n 1 | md5sum | awk '{print $1}')"
 config="$installDirectory/config"
 old="$installDirectory/.old"
-tmp="$installDirectory/tmp"
+tmp="$installDirectory/.tmp"
 defaultWallet="$installDirectory/wallets"
-defaultBlockchain="$installDirectory/.bitmonero"
+defaultData="$installDirectory/.bitmonero"
 defaultCLI="$installDirectory/cli"
 [[ -f $config ]]&& source $config
-sha512="e9b9c222387fb1a0fd4ff672c78a2558b1ee642b3e318410e0a4ba5e7e7d7c12aa60f79d2fced3affcc9437af68e7f9b8166644102136daff42735c10fa19cba"
-walletList="$(ls | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-walletCount="$(ls | grep -v ".keys" | wc -l)"
+sha256="04e3be91e8aa36a61189a485ad6059b5f244a9de3cac8424876b66250ecb8ea0"
+pathSha="$(grep $sha256 $HOME/.bashrc)"
+[[ $pathSha = *"$sha256"* ]]&& pathExist="yes"
 currentDayTime="$(date '+%Y-%m-%d@%H-%M-%S')"
 
 #
@@ -53,17 +55,15 @@ off="printf \033[0m"
 #
 YES_no()
 {
-    $off
-    read yn
-    if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
-        Yes
-    else
-        No
-    fi
+	read yn
+	if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
+		Yes
+	else
+		No
+	fi
 }
 yes_NO()
 {
-    $off
     read yn
     if [[ $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
         Yes
@@ -76,11 +76,11 @@ yes_NO()
 Message()
 {
     echo
-    $igreen; echo "#############     $1" ;$off
+    $igreen; echo "###### $1" ;$off
 }
 Message_Red()
 {
-    $ired; echo "#############    $1" ;$off
+    $ired; echo "###### $1" ;$off
 }
 
 #
@@ -88,48 +88,222 @@ Message_Red()
 #
 Monero_CLI()
 {
+	if [[ ! -d $MONERO_CLI_PATH ]]; then
+		$ired; echo "Monero-CLI folder not found, make sure it exists!"
+		exit
+	fi
+	local originalDirectory="$(pwd)"
 	mkdir -p $tmp && cd $tmp
 	moneroCLI_1="$(wget https://github.com/monero-project/monero/releases/latest -qO - | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*")"
 	moneroCLI_2="$(echo $moneroCLI_1 | awk '{print $1}' | sed 's/"//g')"
 	moneroCLI_3="$moneroCLI_2"
-	Message "downloading [Monero CLI]"
+	Message "downloading [Monero-CLI]"
 	wget -q --show-progress $moneroCLI_3 && moneroCLI_tar="$(ls | grep -o "monero-linux-x64-v*.*.*.*.*.*.*")"
-	Message_Red "extracting [Monero CLI]"
-	tar -xf $moneroCLI_tar
-	rm -f $moneroCLI_tar
-	moneroCLI_fol="$(ls | grep "monero-x86_64-linux-gnu")"
-	mkdir -p "$old/$currentDayTime"
-	mv $MONERO_CLI_PATH/ "$old/$currentDayTime"
-	mv $moneroCLI_fol/ $MONERO_CLI_PATH
-	rm -rf $tmp
+	Message_Red "verifying [Monero-CLI]"
+	$off
+	echo $(wget https://www.getmonero.org/downloads/hashes.txt -qO - | grep "monero-linux-x64" | awk '{print $1}') $moneroCLI_tar | sha256sum -c
+	if [[ $? = 0 ]]; then
+		Message_Red "extracting [Monero-CLI]"
+		tar -xf $moneroCLI_tar
+		rm -f $moneroCLI_tar
+		moneroCLI_fol="$(ls | grep "monero-x86_64-linux-gnu")"
+		if [[ $OLD_FOLDER = "true" ]]; then
+			mkdir -p "$old/$currentDayTime"
+			mv $MONERO_CLI_PATH "$old/$currentDayTime"
+			mv $moneroCLI_fol/ $MONERO_CLI_PATH
+		else
+			rm -rf $MONERO_CLI_PATH
+			mv $moneroCLI_fol $MONERO_CLI_PATH
+		fi
+		rm -rf $tmp
+	else
+		Message_Red "[Monero-CLI] hash did not match! Either getmonero.org has been compromised (or more likely, there was an error)"
+		rm -rf $tmp
+		exit
+	fi
+	cd $originalDirectory
 }
 
 #
-#						Config Function
+#						Missing "x" Functions
 #
+Missing_Monero_Daemon()
+{
+	if [[ ! -f "$MONERO_CLI_PATH/monerod" ]]; then
+		$ired; echo "Error: monero daemon not found!"
+		$white; echo "Download Monero-CLI? (Y/n) "
+		Yes()
+		{
+			Monero_CLI
+		}
+		No(){ $ired; echo "Exiting..." ; exit ;}
+		YES_no
+	fi
+}
+Missing_Monero_CLI()
+{
+	if [[ ! -f "$MONERO_CLI_PATH/monero-wallet-cli" ]]; then
+		$ired; echo "Error: monero-wallet-cli not found!"
+		$white; echo "Download Monero-CLI? (Y/n) "
+		Yes()
+		{
+			Monero_CLI
+		}
+		No(){ $ired; echo "Exiting..." ; exit ;}
+		YES_no
+	fi
+}
 Missing_Config()
 {
 	if [[ ! -f $config ]]; then
 		$white; echo "monero-bash config file missing, creating..."
-		echo "######################
-		# monero-bash config #
-		######################
+echo "######################
+# monero-bash config #
+######################
 
-		# first time prompt
-		FIRST_TIME="true"
+# first time prompt
+FIRST_TIME="true"
 
-		# path
-		BLOCKCHAIN_PATH="/home/xpsdebian/git/monero-bash/.bitmonero"
-		MONERO_CLI_PATH="/home/xpsdebian/git/monero-bash/cli"
-		WALLET_PATH="/home/xpsdebian/git/monero-bash/wallets"
+# path
+DATA_PATH=""
+MONERO_CLI_PATH=""
+WALLET_PATH=""
 
-		# monero cli options
-		Name=""
-		OFFLINE=""" > $config
+# monero-cli
+
+# monero daemon
+START_DAEMON="true"
+STOP_DAEMON="true"
+
+# monero-bash
+AUTO_UPDATE_MONERO_CLI="true"
+AUTO_UPDATE_MONERO_BASH="true"
+OLD_FOLDER="true"
+ADD_TO_PATH="true"" > $config
 		$ired; echo $config
 		source $config
+	fi
+}
+Missing_Config
+
+#
+#						Monero Daemon + Monero Wallet Functions
+#
+Seed_Language_List()
+{
+cat <<EOM
+0 : Deutsch
+1 : English
+2 : Español
+3 : Français
+4 : Italiano
+5 : Nederlands
+6 : Português
+7 : русский язык
+8 : 日本語
+9 : 简体中文 (中国)
+10 : Esperanto
+11 : Lojban
+EOM
+}
+Start_Wallet()
+{
+	if [[ $START_DAEMON = "true" ]]; then
+		Missing_Monero_Daemon
+		$MONERO_CLI_PATH/monerod --detach --config-file "$DATA_PATH/monerod.conf"
+	fi
+	Missing_Monero_CLI
+	if [[ $createWallet = "true" ]]; then
+		$MONERO_CLI_PATH/monero-wallet-cli --generate-new-wallet "$WALLET_PATH/$walletName" --password "$walletPassword" --mnemonic-language "$seedLanguage"
 	else
-		echo found
+		$MONERO_CLI_PATH/monero-wallet-cli --wallet-file "$walletSelection" --password "$walletPassword" --config-file "$DATA_PATH/monero-wallet-cli.conf"
+	fi
+	if [[ $STOP_DAEMON = "true" ]]; then
+		$ired; echo "stopping monerod..."
+		killall monerod
+		if [[ $? = 0 ]]; then
+			$white; echo "monerod stopped"
+		else
+			$ired; echo "error: monerod was not stopped"
+		fi
+	fi
+}
+Create_Wallet()
+{
+	# wallet name
+	while true ;do
+		$white; echo -n "New wallet name: " ;$iwhite
+		read walletName
+		if [[ $walletName = *" "* || $walletName = "" ]]; then
+			$ired; echo "Error: wallet name cannot be empty or have spaces"
+		else
+			break
+		fi
+	done
+	# wallet pass
+	while true; do
+		$white; echo -n "Wallet password: "
+			read -s walletPassword
+			echo
+		$white; echo -n "Enter password again: "
+			read -s walletPasswordAgain
+			echo
+		if [[ $walletPassword = $walletPasswordAgain ]]; then
+			break
+		else
+			$ired; echo "Password was not the same!"
+		fi
+	done
+	# wallet seed language
+	while true ;do
+		$ired; echo "Monero seed languages:" ;$iwhite
+		Seed_Language_List
+		$white; echo -n "Pick seed language: " ;$iwhite
+		read seedLanguage
+		case $seedLanguage in
+			"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;
+			"1"|english|English) seedLanguage="English" ;break ;;
+			"2"|español|Español|spanish|Spanish) seedLanguage="Español" ;break ;;
+			"3"|français|Français|french|French) seedLanguage="Français" ;break ;;
+			"4"|italiano|Italiano|italian|Italian) seedLanguage="Italiano" ;break ;;
+			"5"|nederlands|Nederlands|dutch|Dutch) seedLanguage="Nederlands" ;break ;;
+			"6"|português|Português|portuguese|Portuguese) seedLanguage="Português" ;break ;;
+			"7"|"русский язык"|russian|Russian) seedLanguage="русский язык" ;break ;;
+			"8"|日本語|にほんご|japanese|Japanese) seedLanguage="日本語" ;break ;;
+			"9"|"简体中文(中国)"|"简体中文"|"简体中文 (中国)"|chinese|Chinese|CHINESE) seedLanguage="简体中文 (中国)" ;break ;;
+			"10"|esperanto|Esperanto) seedLanguage="Esperanto" ;break ;;
+			"11"|lojban|Lojban) seedLanguage="Lojban" ;break ;;
+			*) $ired; echo "error: invalid input" ;;
+		esac
+	done
+	$bred; echo "Starting Monero-CLI..." ;$off
+	createWallet="true"
+	Start_Wallet
+}
+Wallet_List()
+{
+	cd $WALLET_PATH
+	local list="$(ls | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
+	$white; echo -n "$list"
+	$ired; echo "[new]"
+}
+Wallet_Count()
+{
+	cd $WALLET_PATH
+	local count="$(ls | grep -v ".keys" | wc -l)"
+	echo -n "$count "
+	if [[ $count = "1" ]]; then
+		echo "Wallet found:"
+	elif [[ $count > "1" ]]; then
+		echo "Wallets found: "
+	elif [[ $count = "0" ]]; then
+		echo "Wallets found"
+		echo -n "Create one at "
+		$ired; echo -n "$WALLET_PATH"
+		$white; echo -n "? (Y/n) " ;$iwhite
+		Yes(){ Create_Wallet ;exit ;}
+		No(){ $white; echo "Exiting..." ;exit ;}
+		YES_no
 	fi
 }
 
@@ -141,30 +315,42 @@ Missing_Config()
 #
 if [[ $FIRST_TIME = "true" ]]; then
 	$bred; echo "###################################################################"
-	$bred; echo "#                monero-bash initial configuration                #"
+	$bred; echo "#                    monero-bash configuration                    #"
 	$bred; echo "###################################################################"
-### blockchain path
+
+	#
+	#						Data Path
+	#
 	if [[ -d "$HOME/.bitmonero" ]]; then
-		$ired; echo "Monero blockchain detected"
-		$white; echo -n "Use $HOME/.bitmonero? (Y/n): "
-		Yes(){ sed -i "s@.*BLOCKCHAIN_PATH.*@BLOCKCHAIN_PATH=\""$HOME/.bitmonero"\"@" $config ;}
+		$ired; echo "Monero data folder detected"
+		$white; echo -n "Use "
+		$ired; echo -n "$HOME/.bitmonero"
+		$white; echo -n "? (Y/n): " ;$iwhite
+		Yes()
+		{
+			sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$HOME/.bitmonero"\"@" $config
+			alreadySetDataPath="true"
+		}
 		No(){ :;}
 		YES_no
-	else
-		$white; echo -n "Monero blockchain path: [Enter for default] "
-		read inputBlockchain
-		if [[ $inputBlockchain = "" ]]; then
-			sed -i "s@.*BLOCKCHAIN_PATH.*@BLOCKCHAIN_PATH=\""$defaultBlockchain"\"@" $config
+	fi
+	if [[ $alreadySetDataPath != "true" ]]; then
+		$white; echo -n "Monero data path: [Enter for default] " ;$iwhite
+		read inputData
+		if [[ $inputData = "" ]]; then
+			sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" $config
 		else
-			sed -i "s@.*BLOCKCHAIN_PATH.*@BLOCKCHAIN_PATH=\""$inputBlockchain"\"@" $config
+			sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" $config
 		fi
 	fi
 	source $config
-	$ired; echo "Blockchain path: $BLOCKCHAIN_PATH"
+	$ired; echo "Data path: $DATA_PATH"
 	echo
 
-### monero-cli path
-	$white; echo -n "Monero-CLI path: [Enter for default] "
+	#
+	#						Monero-CLI Path
+	#
+	$white; echo -n "Monero-CLI path: [Enter for default] " ;$iwhite
 	read inputCLI
 	if [[ $inputCLI = "" ]]; then
 		sed -i "s@.*MONERO_CLI_PATH.*@MONERO_CLI_PATH=\""$defaultCLI"\"@" $config
@@ -175,8 +361,10 @@ if [[ $FIRST_TIME = "true" ]]; then
     $ired; echo "CLI Path: $MONERO_CLI_PATH"
 	echo
 
-### wallet path
-	$white; echo -n "Monero wallet path: [Enter for default] "
+	#
+	#						Wallet Path
+	#
+	$white; echo -n "Monero wallet path: [Enter for default] " ;$iwhite
 	read inputWallet
 	if [[ $inputWallet = "" ]]; then
 		sed -i "s@.*WALLET_PATH.*@WALLET_PATH=\""$defaultWallet"\"@" $config
@@ -186,27 +374,75 @@ if [[ $FIRST_TIME = "true" ]]; then
 	source $config
 	$ired; echo "Wallet path: $WALLET_PATH"
 	echo
-fi
 
-# making default monero-bash folders
-[[ $inputBlockchain = "" ]]&& $ired; echo "Making blockchain folder..." && mkdir -p $BLOCKCHAIN_PATH
-[[ $inputCLI = "" ]]&& $ired; echo "Making CLI folder..." && mkdir -p $MONERO_CLI_PATH
-[[ $inputWallet = "" ]]&& $ired; echo "Making wallet folder..." && mkdir -p $WALLET_PATH
+	#
+	#						Making Folders + Adding "monero-bash" To Path
+	#
+	[[ ! -d $DATA_PATH ]]&&$white&& echo "Making data folder..." && mkdir -p $DATA_PATH
+	[[ ! -f "$DATA_PATH/monero-wallet-cli.conf" ]]&&$white&& echo "Making CLI config file..." && touch "$DATA_PATH/monero-wallet-cli.conf"
+	[[ ! -f "$DATA_PATH/monerod.conf" ]]&&$white&& echo "Making daemon config file..." && touch "$DATA_PATH/monerod.conf"
+	[[ ! -d $MONERO_CLI_PATH ]]&&$white&& echo "Making CLI folder..." && mkdir -p $MONERO_CLI_PATH
+	[[ ! -d $WALLET_PATH ]]&&$white&& echo "Making wallet folder..." && mkdir -p $WALLET_PATH
+	if [[ $pathExist != "yes" ]]; then
+		$white; echo "Adding monero-bash to path..."
+		echo "export PATH="\$PATH:$installDirectory" #$sha256" >> $HOME/.bashrc
+		source $HOME/.bashrc
+	fi
+	echo
 
-# monero-cli installation
-if [[ $inputCLI = "" ]]; then
-	$white; echo -n "Install latest Monero-CLI? (Y/n): "
+	#
+	#						Installation
+	#
+	$white; echo -n "Install latest Monero-CLI in "
+	$ired; echo -n "${MONERO_CLI_PATH}"
+	$white; echo -n "? "
+	$white; echo -n "(Y/n): "
 	Yes(){ Monero_CLI ;}
 	No(){ :;}
+	$iwhite
 	YES_no
+
+	#
+	#						End
+	#
+	echo
+	$bred; echo "###################################################################"
+	$bred; echo "#                monero-bash configuration complete               #"
+	$bred; echo "###################################################################"
+	$white; echo -n "Data path: " ;$ired; echo "$DATA_PATH"
+	$white; echo -n "CLI path: " ;$ired; echo "$MONERO_CLI_PATH"
+	$white; echo -n "Wallet path: " ;$ired; echo "$WALLET_PATH"
+	echo
+	$white; echo -n "type: "
+	$ired; echo -n "monero-bash "
+	$white; echo "to get started"
+	sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" $config
+	source $HOME/.bashrc
+	exec bash
+	exit
 fi
 
+################################################       END OF INITIAL CONFIG     ################################################
+################################################     START OF REGULAR SCRIPT     ################################################
 
-
-
-
-#$iwhite; echo "$walletCount"
-#$iwhite; echo "$walletList"
-#echo "export PATH="\$PATH:$installDirectory" #$sha512" >> $HOME/.bashrc
-
-
+#
+#						Wallet Selection
+#
+$bred; echo "###################"
+$bred; echo "#   monero-bash   #"
+$bred; echo "###################"
+$white; Wallet_Count ; Wallet_List ; echo
+while true ;do
+	$white; echo -n "Pick: "
+	read walletSelection
+		if [[ $walletSelection = *"$walletList"* ]]; then
+			$white; echo -n "Password: "
+			read -s walletPassword && echo
+			Start_Wallet
+			break
+		elif [[ $walletSelection = "new" || $walletSelection = "New" || $walletSelection = "NEW" || $walletSelection = "[new]" || $walletSelection = "[New]" ]]; then
+			Create_Wallet
+		else
+			$ired; echo "Error: wallet does not exist"
+		fi
+done

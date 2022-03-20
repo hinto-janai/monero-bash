@@ -1,15 +1,23 @@
 ######################
-		# monero-bash config #
-		######################
+# monero-bash config #
+######################
 
-		# first time prompt
-		FIRST_TIME=true
+# first time prompt
+FIRST_TIME="true"
 
-		# path
-BLOCKCHAIN_PATH="/home/xpsdebian/git/monero-bash/.bitmonero"
-MONERO_CLI_PATH="/home/xpsdebian/git/monero-bash/cli"
-WALLET_PATH="/home/xpsdebian/git/monero-bash/wallets"
+# path
+DATA_PATH=""
+MONERO_CLI_PATH=""
+WALLET_PATH=""
 
-		# monero cli options
-		Name=
-		OFFLINE=
+# monero-cli
+
+# monero daemon
+START_DAEMON="true"
+STOP_DAEMON="true"
+
+# monero-bash
+AUTO_UPDATE_MONERO_CLI="true"
+AUTO_UPDATE_MONERO_BASH="true"
+OLD_FOLDER="true"
+ADD_TO_PATH="true"

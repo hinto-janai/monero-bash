@@ -2,3 +2,5 @@ cli/
 .old/
 wallets/
 .bitmonero/
+*.swp
+.tmp/

@@ -1,0 +1,12 @@
+monero-bash usage:
+
+monero-bash <options>
+./monero-bash <options>
+
+# SETUP #
+--config            configure basic monero-bash settings
+--uninstall         remove /monero-bash/ folder and remove from $PATH
+
+# STATS #
+--wallets           list wallets
+--size              show size of /monero-bash/ and 
