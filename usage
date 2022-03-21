@@ -1,12 +1,25 @@
-monero-bash usage:
-
-monero-bash <options>
-./monero-bash <options>
+monero-bash usage: monero-bash <option> <more options>
 
 # SETUP #
---config            configure basic monero-bash settings
---uninstall         remove /monero-bash/ folder and remove from $PATH
+config            configure monero-bash settings
+uninstall         remove /monero-bash/ folder and remove from PATH
+
+# UPDATE #
+update            only CHECK for updates
+upgrade           upgrade all OR upgrade <specific thing>
+version           print current versions
+
+# DAEMON #
+daemon            check status of daemon
+daemon start      start the daemon
+daemon stop       stop all daemon processes
 
 # STATS #
---wallets           list wallets
---size              show size of /monero-bash/ and 
+list              list wallets
+size              show size of /monero-bash/
+price             fetch price data from cryptocompare.com API
+
+# HELP #
+help              show this help message
+
+monero-bash, made by: hinto.janaiyo
