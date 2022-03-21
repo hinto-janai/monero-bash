@@ -21,6 +21,7 @@ monero-bash
 ```
 will work anywhere
 
+---
 
 for help:
 ```
