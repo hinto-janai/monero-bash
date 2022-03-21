@@ -123,7 +123,7 @@ Check_Monero_Bash()
 		$ired; echo "$moneroBash_NewVer"
 		updateFound="true"
 	else
-		$white; echo -n "monero-bash "
+		$white; echo -n "monero-bash: "
 	 	$igreen; echo "up to date"
 	fi
 }
@@ -177,7 +177,7 @@ Download_Monero_Bash()
 	wget -q --show-progress $mBash_3 && mBash_tar="$(ls | grep -o "monero-bash")"
 	Message_Red "verifying [monero-bash]"
 	$off
-	echo "$(wget https://github.com/hinto-janaiyo/monero-bash/releases/latest -qO - | grep "sha256sum: " | head -n 1 | awk '{print $2}' | sed 's/\"//')" $mBash_tar | sha256sum -c
+	echo "$(wget https://github.com/hinto-janaiyo/monero-bash/releases/latest -qO - | grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" $mBash_tar | sha256sum -c
 	if [[ $? = 0 ]]; then
 		Message_Red "extracting [monero-bash]"
 		tar -xf $mBash_tar
