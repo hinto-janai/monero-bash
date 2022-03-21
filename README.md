@@ -9,7 +9,7 @@ git clone https://github.com/hinto-janaiyo/monero-bash &&
 cd monero-bash &&
 ./monero-bash
 ```
-*note: ALWAYS clone the main branch, the others might contain system-breaking commands* 
+*note: **ALWAYS** clone the main branch, the others might contain system-breaking commands* 
 
 it will be added to path so after the initial configuration:
 ```
