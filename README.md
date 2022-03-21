@@ -4,6 +4,10 @@
 ![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
 
 ## if you want to beta-test:
+[download latest release, here](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
+
+OR
+
 ```
 git clone https://github.com/hinto-janaiyo/monero-bash &&
 cd monero-bash &&
