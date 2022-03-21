@@ -27,4 +27,12 @@ for help:
 monero-bash help
 ```
 
-to configure, edit the `/monero-bash/config/` file
+to configure, edit:
+```
+/monero-bash/config/
+```
+
+to uninstall cleanly:
+```
+monero-bash uninstall
+```
