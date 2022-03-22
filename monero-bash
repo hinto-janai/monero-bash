@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ################################################     START OF HEADER CODE     ################################################
 #
-#						Variables + Sources
+#						Check If In /monero-bash/
 #
 scriptPath="$(realpath $0)"
 installDirectory="$(dirname "$scriptPath")" && cd $installDirectory
@@ -12,7 +12,10 @@ if [[ $installDirectory != *"monero-bash"* ]]; then
 	exit
 fi
 
-randomHash="$(cat /dev/random | head -n 1 | md5sum | awk '{print $1}')"
+#
+#						Global Variables
+#
+currentDayTime="$(date '+%Y-%m-%d@%H-%M-%S')"
 config="$installDirectory/config"
 old="$installDirectory/.old"
 tmp="$installDirectory/.tmp"
@@ -23,8 +26,22 @@ defaultCLI="$installDirectory/cli"
 sha256="04e3be91e8aa36a61189a485ad6059b5f244a9de3cac8424876b66250ecb8ea0"
 pathSha="$(grep $sha256 $HOME/.bashrc)"
 [[ $pathSha = *"$sha256"* ]]&& pathExist="yes"
-currentDayTime="$(date '+%Y-%m-%d@%H-%M-%S')"
-
+#####################################################################################################
+# the "$pathSha" variable is a unique identifier so that i don't blow up anyones bashrc by          #
+# removing lines that don't belong to monero-bash                                                   #
+#                                                                                                   #
+# the actual sha256 hash:                                                                           #
+# "04e3be91e8aa36a61189a485ad6059b5f244a9de3cac8424876b66250ecb8ea0"                                #
+# is the result of hashing the 25 english seed phrase of a monero wallet i made                     #
+# that contains "0.5XMR" (as of 2022-march-22)                                                      #
+#                                                                                                   #
+# address:                                                                                          #
+# "46F6Se9qcYZ8MfiaRDn21c8PzE14xjrRcBrxHo4xHhTzRniKNLsZJtMh8xCM44aSpnKtGvU9ZtokNgGdZU1jfCWJVqyx14t" #
+# private view key:                                                                                 #
+# "700aaa8803452c441e041be5c2a4ffc8515261962b80128eab3f233bd97cfc0a"                                #
+#                                                                                                   #
+# good luck cracking it !                                                                           #
+#####################################################################################################
 
 #
 #                       Colors
@@ -499,7 +516,7 @@ Current_Versions()
 }
 Uninstall()
 {
-	$bred; echo "## THIS WILL DELETE /monero-bash/ AND EVERYTHING INSIDE IT ###"
+	$bred; echo "### THIS WILL DELETE /monero-bash/ AND EVERYTHING INSIDE IT ###"
 	$bwhite; echo -n "Uninstall "
 	$ired; echo -n "monero-bash? "
 	$bwhite; echo -n "(y/N) "
