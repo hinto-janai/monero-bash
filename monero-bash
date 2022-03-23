@@ -114,10 +114,10 @@ Monero_Bash_Title()
 Version_Variables()
 {
 if [[ $UPDATE_MONERO_CLI = "true" ]]; then
-moneroCLI_NewVer="$(wget https://github.com/monero-project/monero/releases/latest -qO - | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*" | grep -o "monero-linux-x64-*.*" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
+moneroCLI_NewVer="$(wget -qO- https://github.com/monero-project/monero/releases/latest | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*" | grep -o "monero-linux-x64-*.*" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
 fi
 if [[ $UPDATE_MONERO_BASH="true" ]]; then
-moneroBash_NewVer="$(wget https://github.com/hinto-janaiyo/monero-bash/releases/latest -qO - | grep -o "/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*" | grep -o "monero-bash-v*.*.*" | awk '{print $1}' | sed 's/.tar\"//')"
+moneroBash_NewVer="$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest | grep -o "/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*" | grep -o "monero-bash-v*.*.*" | awk '{print $1}' | sed 's/.tar\"//')"
 fi
 }
 Check_Monero_CLI()
@@ -152,14 +152,14 @@ Download_Monero_CLI()
 	fi
 	local originalDirectory="$(pwd)"
 	mkdir -p $tmp && cd $tmp
-	moneroCLI_1="$(wget https://github.com/monero-project/monero/releases/latest -qO - | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*")"
+	moneroCLI_1="$(wget -qO- https://github.com/monero-project/monero/releases/latest | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*")"
 	moneroCLI_2="$(echo $moneroCLI_1 | awk '{print $1}' | sed 's/"//g')"
 	moneroCLI_3="$moneroCLI_2"
 	Message "downloading [Monero-CLI]"
 	wget -q --show-progress $moneroCLI_3 && moneroCLI_tar="$(ls | grep -o "monero-linux-x64-v*.*.*.*.*.*.*")"
 	Message_Red "verifying [Monero-CLI]"
 	$off
-	echo "$(wget https://www.getmonero.org/downloads/hashes.txt -qO - | grep "monero-linux-x64" | awk '{print $1}')" $moneroCLI_tar | sha256sum -c
+	echo "$(wget -qO- https://www.getmonero.org/downloads/hashes.txt | grep "monero-linux-x64" | awk '{print $1}')" $moneroCLI_tar | sha256sum -c
 	if [[ $? = 0 ]]; then
 		Message_Red "extracting [Monero-CLI]"
 		tar -xf $moneroCLI_tar
@@ -187,31 +187,33 @@ Download_Monero_Bash()
 {
 	local originalDirectory="$(pwd)"
 	mkdir -p $tmp && cd $tmp
-	mBash_1="$(wget https://github.com/hinto-janaiyo/monero-bash/releases/latest -qO - | grep -o "/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*")"
-	mBash_2="$(echo "$Monero_Bash_1" | awk '{print $1}' | sed 's/\"//')"
-	mBash_3="$mBash_2"
+	mBash_1="$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest | grep -o "/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*")"
+	mBash_2="$(echo "$mBash_1" | awk '{print $1}' | sed 's/\"//')"
+	mBash_3="https://github.com/$mBash_2"
+	echo $mBash_3
 	Message "downloading [monero-bash]"
-	wget -q --show-progress $mBash_3 && mBash_tar="$(ls | grep -o "monero-bash")"
+	wget -q --show-progress "$mBash_3" && mBash_tar="$(ls | grep "monero-bash")"
 	Message_Red "verifying [monero-bash]"
 	$off
-	echo "$(wget https://github.com/hinto-janaiyo/monero-bash/releases/latest -qO - | grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" $mBash_tar | sha256sum -c
+	echo "$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest | grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" $mBash_tar | sha256sum -c
 	if [[ $? = 0 ]]; then
 		Message_Red "extracting [monero-bash]"
 		tar -xf $mBash_tar
 		rm -f $mBash_tar
-		sed -i "s@.*MONERO_BASH_VER=.*@MONERO_BASH_VER=\""$moneroCLI_NewVer"\"@" $config
+		Version_Variables
+		sed -i "s@.*MONERO_BASH_VER=.*@MONERO_BASH_VER=\""$moneroBash_NewVer"\"@" $config
 		mBash_fol="$(ls | grep "monero-bash")"
 		if [[ $OLD_FOLDER = "true" ]]; then
 			mkdir -p "$old/$currentDayTime"
 			mv "$installDirectory/monero-bash" "$old/$currentDayTime"
-			mv "$mBash_fol/monero-bash" $installDirectory
+			mv "$mBash_fol/monero-bash" "$installDirectory/"
 		else
 			rm "$installDirectory/monero-bash"
 			mv "$mBash_fol/monero-bash" "$installDirectory/"
 		fi
 		configDiffs="$(diff -y "$config" "$mBash_fol/config" | grep ">" | awk '{print $2}')"
 		if [[ $configDiffs != "" ]]; then
-			echo "# $moneroCLI_NewVer options" >> $config
+			echo "# $moneroBash_NewVer options" >> $config
 			diff -y "$config" "$mBash_fol/config" | grep ">" | awk '{print $2}' >> $config
 		fi
 		rm -rf $tmp
@@ -379,7 +381,6 @@ Start_Wallet()
 	Missing_Monero_CLI
 	if [[ $createWallet = "true" ]]; then
 		$MONERO_CLI_PATH/monero-wallet-cli --generate-new-wallet "$WALLET_PATH/$walletName" --password "$walletPassword" --mnemonic-language "$seedLanguage" --config-file "$DATA_PATH/monero-wallet-cli.conf"
-		exit
 	else
 		$MONERO_CLI_PATH/monero-wallet-cli --wallet-file "$walletSelection" --password "$walletPassword" --config-file "$DATA_PATH/monero-wallet-cli.conf"
 	fi
@@ -504,7 +505,7 @@ $bgreen; echo "hinto.janaiyo"
 Price_Check()
 {
 	$ired; echo "Monero price: " ;$off
-	wget "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR" -qO - | tr -d "{\"}" | tr "," "\n"
+	wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR" | tr -d "{\"}" | tr "," "\n"
 	echo
 }
 Current_Versions()
@@ -567,7 +568,7 @@ for optionChoice in $1 ;do
 			exit
 			;;
 		upgrade)
-			[[ $2 = "monero-bash" ]]&& Download_Monero_Bash
+			[[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]&& Download_Monero_Bash
 			[[ $2 = *"cli"* || $2 = *"CLI"* || $2 = *"Cli"* ]]&& Download_Monero_CLI
 			[[ $2 = "" ]]&& Download_All
 			exit
@@ -749,9 +750,10 @@ while true ;do
 			break
 		elif [[ $walletSelection = "new" || $walletSelection = "New" || $walletSelection = "NEW" || $walletSelection = "[new]" || $walletSelection = "[New]" ]]; then
 			Create_Wallet
+			break
 		else
 			$ired; echo "Error: wallet does not exist"
 		fi
 done
-
+exit
 ################################################     END OF INTERACTIVE SCRIPT     ################################################
