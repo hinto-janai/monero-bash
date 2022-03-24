@@ -66,7 +66,9 @@ monero-bash/            root folder
 ├─ .tmp
 ├─ .old
 ```
-*note: `/cli/  /wallets/  /.bitmonero/` these folders don't HAVE to be inside `/monero-bash/`, you can set the paths anywhere*
+*note:* the `/cli/`, `/wallets/`, and `/.bitmonero/` folders don't HAVE to be inside `/monero-bash/`, you can set the paths anywhere*
+
+
 
 the `.tmp` folder is used when downloading/extracting `monero-cli` and `monero-bash` (it is deleted afterwards)
 
