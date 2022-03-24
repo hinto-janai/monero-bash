@@ -44,8 +44,12 @@ Add_To_Bashrc()
 
 Remove_From_Bashrc()
 {
-	echo $pathSha
-	sed -i "s@.*$pathSha.*@@g" "$HOME/.bashrc"
+	if [[ $pathExist = "yes" ]]; then
+		sed -i "s@.*$pathSha.*@@g" "$HOME/.bashrc"
+	else
+		$ired; echo -n "monero-bash "
+		$white; echo "not detected in path"
+	fi
 }
 
 Reset_Path()
