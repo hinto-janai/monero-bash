@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+#						master source file that sources all of /monero-bash/src/
+#
+# global variables
+source "$installDirectory/src/var" || varMissing="true"
+
+# global functions
+for files in $installDirectory/src/func/* ;do
+	source $files || funcMissing="true"
+done
+
+# interactive config
+source "$installDirectory/src/config" || configMissing="true"
+
+# version file
+source "$installDirectory/src/version" || versionMissing="true"
+
+# debug file
+source "$installDirectory/src/debug"

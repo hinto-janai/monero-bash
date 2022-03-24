@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# directly invoke a /monero-bash/ function, variable, etc.
+#
+# USE VERY CAREFULLY
+
+DEBUG()
+{
+	$iwhite; echo -n "input: "
+	read command
+	$command
+}

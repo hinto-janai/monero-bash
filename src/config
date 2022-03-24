@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+#
+#                       Interactive Config
+#
+Interactive_Config(){
+$bred; echo "###################################################################"
+$bred; echo "#                    monero-bash configuration                    #"
+$bred; echo "###################################################################"
+
+#
+#                       Data Path
+#
+if [[ -d "$HOME/.bitmonero" ]]; then
+    $ired; echo "Monero data folder detected"
+    $white; echo -n "Use "
+    $ired; echo -n "$HOME/.bitmonero"
+    $white; echo -n "? (Y/n): " ;$iwhite
+    Yes()
+    {
+        sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$HOME/.bitmonero"\"@" $config
+        alreadySetDataPath="true"
+    }
+    No(){ :;}
+    YES_no
+fi
+if [[ $alreadySetDataPath != "true" ]]; then
+    $white; echo -n "Monero data path: [Enter for default] " ;$iwhite
+    read inputData
+    if [[ $inputData = "" ]]; then
+        sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" $config
+    else
+        sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" $config
+    fi
+fi
+source $config
+$ired; echo "Data path: $DATA_PATH"
+echo
+
+#
+#                       Monero-CLI Path
+#
+$white; echo -n "Monero-CLI path: [Enter for default] " ;$iwhite
+read inputCLI
+if [[ $inputCLI = "" ]]; then
+    sed -i "s@.*MONERO_CLI_PATH.*@MONERO_CLI_PATH=\""$defaultCLI"\"@" $config
+else
+    sed -i "s@.*MONERO_CLI_PATH.*@MONERO_CLI_PATH=\""$inputCLI"\"@" $config
+fi
+source $config
+$ired; echo "CLI Path: $MONERO_CLI_PATH"
+echo
+
+#
+#                       Wallet Path
+#
+$white; echo -n "Monero wallet path: [Enter for default] " ;$iwhite
+read inputWallet
+if [[ $inputWallet = "" ]]; then
+    sed -i "s@.*WALLET_PATH.*@WALLET_PATH=\""$defaultWallet"\"@" $config
+else
+    sed -i "s@.*WALLET_PATH.*@WALLET_PATH=\""$inputWallet"\"@" $config
+fi
+source $config
+$ired; echo "Wallet path: $WALLET_PATH"
+echo
+
+#
+#                       Making Folders + Adding "monero-bash" To Path
+#
+[[ ! -d $DATA_PATH ]]&&$white&& echo "Making data folder..." && mkdir -p $DATA_PATH
+[[ ! -d $MONERO_CLI_PATH ]]&&$white&& echo "Making CLI folder..." && mkdir -p $MONERO_CLI_PATH
+[[ ! -d $WALLET_PATH ]]&&$white&& echo "Making wallet folder..." && mkdir -p $WALLET_PATH
+[[ ! -f "$DATA_PATH/monero-wallet-cli.conf" ]]&&$white&& echo "Making CLI config file..." && touch "$DATA_PATH/monero-wallet-cli.conf"
+[[ ! -f "$DATA_PATH/monerod.conf" ]]&&$white&& echo "Making daemon config file..." && touch "$DATA_PATH/monerod.conf"
+if [[ $pathExist != "yes"  && $ADD_TO_PATH = "true" ]]; then
+    $white; echo "Adding monero-bash to PATH..."
+    Add_To_Bashrc
+fi
+echo
+
+#
+#                       Installation
+#
+$white; echo -n "Install latest Monero-CLI in "
+$ired; echo -n "${MONERO_CLI_PATH}"
+$white; echo -n "? "
+$white; echo -n "(Y/n): "
+Yes(){ Download_Monero_CLI ;}
+No(){ :;}
+$iwhite
+YES_no
+
+#
+#                       End
+#
+echo
+$bred; echo "###################################################################"
+$bred; echo "#                monero-bash configuration complete               #"
+$bred; echo "###################################################################"
+$white; echo -n "Data path: " ;$ired; echo "$DATA_PATH"
+$white; echo -n "CLI path: " ;$ired; echo "$MONERO_CLI_PATH"
+$white; echo -n "Wallet path: " ;$ired; echo "$WALLET_PATH"
+echo
+$white; echo -n "type: "
+$ired; echo -n "monero-bash "
+$white; echo "to get started"
+sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" $config
+source $HOME/.bashrc
+exec bash
+}

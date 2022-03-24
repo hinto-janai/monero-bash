@@ -3,27 +3,21 @@
 ######################
 
 # first time prompt
-FIRST_TIME="true"
+FIRST_TIME="true"                 # triggers the interactive configuration, set to "false" after
 
 # path
-DATA_PATH=""
-MONERO_CLI_PATH=""
-WALLET_PATH=""
+DATA_PATH=""                      # the path of /.bitmonero/
+MONERO_CLI_PATH=""                # the path of the monero-cli binaries
+WALLET_PATH=""                    # the path of your wallets
 
 # monero-cli
 
 # monero daemon
-START_DAEMON="true"
-STOP_DAEMON="true"
+START_DAEMON="true"               # start the daemon automatically when starting the wallet
+STOP_DAEMON="true"                # stop the daemon automatically after closing the wallet
 
 # monero-bash
-UPDATE_MONERO_CLI="true"
-UPDATE_MONERO_BASH="true"
-OLD_FOLDER="true"
-ADD_TO_PATH="true"
-
-# versions (DO NOT MANUALLY CHANGE)
-MONERO_CLI_VER="monero-linux-x64-v0.17.3.0"
-MONERO_CLI_OLD="false"
-MONERO_BASH_VER="monero-bash-v0.0.1"
-MONERO_BASH_OLD="false"
+UPDATE_MONERO_CLI="true"          # allow monero-cli updates to be downloaded
+UPDATE_MONERO_BASH="true"         # allow monero-bash updates to be downloaded
+OLD_FOLDER="true"                 # move old /cli/ and monero-bash files into /.old/ instead of deleting them
+ADD_TO_PATH="true"                # allow monero-bash to edit your bashrc to add to PATH
