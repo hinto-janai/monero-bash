@@ -1,83 +1,36 @@
 #!/usr/bin/env bash
 #
 #						Version Functions
-#
-Current_Versions()
-{
-	$white; echo -n "Monero-CLI: "
-	if [[ $MONERO_CLI_OLD = "false" ]]; then
-		$bgreen; echo "$MONERO_CLI_VER"
-	else
-		$bred; echo "$MONERO_CLI_VER"
-	fi
-		$white; echo -n "monero-bash: "
-	if [[ $MONERO_BASH_OLD = "false" ]]; then
-		$bgreen; echo "$MONERO_BASH_VER"
-	else
-		$bred; echo "$MONERO_BASH_VER"
-	fi
-}
-
-Version_Variables()
+#						these fetch the new version and
+#						turns them into usable variables
+version_NewMonero()
 {
 	local moneroLatestGithub="https://github.com/monero-project/monero/releases/latest"
-	local moneroVar="https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*"
-	local moneroTarName="monero-linux-x64-*.*"
+	local moneroVar="https://downloads.getmonero.org/cli/monero-linux-x64-v.*"
+	local moneroTarName="monero-linux-x64-.*"
+	monero_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.*//')"
+}
+
+version_NewMoneroBash()
+{
 	local mBashLatestGithub="https://github.com/hinto-janaiyo/monero-bash/releases/latest"
-	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*"
-	local mBashTarName="monero-bash-v*.*.*"
-	if [[ $UPDATE_MONERO_CLI = "true" ]]; then
-		moneroCLI_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
-	fi
-	if [[ $UPDATE_MONERO_BASH="true" ]]; then
-		moneroBash_NewVer="$(wget -qO- "$mBashLatestGithub" | grep -o "$mBashVar" | grep -o "$mBashTarName" | awk '{print $1}' | sed 's/.tar\"//')"
-	fi
+	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v.*"
+	local mBashTarName="monero-bash-v.*"
+	moneroBash_NewVer="$(wget -qO- "$mBashLatestGithub" | grep -o "$mBashVar" | grep -o "$mBashTarName" | awk '{print $1}' | sed 's/.tar.*//')"
 }
 
-Check_Monero_CLI()
+version_NewXMRig()
 {
-	Version_Variables
-	if [[ $MONERO_CLI_VER != $moneroCLI_NewVer ]]; then
-		$white; echo -n "Monero-CLI: "
-		$ired; echo -n "$MONERO_CLI_VER "
-		$white; echo -n "> "
-		$bgreen; echo "$moneroCLI_NewVer"
-		updateFound="true"
-		sed -i "s@.*MONERO_CLI_OLD=.*@MONERO_CLI_OLD=\"true\"@" $config
-	else
-		$white; echo -n "Monero-CLI: "
-		$bgreen; echo "up to date"
-	fi
+	local xmrigLatestGithub="https://github.com/xmrig/xmrig/releases/latest"
+	local xmrigVar="xmrig/xmrig/releases/download/.*/xmrig.*linux-static-x64.*"
+	local xmrigTarName="xmrig-.*"
+	xmrig_NewVer="$(wget -qO- "$xmrigLatestGithub" | grep -o "$xmrigVar" | grep -o "$xmrigTarName" | awk '{print $1}' | sed 's/.tar.*//')"
 }
 
-Check_Monero_Bash()
+version_NewP2Pool()
 {
-Version_Variables
-	if [[ $MONERO_BASH_VER != $moneroBash_NewVer ]]; then
-		$white; echo -n "monero-bash: "
-		$ired; echo -n "$MONERO_BASH_VER "
-		$white; echo -n "> "
-		$bgreen; echo "$moneroBash_NewVer"
-		updateFound="true"
-		sed -i "s@.*MONERO_BASH_OLD=.*@MONERO_BASH_OLD=\"true\"@" $config
-	else
-		$white; echo -n "monero-bash: "
-		$bgreen; echo "up to date"
-	fi
-}
-
-Update()
-{
-	Check_Monero_CLI
-	Check_Monero_Bash
-	if [[ $updateFound = "true" ]]; then
-		echo
-		$white; echo -n "type: "
-		$ired; echo -n "monero-bash upgrade "
-		$white; echo "to upgrade all"
-		$white; echo -n "or: "
-		$ired; echo -n "monero-bash upgrade <name> "
-		$white; echo "to upgrade something specific"
-		$off
-	fi
+	local p2poolLatestGithub="https://github.com/SChernykh/p2pool/releases/latest"
+	local p2poolVar="SChernykh/p2pool/releases/download/.*/p2pool-.*-linux-x64.*"
+	local p2poolTarName="p2pool-.*-linux-x64"
+	p2pool_NewVer="$(wget -qO- "$p2poolLatestGithub" | grep -o "$p2poolVar" | grep -o "$p2poolTarName" | awk '{print $1}' | sed 's/.tar.*//')"
 }

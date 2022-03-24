@@ -1,20 +1,32 @@
 #!/usr/bin/env bash
 #
-#						master source file that sources all of /monero-bash/src/
+#						master source file
+#
+
+#
+#						NEEDED SOURCE FILES
 #
 # global variables
-source "$installDirectory/src/var" || varMissing="true"
+source "$installDirectory/src/var" 2>/dev/null || varMissing="true"
 
 # global functions
-for files in $installDirectory/src/func/* ;do
-	source $files || funcMissing="true"
+for functions in $installDirectory/src/func/* ;do
+	source "$functions" 2>/dev/null || funcMissing="true"
 done
 
-# interactive config
-source "$installDirectory/src/config" || configMissing="true"
-
-# version file
-source "$installDirectory/src/version" || versionMissing="true"
-
 # debug file
-source "$installDirectory/src/debug"
+source "$installDirectory/src/debug" 2>/dev/null || debugMissing="true"
+
+# state file
+source "$installDirectory/src/txt/state" 2>/dev/null || stateMissing="true"
+
+# hashlist file
+if [[ ! -f  "$installDirectory/src/txt/hashlist" ]]; then
+	hashlistMissing="true"
+fi
+
+#
+#						USER FILES
+#
+# config file
+source "$dotMoneroBash/config/monero-bash.conf" 2>/dev/null || configMissing="true"

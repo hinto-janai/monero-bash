@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+#                       P2Pool Functions
+#
+p2pool_Status()
+{
+	$white; echo -n "P2Pool is: "
+	if pgrep p2pool &>/dev/null ;then
+		$bgreen; echo "online"
+	else
+		$bred; echo "offline"
+	fi
+}

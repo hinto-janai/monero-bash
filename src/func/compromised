@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+#
+#						messages for when hash/gpg is incorrect
+#
+compromised_Monero_Hash()
+{
+    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    $bwhite; echo -n "@   "
+    $bred; echo -n "WARNING: HASH ERROR!"
+    $bwhite; echo "                   @"
+    $bwhite; echo "@                                          @"
+    $bwhite; echo -n "@   "
+    $bred; echo -n "[Monero] hash did not match!"
+    $bwhite; echo "           @"
+    $bwhite; echo -n "@   "
+    $bred; echo -n "Monero might be compromised"
+    $bwhite; echo "            @"
+    $bwhite; echo -n "@   "
+    $bred; echo -n "(or more likely, there was an error)"
+    $bwhite; echo "   @"
+    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    echo "EXITING FOR SAFTEY..."
+}
+
+compromised_MoneroBash_Hash()
+{
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "WARNING: HASH ERROR!"
+	$bwhite; echo "                   @"
+	$bwhite; echo "@                                          @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "[monero-bash] hash did not match!"
+	$bwhite; echo "      @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "hinto.janaiyo might be compromised"
+	$bwhite; echo "     @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "(or more likely, there was an error)"
+	$bwhite; echo "   @"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	echo "EXITING FOR SAFTEY..."
+}

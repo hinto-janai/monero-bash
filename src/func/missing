@@ -1,61 +1,67 @@
 #!/usr/bin/env bash
 #
-#						Missing "x" Functions
+#							Missing "x" Functions
 #
-Missing_Monero_Daemon()
+missing_MoneroDaemon()
 {
-	if [[ ! -f "$MONERO_CLI_PATH/monerod" ]]; then
-		$ired; echo "Error: monero daemon not found!"
-		$white; echo -n "Download Monero-CLI? (Y/n) "
-		Yes(){ Download_Monero_CLI ;}
-		No(){ $ired; echo "Exiting..." ;exit ;}
-		YES_no
+	if [[ ! -f "$binMonero/monerod" ]]; then
+		print_Error_Exit "monerod missing!"
 	fi
 }
 
-Missing_Monero_CLI()
+missing_MoneroCLI()
 {
-	if [[ ! -f "$MONERO_CLI_PATH/monero-wallet-cli" ]]; then
-		$ired; echo "Error: monero-wallet-cli not found!"
-		$white; echo -n "Download Monero-CLI? (Y/n) "
-		Yes(){ Download_Monero_CLI ;}
-		No(){ $ired; echo "Exiting..." ;exit ;}
-		YES_no
+	if [[ ! -f "$binMonero/monero-wallet-cli" ]]; then
+		print_Error_Exit "monero-wallet-cli missing!"
 	fi
 }
 
-Missing_Config()
+missing_BinMonero()
 {
-if [[ ! -f $config ]]; then
-$white; echo "monero-bash config file missing, creating default..."
-echo "######################
-# monero-bash config #
-######################
+	if [[ ! -d "$binMonero" ]]; then
+		print_Error_Exit "$binMonero missing!"
+	fi
+}
 
-# first time prompt
-FIRST_TIME="true"
+missing_P2Pool()
+{
+	if [[ ! -f "$binP2Pool/p2pool" ]]; then
+		print_Error_Exit "P2Pool missing!"
+	fi
+}
 
-# path
-DATA_PATH=""
-MONERO_CLI_PATH=""
-WALLET_PATH=""
+missing_XMRig()
+{
+	if [[ ! -f "$binXMRig" ]]; then
+		print_Error_Exit "XMRig missing!"
+    fi
+}
 
-# monero-cli
+missing_DotMoneroBash()
+{
+	if [[ ! -d "$dotMoneroBash" ]]; then
+		print_Error_Exit "$dotMoneroBash missing!"
+		echo "Create one with default settings? (Y/n) "
+		Yes(){ build_DefaultDotMoneroBash ;}
+		No(){ echo "Skipping..." ;}
+		prompt_YESno
+	fi
+}
 
-# monero daemon
-START_DAEMON="true"
-STOP_DAEMON="true"
+missing_Wallets()
+{
+	if [[ ! -d "$wallets" ]]; then
+		print_Error "$wallets missing!"
+		echo "Creating wallet folder..."
+		mkdir "$wallets"
+	fi
+}
 
-# monero-bash
-UPDATE_MONERO_CLI="true"
-UPDATE_MONERO_BASH="true"
-OLD_FOLDER="true"
-ADD_TO_PATH="true"
-
-# versions (DO NOT MANUALLY CHANGE)
-MONERO_CLI_VER="monero-linux-x64-v0.17.3.0"
-MONERO_BASH_VER="monero-bash-v0.0.1"" > $config
-$ired; echo $config
-source $config
-fi
+missing_Config()
+{
+	if [[ ! -d "$config" ]]; then
+		print_Error "$config missing!"
+		echo "Creating default config folder..."
+		build_Config
+	fi
 }

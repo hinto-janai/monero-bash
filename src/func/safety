@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+#
+#						Saftey checks so monero-bash doesn't blow something up
+#
+# checks if /.monero-bash/ exists, if not, build default
+safety_DotMoneroBash()
+{
+    if [[ ! -d "$dotMoneroBash" ]]; then
+        $ired; echo "$HOME/.monero-bash/ folder not found!"
+        $white; printf "Build a default folder? (Y/n) "
+		Yes()
+		{
+			QUIET_HASH_LIST
+			build_DefaultDotMoneroBash
+		}
+		No(){ echo "Exiting..." ;exit;}
+		prompt_YESno
+    fi
+}
+# checks if the home folder exists
+safety_Home()
+{
+	if [[ ! -d "$HOME" ]]; then
+		$ired; echo "monero bash error: User's home folder does not exist!"
+		echo "Exiting..."
+		exit
+	fi
+}
+
+# checks if the basic linux folders exists at all
+safety_LinuxFolders()
+{
+	if [[ ! -d "/usr/local/share/" || ! -d "/usr/local/bin/" ]]; then
+		$ired; echo "/usr/ folder error!"
+		$white; echo "monero-bash needs a normal /usr/ folder"
+		echo "Exiting..."
+		exit
+	fi
+}
+
+# check if in /usr/local/share/monero-bash
+safety_UsrLocalShare()
+{
+	if [[ "$installDirectory" != "/usr/local/share/monero-bash" ]]; then
+		$ired; echo "error: monero-bash not in /usr/local/share/ !"
+		$white; echo "was monero-bash installed properly?"
+		echo "Exiting for safety..."
+		exit
+	fi
+}
+
+# checks quiet_hashlist only if not previously checked (used in download)
+safety_HashList()
+{
+	if [[ $alreadyCheckedHashList != "true" ]]; then
+		QUIET_HASH_LIST
+		alreadyCheckedHashList="true"
+	fi
+}

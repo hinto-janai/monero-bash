@@ -1,0 +1,26 @@
+# INSTALL #
+uninstall                   uninstall monero-bash and remove /.monero-bash/
+
+# PKG MANAGER #
+update                      only CHECK for updates
+upgrade all                 upgrade all packages
+upgrade <name>              upgrade specific package
+upgrade <all/name> force    forcefully upgrade packages
+version                     print current package versions
+
+# DAEMON #
+daemon                      print status of daemon
+daemon start                start the daemon (detached)
+daemon stop                 gracefully stop the daemon
+daemon kill                 forcefully kill all daemon processes
+daemon full                 start the daemon attached
+
+# STATS #
+status                      print useful stats
+list                        list wallets
+size                        show size of /.monero-bash/
+price                       fetch price data from cryptocompare.com API
+integrity                   check hash integrity of monero-bash
+
+# HELP #
+help                        show this help message

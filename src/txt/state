@@ -1,0 +1,17 @@
+# the backend file monero-bash uses to read/write state data
+# (DO NOT MANUALLY CHANGE)
+
+# first time check
+FIRST_TIME="false"
+
+# versions
+MONERO_VER="monero-linux-x64-v0.17.3.0"
+MONERO_BASH_VER="monero-bash-v0.0.2"
+XMRIG_VER=""
+P2POOL_VER=""
+
+# old state
+MONERO_OLD="false"
+MONERO_BASH_OLD="false"
+XMRIG_OLD=""
+P2POOL_OLD=""

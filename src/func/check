@@ -1,0 +1,102 @@
+#!/bin/bash
+#
+#						Check "x" (used by update command)
+#						for fetching internet stats
+check_Price()
+{
+	prompt_PriceAPI_IP
+	$ired; echo "XMR price: " ;$off
+	wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR" \
+	| tr -d "{\"}" | tr "," "\n" | sed 's/:/: /g'
+	echo
+	$bred; echo "XMR: 1"
+}
+
+check_Monero()
+{
+	prompt_Sudo
+	error_Sudo
+	version_NewMonero
+	if [[ $MONERO_VER != $monero_NewVer ]]; then
+		$white; echo -n "Monero: "
+		$ired; echo -n "$MONERO_VER "
+		$white; echo -n "> "
+		$bgreen; echo "$monero_NewVer"
+		updateFound="true"
+		sudo sed -i "s@.*MONERO_OLD=.*@MONERO_OLD=\"true\"@" "$state"
+	else
+		$white; echo -n "Monero: "
+		$bgreen; echo "up to date"
+	fi
+}
+
+check_MoneroBash()
+{
+	prompt_Sudo
+	error_Sudo
+	version_NewMoneroBash
+	if [[ $MONERO_BASH_VER != $moneroBash_NewVer ]]; then
+        $white; echo -n "monero-bash: "
+        $ired; echo -n "$MONERO_BASH_VER "
+        $white; echo -n "> "
+        $bgreen; echo "$moneroBash_NewVer"
+		updateFound="true"
+        sed -i "s@.*MONERO_BASH_OLD=.*@MONERO_BASH_OLD=\"true\"@" "$state"
+    else
+        $white; echo -n "monero-bash: "
+        $bgreen; echo "up to date"
+    fi
+}
+
+check_XMRig()
+{
+	prompt_Sudo
+	error_Sudo
+	version_NewXMRig
+	if [[ $XMRIG_VER != $xmrig_NewVer ]]; then
+        $white; echo -n "monero-bash: "
+        $ired; echo -n "$XMRIG_VER "
+        $white; echo -n "> "
+        $bgreen; echo "$xmrig_NewVer"
+		updateFound="true"
+        sed -i "s@.*XMRIG_OLD=.*@XMRIG_OLD=\"true\"@" "$state"
+    else
+        $white; echo -n "XMRig: "
+        $bgreen; echo "up to date"
+    fi
+}
+
+check_P2Pool()
+{
+	prompt_Sudo
+	error_Sudo
+	version_NewP2Pool
+	if [[ $P2POOL_VER != $p2pool_NewVer ]]; then
+        $white; echo -n "monero-bash: "
+        $ired; echo -n "$P2POOL_VER "
+        $white; echo -n "> "
+        $bgreen; echo "$p2pool_NewVer"
+		updateFound="true"
+        sed -i "s@.*P2POOL_OLD=.*@P2POOL_OLD=\"true\"@" "$state"
+    else
+        $white; echo -n "P2Pool: "
+        $bgreen; echo "up to date"
+    fi
+}
+
+check_Update()
+{
+	check_MoneroBash
+	[[ $MONERO_VER != "" ]]&& check_Monero
+	[[ $XMRIG_VER != "" ]]&& check_XMRig
+	[[ $P2POOL_VER != "" ]]&& check_P2Pool
+    if [[ $updateFound = "true" ]]; then
+        echo
+        $ired; echo -n "monero-bash upgrade "
+        $white; echo "to upgrade all"
+        $white; echo -n "or: "
+        $ired; echo -n "monero-bash upgrade <name> "
+        $white; echo "to upgrade something specific"
+        $off
+    fi
+}

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+#
+#						status function, prints multiple helpful stats
+#
+status_All()
+{
+	print_MoneroBashTitle
+	QUIET_HASH_LIST
+	wallet_Count
+	wallet_List
+	print_Version
+	daemon_Status
+	xmrig_Status
+	p2pool_Status
+}
