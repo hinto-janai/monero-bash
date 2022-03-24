@@ -1,7 +1,7 @@
 # monero-bash guide:
-* [Usage](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md#usage
-* [Folder Structure](https://github.com/hinto-janaiyo/monero-bash/blob/main/help.md#folder-structure
-* [Configuration](https://github.com/hinto-janaiyo/monero-bash/blob/main/help.md#configuration
+* [Usage](#usage)
+* [Folder Structure](#folder-structure)
+* [Configuration](#configuration)
 
 
 ## Usage
