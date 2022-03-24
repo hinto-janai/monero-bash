@@ -39,6 +39,10 @@ to be added:
 [for full details and usage, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
 
 ## if you want to beta-test:
+[download the latest release, here](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
+
+or
+
 ```
 git clone https://github.com/hinto-janaiyo/monero-bash &&
 cd monero-bash &&
