@@ -6,6 +6,8 @@
 
 ## Usage
 ```
+monero-bash usage: monero-bash <option> <more options>
+
 # SETUP #
 config            configure monero-bash settings
 uninstall         remove /monero-bash/ folder and remove from PATH
