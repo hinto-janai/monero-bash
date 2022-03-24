@@ -25,10 +25,10 @@ and so, any `monerod.conf` or `monero-wallet-cli.conf` that you may have in your
 
 ## features
 **monero-bash acts as a general meta-program:**
-* `monero-bash`: initial configuration, wallet manager
-* `monero-bash update`, `monero-bash upgrade`: check/install latest version of `monero-cli` (and verify SHA256SUMS automatically)
-* `monero-bash price`: fetch price API for USD and EURO
-* `monero-bash daemon <option>`: control the monero daemon
+* `monero-bash` initial configuration, wallet manager
+* `monero-bash update` `monero-bash upgrade` check/install latest version of `monero-cli` (and verify SHA256SUMS automatically)
+* `monero-bash price` fetch price API for USD and EURO
+* `monero-bash daemon <option>` control the monero daemon
 
 **to be added:**
 * automatic p2pool mining
