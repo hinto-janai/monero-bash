@@ -30,6 +30,15 @@ price             fetch price data from cryptocompare.com API
 # HELP #
 help              show this help message
 ```
+if you ever move the `/monero-bash/` folder, execute `./monero-bash path` to re-add to PATH
+
+currently, it gets added/removed to PATH via your `$USER/.bashrc` with `echo` and `sed`
+
+an alternative would be to:
+```
+sudo ln -s monero-bash /usr/bin/monero-bash
+```
+this is a much cleaner (and safer) way of doing it, but it requires `sudo`, which i'd like to avoid
 
 
 ## Folder Structure
@@ -53,7 +62,7 @@ monero-bash/            root folder
 ├─ .tmp
 ├─ .old
 ```
-*note: you do not need the folders inside `/monero-bash/`, you can set the paths anywhere
+*note: you do not need the folders inside `/monero-bash/`, you can set the paths anywhere*
 
 the `.tmp` folder is used when downloading/extracting monero-cli and monero-bash (it is deleted afterwards)
 
