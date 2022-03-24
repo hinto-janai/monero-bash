@@ -4,7 +4,7 @@
 ![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
 
 ## about
-monero-bash does what bash normally does, it glues together multiple programs in a more automatic fashion.
+monero-bash does what `bash` normally does, it glues together multiple programs in a more automatic fashion.
 
 in this case:
 * monero daemon
@@ -24,13 +24,13 @@ and so, any `monerod.conf` or `monero-wallet-cli.conf` that you may have in your
 **[for full details and usage, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)**
 
 ## features
-monero-bash acts as a general meta-program:
-* the default `monero-bash` command does initial configuration, then acts as a wallet manager
-* `monero-bash update` and `monero-bash upgrade` check/install the latest version of `monero-cli` (and verifies SHA256SUM automatically)
-* `monero-bash price` fetchs price API for USD and EURO
-* `monero-bash daemon <option>` can be used to control the daemon
+**monero-bash acts as a general meta-program:**
+* `monero-bash`: initial configuration, wallet manager
+* `monero-bash update`, `monero-bash upgrade`: check/install latest version of `monero-cli` (and verify SHA256SUMS automatically)
+* `monero-bash price`: fetch price API for USD and EURO
+* `monero-bash daemon <option>`: control the monero daemon
 
-to be added:
+**to be added:**
 * automatic p2pool mining
 * GPG key verification for binaries
 * RPC/Daemon API integration
