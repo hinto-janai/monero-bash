@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+#						Monero Daemon Functions
+#
+Start_Daemon()
+{
+	Missing_Monero_Daemon
+	if pgrep monerod &>/dev/null ; then
+		$bred; echo "Monero daemon detected..." ;$off
+	else
+		$MONERO_CLI_PATH/monerod --data-dir "$DATA_PATH" --config-file "$DATA_PATH/monerod.conf"
+	fi
+}
+
+Start_Daemon_Detached()
+{
+	Missing_Monero_Daemon
+	if pgrep monerod &>/dev/null ; then
+		$bred; echo "Monero daemon detected..." ;$off
+	else
+		$MONERO_CLI_PATH/monerod --detach --data-dir "$DATA_PATH" --config-file "$DATA_PATH/monerod.conf"
+	fi
+}
+
+Kill_Daemon()
+{
+	$ired; echo "Stopping monero daemon..."
+	killall monerod
+	if [[ $? = 0 ]]; then
+		$white; echo "Monero daemon stopped"
+	else
+		$ired; echo "error: Monero daemon was not stopped"
+	fi
+}
+
+Daemon_Health()
+{
+	$white; echo -n "Monero daemon is: "
+	if pgrep monerod &>/dev/null ;then
+		$bgreen; echo "online"
+	else
+		$bred; echo "offline"
+	fi
+}

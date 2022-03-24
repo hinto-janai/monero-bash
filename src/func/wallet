@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#
+#						Monero Wallet Functions
+#
+Start_Wallet()
+{
+	if [[ $START_DAEMON = "true" ]]; then
+		Start_Daemon_Detached
+	fi
+		Missing_Monero_CLI
+	if [[ $createWallet = "true" ]]; then
+		$MONERO_CLI_PATH/monero-wallet-cli --generate-new-wallet "$WALLET_PATH/$walletName" --password "$walletPassword" --mnemonic-language "$seedLanguage" --config-file "$DATA_PATH/monero-wallet-cli.conf"
+	else
+		$MONERO_CLI_PATH/monero-wallet-cli --wallet-file "$walletSelection" --password "$walletPassword" --config-file "$DATA_PATH/monero-wallet-cli.conf"
+	fi
+	if [[ $STOP_DAEMON = "true" ]]; then
+		Kill_Daemon
+	fi
+}
+
+Create_Wallet()
+{
+	# wallet name
+	while true ;do
+			$white; echo -n "New wallet name: " ;$iwhite
+			read walletName
+			if [[ $walletName = *" "* || $walletName = "" ]]; then
+			$ired; echo "Error: wallet name cannot be empty or have spaces"
+		else
+			break
+		fi
+	done
+		# wallet pass
+		while true; do
+			$white; echo -n "Wallet password: "
+			read -s walletPassword
+			echo
+			$white; echo -n "Enter password again: "
+			read -s walletPasswordAgain
+			echo
+			if [[ $walletPassword = $walletPasswordAgain ]]; then
+				break
+			else
+				$ired; echo "Password was not the same!"
+			fi
+		done
+		# wallet seed language
+		while true ;do
+			$ired; echo "Monero seed languages:" ;$iwhite
+			Seed_Language_List
+			$white; echo -n "Pick seed language: " ;$iwhite
+			read seedLanguage
+				case $seedLanguage in
+					"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;
+					"1"|english|English) seedLanguage="English" ;break ;;
+					"2"|español|Español|spanish|Spanish) seedLanguage="Español" ;break ;;
+					"3"|français|Français|french|French) seedLanguage="Français" ;break ;;
+					"4"|italiano|Italiano|italian|Italian) seedLanguage="Italiano" ;break ;;
+					"5"|nederlands|Nederlands|dutch|Dutch) seedLanguage="Nederlands" ;break ;;
+					"6"|português|Português|portuguese|Portuguese) seedLanguage="Português" ;break ;;
+					"7"|"русский язык"|russian|Russian) seedLanguage="русский язык" ;break ;;
+					"8"|日本語|にほんご|japanese|Japanese) seedLanguage="日本語" ;break ;;
+					"9"|"简体中文(中国)"|"简体中文"|"简体中文 (中国)"|chinese|Chinese|CHINESE) seedLanguage="简体中文 (中国)" ;break ;;
+					"10"|esperanto|Esperanto) seedLanguage="Esperanto" ;break ;;
+					"11"|lojban|Lojban) seedLanguage="Lojban" ;break ;;
+					*) $ired; echo "error: invalid input" ;;
+				esac
+		done
+	$bred; echo "Starting Monero-CLI..." ;$off
+	createWallet="true"
+	Start_Wallet
+}
+
+Wallet_Count()
+{
+	cd $WALLET_PATH
+	walletCount="$(ls | grep -v ".keys" | wc -l)"
+	echo -n "$walletCount "
+	if [[ $walletCount = "1" ]]; then
+		echo "wallet found:"
+	elif [[ $walletCount > "1" ]]; then
+		echo "wallets found: "
+	elif [[ $walletCount = "0" ]]; then
+		echo "wallets found"
+		echo -n "Create one at "
+		$ired; echo -n "$WALLET_PATH"
+		$white; echo -n "? (Y/n) " ;$iwhite
+		Yes(){ Create_Wallet ;exit ;}
+		No(){ $white; echo "Exiting..." ;exit ;}
+		YES_no
+	fi
+}
+
+Wallet_List()
+{
+	cd $WALLET_PATH
+	walletList="$(ls | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
+	$ired; echo "$walletList"
+}
