@@ -22,11 +22,18 @@ else
 	exit
 fi
 
-# Debug
-if [[ $1 = "DEBUG" ]]; then
-	DEBUG
-	exit
-fi
+# DEBUG COMMANDS
+case $1 in
+	DEBUG)
+		[[ $2 = "" ]]&& DEBUG && exit
+		if [[ $2 = "LIST" ]]; then
+			echo -e "\033[1;32mMONERO-BASH GLOBAL FUNCTIONS:\033[0m"
+			declare -F | sed 's/declare -f //g'
+			echo -e "\033[1;33mMONERO-BASH GLOBAL VARIABLES:\033[0m"
+			cat "src/var" | grep -v "#" | grep -v "\033"
+			exit
+		fi
+esac
 
 # Interactive Config
 if [[ $FIRST_TIME = "true" && $1 = "" ]]; then
