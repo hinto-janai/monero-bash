@@ -51,7 +51,7 @@ monero-bash/
 ├─ config
 ├─ src
 ```
-these 3: `monero-bash`, `config` and `src` must ALWAYS be in a `/monero-bash/` folder
+`monero-bash`, `config` and `src` must ALWAYS be in a `/monero-bash/` folder
 
 after the initial configuration, `/monero-bash/` might look something like this:
 
@@ -63,14 +63,10 @@ monero-bash/            root folder
 ├─ src                  source code of monero-bash
 ├─ wallets              where wallet files live
 ├─ .bitmonero           monero blockchain/data folder
-├─ .tmp
+├─ .tmp                 temporary location for upgrade downloads
 ├─ .old
 ```
-*note:* the `/cli/`, `/wallets/`, and `/.bitmonero/` folders don't HAVE to be inside `/monero-bash/`, you can set the paths anywhere*
-
-
-
-the `.tmp` folder is used when downloading/extracting `monero-cli` and `monero-bash` (it is deleted afterwards)
+*note:* the `/cli/`, `/wallets/`, and `/.bitmonero/` folders don't HAVE to be inside `/monero-bash/`, you can set the paths anywhere
 
 when upgrading, `monero-bash` (by default), moves any old `/cli/` or `monero-bash` files in a timestamped folder inside `.old` instead of deleting them (if you'd like to change that, see the next section)
 
