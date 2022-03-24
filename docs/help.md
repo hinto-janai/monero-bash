@@ -1,7 +1,7 @@
 # monero-bash guide:
-[Usage](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md#usage
-[Folder Structure](https://github.com/hinto-janaiyo/monero-bash/blob/main/help.md#folder-structure
-[Configuration](https://github.com/hinto-janaiyo/monero-bash/blob/main/help.md#configuration
+* [Usage](#usage)
+* [Folder Structure](#folder-structure)
+* [Configuration](#configuration)
 
 
 ## Usage
@@ -42,14 +42,14 @@ this is a much cleaner (and safer) way of doing it, but it requires `sudo`, whic
 
 
 ## Folder Structure
-the /monero-bash/ folder (ignoring git and docs) starts like this:
+the `/monero-bash/` folder (ignoring git and docs) starts like this:
 ```
 monero-bash/
 ├─ monero-bash
 ├─ config
 ├─ src
 ```
-after the initial configuration, monero-bash might look something like this:
+after the initial configuration, `/monero-bash/` might look something like this:
 
 ```
 monero-bash/            root folder
@@ -64,13 +64,13 @@ monero-bash/            root folder
 ```
 *note: you do not need the folders inside `/monero-bash/`, you can set the paths anywhere*
 
-the `.tmp` folder is used when downloading/extracting monero-cli and monero-bash (it is deleted afterwards)
+the `.tmp` folder is used when downloading/extracting `monero-cli` and `monero-bash` (it is deleted afterwards)
 
-when upgrading, monero-bash (by default), moves any old `cli` or `monero-bash` files in a timestamped folder inside `.old` instead of deleting them (if you'd like to change that, see the next section)
+when upgrading, `monero-bash` (by default), moves any old `/cli/` or `monero-bash` files in a timestamped folder inside `.old` instead of deleting them (if you'd like to change that, see the next section)
 
 
 ## Configuration
-if you already use custom options/flags for `monerod` or `monero-wallet-cli` and want monero-bash to use them as well, make a `monerod.conf` or `monero-wallet-cli.conf` file and put them in your `.bitmonero` folder. [refer to this official monero documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
+if you already use custom options/flags for `monerod` or `monero-wallet-cli` and want `monero-bash` to use them as well, make a `monerod.conf` or `monero-wallet-cli.conf` file and put them in your `.bitmonero` folder. [refer to this official monero documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
 
 for `monero-bash` specific configuration, edit the file `/monero-bash/config`
 ```
