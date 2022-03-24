@@ -21,6 +21,8 @@ it is essentially a bunch of bash scripts invoking monero-cli
 
 and so, any `monerod.conf` or `monero-wallet-cli.conf` that you may have in your `.bitmonero` folder, can be used by monero-bash
 
+**[for full details and usage, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)**
+
 ## features
 monero-bash acts as a general meta-program:
 * the default `monero-bash` command does initial configuration, then acts as a wallet manager
@@ -35,8 +37,6 @@ to be added:
 * "offline" mode, block all internet-related commands
 * daemon inside screen session
 * automatic encrypted wallet backups
-
-[for full details and usage, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
 
 ## if you want to beta-test:
 [download the latest release, here](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
