@@ -2,7 +2,7 @@
 #
 #						Monero Daemon Functions
 #
-Start_Daemon()
+daemon_StartAttached()
 {
 	Missing_Monero_Daemon
 	if pgrep monerod &>/dev/null ; then
@@ -12,7 +12,7 @@ Start_Daemon()
 	fi
 }
 
-Start_Daemon_Detached()
+daemon_StartDetached()
 {
 	Missing_Monero_Daemon
 	if pgrep monerod &>/dev/null ; then
@@ -22,22 +22,25 @@ Start_Daemon_Detached()
 	fi
 }
 
-Kill_Daemon()
+#daemon_Stop(){}
+
+daemon_Kill()
 {
-	$ired; echo "Stopping monero daemon..."
+	$ired; echo "Killing monero daemon..."
 	killall monerod
 	if [[ $? = 0 ]]; then
-		$white; echo "Monero daemon stopped"
+		$white; echo "Monero daemon killed"
 	else
-		$ired; echo "error: Monero daemon was not stopped"
+		$ired; echo "error: Monero daemon was not killed"
 	fi
 }
 
-Daemon_Health()
+daemon_Status()
 {
 	$white; echo -n "Monero daemon is: "
 	if pgrep monerod &>/dev/null ;then
 		$bgreen; echo "online"
+		$MONERO_CLI_PATH/monerod status
 	else
 		$bred; echo "offline"
 	fi

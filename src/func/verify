@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+#						GPG & verification of binaries
+#
+verify_hash_MoneroCLI()
+{
+	moneroCLI_tar="$(ls "$tmp" | grep "monero-linux-x64")"
+	echo "$(wget -qO- "https://www.getmonero.org/downloads/hashes.txt" | grep "monero-linux-x64" | awk '{print $1}')" "$tmp/$moneroCLI_tar" | sha256sum -c
+}

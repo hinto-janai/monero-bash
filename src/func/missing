@@ -1,61 +1,33 @@
 #!/usr/bin/env bash
 #
-#						Missing "x" Functions
+#							Missing "x" Functions
 #
-Missing_Monero_Daemon()
+missing_MoneroDaemon()
 {
 	if [[ ! -f "$MONERO_CLI_PATH/monerod" ]]; then
-		$ired; echo "Error: monero daemon not found!"
-		$white; echo -n "Download Monero-CLI? (Y/n) "
-		Yes(){ Download_Monero_CLI ;}
-		No(){ $ired; echo "Exiting..." ;exit ;}
-		YES_no
+		$ired; echo -n "Error: "
+		$white; echo "monerod missing!"
+		echo "Exiting..."
+		exit
 	fi
 }
 
-Missing_Monero_CLI()
+missing_MoneroCLI()
 {
 	if [[ ! -f "$MONERO_CLI_PATH/monero-wallet-cli" ]]; then
-		$ired; echo "Error: monero-wallet-cli not found!"
-		$white; echo -n "Download Monero-CLI? (Y/n) "
-		Yes(){ Download_Monero_CLI ;}
-		No(){ $ired; echo "Exiting..." ;exit ;}
-		YES_no
+		$ired; echo -n "Error: "
+		$white; echo "monero-wallet-cli missing!"
+		echo "Exiting..."
+		exit
 	fi
 }
 
-Missing_Config()
+missing_MoneroCLI_Folder()
 {
-if [[ ! -f $config ]]; then
-$white; echo "monero-bash config file missing, creating default..."
-echo "######################
-# monero-bash config #
-######################
-
-# first time prompt
-FIRST_TIME="true"
-
-# path
-DATA_PATH=""
-MONERO_CLI_PATH=""
-WALLET_PATH=""
-
-# monero-cli
-
-# monero daemon
-START_DAEMON="true"
-STOP_DAEMON="true"
-
-# monero-bash
-UPDATE_MONERO_CLI="true"
-UPDATE_MONERO_BASH="true"
-OLD_FOLDER="true"
-ADD_TO_PATH="true"
-
-# versions (DO NOT MANUALLY CHANGE)
-MONERO_CLI_VER="monero-linux-x64-v0.17.3.0"
-MONERO_BASH_VER="monero-bash-v0.0.1"" > $config
-$ired; echo $config
-source $config
-fi
+	if [[ ! -d "$MONERO_CLI_PATH" ]]; then
+		$ired; echo -n "Error: "
+		$white; echo "Monero-CLI folder missing!"
+		echo "Exiting..."
+		exit
+	fi
 }

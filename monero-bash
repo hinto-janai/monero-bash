@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
-# /monero-bash/ checks
+# check for /monero-bash/ directory, sourcing, interactive/options
 scriptPath="$(realpath $0)"
-installDirectory="$(dirname "$scriptPath")" && cd $installDirectory
+installDirectory="$(dirname "$scriptPath")"
 if [[ $installDirectory == *"/monero-bash" ]]; then
-	source "$installDirectory/src/all" &>/dev/null || exit 1
-	if [[ $varMissing = "true" || $funcMissing = "true" || $configMissing = "true" || $versionMissing = "true" || $? = "1" ]]; then
+	cd "$installDirectory"
+	source "$installDirectory/src/all"
+	if [[ $? = "1" ]]; then
 		printf "\033[1;31mERROR: monero-bash sourcing error:\n"
 		[[ $varMissing = "true" ]]&& printf "\033[1;37mVariables not sourced\n"
 		[[ $funcMissing = "true" ]]&& printf "\033[1;37mFunctions not sourced\n"
-		[[ $configMissing = "true" ]]&& printf "\033[1;37mConfig not sourced\n"
-        [[ $versionMissing = "true" ]]&& printf "\033[1;37mVersion not sourced\n"
+        [[ $stateMissing = "true" ]]&& printf "\033[1;37mmonero-bash state file missing\n"
+		[[ $debugMissing = "true" ]]&& printf "\033[1;37mmonero-bash debug file missing\n"
+		[[ $hashlistMissing = "true" ]]&& printf "\033[1;37mmonero-bash hashlist file missing\n"
 		printf "\033[0;31mExiting for safety...\n"
 		exit
 	fi
@@ -23,21 +25,19 @@ else
 fi
 
 # DEBUG COMMANDS
-case $1 in
-	DEBUG)
-		[[ $2 = "" ]]&& DEBUG && exit
-		if [[ $2 = "LIST" ]]; then
-			echo -e "\033[1;32mMONERO-BASH GLOBAL FUNCTIONS:\033[0m"
-			declare -F | sed 's/declare -f //g'
-			echo -e "\033[1;33mMONERO-BASH GLOBAL VARIABLES:\033[0m"
-			cat "src/var" | grep -v "#" | grep -v "\033"
-			exit
-		fi
-esac
+if [[ $1 = "DEBUG" ]]; then
+	case $2 in
+		"") DEBUG ;;
+		LIST) LIST ;;
+		PRODUCE_HASH_LIST) PRODUCE_HASH_LIST ;;
+		CHECK_HASH_LIST) CHECK_HASH_LIST ;;
+	esac
+	exit
+fi
 
 # Interactive Config
 if [[ $FIRST_TIME = "true" && $1 = "" ]]; then
-	Interactive_Config
+	config_Interactive
 fi
 
 #
@@ -48,8 +48,8 @@ fi
 # initial configuration
 #
 if [[ $interactive = "true" ]]; then
-	Monero_Bash_Title
-	$white; Wallet_Count ; Wallet_List ; echo
+	print_MoneroBashTitle
+	$white; wallet_Count ; wallet_List ; echo
 	while true ;do
 		$white; echo -n "Pick wallet or "
 		$ired; echo -n "[new]"
@@ -62,10 +62,10 @@ if [[ $interactive = "true" ]]; then
 		if [[ $walletList = *"$walletSelection"* ]]; then
 			$white; echo -n "Password: "
 			read -s walletPassword && echo
-			Start_Wallet
+			wallet_Start
 			break
 		elif [[ $walletSelection = "new" || $walletSelection = "New" || $walletSelection = "NEW" || $walletSelection = "[new]" || $walletSelection = "[New]" ]]; then
-			Create_Wallet
+			wallet_Create
 			break
 		else
 			$ired; echo "Error: wallet does not exist"
@@ -76,80 +76,60 @@ fi
 
 # Option Flags
 if [[ $options = "true" ]]; then
-	for optionChoice in $1 ;do
-		case $optionChoice in
-			config)
-				Interactive_Config
-				break
-				;;
-			uninstall)
-				Uninstall
-				break
-				;;
-			update)
-				Update
-				break
-				;;
-			upgrade)
-				if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
-					$ired; echo -n "Upgrade monero-bash? (Y/n) " ;$off
-					Yes(){ Download_Monero_Bash ;}
-					No(){ echo "Exiting..." ;}
-					YES_no
-				fi
-				if [[ $2 = *"cli"* || $2 = *"CLI"* || $2 = *"Cli"* ]]; then
-					$ired; echo -n "Upgrade Monero-CLI? (Y/n) " ;$off
-					Yes(){ Download_Monero_CLI ;}
-					No(){ echo "Exiting..." ;}
-					YES_no
-				fi
-				if [[ $2 = "" ]]; then
-					$ired; echo -n "Upgrade all? (Y/n) " ;$off
-					Yes(){ Download_All ;}
-					No(){ echo "Exiting..." ;}
-					YES_no
-				fi
-				break
-				;;
-			daemon)
-				[[ $2 = "start" ]]&& Start_Daemon_Detached
-				[[ $2 = "stop" ]]&& Kill_Daemon
-				[[ $2 = "full" ]]&& Start_Daemon
-				[[ $2 = "status" || $2 = "" ]]&& Daemon_Health
-				break
-				;;
-			version)
-				Current_Versions
-				break
-				;;
-			path)
-				Reset_Path
-				break
-				;;
-			list)
-				Wallet_Count
-				Wallet_List
-				break
-				;;
-			size)
-				$ired; echo -n "monero-bash size: " ;$off
-				du -h $installDirectory | tail -n 1 | awk '{print $1}'
-				break
-				;;
-			price)
-				Price_Check
-				break
-				;;
-			help)
-				Print_Usage
-				break
-				;;
-			*)
-				$ired; echo "monero-bash: invalid option!"
-				$white; echo -n "for help, type: "
-				$bred; echo "monero-bash help"
-				break
-		esac
-	done
+	case $1 in
+		config) config_Interactive ;;
+		uninstall) monerobash_Uninstall ;;
+		update) check_Update ;;
+		upgrade)
+			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
+				echo -n "Upgrade monero-bash? (Y/n) "
+				Yes(){ upgrade_MoneroBash ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = *"cli"* || $2 = *"CLI"* || $2 = *"Cli"* ]]; then
+				echo -n "Upgrade Monero-CLI? (Y/n) "
+				Yes(){ upgrade_MoneroCLI ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = "" ]]; then
+				echo -n "Upgrade all? (Y/n) "
+				Yes(){ upgrade_All ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			;;
+		daemon)
+			case $2 in
+				start) daemon_StartDetached ;;
+				stop) daemon_Stop ;;
+				full) daemon_StartAttached ;;
+				kill) daemon_Kill ;;
+				status|"") daemon_Status ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		version) print_Version ;;
+		path)
+			case $2 in
+				add) path_Add ;;
+				remove) path_Remove ;;
+				reset) path_Reset ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		list) wallet_Count && wallet_List ;;
+		size)
+			echo -n "/monero-bash/ size: "
+			du -h "$installDirectory" | tail -n 1 | awk '{print $1}'
+			;;
+		price) check_Price ;;
+		help) print_Usage ;;
+		*)
+			$ired; echo "monero-bash: invalid option!"
+			$white; echo -n "for help, type: "
+			$bred; echo "monero-bash help"
+	esac
 	exit
 fi

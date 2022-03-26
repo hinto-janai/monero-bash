@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+#						Error Handling Functions
+#
+error_Continue()
+{
+	if [[ $? = 0 ]]; then
+		:
+	else
+		printf "\033[1;31mmonero-bash error: \033[0;97m"
+		echo "$1"
+	fi
+}
+
+error_Exit()
+{
+	if [[ $? = 0 ]]; then
+		:
+	else
+		printf "\033[1;31mmonero-bash error: \033[0;97m"
+		echo "$1"
+		echo "Exiting..."
+		exit
+	fi
+}
+
+error_Unknown()
+{
+	printf "\033[1;31mmonero-bash error:\033[0;97mUnknown command"
+	exit
+}

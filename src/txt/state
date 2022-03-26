@@ -1,4 +1,8 @@
-# versions (DO NOT MANUALLY CHANGE)
+#
+# the backend file monero-bash uses to read/write state data
+# (DO NOT MANUALLY CHANGE)
+
+# versions
 MONERO_CLI_VER="monero-linux-x64-v0.17.3.0"
 MONERO_CLI_OLD="false"
 MONERO_BASH_VER="monero-bash-v0.0.2"

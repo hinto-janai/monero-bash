@@ -1,12 +1,76 @@
 #!/usr/bin/env bash
-
-# directly invoke a /monero-bash/ function, variable, etc.
 #
+# debugging tools for monero-bash
 # USE VERY CAREFULLY
+#
 
+# invoke a monero-bash function directly
 DEBUG()
 {
 	$iwhite; echo -n "input: "
 	read command
-	$command
+	"$command"
+}
+
+# list all monero-bash functions, variables
+LIST()
+{
+	echo -e "\033[1;32mMONERO-BASH GLOBAL FUNCTIONS:\033[0m"
+	declare -F | sed 's/declare -f //g'
+	echo -e "\033[1;33mMONERO-BASH GLOBAL VARIABLES:\033[0m"
+	cat "src/var" | grep -v "#" | grep -v "\033"
+}
+
+# produce a hash list for important monero-bash files /monero-bash/src/txt/hashlist
+PRODUCE_HASH_LIST()
+{
+	echo "producing $hashlist"
+	echo -n > "$hashlist"
+	# monero-bash hash
+	sha256sum "monero-bash" >> "$hashlist"
+	# src file hashes
+	for i in src/* ;do
+		if [[ -f "$i" ]]; then
+			sha256sum $i >> "$hashlist"
+		fi
+	done
+	# function hashes
+	for i in src/func/* ;do
+		if [[ -f "$i" ]]; then
+			sha256sum $i >> "$hashlist"
+		fi
+	done
+}
+
+# check hash list against current monero-bash files (with color coded output)
+CHECK_HASH_LIST()
+{
+	# monero-bash hash
+	grep "monero-bash" "$hashlist" &>/dev/null | sha256sum -c &>/dev/null
+	echo -n "monero-bash: "
+	if [[ $? = 0 ]]; then
+		$igreen; echo "OK" ;$white
+	else
+		$bred; echo "FAILED" ;$white
+	fi
+	# src file hashes
+	for i in src/* ;do
+		grep "$i" "$hashlist" &>/dev/null | sha256sum -c &>/dev/null
+		echo -n "$i: "
+		if [[ $? = 0 ]]; then
+			$igreen; echo "OK" ;$white
+		else
+			$bred; echo "FAILED" ;$white
+		fi
+	done
+	# function hashes
+	for i in src/func/* ;do
+		grep "$i" "$hashlist" &>/dev/null | sha256sum -c &>/dev/null
+		echo -n "$i: "
+		if [[ $? = 0 ]]; then
+			$igreen; echo "OK" ;$white
+		else
+			$bred; echo "FAILED" ;$white
+		fi
+	done
 }

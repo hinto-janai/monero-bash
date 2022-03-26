@@ -6,15 +6,20 @@
 source "$installDirectory/src/var" || varMissing="true"
 
 # global functions
-for files in $installDirectory/src/func/* ;do
-	source $files || funcMissing="true"
+for functions in $installDirectory/src/func/* ;do
+	source "$functions" || funcMissing="true"
 done
 
-# interactive config
-source "$installDirectory/src/config" || configMissing="true"
-
-# version file
-source "$installDirectory/src/version" || versionMissing="true"
+# config file
+source "$installDirectory/config" || configMissing="true"
 
 # debug file
-source "$installDirectory/src/debug"
+source "$installDirectory/src/debug" || debugMissing="true"
+
+# state file
+source "$installDirectory/src/txt/state" || stateMissing="true"
+
+# hashlist file
+if [[ ! -f  "$installDirectory/src/txt/hashlist" ]]; then
+	 hashlistMissing="true"
+fi

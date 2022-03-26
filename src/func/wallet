@@ -2,7 +2,7 @@
 #
 #						Monero Wallet Functions
 #
-Start_Wallet()
+wallet_Start()
 {
 	if [[ $START_DAEMON = "true" ]]; then
 		Start_Daemon_Detached
@@ -18,7 +18,7 @@ Start_Wallet()
 	fi
 }
 
-Create_Wallet()
+wallet_Create()
 {
 	# wallet name
 	while true ;do
@@ -71,7 +71,7 @@ Create_Wallet()
 	Start_Wallet
 }
 
-Wallet_Count()
+wallet_Count()
 {
 	cd $WALLET_PATH
 	walletCount="$(ls | grep -v ".keys" | wc -l)"
@@ -91,7 +91,7 @@ Wallet_Count()
 	fi
 }
 
-Wallet_List()
+wallet_List()
 {
 	cd $WALLET_PATH
 	walletList="$(ls | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"

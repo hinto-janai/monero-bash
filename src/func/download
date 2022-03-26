@@ -2,57 +2,23 @@
 #
 #						Download Functions
 #
-Download_Monero_CLI()
+download_MoneroCLI()
 {
-    if [[ ! -d $MONERO_CLI_PATH ]]; then
-        $ired; echo "Monero-CLI folder not found, make sure it exists!"
-        exit
-    fi
-    local originalDirectory="$(pwd)"
-    mkdir -p $tmp && cd $tmp
-    moneroCLI_1="$(wget -qO- https://github.com/monero-project/monero/releases/latest | grep -o "https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*")"
-    moneroCLI_2="$(echo $moneroCLI_1 | awk '{print $1}' | sed 's/"//g')"
-    moneroCLI_3="$moneroCLI_2"
-    Message "downloading [Monero-CLI]"
-    wget -q --show-progress $moneroCLI_3 && moneroCLI_tar="$(ls | grep -o "monero-linux-x64-v*.*.*.*.*.*.*")"
-    Message_Red "verifying [Monero-CLI]"
-    $off
-    echo "$(wget -qO- https://www.getmonero.org/downloads/hashes.txt | grep "monero-linux-x64" | awk '{print $1}')" $moneroCLI_tar | sha256sum -c
-    if [[ $? = 0 ]]; then
-        Message_Red "extracting [Monero-CLI]"
-        tar -xf $moneroCLI_tar
-        rm -f $moneroCLI_tar
-        Version_Variables
-        sed -i "s@.*MONERO_CLI_VER=.*@MONERO_CLI_VER=\""$moneroCLI_NewVer"\"@" $config
-        moneroCLI_fol="$(ls | grep "monero-x86_64-linux-gnu")"
-        if [[ $OLD_FOLDER = "true" ]]; then
-            mkdir -p "$old/$currentDayTime"
-            mv $MONERO_CLI_PATH "$old/$currentDayTime"
-            mv $moneroCLI_fol/ $MONERO_CLI_PATH
-        else
-            rm -rf $MONERO_CLI_PATH
-            mv $moneroCLI_fol $MONERO_CLI_PATH
-        fi
-        sed -i "s@.*MONERO_CLI_OLD=.*@MONERO_CLI_OLD=\"false\"@" $config
-        rm -rf $tmp
-    else
-        Message_Red "[Monero-CLI] hash did not match! Either getmonero.org has been compromised (or more likely, there was an error)"
-        rm -rf $tmp
-        exit
-    fi
-    cd $originalDirectory
+	missing_MoneroCLIFolder
+	prompt_Sudo
+	error_Exit "Sudo is needed for downloading"
+	wget -P "$tmp" -q --show-progress --content-disposition "https://downloads.getmonero.org/cli/linux64"
 }
 
-Download_Monero_Bash()
+download_MoneroBash()
 {
-    local originalDirectory="$(pwd)"
-    mkdir -p $tmp && cd $tmp
-    mBash_1="$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest | grep -o "/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*")"
-    mBash_2="$(echo "$mBash_1" | awk '{print $1}' | sed 's/\"//')"
-    mBash_3="https://github.com/$mBash_2"
-    echo $mBash_3
-    Message "downloading [monero-bash]"
-    wget -q --show-progress "$mBash_3" && mBash_tar="$(ls | grep "monero-bash")"
+	prompt_Sudo
+	error_Exit "Sudo is needed for downloading"
+	local monerobash_link="$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
+		| grep -o "/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v.*" \
+		| awk '{print $1}' \
+		| sed 's/\"//')"
+    wget -P "$tmp" -q --show-progress "$monerobash_link"
     Message_Red "verifying [monero-bash]"
     $off
     echo "$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest | grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" $mBash_tar | sha256sum -c
@@ -86,7 +52,18 @@ Download_Monero_Bash()
     cd $originalDirectory
 }
 
-Download_All()
+download_XMRig()
+{
+	prompt_Sudo
+	error_Exit "Sudo is needed for downloading"
+	local xmrig_link="$(wget -qO- "https://github.com/xmrig/xmrig/releases/latest" \
+		| grep -o "xmrig/xmrig/releases/download/.*/xmrig.*linux-static-x64.*" \
+		| awk '{print $1}' \
+		| sed 's/"//g')"
+	sudo wget -P "$installDirectory" -q --show-progress "https://github.com/$xmrig_link"
+}
+
+download_All()
 {
     $ibred; echo "Upgrading all..."
     Download_Monero_CLI

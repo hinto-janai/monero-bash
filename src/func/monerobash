@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+#
+#						monero-bash Functions
+#
+monerobash_Uninstall()
+{
+	$bred; echo "### THIS WILL DELETE /monero-bash/ AND EVERYTHING INSIDE IT ###"
+	$bwhite; echo -n "Uninstall "
+	$ired; echo -n "monero-bash? "
+	$bwhite; echo -n "(y/N) "
+	Yes()
+	{
+		for i in {10..1} ;do
+		tput sc
+		$bred; echo -n "Uninstalling in $i..."
+		sleep 1
+		if [[ $i != "1" ]]; then
+		tput rc;tput el
+		else
+		echo;echo
+		fi
+		done
+		Message_Red "Removing from PATH"
+		Remove_From_Bashrc
+		Message_Red "Removing /monero-bash/"
+		rm -rf $installDirectory
+	}
+	No(){ $white; echo "Exiting..." ;}
+	yes_NO
+}

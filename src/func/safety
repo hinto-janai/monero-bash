@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+#						Saftey checks so monero-bash doesn't blow something up
+#
+saftey_Home()
+{
+	if [[ ! -d "$HOME" ]]; then
+		$ired; echo "monero-bash error: Home folder not detected"
+		$white; echo "monero-bash needs a /home/user/ folder to work"
+		echo "Exiting for safetey..."
+		exit
+	fi
+}
+

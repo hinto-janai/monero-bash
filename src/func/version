@@ -2,23 +2,7 @@
 #
 #						Version Functions
 #
-Current_Versions()
-{
-	$white; echo -n "Monero-CLI: "
-	if [[ $MONERO_CLI_OLD = "false" ]]; then
-		$bgreen; echo "$MONERO_CLI_VER"
-	else
-		$bred; echo "$MONERO_CLI_VER"
-	fi
-		$white; echo -n "monero-bash: "
-	if [[ $MONERO_BASH_OLD = "false" ]]; then
-		$bgreen; echo "$MONERO_BASH_VER"
-	else
-		$bred; echo "$MONERO_BASH_VER"
-	fi
-}
-
-Version_Variables()
+version_Variables()
 {
 	local moneroLatestGithub="https://github.com/monero-project/monero/releases/latest"
 	local moneroVar="https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*"
@@ -34,50 +18,4 @@ Version_Variables()
 	fi
 }
 
-Check_Monero_CLI()
-{
-	Version_Variables
-	if [[ $MONERO_CLI_VER != $moneroCLI_NewVer ]]; then
-		$white; echo -n "Monero-CLI: "
-		$ired; echo -n "$MONERO_CLI_VER "
-		$white; echo -n "> "
-		$bgreen; echo "$moneroCLI_NewVer"
-		updateFound="true"
-		sed -i "s@.*MONERO_CLI_OLD=.*@MONERO_CLI_OLD=\"true\"@" $config
-	else
-		$white; echo -n "Monero-CLI: "
-		$bgreen; echo "up to date"
-	fi
-}
 
-Check_Monero_Bash()
-{
-Version_Variables
-	if [[ $MONERO_BASH_VER != $moneroBash_NewVer ]]; then
-		$white; echo -n "monero-bash: "
-		$ired; echo -n "$MONERO_BASH_VER "
-		$white; echo -n "> "
-		$bgreen; echo "$moneroBash_NewVer"
-		updateFound="true"
-		sed -i "s@.*MONERO_BASH_OLD=.*@MONERO_BASH_OLD=\"true\"@" $config
-	else
-		$white; echo -n "monero-bash: "
-		$bgreen; echo "up to date"
-	fi
-}
-
-Update()
-{
-	Check_Monero_CLI
-	Check_Monero_Bash
-	if [[ $updateFound = "true" ]]; then
-		echo
-		$white; echo -n "type: "
-		$ired; echo -n "monero-bash upgrade "
-		$white; echo "to upgrade all"
-		$white; echo -n "or: "
-		$ired; echo -n "monero-bash upgrade <name> "
-		$white; echo "to upgrade something specific"
-		$off
-	fi
-}

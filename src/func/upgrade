@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+#
+#
+#upgrade_MoneroBash
+upgrade_MoneroCLI()
+{
+	download_MoneroCLI
+	error_Exit "Monero-CLI download failed"
+	verify_MoneroCLI
+	if [[ $? = 0 ]]; then
+        Message_Red "extracting [Monero-CLI]"
+        tar -xf $moneroCLI_tar
+        rm -f $moneroCLI_tar
+        Version_Variables
+        sed -i "s@.*MONERO_CLI_VER=.*@MONERO_CLI_VER=\""$moneroCLI_NewVer"\"@" $config
+        moneroCLI_fol="$(ls | grep "monero-x86_64-linux-gnu")"
+        if [[ $OLD_FOLDER = "true" ]]; then
+            mkdir -p "$old/$currentDayTime"
+            mv $MONERO_CLI_PATH "$old/$currentDayTime"
+            mv $moneroCLI_fol/ $MONERO_CLI_PATH
+        else
+            rm -rf $MONERO_CLI_PATH
+            mv $moneroCLI_fol $MONERO_CLI_PATH
+        fi
+        sed -i "s@.*MONERO_CLI_OLD=.*@MONERO_CLI_OLD=\"false\"@" $config
+        rm -rf $tmp
+    else
+        Message_Red "[Monero-CLI] hash did not match! Either getmonero.org has been compromised (or more likely, there was an error)"
+        rm -rf $tmp
+        exit
+    fi
+}
+#upgrade_All
