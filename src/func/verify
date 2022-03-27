@@ -2,8 +2,16 @@
 #
 #						GPG & verification of binaries
 #
-verify_hash_MoneroCLI()
+verify_hash_Monero()
 {
-	moneroCLI_tar="$(ls "$tmp" | grep "monero-linux-x64")"
-	echo "$(wget -qO- "https://www.getmonero.org/downloads/hashes.txt" | grep "monero-linux-x64" | awk '{print $1}')" "$tmp/$moneroCLI_tar" | sha256sum -c
+	monero_tar="$(ls "$tmp" | grep "monero-linux-x64")"
+	echo "$(wget -qO- "https://www.getmonero.org/downloads/hashes.txt" | grep "monero-linux-x64" | awk '{print $1}')" "$tmp/$monero_tar" | sha256sum -c
+}
+
+verify_hash_MoneroBash()
+{
+	moneroBash_tar="$(ls "$tmp" | grep "monero-bash")"
+	echo "$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
+		| grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" \
+		$moneroBash_tar | sha256sum -c
 }

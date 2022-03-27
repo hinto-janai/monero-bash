@@ -4,29 +4,37 @@
 #
 daemon_StartAttached()
 {
-	Missing_Monero_Daemon
+	missing_MoneroDaemon
 	if pgrep monerod &>/dev/null ; then
 		$bred; echo "Monero daemon detected..." ;$off
 	else
-		$MONERO_CLI_PATH/monerod --data-dir "$DATA_PATH" --config-file "$DATA_PATH/monerod.conf"
+		"$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod"
 	fi
 }
 
 daemon_StartDetached()
 {
-	Missing_Monero_Daemon
+	missing_MoneroDaemon
 	if pgrep monerod &>/dev/null ; then
 		$bred; echo "Monero daemon detected..." ;$off
 	else
-		$MONERO_CLI_PATH/monerod --detach --data-dir "$DATA_PATH" --config-file "$DATA_PATH/monerod.conf"
+		"$binMonero/monerod" --detach --data-dir "$DATA_PATH" --config-file "$config/monerod"
 	fi
 }
 
-#daemon_Stop(){}
+daemon_Stop()
+{
+	$ired; echo "Stopping Monero daemon gracefully..." ;$off
+	"$binMonero/monerod" exit
+	while pgrep monerod ;do
+		echo -n "."
+		sleep 1
+	done
+}
 
 daemon_Kill()
 {
-	$ired; echo "Killing monero daemon..."
+	$ired; echo "Killing Monero daemon..."
 	killall monerod
 	if [[ $? = 0 ]]; then
 		$white; echo "Monero daemon killed"
@@ -40,7 +48,7 @@ daemon_Status()
 	$white; echo -n "Monero daemon is: "
 	if pgrep monerod &>/dev/null ;then
 		$bgreen; echo "online"
-		$MONERO_CLI_PATH/monerod status
+		$binMonero/monerod status
 	else
 		$bred; echo "offline"
 	fi

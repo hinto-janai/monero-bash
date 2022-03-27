@@ -40,10 +40,10 @@ prompt_PriceAPI_IP()
 		echo
 		$white; echo -n "This will expose your IP to: "
 		$ired; echo "https://cryptocompare.com"
-		$white; echo -n "Continue? (Y/n) "
+		$white; echo -n "Continue? (y/N) "
 		Yes(){ :;}
 		No(){ echo "Exiting..." ;exit ;}
-		prompt_YESno
+		prompt_NOyes
 	fi
 }
 

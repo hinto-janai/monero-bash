@@ -8,10 +8,10 @@ version_Variables()
 	local moneroVar="https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*"
 	local moneroTarName="monero-linux-x64-*.*"
 	local mBashLatestGithub="https://github.com/hinto-janaiyo/monero-bash/releases/latest"
-	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*"
+	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v*.*.*"
 	local mBashTarName="monero-bash-v*.*.*"
 	if [[ $UPDATE_MONERO_CLI = "true" ]]; then
-		moneroCLI_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
+		monero_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
 	fi
 	if [[ $UPDATE_MONERO_BASH="true" ]]; then
 		moneroBash_NewVer="$(wget -qO- "$mBashLatestGithub" | grep -o "$mBashVar" | grep -o "$mBashTarName" | awk '{print $1}' | sed 's/.tar\"//')"

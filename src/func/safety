@@ -2,13 +2,24 @@
 #
 #						Saftey checks so monero-bash doesn't blow something up
 #
-saftey_Home()
+# checks if the home folder exists
+safety_Home()
 {
 	if [[ ! -d "$HOME" ]]; then
-		$ired; echo "monero-bash error: Home folder not detected"
-		$white; echo "monero-bash needs a /home/user/ folder to work"
-		echo "Exiting for safetey..."
+		$ired; echo "User's home folder does not exist!"
+		$white; echo "monero-bash needs a /home/user/ folder"
+		echo "Exiting..."
 		exit
 	fi
 }
 
+# checks if the basic linux folders exists at all
+safety_LinuxFolders()
+{
+	if [[ ! -d "/usr/" || ! -d "/usr/share/" || ! -d "/usr/bin/" ]]; then
+		$ired; echo "/usr/ folder error!"
+		$white; echo "monero-bash needs a normal /usr/ folder"
+		echo "Exiting..."
+		exit
+	fi
+}

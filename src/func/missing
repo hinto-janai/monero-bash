@@ -4,8 +4,8 @@
 #
 missing_MoneroDaemon()
 {
-	if [[ ! -f "$MONERO_CLI_PATH/monerod" ]]; then
-		$ired; echo -n "Error: "
+	if [[ ! -f "$binMonero/monerod" ]]; then
+		$ired; echo -n "monero-bash error: "
 		$white; echo "monerod missing!"
 		echo "Exiting..."
 		exit
@@ -14,20 +14,54 @@ missing_MoneroDaemon()
 
 missing_MoneroCLI()
 {
-	if [[ ! -f "$MONERO_CLI_PATH/monero-wallet-cli" ]]; then
-		$ired; echo -n "Error: "
+	if [[ ! -f "$binMonero/monero-wallet-cli" ]]; then
+		$ired; echo -n "monero-bash error: "
 		$white; echo "monero-wallet-cli missing!"
 		echo "Exiting..."
 		exit
 	fi
 }
 
-missing_MoneroCLI_Folder()
+missing_Monero_Folder()
 {
-	if [[ ! -d "$MONERO_CLI_PATH" ]]; then
-		$ired; echo -n "Error: "
-		$white; echo "Monero-CLI folder missing!"
+	if [[ ! -d "$binMonero" ]]; then
+		$ired; echo -n "monero bash error: "
+		$white; echo "Monero folder missing!"
 		echo "Exiting..."
 		exit
 	fi
 }
+
+missing_P2Pool_Folder()
+{
+	if [[ ! -d "$binP2Pool" ]]; then
+		$ired; echo -n "monero bash error: "
+		$white; echo "P2Pool folder missing!"
+		echo "Exiting..."
+		exit
+	fi
+}
+
+missing_XMRig()
+{
+	if [[ ! -f "$bin/xmrig" ]]; then
+        $ired; echo -n "monero bash error: "
+        $white; echo "Monero folder missing!"
+        echo "Exiting..."
+        exit
+    fi
+}
+
+missing_DotMoneroBash()
+{
+	if [[ ! -d "$dotMoneroBash" ]]; then
+		$ired; echo -n "monero-bash error: "
+		$white; echo "monero-bash folder missing!"
+		echo "Create one with default settings? (Y/n) "
+		Yes(){ build_DefaultDotMoneroBash ;}
+		No(){ echo "Skipping..." ;}
+		prompt_YESno
+	fi
+}
+
+

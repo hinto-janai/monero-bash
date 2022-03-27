@@ -20,34 +20,37 @@ check_NewVersion()
 	local mBashLatestGithub="https://github.com/hinto-janaiyo/monero-bash/releases/latest"
 	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/v*.*.*/monero-bash-v*.*.*"
 	local mBashTarName="monero-bash-v*.*.*"
-	moneroCLI_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
+	monero_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
 	moneroBash_NewVer="$(wget -qO- "$mBashLatestGithub" | grep -o "$mBashVar" | grep -o "$mBashTarName" | awk '{print $1}' | sed 's/.tar\"//')"
 }
 
-check_MoneroCLI()
+check_Monero()
 {
+	prompt_Sudo
 	check_NewVersion
-	if [[ $MONERO_CLI_VER != $moneroCLI_NewVer ]]; then
-		$white; echo -n "Monero-CLI: "
-		$ired; echo -n "$MONERO_CLI_VER "
+	if [[ $MONERO_VER != $monero_NewVer ]]; then
+		$white; echo -n "Monero: "
+		$ired; echo -n "$MONERO_VER "
 		$white; echo -n "> "
-		$bgreen; echo "$moneroCLI_NewVer"
-		sed -i "s@.*MONERO_CLI_OLD=.*@MONERO_CLI_OLD=\"true\"@" "$config"
+		$bgreen; echo "$monero_NewVer"
+		updateFound="true"
+		sudo sed -i "s@.*MONERO_OLD=.*@MONERO_OLD=\"true\"@" "$state"
 	else
-		$white; echo -n "Monero-CLI: "
+		$white; echo -n "Monero: "
 		$bgreen; echo "up to date"
 	fi
 }
 
 check_MoneroBash()
 {
+	prompt_Sudo
     if [[ $MONERO_BASH_VER != $moneroBash_NewVer ]]; then
         $white; echo -n "monero-bash: "
         $ired; echo -n "$MONERO_BASH_VER "
         $white; echo -n "> "
         $bgreen; echo "$moneroBash_NewVer"
-        updateFound="true"
-        sed -i "s@.*MONERO_BASH_OLD=.*@MONERO_BASH_OLD=\"true\"@" "$config"
+		updateFound="true"
+        sed -i "s@.*MONERO_BASH_OLD=.*@MONERO_BASH_OLD=\"true\"@" "$state"
     else
         $white; echo -n "monero-bash: "
         $bgreen; echo "up to date"
@@ -56,11 +59,10 @@ check_MoneroBash()
 
 check_Update()
 {
-    check_MoneroCLI
+    check_Monero
     check_MoneroBash
     if [[ $updateFound = "true" ]]; then
         echo
-        $white; echo -n "type: "
         $ired; echo -n "monero-bash upgrade "
         $white; echo "to upgrade all"
         $white; echo -n "or: "

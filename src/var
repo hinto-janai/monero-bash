@@ -2,14 +2,34 @@
 #
 #                       Global Variables
 #
-currentDayTime="$(date '+%Y-%m-%d@%H-%M-%S')"
-# home folder paths
-MoneroBashFolder="$HOME/monero-bash"
-config="$MoneroBashFolder/config"
-defaultWallet="$MoneroBashFolder/wallets"
-defaultData="$MoneroBashFolder/.bitmonero"
-tmp="$installDirectory/.tmp"
+# file/folder paths
+dotMoneroBash="$HOME/.monero-bash"
+bin="$dotMoneroBash/bin"
+binMonero="$bin/monero"
+binP2Pool="$bin/p2pool"
+config="$dotMoneroBash/config"
+wallets="$dotMoneroBash/wallets"
+bitMonero="$dotMoneroBash/.bitmonero"
+tmp="$dotMoneroBash/.04e3be91e8aa36a61189a485ad6059b5f244a9de3cac8424876b66250ecb8ea0"
 hashlist="$installDirectory/src/txt/hashlist"
+state="$installDirectory/src/txt/state"
+#####################################################################################################
+# the "$tmp" folder is a unique hash instead of ".tmp" so that if some dude made a folder called    #
+# ".tmp" inside /monero-bash/, i wouldnt delete it. please note: the folder with that hash name     #
+# WILL BE DELETED during the upgrade process                                                        #
+#                                                                                                   #
+# the actual sha256 hash:                                                                           #
+# "04e3be91e8aa36a61189a485ad6059b5f244a9de3cac8424876b66250ecb8ea0"                                #
+# is the result of hashing the 25 english seed phrase of a monero wallet i made                     #
+# that contains "0.5XMR" (as of 2022-march-22)                                                      #
+#                                                                                                   #
+# address:                                                                                          #
+# "46F6Se9qcYZ8MfiaRDn21c8PzE14xjrRcBrxHo4xHhTzRniKNLsZJtMh8xCM44aSpnKtGvU9ZtokNgGdZU1jfCWJVqyx14t" #
+# private view key:                                                                                 #
+# "700aaa8803452c441e041be5c2a4ffc8515261962b80128eab3f233bd97cfc0a"                                #
+#                                                                                                   #
+# good luck cracking it !                                                                           #
+#####################################################################################################
 
 #
 #						Colors

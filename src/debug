@@ -40,37 +40,74 @@ PRODUCE_HASH_LIST()
 			sha256sum $i >> "$hashlist"
 		fi
 	done
+	# txt hashes
+	for i in src/txt/* ;do
+		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
+			sha256sum $i >> "$hashlist"
+		fi
+	done
 }
 
 # check hash list against current monero-bash files (with color coded output)
 CHECK_HASH_LIST()
 {
 	# monero-bash hash
-	grep "monero-bash" "$hashlist" &>/dev/null | sha256sum -c &>/dev/null
-	echo -n "monero-bash: "
-	if [[ $? = 0 ]]; then
+	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
+	if [[ $? = "0" ]]; then
+		echo -n "monero-bash: "
 		$igreen; echo "OK" ;$white
 	else
+		echo -n "monero-bash: "
 		$bred; echo "FAILED" ;$white
+		hashFail="true"
 	fi
 	# src file hashes
 	for i in src/* ;do
-		grep "$i" "$hashlist" &>/dev/null | sha256sum -c &>/dev/null
-		echo -n "$i: "
-		if [[ $? = 0 ]]; then
-			$igreen; echo "OK" ;$white
-		else
-			$bred; echo "FAILED" ;$white
+		if [[ -f "$i" ]]; then
+			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+			if [[ $? = "0" ]]; then
+				echo -n "$i: "
+				$igreen; echo "OK" ;$white
+			else
+				echo -n "$i: "
+				$bred; echo "FAILED" ;$white
+				hashFail="true"
+			fi
 		fi
 	done
 	# function hashes
 	for i in src/func/* ;do
-		grep "$i" "$hashlist" &>/dev/null | sha256sum -c &>/dev/null
-		echo -n "$i: "
-		if [[ $? = 0 ]]; then
+		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+		if [[ $? = "0" ]]; then
+			echo -n "$i: "
 			$igreen; echo "OK" ;$white
 		else
+			echo -n "$i: "
 			$bred; echo "FAILED" ;$white
+			hashFail="true"
 		fi
 	done
+	# txt hashes
+	for i in src/txt/* ;do
+		if [[ $i != "src/txt/hashlist" ]]; then
+			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+			if [[ $? = "0" ]]; then
+				echo -n "$i: "
+				$igreen; echo "OK" ;$white
+			else
+				echo -n "$i: "
+				$bred; echo "FAILED" ;$white
+				hashFail="true"
+			fi
+		fi
+	done
+	if [[ $hashFail = "true" ]]; then
+		$bred; echo -n "monero-bash error: "
+		$bwhite; echo "hash check has failed"
+		$white; echo "Exiting for safety..."
+		exit 1
+	else
+		$bwhite; echo -n "monero-bash: "
+		$bgreen; echo "hash check success!"
+	fi
 }

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 #
-#						master source file that sources all of /monero-bash/src/
+#						master source file
+#
+
+#
+#						NEEDED SOURCE FILES
 #
 # global variables
 source "$installDirectory/src/var" || varMissing="true"
@@ -10,9 +14,6 @@ for functions in $installDirectory/src/func/* ;do
 	source "$functions" || funcMissing="true"
 done
 
-# config file
-source "$installDirectory/config" || configMissing="true"
-
 # debug file
 source "$installDirectory/src/debug" || debugMissing="true"
 
@@ -21,5 +22,11 @@ source "$installDirectory/src/txt/state" || stateMissing="true"
 
 # hashlist file
 if [[ ! -f  "$installDirectory/src/txt/hashlist" ]]; then
-	 hashlistMissing="true"
+	hashlistMissing="true"
 fi
+
+#
+#						USER FILES
+#
+# config file
+source "$MONERO_BASH_FOLDER/config/monero-bash" || configMissing="true"

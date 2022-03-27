@@ -4,17 +4,23 @@
 #
 wallet_Start()
 {
-	if [[ $START_DAEMON = "true" ]]; then
-		Start_Daemon_Detached
+	if [[ $AUTO_START_DAEMON = "true" ]]; then
+		missing_MoneroDaemon
+		daemon_StartDetached
 	fi
-		Missing_Monero_CLI
+		missing_MoneroCLI
 	if [[ $createWallet = "true" ]]; then
-		$MONERO_CLI_PATH/monero-wallet-cli --generate-new-wallet "$WALLET_PATH/$walletName" --password "$walletPassword" --mnemonic-language "$seedLanguage" --config-file "$DATA_PATH/monero-wallet-cli.conf"
+		$MONERO_CLI_PATH/monero-wallet-cli --generate-new-wallet "$WALLET_PATH/$walletName" \
+			--password "$walletPassword" \
+			--mnemonic-language "$seedLanguage" \
+			--config-file "$config/monero-wallet-cli"
 	else
-		$MONERO_CLI_PATH/monero-wallet-cli --wallet-file "$walletSelection" --password "$walletPassword" --config-file "$DATA_PATH/monero-wallet-cli.conf"
+		$MONERO_CLI_PATH/monero-wallet-cli --wallet-file "$walletSelection" \
+			--password "$walletPassword" \
+			--config-file "$config/monero-wallet-cli"
 	fi
-	if [[ $STOP_DAEMON = "true" ]]; then
-		Kill_Daemon
+	if [[ $AUTO_STOP_DAEMON = "true" ]]; then
+		daemon_Stop
 	fi
 }
 
@@ -47,7 +53,7 @@ wallet_Create()
 		# wallet seed language
 		while true ;do
 			$ired; echo "Monero seed languages:" ;$iwhite
-			Seed_Language_List
+			print_SeedLanguageList
 			$white; echo -n "Pick seed language: " ;$iwhite
 			read seedLanguage
 				case $seedLanguage in
@@ -66,9 +72,9 @@ wallet_Create()
 					*) $ired; echo "error: invalid input" ;;
 				esac
 		done
-	$bred; echo "Starting Monero-CLI..." ;$off
+	$bred; echo "Starting Monero..." ;$off
 	createWallet="true"
-	Start_Wallet
+	wallet_Start
 }
 
 wallet_Count()

@@ -2,14 +2,125 @@
 #
 #						monero-bash Functions
 #
+
+###################################################   START OF INSTALL FUNCTION   ###################################################
+monerobash_Install()
+{
+	$bred; echo "###################################################################"
+	$bred; echo "#            monero-bash configuration & installation             #"
+	$bred; echo "###################################################################"
+
+while true ;do
+	# Data Path
+	# $HOME/.bitmonero check
+	if [[ -d "$HOME/.bitmonero" ]]; then
+		$ired; echo "Monero data folder detected"
+		$white; echo -n "Use "
+		$ired; echo -n "$HOME/.bitmonero"
+		$white; echo -n "? (Y/n): " ;$iwhite
+		Yes(){ alreadyFoundDataPath="true" ;}
+		No(){ :;}
+		prompt_YESno
+	fi
+	if [[ $alreadyFoundDataPath != "true" ]]; then
+		$white; echo -n "Monero data path [Enter for default]: " ;$iwhite
+		read inputData
+	fi
+
+	# Data Path Confirmation
+	if [[ $alreadyFoundDataPath = "true" ]]; then
+		$white; echo -n "Data path: "
+		$ired; echo "$HOME/.bitmonero"
+		$white; echo -n "Is this okay? (Y/n) "
+		Yes(){ echo "Data path set!" ;break;}
+		No(){ :;}
+		prompt_YESno
+	elif [[ $alreadyFoundDataPath != "true" ]]; then
+		$white; echo -n "Data path: "
+		$ired; echo "$bitMonero"
+		$white; echo -n "Is this okay? (Y/n) "
+		Yes(){ echo "Data path set!" ;break;}
+		No(){ :;}
+		prompt_YESno
+	fi
+done
+
+# Installation Prompt
+	$bwhite; echo -n "Start "
+	$bred; echo -n "monero-bash "
+	$bwhite; echo -n "install? (Y/n)"
+	Yes(){ $white; echo "Starting monero-bash install!" ;}
+	No(){ $white; echo "Exiting..." ;exit;}
+	prompt_YESno
+	prompt_Sudo
+	error_Exit "Sudo is required to install monero-bash"
+
+# Hash Integrity Check
+	print_GreenHash "Checking monero-bash hash integrity"
+	CHECK_HASH_LIST
+
+# Setting Data Path
+	print_GreenHash "Setting Data Path"
+	if [[ $alreadyFoundDataPath = "true" ]]; then
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$HOME/.bitmonero"\"@" "$config"
+	elif [[ $inputData != "" ]]; then
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" "$config"
+	else
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" "$config"
+	fi
+
+# Moving to /usr/
+	print_GreenHash "Moving to monero-bash to /usr/share/monero-bash/"
+	sudo mv "$installDirectory" "/usr/share/"
+
+# Adding to PATH
+	print_GreenHash "Adding monero-bash to PATH"
+	path_Add
+	echo
+
+# Building $HOME/.monero-bash
+	print_GreenHash "Building monero-bash folders"
+	if [[ $alreadyFoundDataPath = "true" ]]; then
+		bulid_NoBitMonero_DotMoneroBash
+	else
+		build_DefaultDotMoneroBash
+	fi
+
+# First Time = false
+sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
+
+#
+#                       End
+#
+echo
+$bred; echo "###################################################################"
+$bred; echo "#                monero-bash installation complete                #"
+$bred; echo "###################################################################"
+$white; echo -n "Data path: " ;$ired; echo "$DATA_PATH"
+$white; echo -n "Binary path: " ;$ired; echo "$bin"
+$white; echo -n "Config path: " ;$ired; echo "$config"
+$white; echo -n "Wallet path: " ;$ired; echo "$wallets"
+echo
+$white; echo -n "type: "
+$ired; echo -n "monero-bash help"
+$white; echo "to get started"
+}
+###################################################   END OF INSTALL FUNCTION   ###################################################
+
 monerobash_Uninstall()
 {
-	$bred; echo "### THIS WILL DELETE /monero-bash/ AND EVERYTHING INSIDE IT ###"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE ./monero-bash AND EVERYTHING INSIDE IT"
+	$bwhite; echo "   @"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "Uninstall "
 	$ired; echo -n "monero-bash? "
 	$bwhite; echo -n "(y/N) "
 	Yes()
 	{
+		prompt_Sudo
+		error_Exit "Sudo is needed to uninstall"
 		for i in {10..1} ;do
 		tput sc
 		$bred; echo -n "Uninstalling in $i..."
@@ -20,10 +131,16 @@ monerobash_Uninstall()
 		echo;echo
 		fi
 		done
-		Message_Red "Removing from PATH"
-		Remove_From_Bashrc
-		Message_Red "Removing /monero-bash/"
-		rm -rf $installDirectory
+		print_RedHash "Removing $dotMoneroBash"
+			sudo rm -rf "$dotMoneroBash"
+			error_Continue "$dotMoneroBash not removed"
+		print_RedHash "Removing from PATH"
+			path_Remove
+			error_Continue "PATH not removed"
+		print_RedHash "Removing /usr/share/monero-bash/"
+			sudo rm -rf "/usr/share/monero-bash"
+			error_Exit "monero-bash not removed"
+		print_GreenHash "monero-bash has been uninstalled"
 	}
 	No(){ $white; echo "Exiting..." ;}
 	yes_NO

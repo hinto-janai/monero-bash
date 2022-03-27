@@ -3,32 +3,29 @@
 #
 #
 #upgrade_MoneroBash
-upgrade_MoneroCLI()
+upgrade_Monero()
 {
-	download_MoneroCLI
-	error_Exit "Monero-CLI download failed"
-	verify_MoneroCLI
-	if [[ $? = 0 ]]; then
-        Message_Red "extracting [Monero-CLI]"
-        tar -xf $moneroCLI_tar
-        rm -f $moneroCLI_tar
-        Version_Variables
-        sed -i "s@.*MONERO_CLI_VER=.*@MONERO_CLI_VER=\""$moneroCLI_NewVer"\"@" $config
-        moneroCLI_fol="$(ls | grep "monero-x86_64-linux-gnu")"
-        if [[ $OLD_FOLDER = "true" ]]; then
-            mkdir -p "$old/$currentDayTime"
-            mv $MONERO_CLI_PATH "$old/$currentDayTime"
-            mv $moneroCLI_fol/ $MONERO_CLI_PATH
-        else
-            rm -rf $MONERO_CLI_PATH
-            mv $moneroCLI_fol $MONERO_CLI_PATH
-        fi
-        sed -i "s@.*MONERO_CLI_OLD=.*@MONERO_CLI_OLD=\"false\"@" $config
-        rm -rf $tmp
+	prompt_Sudo
+	cleanup_Tmp
+	print_GreenHash "Downloading: [Monero]"
+	download_Monero
+	error_Exit "Downloading failed: [Monero]"
+	verify_Monero
+	if [[ $? = "0" ]]; then
+        print_RedHash "Extracting: [Monero]"
+        tar -xf $monero_tar
+        rm -f $monero_tar
+        version_Variables
+        sudo sed -i "s@.*MONERO_VER=.*@MONERO_VER=\""$monero_NewVer"\"@" "$state"
+        monero_fol="$(ls | grep "monero-x86_64-linux-gnu")"
+		rm -rf "$binMonero"
+		mkdir -p "$binMonero"
+		mv "$monero_fol/" "$binMonero"
+		sudo sed -i "s@.*MONERO_OLD=.*@MONERO_OLD=\"false\"@" "$state"
     else
-        Message_Red "[Monero-CLI] hash did not match! Either getmonero.org has been compromised (or more likely, there was an error)"
-        rm -rf $tmp
+		compromised_Monero_Hash
         exit
     fi
+	cleanup_Tmp
 }
 #upgrade_All
