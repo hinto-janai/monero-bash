@@ -7,12 +7,12 @@
 * Date: 2022-03-27
 
 ## Intro
-Can I trust monero-bash? Will it steal my Monero? Is it downloading malware?
-
+Is monero-bash a virus? Will it steal my Monero? Is it downloading malware instead of the real packages?
 ```
 No
 ```
-So what happens when you type `monero-bash upgrade`?	
+So what actually happens when you type `monero-bash upgrade`?	
+
 I'd like to keep this as short as possible but simple enough so that anyone can understand it, so here's a step-by-step explanation of the code/commands being executed:
 
 ## Download
