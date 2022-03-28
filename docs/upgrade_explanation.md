@@ -13,7 +13,7 @@ No
 ```
 So what actually happens when you type `monero-bash upgrade`?	
 
-I'd like to keep this as short as possible but simple enough so that anyone can understand it, so here's a step-by-step explanation of the code/commands being executed:
+I'd like to keep this as short as possible but simple enough so that anyone can understand it, so here's a step-by-step explanation of the code/commands that gets executed when you `upgrade`:
 
 ## Download
 ```
@@ -22,7 +22,7 @@ download_Monero()
     wget -P "$tmp" -q --show-progress --content-disposition "https://downloads.getmonero.org/cli/linux64"
 }
 ```
-For this example, we'll be downloading `Monero`. Above is the first function called when upgrading (after many, many safety & error checks)
+For this example, we'll be downloading `Monero`. Above is the first function called when you `upgrade` (after many, many safety & error checks)
 
 The download function is a single command:
 1. It downloads `https://downloads.getmonero.org/cli/linux64` into a temporary folder with a progress bar
