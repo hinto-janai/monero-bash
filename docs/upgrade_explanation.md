@@ -41,7 +41,7 @@ verify_hash_Monero()
 After successful download, `monero-bash`:
 1. Finds the downloaded `tar` file
 2. Compares its hash with the official hash list from `https://www.getmonero.org/downloads/hashes.txt`
-3. Either prints a green "OK" or a red "FAILED" message
+3. Either prints a green `OK` or a red `FAILED` message
 
 ## Upgrade
 ```
