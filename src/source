@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
+#
 # master source file
+#
 
-# NEEDED SOURCE FILES
 # global variables
 source "$installDirectory/src/var" 2>/dev/null || varMissing="true"
 
