@@ -11,9 +11,7 @@ Is monero-bash a virus? Will it steal my Monero? Is it downloading malware inste
 ```
 No
 ```
-So what actually happens when you type `monero-bash upgrade`?	
-
-Here's a short and simplified step-by-step explanation of the code/commands that gets executed when you `upgrade`
+Here's a simplified step-by-step explanation of the code/commands that gets executed when you `monero-bash upgrade monero`
 
 ## Download
 ```
@@ -22,8 +20,6 @@ download_Monero()
     wget -P "$tmp" -q --show-progress --content-disposition "https://downloads.getmonero.org/cli/linux64"
 }
 ```
-For this example, we'll be downloading `Monero`. Above is the first function called when you `upgrade`
-
 The download function is a single command:
 1. It downloads `https://downloads.getmonero.org/cli/linux64` into a temporary folder with a progress bar
 
@@ -58,14 +54,14 @@ upgrade_Monero()
 	fi
 }
 ```
-THIS EXAMPLE CODE WAS SHORTENED FOR SIMPLICITY SAKE
+***THIS CODE WAS SHORTENED FOR SIMPLICITY SAKE***
 
-[I encourage you to click here to see the entire function](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/upgrade) and [here, for all the source code](https://github.com/hinto-janaiyo/monero-bash/blob/main/src)
+[I encourage you to click here to see the entire function](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/upgrade)
 
 If the verification goes well, `monero-bash`:
 1. Extracts the `tar` file
-3. Replaces the old `Monero` folder with the new
-4. Edits the `state` file with the new version number
+2. Replaces the old `Monero` folder with the new
+3. Edits the `state` file with the new version number
 
 If the verification **fails,** `monero-bash`:
 1. Spits out a [scary looking message](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/compromised)
@@ -73,12 +69,10 @@ If the verification **fails,** `monero-bash`:
 
 Since `monero-bash` gets installed in `/usr/local/share/monero-bash/`, sudo is required to edit the `state` file, as `/usr/` is a write-protected directory.
 
-Not unlike `apt` or `pacman` (or really, any program) that needs sudo when manipulating data located in write-protected areas.
-
 ## Conclusion
 I am far too concerned with making sure `monero-bash` doesn't blow up anyone's files to have the time to:
 1. Learn how to write malware
 2. Implement the malware
 3. Try to obfuscate the malware
 
-Espescially in an open-source environment. At the end of the day, all the code is open, not just in the repo but on your computer itself. Unlike compiled binaries, `monero-bash` is literally just a collection of scripts you can open up at any time at `/usr/local/share/monero-bash/`
+All the code is open, not just in the repo but on your computer itself. `monero-bash` is literally just a collection of scripts you can open up at any time at `/usr/local/share/monero-bash/`
