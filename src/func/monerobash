@@ -66,7 +66,6 @@ done
 
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
-	sudo chown -R "root:" "$installDirectory" &&
 	sudo mv "$installDirectory" "/usr/local/share/" &&
 	installDirectory="/usr/local/share/monero-bash" &&
 	hashlist="$installDirectory/src/txt/hashlist" &&
@@ -97,6 +96,7 @@ done
 
 # First Time = false
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
+sudo chown -R "$USER:" "$installDirectory"
 PRODUCE_HASH_LIST
 
 #
