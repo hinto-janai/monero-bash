@@ -92,10 +92,10 @@ done
 	else
 		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" "$config/monero-bash.conf"
 	fi
+	source "$config"
 
 # First Time = false
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
-source "$state"
 
 #
 #                       End
@@ -111,7 +111,7 @@ $white; echo -n "Wallet path: " ;$ired; echo "$wallets"
 $bwhite; echo -n "monero-bash path: " ;$bred; echo "$dotMoneroBash"
 echo
 $white; echo -n "type: "
-$ired; echo -n "monero-bash help"
+$ired; echo -n "monero-bash help "
 $white; echo "to get started"
 }
 ###################################################   END OF INSTALL FUNCTION   ###################################################
@@ -140,6 +140,9 @@ monerobash_Uninstall()
 		echo;echo
 		fi
 		done
+		# Hash Integrity Check
+		print_GreenHash "Checking monero-bash hash integrity"
+		CHECK_HASH_LIST
 		print_RedHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
 			error_Continue "$dotMoneroBash not removed"
@@ -152,5 +155,5 @@ monerobash_Uninstall()
 		print_GreenHash "monero-bash has been uninstalled"
 	}
 	No(){ $white; echo "Exiting..." ;}
-	prompt_yesNO
+	prompt_NOyes
 }
