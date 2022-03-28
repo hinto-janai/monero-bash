@@ -32,7 +32,7 @@ while true ;do
 		$white; echo -n "Data path: "
 		$ired; echo "$HOME/.bitmonero"
 		$white; echo -n "Is this okay? (Y/n) "
-		Yes(){ echo "Data path set!" ;break;}
+		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
 	elif [[ $alreadyFoundDataPath != "true" ]]; then
@@ -43,10 +43,11 @@ while true ;do
 			$ired; echo "$inputData"
 		fi
 		$white; echo -n "Is this okay? (Y/n) "
-		Yes(){ echo "Data path set!" ;break;}
+		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
 	fi
+	[[ "$yes" = "true" ]]&& break
 done
 
 # Installation Prompt
