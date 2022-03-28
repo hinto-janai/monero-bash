@@ -92,7 +92,7 @@ done
 	else
 		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" "$config/monero-bash.conf"
 	fi
-	source "$config"
+	source "$config/monero-bash.conf"
 
 # First Time = false
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
