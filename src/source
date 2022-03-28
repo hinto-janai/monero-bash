@@ -1,11 +1,8 @@
 #!/usr/bin/env bash
 #
-#						master source file
+# master source file
 #
 
-#
-#						NEEDED SOURCE FILES
-#
 # global variables
 source "$installDirectory/src/var" 2>/dev/null || varMissing="true"
 
@@ -25,8 +22,6 @@ if [[ ! -f  "$installDirectory/src/txt/hashlist" ]]; then
 	hashlistMissing="true"
 fi
 
-#
-#						USER FILES
-#
+# USER FILES
 # config file
 source "$dotMoneroBash/config/monero-bash.conf" 2>/dev/null || configMissing="true"
