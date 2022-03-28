@@ -24,7 +24,7 @@ check_Template()
 		$bgreen; echo "$NAME_NEWVER"
 		updateFound="true"
 		sudo sed -i "s@.*"$NAME_OLD"=.*@"$NAME_OLD"=\"true\"@" "$state"
-		PRODUCE_HASH_LIST
+		PRODUCE_HASH_LIST &>/dev/null
 	else
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date"
