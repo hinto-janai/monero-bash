@@ -39,7 +39,7 @@ daemon_Kill()
 	if [[ $? = 0 ]]; then
 		$white; echo "Monero daemon killed"
 	else
-		$ired; echo "error: Monero daemon was not killed"
+		print_Error "Monero daemon was not killed"
 	fi
 }
 

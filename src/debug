@@ -5,9 +5,10 @@
 #
 
 # invoke a monero-bash function directly
-DEBUG()
+DEBUG_04e3be9()
 {
-	$iwhite; echo -n "input: "
+	$bred; echo "@@@@@@   DEBUG MODE - BE CAREFUL   @@@@@@"
+	$iwhite; echo -n "function to execute: " ;$off
 	read command
 	"$command"
 }
@@ -21,29 +22,36 @@ LIST()
 	cat "src/var" | grep -v "#" | grep -v "\033"
 }
 
+# puts installed packages into variables
+#WHICH_PACKAGES()
+#{
+#	
+#}
+
 # produce a hash list for important monero-bash files /monero-bash/src/txt/hashlist
 PRODUCE_HASH_LIST()
 {
+	prompt_Sudo
 	echo "producing $hashlist"
-	echo -n > "$hashlist"
+	sudo echo -n > "$hashlist"
 	# monero-bash hash
-	sha256sum "monero-bash" >> "$hashlist"
+	sudo sha256sum "monero-bash" >> "$hashlist"
 	# src file hashes
 	for i in src/* ;do
 		if [[ -f "$i" ]]; then
-			sha256sum $i >> "$hashlist"
+			sudo sha256sum $i >> "$hashlist"
 		fi
 	done
 	# function hashes
 	for i in src/func/* ;do
 		if [[ -f "$i" ]]; then
-			sha256sum $i >> "$hashlist"
+			sudo sha256sum $i >> "$hashlist"
 		fi
 	done
 	# txt hashes
 	for i in src/txt/* ;do
 		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
-			sha256sum $i >> "$hashlist"
+			sudo sha256sum $i >> "$hashlist"
 		fi
 	done
 }
@@ -55,7 +63,7 @@ CHECK_HASH_LIST()
 	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
 	if [[ $? = "0" ]]; then
 		echo -n "monero-bash: "
-		$igreen; echo "OK" ;$white
+		$bgreen; echo "OK" ;$white
 	else
 		echo -n "monero-bash: "
 		$bred; echo "FAILED" ;$white
@@ -67,7 +75,7 @@ CHECK_HASH_LIST()
 			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
 			if [[ $? = "0" ]]; then
 				echo -n "$i: "
-				$igreen; echo "OK" ;$white
+				$bgreen; echo "OK" ;$white
 			else
 				echo -n "$i: "
 				$bred; echo "FAILED" ;$white
@@ -80,7 +88,7 @@ CHECK_HASH_LIST()
 		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
 		if [[ $? = "0" ]]; then
 			echo -n "$i: "
-			$igreen; echo "OK" ;$white
+			$bgreen; echo "OK" ;$white
 		else
 			echo -n "$i: "
 			$bred; echo "FAILED" ;$white
@@ -93,7 +101,7 @@ CHECK_HASH_LIST()
 			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
 			if [[ $? = "0" ]]; then
 				echo -n "$i: "
-				$igreen; echo "OK" ;$white
+				$bgreen; echo "OK" ;$white
 			else
 				echo -n "$i: "
 				$bred; echo "FAILED" ;$white
@@ -102,6 +110,71 @@ CHECK_HASH_LIST()
 		fi
 	done
 	if [[ $hashFail = "true" ]]; then
+		$bred; echo -n "monero-bash error: "
+		$bwhite; echo "hash check has failed"
+		$white; echo "Exiting for safety..."
+		exit 1
+	else
+		$bwhite; echo -n "monero-bash: "
+		$bgreen; echo "hash check success!"
+	fi
+}
+
+# checks the hash list less verbosely
+QUIET_HASH_LIST()
+{
+	# monero-bash hash
+	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
+	if [[ $? = "0" ]]; then
+		echo -n "monero-bash: "
+		$bgreen; echo "OK" ;$white
+	else
+		echo -n "monero-bash: "
+		$bred; echo "FAILED" ;$white
+		hashFail="true"
+	fi
+	# src file hashes
+	for i in src/* ;do
+		if [[ -f "$i" ]]; then
+			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+			[[ $? != "0" ]]&& srcHashFail="true"
+		fi
+	done
+	if [[ $srcHashFail = "true" ]]; then
+		$white; echo -n "source: "
+		$bred; echo "FAILED"
+	else
+		$white; echo -n "source: " ;$white
+		$bgreen; echo "OK" ;$white
+	fi
+	# function hashes
+	for i in src/func/* ;do
+		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+		[[ $? != "0" ]]&& funcHashFail="true"
+	done
+	if [[ $funcHashFail = "true" ]]; then
+		$white; echo -n "functions: "
+		$bred; echo "FAILED"
+	else
+		$white; echo -n "functions: " ;$white
+		$bgreen; echo "OK" ;$white
+	fi
+	# txt hashes
+	for i in src/txt/* ;do
+		if [[ $i != "src/txt/hashlist" ]]; then
+			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+			[[ $? != "0" ]]&& txtHashFail="true"
+		fi
+	done
+	if [[ $txtHashFail = "true" ]]; then
+		$white; echo -n "text: "
+		$bred; echo "FAILED"
+	else
+		$white; echo -n "text: " ;$white
+		$bgreen; echo "OK" ;$white
+	fi
+	# if any fail, print error
+	if [[ $hashFail = "true" || $srcHashFail = "true" || $funcHashFail = "true" || $txtHashFail = "true" ]]; then
 		$bred; echo -n "monero-bash error: "
 		$bwhite; echo "hash check has failed"
 		$white; echo "Exiting for safety..."

@@ -1,21 +1,36 @@
 #!/usr/bin/env bash
 #
 #						Version Functions
-#
-version_Variables()
+#						these fetch the new version and
+#						turns them into usable variables
+version_NewMonero()
 {
 	local moneroLatestGithub="https://github.com/monero-project/monero/releases/latest"
-	local moneroVar="https://downloads.getmonero.org/cli/monero-linux-x64-v*.*.*.*.*.*.*"
-	local moneroTarName="monero-linux-x64-*.*"
-	local mBashLatestGithub="https://github.com/hinto-janaiyo/monero-bash/releases/latest"
-	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v*.*.*"
-	local mBashTarName="monero-bash-v*.*.*"
-	if [[ $UPDATE_MONERO_CLI = "true" ]]; then
-		monero_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.bz2\"//')"
-	fi
-	if [[ $UPDATE_MONERO_BASH="true" ]]; then
-		moneroBash_NewVer="$(wget -qO- "$mBashLatestGithub" | grep -o "$mBashVar" | grep -o "$mBashTarName" | awk '{print $1}' | sed 's/.tar\"//')"
-	fi
+	local moneroVar="https://downloads.getmonero.org/cli/monero-linux-x64-v.*"
+	local moneroTarName="monero-linux-x64-.*"
+	monero_NewVer="$(wget -qO- "$moneroLatestGithub" | grep -o "$moneroVar" | grep -o "$moneroTarName" | awk '{print $1}' | sed 's/.tar.*//')"
 }
 
+version_NewMoneroBash()
+{
+	local mBashLatestGithub="https://github.com/hinto-janaiyo/monero-bash/releases/latest"
+	local mBashVar="/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v.*"
+	local mBashTarName="monero-bash-v.*"
+	moneroBash_NewVer="$(wget -qO- "$mBashLatestGithub" | grep -o "$mBashVar" | grep -o "$mBashTarName" | awk '{print $1}' | sed 's/.tar.*//')"
+}
 
+version_NewXMRig()
+{
+	local xmrigLatestGithub="https://github.com/xmrig/xmrig/releases/latest"
+	local xmrigVar="xmrig/xmrig/releases/download/.*/xmrig.*linux-static-x64.*"
+	local xmrigTarName="xmrig-.*"
+	xmrig_NewVer="$(wget -qO- "$xmrigLatestGithub" | grep -o "$xmrigVar" | grep -o "$xmrigTarName" | awk '{print $1}' | sed 's/.tar.*//')"
+}
+
+version_NewP2Pool()
+{
+	local p2poolLatestGithub="https://github.com/SChernykh/p2pool/releases/latest"
+	local p2poolVar="SChernykh/p2pool/releases/download/.*/p2pool-.*-linux-x64.*"
+	local p2poolTarName="p2pool-.*-linux-x64"
+	p2pool_NewVer="$(wget -qO- "$p2poolLatestGithub" | grep -o "$p2poolVar" | grep -o "$p2poolTarName" | awk '{print $1}' | sed 's/.tar.*//')"
+}

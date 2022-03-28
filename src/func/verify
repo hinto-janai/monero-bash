@@ -1,17 +1,43 @@
 #!/bin/bash
 #
-#						GPG & verification of binaries
+#						hash & GPG verification of binaries
 #
 verify_hash_Monero()
 {
-	monero_tar="$(ls "$tmp" | grep "monero-linux-x64")"
-	echo "$(wget -qO- "https://www.getmonero.org/downloads/hashes.txt" | grep "monero-linux-x64" | awk '{print $1}')" "$tmp/$monero_tar" | sha256sum -c
+	tarName="$(ls "$tmp")"
+	echo "$(wget -qO- "https://www.getmonero.org/downloads/hashes.txt" \
+		| grep "monero-linux-x64" | awk '{print $1}')" \
+		"$tmp/$tarName" | sha256sum -c &>/dev/null
+	print_OKFAILED
 }
 
 verify_hash_MoneroBash()
 {
-	moneroBash_tar="$(ls "$tmp" | grep "monero-bash")"
+	tarName="$(ls "$tmp")"
 	echo "$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
 		| grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" \
-		$moneroBash_tar | sha256sum -c
+		"$tmp/$tarName" | sha256sum -c &>/dev/null
+	print_OKFAILED
 }
+
+verify_hash_XMRig()
+{
+	tarName="$(ls "$tmp")"
+	echo "$(wget -qO- https://github.com/xmrig/xmrig/releases/latest \
+		| grep "*xmrig-.*-linux-static-x64.*" | awk '{print $1}' | head -n 1)" \
+		"$tmp/$tarName" | sha256sum -c &>/dev/null
+	print_OKFAILED
+}
+
+verify_hash_P2Pool()
+{
+	tarName="$(ls "$tmp")"
+	p2pool_hashfile="$(wget -qO- https://github.com/SChernykh/p2pool/releases/latest \
+		| grep -o "/SChernykh/p2pool/releases/download/.*/sha256sum.*" \
+		| awk '{print $1}' | sed 's/"//g')"
+	p2pool_hashfile2="$(wget -qO- "https://github.com/$p2pool_hashfile" \
+		| grep -A2 "linux-x64" | grep "SHA256" | awk '{print $2}')"
+	echo "$p2pool_hashfile2" "$tmp/$tarName" | sha256sum -c &>/dev/null
+	print_OKFAILED
+}
+

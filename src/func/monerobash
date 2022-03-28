@@ -37,7 +37,11 @@ while true ;do
 		prompt_YESno
 	elif [[ $alreadyFoundDataPath != "true" ]]; then
 		$white; echo -n "Data path: "
-		$ired; echo "$bitMonero"
+		if [[ "$inputData" = "" ]]; then
+			$ired; echo "$bitMonero"
+		else
+			$ired; echo "$inputData"
+		fi
 		$white; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;break;}
 		No(){ :;}
@@ -59,35 +63,37 @@ done
 	print_GreenHash "Checking monero-bash hash integrity"
 	CHECK_HASH_LIST
 
-# Setting Data Path
-	print_GreenHash "Setting Data Path"
-	if [[ $alreadyFoundDataPath = "true" ]]; then
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$HOME/.bitmonero"\"@" "$config"
-	elif [[ $inputData != "" ]]; then
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" "$config"
-	else
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" "$config"
-	fi
-
-# Moving to /usr/
-	print_GreenHash "Moving to monero-bash to /usr/share/monero-bash/"
-	sudo mv "$installDirectory" "/usr/share/"
+# Moving to /usr/local/
+	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
+	sudo mv "$installDirectory" "/usr/local/share/" &&
+	installDirectory="/usr/local/share/monero-bash" &&
+	hashlist="$installDirectory/src/txt/hashlist" &&
+	state="$installDirectory/src/txt/state"
 
 # Adding to PATH
 	print_GreenHash "Adding monero-bash to PATH"
 	path_Add
-	echo
 
 # Building $HOME/.monero-bash
-	print_GreenHash "Building monero-bash folders"
+	print_GreenHash "Building /.monero-bash/ folders"
 	if [[ $alreadyFoundDataPath = "true" ]]; then
-		bulid_NoBitMonero_DotMoneroBash
+		build_NoBitMonero_DotMoneroBash
 	else
 		build_DefaultDotMoneroBash
 	fi
 
+# Setting Data Path
+	print_GreenHash "Setting data path"
+	if [[ $alreadyFoundDataPath = "true" ]]; then
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$HOME/.bitmonero"\"@" "$config/monero-bash.conf"
+	elif [[ $inputData != "" ]]; then
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" "$config/monero-bash.conf"
+	else
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" "$config/monero-bash.conf"
+	fi
+
 # First Time = false
-sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
+sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
 
 #
 #                       End
@@ -100,6 +106,7 @@ $white; echo -n "Data path: " ;$ired; echo "$DATA_PATH"
 $white; echo -n "Binary path: " ;$ired; echo "$bin"
 $white; echo -n "Config path: " ;$ired; echo "$config"
 $white; echo -n "Wallet path: " ;$ired; echo "$wallets"
+$bwhite; echo -n "monero-bash path: " ;$bred; echo "$dotMoneroBash"
 echo
 $white; echo -n "type: "
 $ired; echo -n "monero-bash help"
@@ -137,8 +144,8 @@ monerobash_Uninstall()
 		print_RedHash "Removing from PATH"
 			path_Remove
 			error_Continue "PATH not removed"
-		print_RedHash "Removing /usr/share/monero-bash/"
-			sudo rm -rf "/usr/share/monero-bash"
+		print_RedHash "Removing /usr/local/share/monero-bash/"
+			sudo rm -rf "/usr/local/share/monero-bash"
 			error_Exit "monero-bash not removed"
 		print_GreenHash "monero-bash has been uninstalled"
 	}

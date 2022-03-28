@@ -7,18 +7,18 @@
 #						NEEDED SOURCE FILES
 #
 # global variables
-source "$installDirectory/src/var" || varMissing="true"
+source "$installDirectory/src/var" 2>/dev/null || varMissing="true"
 
 # global functions
 for functions in $installDirectory/src/func/* ;do
-	source "$functions" || funcMissing="true"
+	source "$functions" 2>/dev/null || funcMissing="true"
 done
 
 # debug file
-source "$installDirectory/src/debug" || debugMissing="true"
+source "$installDirectory/src/debug" 2>/dev/null || debugMissing="true"
 
 # state file
-source "$installDirectory/src/txt/state" || stateMissing="true"
+source "$installDirectory/src/txt/state" 2>/dev/null || stateMissing="true"
 
 # hashlist file
 if [[ ! -f  "$installDirectory/src/txt/hashlist" ]]; then
@@ -29,4 +29,4 @@ fi
 #						USER FILES
 #
 # config file
-source "$MONERO_BASH_FOLDER/config/monero-bash" || configMissing="true"
+source "$dotMoneroBash/config/monero-bash.conf" 2>/dev/null || configMissing="true"

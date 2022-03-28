@@ -23,16 +23,11 @@ else
 	exit
 fi
 
-# even more safety checks
-#safety_MoneroBashFolder
-
 # DEBUG COMMANDS
-if [[ $1 = "DEBUG" ]]; then
+if [[ $1 = "DEBUG_04e3be9" ]]; then
 	case $2 in
-		"") DEBUG ;;
-		LIST) LIST ;;
-		PRODUCE_HASH_LIST) PRODUCE_HASH_LIST ;;
-		CHECK_HASH_LIST) CHECK_HASH_LIST ;;
+		"") DEBUG_04e3be9 ;;
+		*) "$2" ;;
 	esac
 	exit
 fi
@@ -41,6 +36,14 @@ fi
 if [[ $FIRST_TIME = "true" ]]; then
 	monerobash_Install
 	exit
+fi
+
+# even more safety checks
+if [[ $FIRST_TIME != "true" ]]; then
+	safety_LinuxFolders
+#	safety_UsrLocalShare
+	safety_Home
+#	safety_DotMoneroBash
 fi
 
 #
@@ -80,27 +83,41 @@ fi
 # Option Flags
 if [[ $options = "true" ]]; then
 	case $1 in
-		config) config_Interactive ;;
 		uninstall) monerobash_Uninstall ;;
 		update) check_Update ;;
 		upgrade)
+			[[ $3 = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!"
 			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
 				echo -n "Upgrade monero-bash? (Y/n) "
 				Yes(){ upgrade_MoneroBash ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
 			fi
-			if [[ $2 = *"cli"* || $2 = *"CLI"* || $2 = *"Cli"* ]]; then
-				echo -n "Upgrade Monero-CLI? (Y/n) "
-				Yes(){ upgrade_MoneroCLI ;}
+			if [[ $2 = *"monero"* || $2 = *"Monero"* || $2 = *"MONERO"* ]]; then
+				echo -n "Upgrade Monero? (Y/n) "
+				Yes(){ upgrade_Monero ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
 			fi
-			if [[ $2 = "" ]]; then
-				echo -n "Upgrade all? (Y/n) "
+			if [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
+				echo -n "Upgrade XMRig? (Y/n) "
+				Yes(){ upgrade_XMRig ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
+				echo -n "Upgrade P2Pool? (Y/n) "
+				Yes(){ upgrade_P2Pool ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = "all" ]]; then
+				echo -n "Upgrade all packages? (Y/n) "
 				Yes(){ upgrade_All ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
+			elif [[ $2 = "" ]]; then
+				print_Error "Pick a package or <all>"
 			fi
 			;;
 		daemon)
@@ -114,17 +131,10 @@ if [[ $options = "true" ]]; then
 			esac
 			;;
 		version) print_Version ;;
-		path)
-			case $2 in
-				add) path_Add ;;
-				remove) path_Remove ;;
-				reset) path_Reset ;;
-				*) error_Unknown ;;
-			esac
-			;;
 		list) wallet_Count && wallet_List ;;
 		size) print_Size ;;
 		price) check_Price ;;
+		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		*)
 			$ired; echo "monero-bash: invalid option!"

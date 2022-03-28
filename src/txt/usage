@@ -1,23 +1,26 @@
-# SETUP #
-config            configure monero-bash settings
-uninstall         remove /monero-bash/ folder and remove from PATH
+# INSTALL #
+uninstall                   uninstall monero-bash and remove /.monero-bash/
 
-# UPDATE #
-update            only CHECK for updates
-upgrade           upgrade all OR upgrade <specific thing>
-version           print current versions
-path              RESET path to /monero-bash/
+# PKG MANAGER #
+update                      only CHECK for updates
+upgrade all                 upgrade all packages
+upgrade <name>              upgrade specific package
+upgrade <all/name> force    forcefully upgrade packages
+version                     print current package versions
 
 # DAEMON #
-daemon            check status of daemon
-daemon start      start the daemon (detached)
-daemon stop       stop all daemon processes
-daemon full       start the daemon without detaching
+daemon                      print status of daemon
+daemon start                start the daemon (detached)
+daemon stop                 gracefully stop the daemon
+daemon kill                 forcefully kill all daemon processes
+daemon full                 start the daemon attached
 
 # STATS #
-list              list wallets
-size              show size of /monero-bash/
-price             fetch price data from cryptocompare.com API
+status                      print useful stats
+list                        list wallets
+size                        show size of /.monero-bash/
+price                       fetch price data from cryptocompare.com API
+integrity                   check hash integrity of monero-bash
 
 # HELP #
-help              show this help message
+help                        show this help message

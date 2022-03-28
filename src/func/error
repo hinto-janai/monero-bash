@@ -24,6 +24,19 @@ error_Exit()
 	fi
 }
 
+error_Sudo()
+{
+	if [[ $? = "0" ]]; then
+		:
+	else
+		printf "\033[1;31mmonero-bash error: \033[0;97m"
+		echo "[sudo] is needed"
+		echo "Exiting..."
+		exit
+	fi
+}
+
+
 error_Unknown()
 {
 	printf "\033[1;31mmonero-bash error:\033[0;97mUnknown command"

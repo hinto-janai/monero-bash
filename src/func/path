@@ -6,22 +6,19 @@
 #
 path_Add()
 {
-	if [[ -f "/usr/bin/monero-bash" ]]; then
+	if [[ -f "/usr/local/bin/monero-bash" ]]; then
 		$ired; echo "monero-bash PATH is already set: "
-		$white; echo "/usr/bin/monero-bash"
+		$white; echo "/usr/local/bin/monero-bash"
 	else
-		echo "Adding monero-bash to PATH..."
-		sudo ln -s "$installDirectory/monero-bash" "/usr/bin/monero-bash"
+		sudo ln -s "$installDirectory/monero-bash" "/usr/local/bin/monero-bash"
 		error_Continue "Adding to PATH failed"
 	fi
 }
 
 path_Remove()
 {
-	if [[ -f "/usr/bin/monero-bash" ]]; then
-		echo "Removing monero-bash from PATH..."
-		sudo rm "/usr/bin/monero-bash"
-		error_Continue "Removing from PATH failed"
+	if [[ -f "/usr/local/bin/monero-bash" ]]; then
+		sudo rm "/usr/local/bin/monero-bash"
 	else
 		$ired; echo "monero-bash PATH is not set"
 	fi
@@ -30,9 +27,9 @@ path_Remove()
 path_Reset()
 {
 	echo "Resetting monero-bash PATH..."
-	sudo rm "/usr/bin/monero-bash"
+	sudo rm "/usr/local/bin/monero-bash"
 	error_Exit "Removing from PATH failed"
-	sudo ln -s "$installDirectory/monero-bash" "/usr/bin/monero-bash"
+	sudo ln -s "$installDirectory/monero-bash" "/usr/local/bin/monero-bash"
 	error_Exit "Adding to PATH failed"
 	$igreen; echo "monero-bash PATH reset!"
 }

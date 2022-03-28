@@ -22,17 +22,29 @@ print_MoneroBashTitle()
 
 print_Version()
 {
-	$white; echo -n "Monero-CLI: "
-	if [[ $MONERO_CLI_OLD = "false" ]]; then
-		$bgreen; echo "$MONERO_CLI_VER"
-	else
-		$bred; echo "$MONERO_CLI_VER"
-	fi
-		$white; echo -n "monero-bash: "
-	if [[ $MONERO_BASH_OLD = "false" ]]; then
-		$bgreen; echo "$MONERO_BASH_VER"
-	else
+	$white; echo -n "monero-bash: "
+	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
 		$bred; echo "$MONERO_BASH_VER"
+	else
+		$bgreen; echo "$MONERO_BASH_VER"
+	fi
+	$white; echo -n "Monero: "
+	if [[ "$MONERO_OLD" = "true" ]]; then
+		$bred; echo "$MONERO_VER"
+	else
+		$bgreen; echo "$MONERO_VER"
+	fi
+	$white; echo -n "monero-bash: "
+	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
+		$bred; echo "$MONERO_BASH_VER"
+	else
+		$bgreen; echo "$MONERO_BASH_VER"
+	fi
+	$white; echo -n "monero-bash: "
+	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
+		$bred; echo "$MONERO_BASH_VER"
+	else
+		$bgreen; echo "$MONERO_BASH_VER"
 	fi
 }
 
@@ -41,7 +53,7 @@ print_Usage()
     $off; echo -n "monero-bash usage: "
     $ired; echo "monero-bash <option> <more options>" ;$off
     echo
-    cat "$installDirectory/src/usage"
+    cat "$installDirectory/src/txt/usage"
     echo
     $ired; echo -n "monero-bash, "
     $white; echo -n "made by: "
@@ -56,6 +68,32 @@ print_Size()
 	du -h "$MoneroBashFolder" | tail -n 1 | awk '{print $1}'
 }
 
+print_Error()
+{
+	$ired; printf "monero-bash error: "
+	$iwhite; echo "$1"
+}
+
+print_Error_Exit()
+{
+	$ired; printf "monero-bash error: "
+	$iwhite; echo "$1"
+	$white; echo "Exiting..."
+	exit
+}
+
+# used for color coding sha256sum output
+print_OKFAILED()
+{
+	if [[ $? = "0" ]]; then
+		$white; echo -n "$1: "
+		$igreen; echo "OK" ;$white
+	else
+		$white; echo -n "$1: "
+		$bred; echo "FAILED" ;$white
+		hashFail="true"
+	fi
+}
 
 print_SeedLanguageList()
 {

@@ -4,17 +4,11 @@
 #
 download_Monero()
 {
-	prompt_Sudo
-    error_Exit "Sudo is needed for upgrading"
-	missing_MoneroFolder
-	cd "$tmp"
 	wget -P "$tmp" -q --show-progress --content-disposition "https://downloads.getmonero.org/cli/linux64"
 }
 
 download_MoneroBash()
 {
-	prompt_Sudo
-	error_Exit "Sudo is needed for upgrading"
 	local monerobash_link="$(wget -qO- "https://github.com/hinto-janaiyo/monero-bash/releases/latest" \
 		| grep -o "/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v.*" \
 		| awk '{print $1}' \
@@ -24,8 +18,6 @@ download_MoneroBash()
 
 download_XMRig()
 {
-	prompt_Sudo
-	error_Exit "Sudo is needed for upgrading"
 	local xmrig_link="$(wget -qO- "https://github.com/xmrig/xmrig/releases/latest" \
 		| grep -o "xmrig/xmrig/releases/download/.*/xmrig.*linux-static-x64.*" \
 		| awk '{print $1}' \
@@ -35,19 +27,9 @@ download_XMRig()
 
 download_P2Pool()
 {
-	prompt_Sudo
-	error_Exit "Sudo is needed for upgrading"
 	local p2pool_link="$(wget -qO- "https://github.com/SChernykh/p2pool/releases/latest" \
-		| grep -o "SChernykh/p2pool/releases/download/.*/p2pool-.*-linux-x64.*.*" \
+		| grep -o "SChernykh/p2pool/releases/download/.*/p2pool-.*-linux-x64.*" \
 		| awk '{print $1}' \
 		| sed 's/"//g')"
 	sudo wget -P "$tmp" -q --show-progress "$https://github.com/p2pool_link"
-}
-
-download_All()
-{
-    $ibred; echo "Upgrading all..."
-    download_MoneroBash
-    download_Monero
-	download_XMRig
 }
