@@ -96,6 +96,7 @@ done
 
 # First Time = false
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
+PRODUCE_HASH_LIST
 
 #
 #                       End
@@ -120,7 +121,7 @@ monerobash_Uninstall()
 {
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "@   "
-	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE ./monero-bash AND EVERYTHING INSIDE IT"
+	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE /.monero-bash/ AND EVERYTHING INSIDE IT"
 	$bwhite; echo "   @"
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "Uninstall "
