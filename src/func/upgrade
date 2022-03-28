@@ -14,7 +14,7 @@ upgrade_Template()
 		print_GreenHash "Downloading: [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
 		error_Exit "Downloading failed: [$NAME_PRETTY]"
-		verify_"$NAME_FUNC"
+		verify_hash_"$NAME_FUNC"
 		if [[ $? = "0" ]]; then
 			print_RedHash "Extracting: [$NAME_PRETTY]"
 			tar -xf "$tarName"

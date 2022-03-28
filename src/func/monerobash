@@ -90,7 +90,7 @@ done
 	elif [[ $inputData != "" ]]; then
 		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" "$config/monero-bash.conf"
 	else
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$defaultData"\"@" "$config/monero-bash.conf"
+		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$bitMonero"\"@" "$config/monero-bash.conf"
 	fi
 	source "$config/monero-bash.conf"
 
@@ -143,7 +143,7 @@ monerobash_Uninstall()
 		done
 		# Hash Integrity Check
 		print_GreenHash "Checking monero-bash hash integrity"
-		CHECK_HASH_LIST
+		QUIET_HASH_LIST
 		print_RedHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
 			error_Continue "$dotMoneroBash not removed"
