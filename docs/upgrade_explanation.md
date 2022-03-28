@@ -1,4 +1,4 @@
-# is monero-bash a virus? an explanation of the "upgrade" command
+# is monero-bash a virus?
 * [Intro](#Intro)
 * [Download](#Download)
 * [Verify](#Verify)
@@ -7,7 +7,13 @@
 * Date: 2022-03-27
 
 ## Intro
-What happens when you type `monero-bash upgrade`? I'd like to keep this as short as possible but simple enough so that anyone can understand it, so here's a step-by-step explanation of the code/commands being executed:
+Can I trust monero-bash? Will it steal my Monero? Is it downloading malware?
+
+```
+No
+```
+So what happens when you type `monero-bash upgrade`?	
+I'd like to keep this as short as possible but simple enough so that anyone can understand it, so here's a step-by-step explanation of the code/commands being executed:
 
 ## Download
 ```
