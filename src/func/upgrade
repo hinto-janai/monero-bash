@@ -10,8 +10,9 @@ upgrade_Template()
 	else
 		prompt_Sudo;error_Sudo
 		safety_HashList
-		cleanup_Tmp;error_Exit "Could not cleanup /$dotMoneroBash/.tmp/"
-		print_GreenHash "Downloading: [$NAME_PRETTY]" && download_"$NAME_FUNC"
+		tmp_Create;error_Exit "Could not create tmp folder"
+		print_GreenHash "Downloading: [$NAME_PRETTY]"
+		download_"$NAME_FUNC"
 		error_Exit "Downloading failed: [$NAME_PRETTY]"
 		verify_"$NAME_FUNC"
 		if [[ $? = "0" ]]; then
@@ -36,7 +37,7 @@ upgrade_Template()
 			compromised_"$NAME_FUNC"_Hash
 			exit
 		fi
-		cleanup_Tmp;error_Exit "Could not cleanup /$dotMoneroBash/.tmp/"
+		tmp_Del;error_Exit "Could not cleanup tmp folder"
 	fi
 }
 

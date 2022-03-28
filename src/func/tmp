@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# functions for creating /tmp/ folders
+
+tmp_Create()
+{
+	tmp_Del
+	tmp="$(mktemp /tmp/monero-bash.XXXXXXXXXX)"
+}
+
+tmp_Del()
+{
+	if find /tmp/monero-bash.* &>/dev/null ; then
+		rm -rf /tmp/monero-bash.*
+	fi
+}
