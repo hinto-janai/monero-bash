@@ -53,8 +53,8 @@ done
 # Installation Prompt
 	$bwhite; echo -n "Start "
 	$bred; echo -n "monero-bash "
-	$bwhite; echo -n "install? (Y/n)"
-	Yes(){ $white; echo "Starting monero-bash install!" ;}
+	$bwhite; echo -n "install? (Y/n) "
+	Yes(){ $white; echo "Starting..." ;}
 	No(){ $white; echo "Exiting..." ;exit;}
 	prompt_YESno
 	prompt_Sudo
@@ -151,5 +151,5 @@ monerobash_Uninstall()
 		print_GreenHash "monero-bash has been uninstalled"
 	}
 	No(){ $white; echo "Exiting..." ;}
-	yes_NO
+	prompt_yesNO
 }
