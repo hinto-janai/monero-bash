@@ -4,7 +4,7 @@
 #
 upgrade_Template()
 {
-	if [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
+	if [[ "${NAME_CAPS}_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date"
 	else
@@ -18,8 +18,10 @@ upgrade_Template()
 		verify_hash_"$NAME_FUNC"
 		if [[ "$verifyOK" = "true" ]]; then
 			print_RedHash "Extracting: [$NAME_PRETTY]"
-			tar -xf "$tmp/$tarName"
-			rm -f "$tmp/$tarName"
+			tar -xf "$tmp/$tarName" -C "$tmp" &&
+			rm -f "$tmp/$tarName" &&
+			$white; echo "$tarName: "
+			$igreen; echo "EXTRACTED"
 			local folderName="$(ls "$tmp")"
 			if [[ $folderName = "" ]]; then
 				$ired; echo "monero-bash error: extracted tar was not found"
@@ -31,9 +33,12 @@ upgrade_Template()
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
+			print_RedHash "Updating version: [$NAME_PRETTY]"
+			version_New"$NAME_FUNC"
 			sudo mv "$tmp/$folderName" "$DIRECTORY"
-			sudo sed -i "s@.*"$NAME_SED"_VER=.*@"$NAME_SED"_VER=\""$NAME_NEWVER"\"@" "$state"
-			sudo sed -i "s@.*"$NAME_SED"_OLD=.*@"$NAME_SED"_OLD=\"false\"@" "$state"
+			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NAME_NEWVER"\"@" "$state"
+			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+			$white; echo "$NAME_NEWVER"
 		else
 			compromised_"$NAME_FUNC"_Hash
 			exit
@@ -45,11 +50,10 @@ upgrade_Template()
 
 upgrade_Monero()
 {
-	NAME_OLD="$MONERO_OLD"
 	NAME_PRETTY="Monero"
 	NAME_FUNC="Monero"
 	DIRECTORY="$binMonero"
-	NAME_SED="MONERO"
+	NAME_CAPS="MONERO"
 	NAME_NEWVER="$monero_NewVer"
 	upgrade_Template
 }
@@ -60,7 +64,7 @@ upgrade_MoneroBash()
 	NAME_PRETTY="monero-bash"
 	NAME_FUNC="MoneroBash"
 	DIRECTORY="$installDirectory"
-	NAME_SED="MONERO_BASH"
+	NAME_CAPS="MONERO_BASH"
 	NAME_NEWVER="$moneroBash_NewVer"
 	upgrade_Template
 }
@@ -71,7 +75,7 @@ upgrade_XMRig()
 	NAME_PRETTY="XMRig"
 	NAME_FUNC="XMRig"
 	DIRECTORY="$binXMRig"
-	NAME_SED="XMRIG"
+	NAME_CAPS="XMRIG"
 	NAME_NEWVER="$xmrig_NewVer"
 	upgrade_Template
 }
@@ -82,7 +86,7 @@ upgrade_P2Pool()
 	NAME_PRETTY="P2Pool"
 	NAME_FUNC="P2Pool"
 	DIRECTORY="$binP2Pool"
-	NAME_SED="P2POOL"
+	NAME_CAPS="P2POOL"
 	NAME_NEWVER="$p2pool_NewVer"
 	upgrade_Template
 }
