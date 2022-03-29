@@ -66,10 +66,11 @@ done
 
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
-	sudo mv "$installDirectory" "/usr/local/share/" &&
-	installDirectory="/usr/local/share/monero-bash" &&
-	hashlist="$installDirectory/src/txt/hashlist" &&
+	sudo mv "$installDirectory" "/usr/local/share/"
+	installDirectory="/usr/local/share/monero-bash"
+	hashlist="$installDirectory/src/txt/hashlist"
 	state="$installDirectory/src/txt/state"
+	sudo chown -R "$USER:" "$installDirectory"
 
 # Adding to PATH
 	print_GreenHash "Adding monero-bash to PATH"
@@ -96,7 +97,6 @@ done
 
 # First Time = false
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
-sudo chown -R "$USER:" "$installDirectory"
 PRODUCE_HASH_LIST
 
 #
@@ -132,11 +132,15 @@ monerobash_Uninstall()
 	{
 		prompt_Sudo
 		error_Exit "Sudo is needed to uninstall"
-		for i in {10..1} ;do
+		for i in {10..0} ;do
 		tput sc
-		$bred; echo -n "Uninstalling in $i..."
+		if [[ "$i" = "0" ]]; then
+			$bred; echo -n "Uninstalling..."
+		else
+			$bred; echo -n "Uninstalling in $i..."
+		fi
 		sleep 1
-		if [[ $i != "1" ]]; then
+		if [[ $i != "0" ]]; then
 		tput rc;tput el
 		else
 		echo;echo

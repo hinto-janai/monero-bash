@@ -82,7 +82,7 @@ print_Error_Exit()
 	exit
 }
 
-# used for color coding sha256sum output
+# used for color coding sha256sum output (FOR UPGRADE FUNCTION)
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
