@@ -4,7 +4,7 @@
 #
 upgrade_Template()
 {
-	if [[ "${NAME_CAPS}_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
+	if [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date"
 	else
@@ -50,6 +50,7 @@ upgrade_Template()
 
 upgrade_Monero()
 {
+	NAME_OLD="$MONERO_OLD"
 	NAME_PRETTY="Monero"
 	NAME_FUNC="Monero"
 	DIRECTORY="$binMonero"
