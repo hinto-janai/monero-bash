@@ -106,14 +106,14 @@ echo
 $bred; echo "###################################################################"
 $bred; echo "#                monero-bash installation complete                #"
 $bred; echo "###################################################################"
-$white; echo -n "Data path: " ;$ired; echo "$DATA_PATH"
-$white; echo -n "Binary path: " ;$ired; echo "$bin"
-$white; echo -n "Config path: " ;$ired; echo "$config"
-$white; echo -n "Wallet path: " ;$ired; echo "$wallets"
-$bwhite; echo -n "monero-bash path: " ;$bred; echo "$dotMoneroBash"
+$bwhite; echo "monero-bash path: " ;$bred; echo "$dotMoneroBash"
+$white; echo -n "Data: $DATA_PATH"
+echo "Binaries: $bin"
+echo "Configs: $config"
+echo "Wallets: $wallets"
 echo
 $white; echo -n "type: "
-$ired; echo -n "monero-bash help "
+$bred; echo -n "monero-bash help "
 $white; echo "to get started"
 }
 ###################################################   END OF INSTALL FUNCTION   ###################################################
