@@ -38,7 +38,7 @@ upgrade_Template()
 			sudo mv "$tmp/$folderName" "$DIRECTORY"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-			PRODUCE_HASH_LIST
+			PRODUCE_HASH_LIST &>/dev/null
 			$white; echo -n "$NewVer: "
 			$igreen; echo "NEW VERSION"
 		else

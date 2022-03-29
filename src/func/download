@@ -5,11 +5,16 @@
 download_Template()
 {
 	tmp="$(find /tmp/monero-bash.*)"
-	wget -P "$tmp" -q --show-progress --content-disposition "$link"
+	if [[ $downloadMonero = "true" ]]; then
+		wget -P "$tmp" -q --show-progress --content-disposition "$link"
+	else
+		wget -P "$tmp" -q --show-progress "https://github.com/$link"
+	fi
 }
 download_Monero()
 {
 	local link="https://downloads.getmonero.org/cli/linux64"
+	local downloadMonero="true"
 	download_Template
 }
 
