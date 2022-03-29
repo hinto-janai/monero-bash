@@ -57,7 +57,7 @@ missing_Wallets()
 	fi
 }
 
-missing_Config()
+missing_ConfigFolder()
 {
 	if [[ ! -d "$config" ]]; then
 		print_Error "$config missing!"
@@ -65,3 +65,48 @@ missing_Config()
 		build_Config
 	fi
 }
+
+missing_ConfigTemplate()
+{
+	if [[ ! -f "$config/$conf" ]]; then
+		print_Error "$conf missing!"
+		echo "Creating blank $conf..."
+		touch "$config/$conf"
+	fi
+}
+
+missing_ConfigMonerod()
+{
+	local conf="monerod.conf"
+	missing_ConfigTemplate
+}
+
+missing_ConfigWallet()
+{
+	local conf="monero-wallet-cli.conf"
+	missing_ConfigTemplate
+}
+
+
+missing_ConfigMoneroBash()
+{
+	local conf="monero-bash.conf"
+	missing_ConfigTemplate
+}
+
+
+missing_ConfigXMRig()
+{
+	local conf="xmrig.conf"
+	missing_ConfigTemplate
+}
+
+
+missing_ConfigP2Pool()
+{
+	local conf="p2pool.conf"
+	missing_ConfigTemplate
+}
+
+
+
