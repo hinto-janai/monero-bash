@@ -4,7 +4,7 @@
 tmp_Create()
 {
 	tmp_Del
-	mktemp -d /tmp/monero-bash.XXXXXXXXXX
+	mktemp -d /tmp/monero-bash.XXXXXXXXXX &>/dev/null
 }
 
 tmp_Del()
