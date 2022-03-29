@@ -4,7 +4,7 @@
 #
 download_Template()
 {
-	tmp="$(find /tmp/monero-bash.*)"
+	tmp="$(find /tmp/monero-bash.* &>/dev/null)"
 	wget -P "$tmp" -q --show-progress --content-disposition "$link"
 }
 download_Monero()

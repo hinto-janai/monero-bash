@@ -39,6 +39,7 @@ upgrade_Template()
 			exit
 		fi
 		tmp_Del;error_Exit "Could not cleanup tmp folder"
+		print_GreenHash "Upgraded: [$NAME_PRETTY]"
 	fi
 }
 
