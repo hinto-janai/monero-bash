@@ -20,7 +20,7 @@ upgrade_Template()
 			print_RedHash "Extracting: [$NAME_PRETTY]"
 			tar -xf "$tmp/$tarName" -C "$tmp" &&
 			rm -f "$tmp/$tarName" &&
-			$white; echo "$tarName: "
+			$white; echo -n "$tarName: "
 			$igreen; echo "EXTRACTED"
 			local folderName="$(ls "$tmp")"
 			if [[ $folderName = "" ]]; then
@@ -36,9 +36,9 @@ upgrade_Template()
 			print_RedHash "Updating version: [$NAME_PRETTY]"
 			version_New"$NAME_FUNC"
 			sudo mv "$tmp/$folderName" "$DIRECTORY"
-			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NAME_NEWVER"\"@" "$state"
+			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-			$white; echo "$NAME_NEWVER"
+			$white; echo "$NewVer"
 		else
 			compromised_"$NAME_FUNC"_Hash
 			exit
@@ -55,7 +55,6 @@ upgrade_Monero()
 	NAME_FUNC="Monero"
 	DIRECTORY="$binMonero"
 	NAME_CAPS="MONERO"
-	NAME_NEWVER="$monero_NewVer"
 	upgrade_Template
 }
 
@@ -66,7 +65,6 @@ upgrade_MoneroBash()
 	NAME_FUNC="MoneroBash"
 	DIRECTORY="$installDirectory"
 	NAME_CAPS="MONERO_BASH"
-	NAME_NEWVER="$moneroBash_NewVer"
 	upgrade_Template
 }
 
@@ -77,7 +75,6 @@ upgrade_XMRig()
 	NAME_FUNC="XMRig"
 	DIRECTORY="$binXMRig"
 	NAME_CAPS="XMRIG"
-	NAME_NEWVER="$xmrig_NewVer"
 	upgrade_Template
 }
 
@@ -88,7 +85,6 @@ upgrade_P2Pool()
 	NAME_FUNC="P2Pool"
 	DIRECTORY="$binP2Pool"
 	NAME_CAPS="P2POOL"
-	NAME_NEWVER="$p2pool_NewVer"
 	upgrade_Template
 }
 

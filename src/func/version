@@ -10,7 +10,7 @@ version_Template()
 version_NewMonero()
 {
 	local LatestGithub="https://github.com/monero-project/monero/releases/latest"
-	local Var="https://downloads.getmonero.org/cli/monero-linux-x64-v.*"
+	local Ver="https://downloads.getmonero.org/cli/monero-linux-x64-v.*"
 	local TarName="monero-linux-x64-.*"
 	version_Template
 }
