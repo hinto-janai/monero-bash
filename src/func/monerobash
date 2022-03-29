@@ -67,10 +67,10 @@ done
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
 	sudo mv "$installDirectory" "/usr/local/share/"
-	sudo chown -R "$USER:" "$installDirectory"
 	installDirectory="/usr/local/share/monero-bash"
 	hashlist="$installDirectory/src/txt/hashlist"
 	state="$installDirectory/src/txt/state"
+	sudo chown -R "$USER:" "$installDirectory"
 
 # Adding to PATH
 	print_GreenHash "Adding monero-bash to PATH"
