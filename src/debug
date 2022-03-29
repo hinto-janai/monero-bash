@@ -32,7 +32,7 @@ LIST()
 PRODUCE_HASH_LIST()
 {
 	prompt_Sudo
-	echo "producing $hashlist"
+	echo "producing hashlist"
 	sudo echo -n > "$hashlist"
 	# monero-bash hash
 	sudo sha256sum "monero-bash" >> "$hashlist"

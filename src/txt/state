@@ -11,7 +11,7 @@ XMRIG_VER=""
 P2POOL_VER=""
 
 # old state
-MONERO_OLD="false"
+MONERO_OLD="true"
 MONERO_BASH_OLD="false"
-XMRIG_OLD="false"
-P2POOL_OLD="false"
+XMRIG_OLD="true"
+P2POOL_OLD="true"

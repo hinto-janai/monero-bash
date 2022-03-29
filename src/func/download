@@ -2,34 +2,45 @@
 #
 #						Download Functions
 #
+download_Template()
+{
+	tmp="$(find /tmp/monero-bash.*)"
+	if [[ $downloadMonero = "true" ]]; then
+		wget -P "$tmp" -q --show-progress --content-disposition "$link"
+	else
+		wget -P "$tmp" -q --show-progress "https://github.com/$link"
+	fi
+}
 download_Monero()
 {
-	wget -P "$tmp" -q --show-progress --content-disposition "https://downloads.getmonero.org/cli/linux64"
+	local link="https://downloads.getmonero.org/cli/linux64"
+	local downloadMonero="true"
+	download_Template
 }
 
 download_MoneroBash()
 {
-	local monerobash_link="$(wget -qO- "https://github.com/hinto-janaiyo/monero-bash/releases/latest" \
+	local link="$(wget -qO- "https://github.com/hinto-janaiyo/monero-bash/releases/latest" \
 		| grep -o "/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v.*" \
 		| awk '{print $1}' \
 		| sed 's/\"//')"
-    wget -P "$tmp" -q --show-progress "https://github.com/$monerobash_link"
+    download_Template
 }
 
 download_XMRig()
 {
-	local xmrig_link="$(wget -qO- "https://github.com/xmrig/xmrig/releases/latest" \
+	local link="$(wget -qO- "https://github.com/xmrig/xmrig/releases/latest" \
 		| grep -o "xmrig/xmrig/releases/download/.*/xmrig.*linux-static-x64.*" \
 		| awk '{print $1}' \
 		| sed 's/"//g')"
-	sudo wget -P "$tmp" -q --show-progress "https://github.com/$xmrig_link"
+	download_Template
 }
 
 download_P2Pool()
 {
-	local p2pool_link="$(wget -qO- "https://github.com/SChernykh/p2pool/releases/latest" \
+	local link="$(wget -qO- "https://github.com/SChernykh/p2pool/releases/latest" \
 		| grep -o "SChernykh/p2pool/releases/download/.*/p2pool-.*-linux-x64.*" \
 		| awk '{print $1}' \
 		| sed 's/"//g')"
-	sudo wget -P "$tmp" -q --show-progress "$https://github.com/p2pool_link"
+	download_Template
 }

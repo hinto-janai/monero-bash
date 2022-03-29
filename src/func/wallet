@@ -4,11 +4,12 @@
 #
 wallet_Start()
 {
+	missing_MoneroCLI
 	if [[ $AUTO_START_DAEMON = "true" ]]; then
-		missing_MoneroCLI
 		missing_MoneroDaemon
 		daemon_StartDetached
 	fi
+	missing_ConfigWallet
 	if [[ $createWallet = "true" ]]; then
 		"$binMonero/monero-wallet-cli" \
 			--generate-new-wallet "$wallets/$walletName" \
@@ -17,7 +18,7 @@ wallet_Start()
 			--config-file "$config/monero-wallet-cli.conf"
 	else
 		"$binMonero/monero-wallet-cli" \
-			--wallet-file "$walletSelection" \
+			--wallet-file "$wallets/$walletSelection" \
 			--password "$walletPassword" \
 			--config-file "$config/monero-wallet-cli.conf"
 	fi
