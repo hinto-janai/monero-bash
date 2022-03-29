@@ -78,9 +78,9 @@ done
 # Building $HOME/.monero-bash
 	print_GreenHash "Building /.monero-bash/ folders"
 	if [[ $alreadyFoundDataPath = "true" ]]; then
-		build_NoBitMonero_DotMoneroBash
+		build_Template
 	else
-		build_DefaultDotMoneroBash
+		build_DotMoneroBash
 	fi
 
 # Setting Data Path

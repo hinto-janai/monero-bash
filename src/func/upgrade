@@ -6,7 +6,7 @@ upgrade_Template()
 {
 	if [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
-		$bgreen; echo "up to date"
+		$bgreen; echo "up to date" ;$off
 	else
 		prompt_Sudo;error_Sudo
 		safety_HashList
@@ -29,16 +29,18 @@ upgrade_Template()
 				exit
 			fi
 			if [[ $OLD_FOLDER = "true" ]]; then
-				mkdir -p "$old/$currentDayTime" ; sudo mv "$DIRECTORY" "$old/$currentDayTime/"
+				mkdir -p "$old/$currentDayTime"
+				sudo mv "$DIRECTORY" "$old/$currentDayTime/"
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
+			sudo mv "$tmp/$folderName" "$DIRECTORY"
+			[[ -f "$binXMRig/config.json"]]&& rm "$binXMRig/config.json"
 			print_RedHash "Updating local state"
 			version_New"$NAME_FUNC"
-			sudo mv "$tmp/$folderName" "$DIRECTORY"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-			PRODUCE_HASH_LIST &>/dev/null
+			PRODUCE_HASH_LIST
 			$white; echo -n "$NewVer: "
 			$igreen; echo "NEW VERSION"
 		else
@@ -90,3 +92,10 @@ upgrade_P2Pool()
 	upgrade_Template
 }
 
+upgrade_All()
+{
+	upgrade_MoneroBash
+	upgrade_Monero
+	upgrade_XMRig
+	upgrade_P2Pool
+}

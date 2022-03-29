@@ -3,7 +3,7 @@
 #						build folders, files
 #
 # builds everything in monero-bash with default settings
-build_DefaultDotMoneroBash()
+bulid_Template()
 {
 	prompt_Sudo
 	error_Sudo
@@ -12,25 +12,12 @@ build_DefaultDotMoneroBash()
 	mkdir -p "$binMonero"
 	mkdir -p "$binP2Pool"
 	mkdir -p "$wallets"
-	mkdir -p "$bitMonero"
 	sudo cp -r "$installDirectory/config" "$config"
-	sudo chown -R "$USER:" "$dotMoneroBash"
-	touch "$config/monerod.conf"
-	touch "$config/monero-wallet-cli.conf"
-	touch "$config/monero-rpc.conf"
 }
-
-bulid_NoBitMonero_DotMoneroBash()
+build_DotMoneroBash()
 {
-	prompt_Sudo
-	error_Sudo
-	mkdir -p "$dotMoneroBash"
-	mkdir -p "$bin"
-	mkdir -p "$binMonero"
-	mkdir -p "$binP2Pool"
-	mkdir -p "$wallets"
-	sudo cp -r "$installDirectory/config" "$config"
-	sudo chown -R "$USER:" "$dotMoneroBash"
+	build_Template
+	mkdir -p "$bitMonero"
 }
 
 # just build monero-bash config
@@ -39,5 +26,4 @@ build_Config()
 	prompt_Sudo
 	error_Sudo
 	sudo cp -r "$installDirectory/config" "$config"
-	sudo chown -R "$USER:" "$dotMoneroBash"
 }

@@ -4,8 +4,8 @@
 #
 wallet_Start()
 {
+	missing_MoneroCLI
 	if [[ $AUTO_START_DAEMON = "true" ]]; then
-		missing_MoneroCLI
 		missing_MoneroDaemon
 		daemon_StartDetached
 	fi

@@ -84,7 +84,7 @@ fi
 if [[ $options = "true" ]]; then
 	case $1 in
 		uninstall) monerobash_Uninstall ;;
-		update) check_Update ;;
+		update) update_All ;;
 		upgrade)
 			[[ $3 = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!"
 			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
