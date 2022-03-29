@@ -14,6 +14,7 @@ upgrade_Template()
 		print_GreenHash "Downloading: [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
 		error_Exit "Downloading failed: [$NAME_PRETTY]"
+		print_RedHash "Verifying: [$NAME_PRETTY]"
 		verify_hash_"$NAME_FUNC"
 		if [[ $? = "0" ]]; then
 			print_RedHash "Extracting: [$NAME_PRETTY]"
