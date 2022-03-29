@@ -4,7 +4,7 @@
 tmp_Create()
 {
 	tmp_Del
-	tmp="$(mktemp -d /tmp/monero-bash.XXXXXXXXXX)"
+	mktemp -d /tmp/monero-bash.XXXXXXXXXX
 }
 
 tmp_Del()
