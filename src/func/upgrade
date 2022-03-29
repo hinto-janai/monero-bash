@@ -35,7 +35,7 @@ upgrade_Template()
 				sudo rm -rf "$DIRECTORY"
 			fi
 			sudo mv "$tmp/$folderName" "$DIRECTORY"
-			[[ -f "$binXMRig/config.json"]]&& rm "$binXMRig/config.json"
+			[[ -f "$binXMRig/config.json" ]]&& rm "$binXMRig/config.json"
 			print_RedHash "Updating local state"
 			version_New"$NAME_FUNC"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
