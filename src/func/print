@@ -34,17 +34,17 @@ print_Version()
 	else
 		$bgreen; echo "$MONERO_VER"
 	fi
-	$white; echo -n "monero-bash: "
-	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
-		$bred; echo "$MONERO_BASH_VER"
+	$white; echo -n "XMRig: "
+	if [[ "$XMIRG_OLD" = "true" ]]; then
+		$bred; echo "$XMRIG_VER"
 	else
-		$bgreen; echo "$MONERO_BASH_VER"
+		$bgreen; echo "$XMRIG_VER"
 	fi
-	$white; echo -n "monero-bash: "
-	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
-		$bred; echo "$MONERO_BASH_VER"
+	$white; echo -n "P2Pool: "
+	if [[ "$P2POOL_OLD" = "true" ]]; then
+		$bred; echo "$P2POOL_VER"
 	else
-		$bgreen; echo "$MONERO_BASH_VER"
+		$bgreen; echo "$P2POOL_VER"
 	fi
 }
 
@@ -65,7 +65,7 @@ print_Size()
 	$white; echo -n "monero-bash install: " ;$ired
 	du -h "$installDirectory" | tail -n 1 | awk '{print $1}'
 	$white; echo -n "/.monero-bash/: " ;$ired
-	du -h "$binMoneroBash" | tail -n 1 | awk '{print $1}'
+	du -h "$dotMoneroBash" | tail -n 1 | awk '{print $1}'
 }
 
 print_Error()
@@ -86,7 +86,7 @@ print_Error_Exit()
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
-		$white; echo -n "$1: "
+		$white; echo -n "$tarName: "
 		$igreen; echo "OK" ;$white
 	else
 		$white; echo -n "$1: "

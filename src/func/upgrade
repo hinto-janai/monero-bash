@@ -17,8 +17,8 @@ upgrade_Template()
 		verify_hash_"$NAME_FUNC"
 		if [[ $? = "0" ]]; then
 			print_RedHash "Extracting: [$NAME_PRETTY]"
-			tar -xf "$tarName"
-			rm -f "$tarName"
+			tar -xf "$tmp/$tarName"
+			rm -f "$tmp/$tarName"
 			local folderName="$(ls "$tmp")"
 			if [[ $folderName = "" ]]; then
 				$ired; echo "monero-bash error: extracted tar was not found"
