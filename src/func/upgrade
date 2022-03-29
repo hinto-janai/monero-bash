@@ -16,7 +16,7 @@ upgrade_Template()
 		error_Exit "Downloading failed: [$NAME_PRETTY]"
 		print_RedHash "Verifying: [$NAME_PRETTY]"
 		verify_hash_"$NAME_FUNC"
-		if [[ $? = "0" ]]; then
+		if [[ "$verifyOK" = "true" ]]; then
 			print_RedHash "Extracting: [$NAME_PRETTY]"
 			tar -xf "$tmp/$tarName"
 			rm -f "$tmp/$tarName"

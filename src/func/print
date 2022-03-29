@@ -88,10 +88,10 @@ print_OKFAILED()
 	if [[ $? = "0" ]]; then
 		$white; echo -n "$tarName: "
 		$igreen; echo "OK" ;$white
+		verifyOK="true"
 	else
 		$white; echo -n "$1: "
 		$bred; echo "FAILED" ;$white
-		hashFail="true"
 	fi
 }
 
