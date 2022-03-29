@@ -64,8 +64,8 @@ print_Size()
 {
 	$white; echo -n "monero-bash install: " ;$ired
 	du -h "$installDirectory" | tail -n 1 | awk '{print $1}'
-	$white; echo -n "$MoneroBashFolder: " ;$ired
-	du -h "$MoneroBashFolder" | tail -n 1 | awk '{print $1}'
+	$white; echo -n "/.monero-bash/: " ;$ired
+	du -h "$binMoneroBash" | tail -n 1 | awk '{print $1}'
 }
 
 print_Error()
