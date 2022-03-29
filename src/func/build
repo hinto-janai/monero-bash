@@ -3,7 +3,7 @@
 #						build folders, files
 #
 # builds everything in monero-bash with default settings
-bulid_Template()
+build_Template()
 {
 	prompt_Sudo
 	error_Sudo
@@ -14,6 +14,7 @@ bulid_Template()
 	mkdir -p "$wallets"
 	sudo cp -r "$installDirectory/config" "$config"
 }
+
 build_DotMoneroBash()
 {
 	build_Template

@@ -132,11 +132,15 @@ monerobash_Uninstall()
 	{
 		prompt_Sudo
 		error_Exit "Sudo is needed to uninstall"
-		for i in {10..1} ;do
+		for i in {10..0} ;do
 		tput sc
-		$bred; echo -n "Uninstalling in $i..."
+		if [[ "$i" = "0" ]]; then
+			$bred; echo -n "Uninstalling..."
+		else
+			$bred; echo -n "Uninstalling in $i..."
+		fi
 		sleep 1
-		if [[ $i != "1" ]]; then
+		if [[ $i != "0" ]]; then
 		tput rc;tput el
 		else
 		echo;echo
