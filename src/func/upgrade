@@ -14,10 +14,10 @@ upgrade_Template()
 		print_GreenHash "Downloading: [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
 		error_Exit "Downloading failed: [$NAME_PRETTY]"
-		print_RedHash "Verifying: [$NAME_PRETTY]"
+		print_RedHash "Verifying"
 		verify_hash_"$NAME_FUNC"
 		if [[ "$verifyOK" = "true" ]]; then
-			print_RedHash "Extracting: [$NAME_PRETTY]"
+			print_RedHash "Extracting"
 			tar -xf "$tmp/$tarName" -C "$tmp" &&
 			rm -f "$tmp/$tarName" &&
 			$white; echo -n "$tarName: "
@@ -33,12 +33,13 @@ upgrade_Template()
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
-			print_RedHash "Updating version: [$NAME_PRETTY]"
+			print_RedHash "Updating local state"
 			version_New"$NAME_FUNC"
 			sudo mv "$tmp/$folderName" "$DIRECTORY"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-			$white; echo "$NewVer"
+			$white; echo -n "$NewVer: "
+			$igreen; echo "NEW VERSION"
 		else
 			compromised_"$NAME_FUNC"_Hash
 			exit
