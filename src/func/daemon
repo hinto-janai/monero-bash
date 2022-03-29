@@ -8,7 +8,7 @@ daemon_StartAttached()
 	if pgrep monerod &>/dev/null ; then
 		$bred; echo "Monero daemon detected..." ;$off
 	else
-		"$binMonero/monerod.conf" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf"
+		"$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf"
 	fi
 }
 
@@ -18,7 +18,7 @@ daemon_StartDetached()
 	if pgrep monerod &>/dev/null ; then
 		$bred; echo "Monero daemon detected..." ;$off
 	else
-		"$binMonero/monerod.conf" --detach --data-dir "$DATA_PATH" --config-file "$config/monerod.conf"
+		"$binMonero/monerod" --detach --data-dir "$DATA_PATH" --config-file "$config/monerod.conf"
 	fi
 }
 
@@ -26,8 +26,13 @@ daemon_Stop()
 {
 	$ired; echo "Stopping Monero daemon gracefully..." ;$off
 	"$binMonero/monerod" exit
-	while pgrep monerod ;do
-		echo -n "."
+	while true ;do
+		if pgrep monerod &>/dev/null ;then
+			echo -n "."
+		else
+			echo "."
+			break
+		fi
 		sleep 1
 	done
 }

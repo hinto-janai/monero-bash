@@ -82,7 +82,7 @@ upgrade_XMRig()
 
 upgrade_P2Pool()
 {
-	NAME_OLD="$P2Pool_OLD"
+	NAME_OLD="$P2POOL_OLD"
 	NAME_PRETTY="P2Pool"
 	NAME_FUNC="P2Pool"
 	DIRECTORY="$binP2Pool"
