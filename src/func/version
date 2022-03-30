@@ -5,36 +5,32 @@
 #						turns them into usable variables
 version_Template()
 {
-	NewVer="$(wget -qO- "$LatestGithub" | grep -o "$Ver" | grep -o "$TarName" | awk '{print $1}' | sed 's/.tar.*//')"
+	NewVer="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
 }
 version_NewMonero()
 {
-	local LatestGithub="https://github.com/monero-project/monero/releases/latest"
-	local Ver="https://downloads.getmonero.org/cli/monero-linux-x64-v.*"
-	local TarName="monero-linux-x64-.*"
+	local AUTHOR="monero-project"
+	local PROJECT="monero"
 	version_Template
 }
 
 version_NewMoneroBash()
 {
-	local LatestGithub="https://github.com/hinto-janaiyo/monero-bash/releases/latest"
-	local Ver="/hinto-janaiyo/monero-bash/releases/download/.*/monero-bash-v.*"
-	local TarName="monero-bash-v.*"
+	local AUTHOR="hinto-janaiyo"
+	local PROJECT="monero-bash"
 	version_Template
 }
 
 version_NewXMRig()
 {
-	local LatestGithub="https://github.com/xmrig/xmrig/releases/latest"
-	local Ver="xmrig/xmrig/releases/download/.*/xmrig.*linux-static-x64.*"
-	local TarName="xmrig-.*"
+	local AUTHOR="xmrig"
+	local PROJECT="xmrig"
 	version_Template
 }
 
 version_NewP2Pool()
 {
-	local LatestGithub="https://github.com/SChernykh/p2pool/releases/latest"
-	local Ver="SChernykh/p2pool/releases/download/.*/p2pool-.*-linux-x64.*"
-	local TarName="p2pool-.*-linux-x64"
+	local AUTHOR="SChernykh"
+	local PROJECT="p2pool"
 	version_Template
 }

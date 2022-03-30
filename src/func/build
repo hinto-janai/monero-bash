@@ -8,7 +8,6 @@ build_Template()
 	prompt_Sudo
 	error_Sudo
 	mkdir -p "$dotMoneroBash"
-	mkdir -p "$bin"
 	mkdir -p "$wallets"
 	build_Config
 }
