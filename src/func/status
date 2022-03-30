@@ -9,7 +9,40 @@ status_All()
 	wallet_Count
 	wallet_List
 	print_Version
-	daemon_Status
-	xmrig_Status
-	p2pool_Status
+	status_Daemon
+	status_XMRig
+	status_P2Pool
+}
+
+status_Template()
+{
+	$white; echo -n "$NAME is: "
+	if pgrep $PROCESS &>/dev/null ;then
+		$bgreen; echo "online"
+		EXTRA_STATS
+	else
+		$bred; echo "offline"
+	fi
+}
+
+status_Daemon()
+{
+	local NAME="Monero daemon"
+	local PROCESS="monerod"
+	EXTRA_STATS(){ $binMonero/monerod status ;}
+	status_Template
+}
+
+status_XMRig()
+{
+	local NAME="XMRig"
+	local PROCESS="xmrig"
+	status_Template
+}
+
+status_P2Pool()
+{
+	local NAME="P2Pool"
+	local PROCESS="p2pool"
+	status_Template
 }
