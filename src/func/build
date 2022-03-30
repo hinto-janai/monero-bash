@@ -31,8 +31,8 @@ build_Bin()
 {
 	prompt_Sudo
 	error_Sudo
-	mkdir -p "$bin"
-	mkdir -p "$binMonero"
-	mkdir -p "$binXMRig"
-	mkdir -p "$binP2Pool"
+	sudo mkdir -p "$bin"
+	sudo mkdir -p "$binMonero"
+	sudo mkdir -p "$binXMRig"
+	sudo mkdir -p "$binP2Pool"
 }

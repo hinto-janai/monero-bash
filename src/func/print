@@ -4,12 +4,12 @@
 #
 print_GreenHash()
 {
-	$igreen; echo "###### $1" ;$off
+	$bgreen; echo "######   $1" ;$off
 }
 
 print_RedHash()
 {
-	$ired; echo "###### $1" ;$off
+	$ired; echo "######   $1" ;$off
 }
 
 print_MoneroBashTitle()

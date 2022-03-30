@@ -9,7 +9,7 @@ upgrade_Template()
 		$bgreen; echo "up to date" ;$off
 	else
 		prompt_Sudo;error_Sudo
-		safety_HashList
+		echo;safety_HashList;echo
 		tmp_Create;error_Exit "Could not create tmp folder"
 		print_GreenHash "Downloading - [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
