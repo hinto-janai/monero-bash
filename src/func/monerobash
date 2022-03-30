@@ -108,7 +108,6 @@ $bred; echo "#                monero-bash installation complete                #
 $bred; echo "###################################################################"
 $bwhite; echo -n "monero-bash path: " ;$white; echo "$dotMoneroBash"
 $white; echo "Data: $DATA_PATH"
-echo "Binaries: $bin"
 echo "Configs: $config"
 echo "Wallets: $wallets"
 echo

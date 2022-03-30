@@ -107,6 +107,3 @@ missing_ConfigP2Pool()
 	local conf="p2pool.json"
 	missing_ConfigTemplate
 }
-
-
-
