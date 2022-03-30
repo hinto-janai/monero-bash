@@ -26,3 +26,13 @@ build_Config()
 	sudo cp -r "$installDirectory/config" "$config"
 	sudo chown -R "$USER:" "$config"
 }
+
+build_Bin()
+{
+	prompt_Sudo
+	error_Sudo
+	mkdir -p "$bin"
+	mkdir -p "$binMonero"
+	mkdir -p "$binXMRig"
+	mkdir -p "$binP2Pool"
+}
