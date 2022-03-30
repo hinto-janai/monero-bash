@@ -1,7 +1,12 @@
 #!/bin/bash
 #
-#						hash & GPG verification of binaries
+# hash & GPG verification of binaries
 #
+# haven't found a way to make a "template" function
+# that fits for all. everyone has a slightly differently
+# named sha256sum file, with slightly different
+# internal formatting.
+
 verify_hash_Monero()
 {
 	tarName="$(ls "$tmp")"
@@ -15,7 +20,7 @@ verify_hash_MoneroBash()
 {
 	tarName="$(ls "$tmp")"
 	echo "$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
-		| grep -A1 "SHA256SUM" | awk '{print $1}' | head -n 2 | tail -n 1)" \
+		| grep -A1 "SHA256SUM*" | awk '{print $1}' | head -n 2 | tail -n 1)" \
 		"$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
 }
