@@ -9,8 +9,6 @@ build_Template()
 	error_Sudo
 	mkdir -p "$dotMoneroBash"
 	mkdir -p "$bin"
-	mkdir -p "$binMonero"
-	mkdir -p "$binP2Pool"
 	mkdir -p "$wallets"
 	build_Config
 }

@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# functions that create systemd .service files
+systemd_Template()
+{
+prompt_Sudo
+error_Sudo
+sudo sh -c "cat <<EOM > /etc/systemd/system/monero-bash-$name.service
+[Unit]
+Description=monero-bash-$name
+After=network.target
+
+[Service]
+User=$USER
+Group=$USER
+Type=simple
+ExecStart=$command
+Restart=always
+
+[Install]
+WantedBy=multi-user.target"
+}
+systemd_Monerod()
+{
+	local name="monerod"
+	local command="$binMonero/monerod --data-dir $DATA_DIRECTORY --config-file $config/monerod.conf --non-interactive"
+	systemd_Template
+}
+
+systemd_XMRig()
+{
+	local name="xmrig"
+	local command="$binXMRig/xmrig --config $config/xmrig.json"
+	systemd_Template
+}
+
+systemd_P2Pool()
+{
+	local name="p2pool"
+	local command=""
+	systemd_Template
+}

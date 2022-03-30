@@ -6,8 +6,11 @@ wallet_Start()
 {
 	missing_MoneroCLI
 	if [[ $AUTO_START_DAEMON = "true" ]]; then
-		missing_MoneroDaemon
-		daemon_StartDetached
+		if [[ $SYSTEMD_MONEROD = "true" ]]; then
+			daemon_systemd_Monerod
+		else
+			daemon_StartDetached
+		fi
 	fi
 	missing_ConfigWallet
 	if [[ $createWallet = "true" ]]; then
@@ -16,14 +19,20 @@ wallet_Start()
 			--password "$walletPassword" \
 			--mnemonic-language "$seedLanguage" \
 			--config-file "$config/monero-wallet-cli.conf"
+			error_Exit "Could not start monero-wallet-cli"
 	else
 		"$binMonero/monero-wallet-cli" \
 			--wallet-file "$wallets/$walletSelection" \
 			--password "$walletPassword" \
 			--config-file "$config/monero-wallet-cli.conf"
+			error_Exit "Could not start monero-wallet-cli"
 	fi
 	if [[ $AUTO_STOP_DAEMON = "true" ]]; then
-		daemon_Stop
+		if [[ $SYSTEMD_MONEROD = "true" ]]; then
+			daemon_systemd_Stop
+		else
+			daemon_Stop
+		fi
 	fi
 }
 

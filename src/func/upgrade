@@ -34,6 +34,7 @@ upgrade_Template()
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
+			mkdir -p "$DIRECTORY"
 			sudo mv "$tmp/$folderName" "$DIRECTORY"
 			[[ -f "$binXMRig/config.json" ]]&& rm "$binXMRig/config.json"
 			print_RedHash "Updating local state"
