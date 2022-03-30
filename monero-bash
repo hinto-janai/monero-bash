@@ -134,6 +134,7 @@ if [[ $options = "true" ]]; then
 		list) wallet_Count && wallet_List ;;
 		size) print_Size ;;
 		price) check_Price ;;
+		status) status_All ;;
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		*)

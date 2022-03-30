@@ -66,6 +66,10 @@ print_Size()
 	du -h "$installDirectory" | tail -n 1 | awk '{print $1}'
 	$white; echo -n "/.monero-bash/: " ;$ired
 	du -h "$dotMoneroBash" | tail -n 1 | awk '{print $1}'
+	if [[ "$DATA_PATH" != "$bitMonero" ]]; then
+		$white; echo -n "/.bitmonero/: " ;$ired
+		du -h "$DATA_PATH" | tail -n 1 | awk '{print $1}'
+	fi
 }
 
 print_Error()

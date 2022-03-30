@@ -28,15 +28,14 @@ upgrade_Template()
 				$white; echo "Exiting for safety..."
 				exit
 			fi
+			build_Bin
 			if [[ $OLD_FOLDER = "true" ]]; then
 				mkdir -p "$old/$currentDayTime"
 				sudo mv "$DIRECTORY" "$old/$currentDayTime/"
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
-			build_Bin
 			sudo mv "$tmp/$folderName"/* "$DIRECTORY"
-			[[ -f "$binXMRig/config.json" ]]&& rm "$binXMRig/config.json"
 			print_RedHash "Updating local state"
 			version_New"$NAME_FUNC"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
