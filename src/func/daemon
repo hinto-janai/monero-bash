@@ -1,33 +1,53 @@
 #!/usr/bin/env bash
-#
-#						Monero Daemon Functions
-#
-daemon_StartAttached()
+# Monero Daemon Functions
+daemon_Template()
 {
 	missing_MoneroDaemon
 	if pgrep monerod &>/dev/null ; then
-		$bred; echo "Monero daemon already detected..." ;$off
-	else
+        $bred; echo "Monero daemon already detected..." ;$off
+    else
 		missing_ConfigMonerod
-		"$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf"
+		DAEMON_COMMANDS
+		error_Exit "Could not start monerod"
 	fi
+}
+
+daemon_systemd_Start()
+{
+	DAEMON_COMMANDS()
+	{
+		$bred; echo "Starting Monero daemon..."
+		sudo systemctl start monero-bash-monerod
+	}
+	daemon_Template
+}
+
+daemon_systemd_Stop()
+{
+	DAEMON_COMMANDS()
+	{
+		$bred; echo "Stopping Monero daemon gracefully..."
+		sudo systemctl stop monero-bash-monerod
+	}
+	daemon_Template
+}
+
+daemon_StartAttached()
+{
+	DAEMON_COMMANDS(){ "$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;}
+	daemon_Template
 }
 
 daemon_StartDetached()
 {
-	missing_MoneroDaemon
-	if pgrep monerod &>/dev/null ; then
-		$bred; echo "Monero daemon already detected..." ;$off
-	else
-		missing_ConfigMonerod
-		"$binMonero/monerod" --detach --data-dir "$DATA_PATH" --config-file "$config/monerod.conf"
-	fi
+	DAEMON_COMMANDS(){ "$binMonero/monerod" --detach --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;}
+	daemon_Template
 }
 
 daemon_Stop()
 {
 	$ired; echo "Stopping Monero daemon gracefully..." ;$off
-	"$binMonero/monerod" exit
+	"$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" exit
 	while true ;do
 		if pgrep monerod &>/dev/null ;then
 			echo -n "."

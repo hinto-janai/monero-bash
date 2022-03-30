@@ -33,9 +33,9 @@ prompt_PriceAPI_IP()
 {
 	if [[ $PRICE_API_IP_WARNING = "true" ]]; then
 		$white; echo -n "Edit "
-		$ired; echo -n "PRICE_API_IP_WARNING=\"true\" "
-		$white; echo -n "in the "
-		$ired; echo -n "config "
+		$ired; echo -n "PRICE_API_IP_WARNING "
+		$white; echo -n "in "
+		$ired; echo -n "monero-bash.conf "
 		$white; echo "to silence this warning"
 		echo
 		$white; echo -n "This will expose your IP to: "

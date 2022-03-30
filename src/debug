@@ -197,7 +197,7 @@ QUIET_HASH_LIST()
 		[[ $? != "0" ]]&& HashFail="true"
 	done
 	if [[ $txtHashFail = "true" ]]; then
-		$white; echo -n "text: "
+		$white; echo -n "config: "
 		$bred; echo "FAILED"
 	else
 		$white; echo -n "text: " ;$white
