@@ -45,7 +45,7 @@ upgrade_Template()
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 			PRODUCE_HASH_LIST
 			$white; echo -n "$NewVer: "
-			$igreen; echo "NEW VERSION"
+			$igreen; echo "VERSION"
 		else
 			compromised_"$NAME_FUNC"_Hash
 			exit
