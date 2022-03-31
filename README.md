@@ -12,8 +12,7 @@
 * [Todo](#Todo)
 * [Is this a virus?](#Is-this-a-virus)
 
----
-
+## About
 monero-bash is a wrapper/manager for:
 
 * `monerod`
@@ -28,20 +27,13 @@ This project is a [CCS Proposal](https://repo.getmonero.org/monero-project/ccs-p
 
 If this program was/is useful to you, please show support to get it funded!
 
----
-
 ## Features
-📦 `PACKAGE MANAGER` automated downloading, verifying and upgrading of packages
-
-💵 `WALLET` wallet menu to display names/amounts of wallets
-
-👺 `DAEMON` control `monerod` more easily/automatically
-
-⛏️  `MINING` automated mining, **default is P2Pool**
-
-👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
-
-📈 `STATS` various stats to display (processes, price, disk usage, etc)
+* 📦 `PACKAGE MANAGER` automated downloading, verifying and upgrading of packages
+* 💵 `WALLET` wallet menu to display names/amounts of wallets
+* 👺 `DAEMON` control `monerod` more easily/automatically
+* ⛏️  `MINING` automated mining, **default is P2Pool**
+* 👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+* 📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
 [To install monero-bash, download the latest release here](https://github.com/hinto-janaiyo/monero-bash/releases/latest) and
