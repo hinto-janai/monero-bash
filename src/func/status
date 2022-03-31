@@ -17,7 +17,7 @@ status_All()
 
 status_Template()
 {
-	$white; echo -n "$NAME is: "
+	$white; echo -n "$NAME: "
 	if pgrep $PROCESS &>/dev/null ;then
 		$bgreen; echo "online"
 		EXTRA_STATS

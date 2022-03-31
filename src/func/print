@@ -9,7 +9,7 @@ print_GreenHash()
 
 print_RedHash()
 {
-	$ired; echo "### $1" ;$off
+	$ired; echo "###### $1" ;$off
 }
 
 print_WhiteHash()
@@ -132,4 +132,13 @@ cat <<EOM
 10 : Esperanto
 11 : Lojban
 EOM
+}
+
+print_NotYet()
+{
+	$bred; echo -n "monero-bash: "
+	$white; echo "This feature is not implemented yet!"
+	echo
+	echo "If you'd like to show support to get this program funded, here is the CCS Proposal: "
+	$bwhite; echo "https://repo.getmonero.org/monero-project/ccs-proposals/-/merge_requests/297"
 }

@@ -3,11 +3,15 @@ uninstall                   uninstall monero-bash and remove /.monero-bash/
 
 # PACKAGES #
 install <all/name>          install <all> or a specific package
-remove <name>               remove specific package
+remove <all/name>           remove <all> or a specific package
+remove <all/name> force     forcefully remove a package
 update                      only CHECK for updates
 upgrade <all/name>          upgrade <all> or a specific package
 upgrade <all/name> force    forcefully upgrade packages
 version                     print installed package versions
+
+# WALLET #
+monero-bash                 the default command will open wallet selection
 
 # MONERO DAEMON #
 daemon                      print status of daemon
@@ -15,6 +19,18 @@ daemon start                start the daemon (detached)
 daemon stop                 gracefully stop the daemon
 daemon kill                 forcefully kill all daemon processes
 daemon full                 start the daemon attached
+
+# MINE #
+mine start                  start monerod, xmrig, p2pool in the background
+mine stop                   stop monerod, xmrig, p2pool
+
+# WATCH #
+watch daemon                show live daemon output
+watch xmrig                 show live xmrig output
+watch p2pool                show live p2pool output
+
+# BACKUP #
+backup                      encrypt and backup your /wallets/
 
 # STATS #
 status                      print useful stats

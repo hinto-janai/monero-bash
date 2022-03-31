@@ -83,6 +83,9 @@ fi
 # Option Flags
 if [[ $options = "true" ]]; then
 	case $1 in
+		watch) print_NotYet ;;
+		backup) print_NotYet ;;
+		mine) print_NotYet ;;
 		uninstall) monerobash_Uninstall ;;
 		update) update_All ;;
 		daemon)
@@ -109,32 +112,30 @@ if [[ $options = "true" ]]; then
 				Yes(){ upgrade_MoneroBash ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = "monero" || $2 = "Monero" || $2 = "MONERO" ]]; then
+			elif [[ $2 = "monero" || $2 = "Monero" || $2 = "MONERO" ]]; then
 				echo -n "Upgrade Monero? (Y/n) "
 				Yes(){ upgrade_Monero ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
+			elif [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
 				echo -n "Upgrade XMRig? (Y/n) "
 				Yes(){ upgrade_XMRig ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
+			elif [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
 				echo -n "Upgrade P2Pool? (Y/n) "
 				Yes(){ upgrade_P2Pool ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = "all" ]]; then
+			elif [[ $2 = "all" ]]; then
 				echo -n "Upgrade all packages? (Y/n) "
 				Yes(){ upgrade_All ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
 			elif [[ $2 = "" ]]; then
 				print_Error "Pick a package or <all>"
+			else
+				error_Unknown
 			fi
 			;;
 		install)
@@ -143,32 +144,60 @@ if [[ $options = "true" ]]; then
 				Yes(){ install_MoneroBash ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = *"monero"* || $2 = *"Monero"* || $2 = *"MONERO"* ]]; then
+			elif [[ $2 = "monero" || $2 = "Monero" || $2 = "MONERO" ]]; then
 				echo -n "Install Monero? (Y/n) "
 				Yes(){ install_Monero ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
+			elif [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
 				echo -n "Install XMRig? (Y/n) "
 				Yes(){ install_XMRig ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
+			elif [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
 				echo -n "Install P2Pool? (Y/n) "
 				Yes(){ install_P2Pool ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
-			fi
-			if [[ $2 = "all" ]]; then
+			elif [[ $2 = "all" ]]; then
 				echo -n "Install all packages? (Y/n) "
 				Yes(){ install_All ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
 			elif [[ $2 = "" ]]; then
 				print_Error "Pick a package or <all>"
+			else
+				error_Unknown
+			fi
+			;;
+		remove)
+			[[ $3 = "force" ]]&& FORCE_REMOVE="true" &&$ired&& echo "Forcefully removing...!" ;$off
+			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
+				remove_MoneroBash
+			elif [[ $2 = "monero" || $2 = "Monero" || $2 = "MONERO" ]]; then
+				echo -n "Remove Monero? (Y/n) "
+				Yes(){ remove_Monero ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			elif [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
+				echo -n "Remove XMRig? (Y/n) "
+				Yes(){ remove_XMRig ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			elif [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
+				echo -n "Remove P2Pool? (Y/n) "
+				Yes(){ remove_P2Pool ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			elif [[ $2 = "all" ]]; then
+				echo -n "Remove all packages? (Y/n) "
+				Yes(){ remove_All ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			elif [[ $2 = "" ]]; then
+				print_Error "Pick a package or <all>"
+			else
+				error_Unknown
 			fi
 			;;
 		*)

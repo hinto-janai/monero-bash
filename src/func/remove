@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+# remove functions
+remove_Template()
+{
+	if [[ "$NAME_VER" = "" && "$FORCE_REMOVE" != "true" ]]; then
+		$white; echo -n "$NAME_PRETTY: "
+		$ired; echo "is not installed"
+	else
+		prompt_Sudo;error_Sudo
+		echo;safety_HashList
+		print_RedHash "Removing [$NAME_PRETTY]"
+		sudo rm -rf "$DIRECTORY"
+		print_WhiteHash "Updating local state"
+		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\"\"@" "$state"
+		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
+		PRODUCE_HASH_LIST
+		print_RedHash "Removed [$NAME_PRETTY]"
+	fi
+}
+
+remove_Monero()
+{
+	NAME_VER="MONERO_VER"
+	NAME_PRETTY="Monero"
+	NAME_CAPS="MONERO"
+	DIRECTORY="$binMonero"
+	remove_Template
+}
+
+remove_MoneroBash()
+{
+	$iwhite; echo -n "type: "
+	$bred; echo -n "monero-bash uninstall "
+	$iwhite; echo "to remove monero-bash"
+}
+
+remove_XMRig()
+{
+	NAME_VER="XMRIG_VER"
+	NAME_PRETTY="XMRig"
+	NAME_CAPS="XMRIG"
+	DIRECTORY="$binXMRig"
+	remove_Template
+}
+
+remove_P2Pool()
+{
+	NAME_VER="P2POOL_VER"
+	NAME_PRETTY="P2Pool"
+	NAME_CAPS="P2POOL"
+	DIRECTORY="$binP2Pool"
+	remove_Template
+}
+
+remove_All()
+{
+	remove_Monero
+	remove_XMRig
+	remove_P2Pool
+}

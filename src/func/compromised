@@ -41,3 +41,43 @@ compromised_MoneroBash_Hash()
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	echo "EXITING FOR SAFTEY..."
 }
+
+compromised_XMRig_Hash()
+{
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "WARNING: HASH ERROR!"
+	$bwhite; echo "                   @"
+	$bwhite; echo "@                                          @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "[XMRig] hash did not match!"
+	$bwhite; echo "            @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "XMRig might be compromised"
+	$bwhite; echo "             @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "(or more likely, there was an error)"
+	$bwhite; echo "   @"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	echo "EXITING FOR SAFTEY..."
+}
+
+compromised_XMRig_Hash()
+{
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "WARNING: HASH ERROR!"
+	$bwhite; echo "                   @"
+	$bwhite; echo "@                                          @"
+	$bwhite; echo -n "@   "
+    $bred; echo -n "[P2Pool] hash did not match!"
+    $bwhite; echo "           @"
+    $bwhite; echo -n "@   "
+    $bred; echo -n "SChernykh might be compromised"
+    $bwhite; echo "         @"
+	$bwhite; echo -n "@   "
+	$bred; echo -n "(or more likely, there was an error)"
+	$bwhite; echo "   @"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	echo "EXITING FOR SAFTEY..."
+}

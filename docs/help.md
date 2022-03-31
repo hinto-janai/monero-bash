@@ -12,11 +12,15 @@ uninstall                   uninstall monero-bash and remove /.monero-bash/
 
 # PACKAGES #
 install <all/name>          install <all> or a specific package
-remove <name>               remove specific package
+remove <all/name>           remove <all> or a specific package
+remove <all/name> force     forcefully remove a package
 update                      only CHECK for updates
 upgrade <all/name>          upgrade <all> or a specific package
 upgrade <all/name> force    forcefully upgrade packages
 version                     print installed package versions
+
+# WALLET #
+monero-bash                 the default command will open wallet selection
 
 # MONERO DAEMON #
 daemon                      print status of daemon
@@ -47,10 +51,10 @@ The `/monero-bash/` folder starts like this:
 ```
 monero-bash/
 ├─ monero-bash       main script
-├─ bin               binary files
-├─ config            config files
-├─ src               source code
-├─ old               old files
+├─ bin               where package binaries live
+├─ config            config files for all packages
+├─ src               monero-bash source code
+├─ old               temp folder when upgrading
 ```
 After installation, monero-bash will:
 * move itself to `/usr/local/share/monero-bash`

@@ -30,7 +30,7 @@ The download function does a simple job:
 ```
 verify_hash_Monero()
 {
-	echo "https://www.getmonero.org/downloads/hashes.txt" "$tarName" | sha256sum -c
+	echo "https://www.getmonero.org/downloads/hashes.txt" "$tar" | sha256sum -c
 }
 ```
 After successful download, `monero-bash`:
@@ -42,7 +42,7 @@ After successful download, `monero-bash`:
 upgrade_Monero()
 {
 	if [[ $verifyOK = "true" ]]; then
-		tar -xf "$tarName"
+		tar -xf "$tar"
 		mv "$folderName" "$currentFolder"
 		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	else
