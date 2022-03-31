@@ -65,7 +65,9 @@ Since `monero-bash` gets installed in `/usr/local/share/monero-bash/`, sudo is r
 ## Details
 For the sake of being simple and easy to read, the functions presented in the examples above were ***HEAVILY*** reduced and turned into pseudo-code. The `Verify` function shown is not even a valid command. 
 
-[I highly encourage you to click here to see the actual Upgrade function](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/upgrade), and here for some of the important functions it's made out of: [Download](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download) [Verify](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify) [Version](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version)
+[I highly encourage you to click here to see the actual upgrade function](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/upgrade)
+
+And here for some of the important functions it's made out of:  [Download](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)  [Verify](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify)  [Version](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version)
 
 What you'll find is a bunch of grep/awk/sed, error handling, cleanup, and safety checks.
 
