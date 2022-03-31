@@ -16,9 +16,9 @@ daemon_stop_Template()
 {
 	missing_MoneroDaemon
 	if pgrep monerod &>/dev/null ; then
-		$bred; echo "Monero daemon is not online" ;$off
-	else
 		DAEMON_COMMANDS
+	else
+		$bred; echo "Monero daemon is not online" ;$off
 	fi
 }
 

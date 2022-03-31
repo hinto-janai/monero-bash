@@ -68,12 +68,24 @@ print_Usage()
 print_Size()
 {
 	$white; echo -n "monero-bash install: " ;$ired
-	du -h "$installDirectory" | tail -n 1 | awk '{print $1}'
+	du -h "$installDirectory"  --exclude="$installDirectory/bin" | tail -n 1 | awk '{print $1}'
 	$white; echo -n "/.monero-bash/: " ;$ired
 	du -h "$dotMoneroBash" | tail -n 1 | awk '{print $1}'
 	if [[ "$DATA_PATH" != "$bitMonero" ]]; then
 		$white; echo -n "/.bitmonero/: " ;$ired
 		du -h "$DATA_PATH" | tail -n 1 | awk '{print $1}'
+	fi
+	if [[ $MONERO_VER != "" ]]; then
+		$white; echo -n "Monero: " ;$ired
+		du -h "$binMonero" | tail -n 1 | awk '{print $1}'
+	fi
+	if [[ $XMRIG_VER != "" ]]; then
+		$white; echo -n "XMRig: " ;$ired
+		du -h "$binXMRig" | tail -n 1 | awk '{print $1}'
+	fi
+	if [[ $P2POOL_VER != "" ]]; then
+		$white; echo -n "P2Pool: " ;$ired
+		du -h "$binP2Pool" | tail -n 1 | awk '{print $1}'
 	fi
 }
 
