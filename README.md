@@ -109,7 +109,9 @@ help                        show this help message
 <summary>Is this a virus?</summary>
 
 ---
+
 [No. Click here for a quick explaination of what monero-bash does.](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
+
 ---
 </details>
 
