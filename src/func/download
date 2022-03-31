@@ -12,6 +12,16 @@ download_Template()
 			| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 			| sed 's/\"//g')"
 		wget -P "$tmp" -q --show-progress "$link"
+		if [[ $? = "8" ]]; then
+			$ired; echo "GitHub API ratelimit detected..."
+			$white; echo "Trying GitHub HTML filter instead..."
+			link="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest" \
+				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
+				| awk '{print $1}' \
+				| sed 's/\"//g')"
+			wget -P "$tmp" -q --show-progress "https://github.com/$link"
+			code_Wget
+		fi
 	fi
 }
 download_Monero()

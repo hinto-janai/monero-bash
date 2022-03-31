@@ -6,6 +6,15 @@
 version_Template()
 {
 	NewVer="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
+		if [[ $? = "8" ]]; then
+			$ired; echo "GitHub API ratelimit detected..."
+			$white; echo "Trying GitHub HTML filter instead..."
+			NewVer="$(wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
+				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+				| awk '{print $1}' | head -n1 \
+				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+			[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
+		fi
 }
 version_NewMonero()
 {
