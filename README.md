@@ -32,10 +32,15 @@ If this program was/is useful to you, please show support to get it funded!
 
 ## Features
 📦 `PACKAGE MANAGER` automated downloading, verifying and upgrading of packages
+
 💵 `WALLET` wallet menu to display names/amounts of wallets
+
 👺 `DAEMON` control `monerod` more easily/automatically
+
 ⛏️  `MINING` automated mining, **default is P2Pool**
+
 👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+
 📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
