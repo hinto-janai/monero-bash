@@ -94,8 +94,8 @@ upgrade_P2Pool()
 
 upgrade_All()
 {
-	upgrade_MoneroBash
-	upgrade_Monero
-	upgrade_XMRig
-	upgrade_P2Pool
+	[[ $MONERO_BASH_VER != "" ]]&& upgrade_MoneroBash
+	[[ $MONERO_VER != "" ]]&& upgrade_Monero
+	[[ $XMRIG_VER != "" ]]&& upgrade_XMRig
+	[[ $P2POOL_VER != "" ]]&& upgrade_P2Pool
 }
