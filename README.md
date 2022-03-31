@@ -4,12 +4,13 @@
 ![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
 
 ## Contents
+* [About](#About)
 * [Features](#Features)
 * [Install](#Install)
 * [Usage](#Usage)
 * [Details](#Details)
-* [TODO](#TODO)
-* [is this a virus?](#is-this-a-virus)
+* [Todo](#Todo)
+* [Is this a virus?](#Is-this-a-virus)
 
 ---
 
@@ -30,12 +31,12 @@ If this program was/is useful to you, please show support to get it funded!
 ---
 
 ## Features
-* `PACKAGE MANAGER`📦 automated downloading, verifying and upgrading of packages
-* `WALLET`💵 wallet menu to display names/amounts of wallets
-* `DAEMON`👺 control `monerod` more easily/automatically
-* `MINING`⛏️  automated mining, **default is P2Pool**
-* `WATCH`👁️  switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
-* `STATS`📈 various stats to display (processes, price, disk usage, etc)
+📦 `PACKAGE MANAGER` automated downloading, verifying and upgrading of packages
+💵 `WALLET` wallet menu to display names/amounts of wallets
+👺 `DAEMON` control `monerod` more easily/automatically
+⛏️  `MINING` automated mining, **default is P2Pool**
+👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
 [To install monero-bash, download the latest release here](https://github.com/hinto-janaiyo/monero-bash/releases/latest) and
@@ -92,7 +93,18 @@ integrity                   check hash integrity of monero-bash
 help                        show this help message
 ```
 
-## TODO
+## Details
+***monero-bash does not have any hard dependencies***
+
+If you have a modern Linux system, you most likely have everything needed for monero-bash to work
+* bash
+* wget
+* procfs
+* systemd
+* GNU coreutils
+* GNU grep/awk/sed
+
+## Todo
 ***To be added***
 * Automatic P2Pool mining
 * GPG key verification for binaries
@@ -107,4 +119,4 @@ help                        show this help message
 Not added at all
 * `remove` command
 
-## [is this a virus?](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
+## [Is this a virus?](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
