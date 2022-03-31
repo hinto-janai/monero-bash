@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #						Upgrade Functions
 #
@@ -31,21 +31,31 @@ upgrade_Template()
 				$white; echo "Exiting for safety..."
 				exit
 			fi
-			if [[ $OLD_FOLDER = "true" && -d "$DIRECTORY" ]]; then
-				mkdir -p "$old/$currentDayTime"
-				sudo mv "$DIRECTORY" "$old/$currentDayTime/"
-			else
-				sudo rm -rf "$DIRECTORY"
+			if [[ -d "$DIRECTORY" ]]; then
+				mkdir -p "$old"
+				if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
+					sudo cp "$installDirectory/monero-bash" "$old"
+					sudo cp -r "$installDirectory/src" "$old"
+				else
+					sudo mv "$DIRECTORY" "$old"
+				fi
 			fi
-			sudo mkdir -p "$DIRECTORY"
-			sudo mv "$tmp/$folderName"/* "$DIRECTORY"
+			if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
+				sudo cp -f "$tmp/$folderName/monero-bash" "$installDirectory"
+				sudo cp -fr "$tmp/folderName/src" "$installDirectory"
+				sudo cp -f "$old/src/txt/state" "$state"
+			else
+				sudo mkdir -p "$DIRECTORY"
+				sudo mv "$tmp/$folderName"/* "$DIRECTORY"
+			fi
+			sudo rm -rf "$old"
 			print_WhiteHash "Updating local state"
 			version_"$NAME_FUNC"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-			PRODUCE_HASH_LIST
 			$white; echo -n "$NewVer: "
 			$igreen; echo "VERSION"
+			PRODUCE_HASH_LIST
 		else
 			compromised_"$NAME_FUNC"_Hash
 			exit
