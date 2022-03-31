@@ -3,19 +3,17 @@
 
 ![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
 
----
-
 ## Contents
-* [About](#About)
 * [Features](#Features)
 * [Install](#Install)
 * [Usage](#Usage)
 * [Details](#Details)
 * [TODO](#TODO)
-* [is this a virus?](#is this a virus?)
+* [is this a virus?](#is-this-a-virus)
 
-## About
-monero-bash is a manager for monero-related software:
+---
+
+monero-bash is a wrapper/manager for:
 
 * `monerod`
 * `monero-wallet-cli`
@@ -25,16 +23,22 @@ monero-bash is a manager for monero-related software:
 
 monero-bash abstracts/automates these programs into simple interactive prompts and `linux-like` commands
 
+This project is a [CCS Proposal](https://repo.getmonero.org/monero-project/ccs-proposals/-/merge_requests/297)
+
+If this program was/is useful to you, please show support to get it funded!
+
+---
+
 ## Features
-* PACKAGE MANAGER - automated downloading, verifying and upgrading of packages
-* WALLET - wallet menu to display names/amounts of wallets
-* DAEMON - control `monerod` more easily/automatically
-* MINING - automated mining, **default is P2Pool**
-* WATCH - switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
-* STATS - various stats to display (processes, price, disk usage, etc)
+* `PACKAGE MANAGER`📦 automated downloading, verifying and upgrading of packages
+* `WALLET`💵 wallet menu to display names/amounts of wallets
+* `DAEMON`👺 control `monerod` more easily/automatically
+* `MINING`⛏️  automated mining, **default is P2Pool**
+* `WATCH`👁️  switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+* `STATS`📈 various stats to display (processes, price, disk usage, etc)
 
 ## Install
-[download the latest release, here](https://github.com/hinto-janaiyo/monero-bash/releases/latest) and
+[To install monero-bash, download the latest release here](https://github.com/hinto-janaiyo/monero-bash/releases/latest) and
 ```
 ./monero-bash
 ```
@@ -47,7 +51,7 @@ git clone https://github.com/hinto-janaiyo/monero-bash &&
 cd monero-bash &&
 ./monero-bash
 ```
-**ALWAYS clone the main branch** the other branches are not tested and may result in system damage
+**ALWAYS clone the main branch,** the other branches are not tested and may result in system damage
 
 ## Usage
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
@@ -89,22 +93,18 @@ help                        show this help message
 ```
 
 ## TODO
-To be added:
+***To be added***
 * Automatic P2Pool mining
 * GPG key verification for binaries
 * RPC/Daemon API integration
 * Automatic encrypted wallet backups
 
-Added but not usable yet:
+*Added but not usable yet*
 * XMRig, P2Pool can be installed but not invoked
 * systemd intergrated, but not invokable
 * `watch` command works, but no XMRig/P2Pool instance to watch
 
-Not added at all:
+Not added at all
 * `remove` command
-
-This project was/is originally a [CCS Proposal](https://repo.getmonero.org/monero-project/ccs-proposals/-/merge_requests/297)
-
-If this program is useful to you, please show support to get it funded!
 
 ## [is this a virus?](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
