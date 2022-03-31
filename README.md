@@ -54,7 +54,8 @@ cd monero-bash &&
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
 
 <details>
-	<summary>Click to reveal command usage</summary>
+<summary>Click to reveal command usage</summary>
+
 ```
 monero-bash usage:          monero-bash <option> <more options>
 
@@ -105,12 +106,14 @@ help                        show this help message
 
 ## FAQ
 <details>
-	<summary>Is this a virus?</summary>
+<summary>Is this a virus?</summary>
+
 [No. Click here for a quick explaination of what monero-bash does.](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
 </details>
 
 <details>
-	<summary>Where does monero-bash download packages from?</summary>
+<summary>Where does monero-bash download packages from?</summary>
+
 * Monero - `https://downloads.getmonero.org/cli/linux64`
 * monero-bash - `https://github.com/hinto-janaiyo/monero-bash`
 * XMRig - `https://github.com/xmrig/xmrig`
@@ -125,7 +128,8 @@ Unfortunately, there is no "official" central repo for all these programs, so `m
 </details>
 
 <details>
-	<summary>Does monero-bash have dependencies?</summary>
+<summary>Does monero-bash have dependencies?</summary>
+
 ***monero-bash does not have any hard dependencies***
 
 If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work
@@ -138,7 +142,8 @@ If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.)
 </details>
 
 <details>
-	<summary>monero-bash says I have a package but I don't and can't upgrade!</summary>
+<summary>monero-bash says I have a package but I don't and can't upgrade!</summary>
+
 ```
 monero-bash upgrade <package> force
 ```
@@ -154,7 +159,8 @@ monero-bash install <package>
 </details>
 
 <details>
-	<summary>Where does monero-bash install itself?</summary>
+
+<summary>Where does monero-bash install itself?</summary>
 The source folder gets installed in
 ```
 /usr/local/share/monero-bash
@@ -171,7 +177,8 @@ The user folder is in
 </details>
 
 <details>
-	<summary>How to uninstall?</summary>
+
+<summary>How to uninstall?</summary>
 ```
 monero-bash uninstall
 ```
