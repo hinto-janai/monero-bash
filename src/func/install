@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# install functions
+install_Template()
+{
+	if [[ "$VER" != "" ]]; then
+		$white; echo -n "$NAME ($VER) "
+		$white; echo "is already installed"
+	else
+		local INSTALL="true"
+		upgrade_"$FUNC"
+	fi
+}
+
+install_Monero()
+{
+	local VER="$MONERO_VER"
+	local NAME="Monero"
+	local FUNC="Monero"
+	install_Template
+}
+
+install_MoneroBash()
+{
+	local VER="$MONERO_BASH_VER"
+	local NAME="monero-bash"
+	local FUNC="MoneroBash"
+	install_Template
+}
+
+install_XMRig()
+{
+	local VER="$XMRIG_VER"
+	local NAME="XMRig"
+	local FUNC="XMRig"
+	install_Template
+}
+
+install_P2Pool()
+{
+	local VER="$P2POOL_VER"
+	local NAME="P2Pool"
+	local FUNC="P2Pool"
+	install_Template
+}
+
+install_All()
+{
+	install_MoneroBash
+	install_Monero
+	install_XMRig
+	install_P2Pool
+}

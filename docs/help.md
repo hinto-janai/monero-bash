@@ -3,100 +3,105 @@
 * [Folder Structure](#folder-structure)
 * [Configuration](#configuration)
 
-
 ## Usage
 ```
-monero-bash usage: monero-bash <option> <more options>
+monero-bash usage:          monero-bash <option> <more options>
 
-# SETUP #
-config            configure monero-bash settings
-uninstall         remove /monero-bash/ folder and remove from PATH
+# UNINSTALL #
+uninstall                   uninstall monero-bash and remove /.monero-bash/
 
-# UPDATE #
-update            only CHECK for updates
-upgrade           upgrade all OR upgrade <specific thing>
-version           print current versions
-path              RESET path to /monero-bash/
+# PACKAGES #
+install <all/name>          install <all> or a specific package
+remove <name>               remove specific package
+update                      only CHECK for updates
+upgrade <all/name>          upgrade <all> or a specific package
+upgrade <all/name> force    forcefully upgrade packages
+version                     print installed package versions
 
-# DAEMON #
-daemon            check status of daemon
-daemon start      start the daemon (detached)
-daemon stop       stop all daemon processes
-daemon full       start the daemon without detaching
+# MONERO DAEMON #
+daemon                      print status of daemon
+daemon start                start the daemon (detached)
+daemon stop                 gracefully stop the daemon
+daemon kill                 forcefully kill all daemon processes
+daemon full                 start the daemon attached
+
+# WATCH #
+watch daemon                show live daemon output
+watch xmrig                 show live xmrig output
+watch p2pool                show live p2pool output
 
 # STATS #
-list              list wallets
-size              show size of /monero-bash/
-price             fetch price data from cryptocompare.com API
+status                      print useful stats
+list                        list wallets
+size                        show size of monero-bash folders
+price                       fetch price data from cryptocompare.com API
+integrity                   check hash integrity of monero-bash
 
 # HELP #
-help              show this help message
+help                        show this help message
 ```
-if you ever move the `/monero-bash/` folder, execute `./monero-bash path` to re-add to PATH
-
-currently, it gets added/removed from PATH via your `$USER/.bashrc` with `echo` and `sed`
-
-an alternative would be to:
-```
-sudo ln -s monero-bash /usr/bin/monero-bash
-```
-this is a much cleaner (and safer) way of doing it, but it requires `sudo`, which i'd like to avoid
-
 
 ## Folder Structure
-the `/monero-bash/` folder starts like this:
+The `/monero-bash/` folder starts like this:
+
 ```
 monero-bash/
-├─ monero-bash
-├─ config
-├─ src
+├─ monero-bash       main script
+├─ bin               binary files
+├─ config            config files
+├─ src               source code
+├─ old               old files
 ```
-`monero-bash`, `config` and `src` must ALWAYS be in a `/monero-bash/` folder
-
-after the initial configuration, `/monero-bash/` might look something like this:
+After installation, monero-bash will:
+* move itself to `/usr/local/share/monero-bash`
+* add itself to PATH
+* create a `.monero-bash` in your $HOME
 
 ```
-monero-bash/            root folder
-├─ monero-bash          main script itself
-├─ config               config file for monero-bash
-├─ cli                  where monero-cli binaries live
-├─ src                  source code of monero-bash
-├─ wallets              where wallet files live
+/home/user/.monero-bash/
+├─ config               config files
+├─ wallets              wallet files
 ├─ .bitmonero           monero blockchain/data folder
-├─ .tmp                 temporary location for upgrade downloads
-├─ .old
 ```
-*note:* the `/cli/`, `/wallets/`, and `/.bitmonero/` folders don't HAVE to be inside `/monero-bash/`, you can set the paths anywhere
+*note:* the `.bitmonero/` folder path can be set anywhere
 
-when upgrading, `monero-bash` (by default), moves any old `/cli/` or `monero-bash` files in a timestamped folder inside `.old` instead of deleting them (if you'd like to change that, see the next section)
+When upgrading, `monero-bash` moves packages into a timestamped folder inside `old` instead of deleting them (to change that, see the next section)
 
 
 ## Configuration
-if you already use custom configs/options for `monerod` or `monero-wallet-cli` and want `monero-bash` to use them as well, make a `monerod.conf` or `monero-wallet-cli.conf` file and put them in your `.bitmonero` folder. [refer to this official monero documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
+If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, just put them in your `.bitmonero` folder and monero-bash will use them
 
-for `monero-bash` specific configuration, edit the file `/monero-bash/config`
+[Refer to this documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
+
+For `monero-bash` specific configuration, edit `/.monero-bash/config/monero-bash.conf`
 ```
 ######################
 # monero-bash config #
 ######################
+# monerod
+DATA_PATH=""                            the path of /.bitmonero/
+SYSTEMD_MONEROD="false"                 use systemd to control monerod 
 
-# first time prompt
-FIRST_TIME="true"                 # triggers the interactive configuration, set to "false" after
+# monero-wallet-cli
+AUTO_START_DAEMON="true"                auto-start daemon on wallet open
+AUTO_STOP_DAEMON="true"                 auto-stop daemon on wallet close
 
-# path
-DATA_PATH=""                      # the path of /.bitmonero/      
-MONERO_CLI_PATH=""                # the path of the monero-cli binaries
-WALLET_PATH=""                    # the path of your wallets
-
-# monero-cli
-
-# monero daemon
-START_DAEMON="true"               # start the daemon automatically when starting the wallet
-STOP_DAEMON="true"                # stop the daemon automatically after closing the wallet
+# monero-rpc
 
 # monero-bash
-UPDATE_MONERO_CLI="true"          # allow monero-cli updates to be downloaded
-UPDATE_MONERO_BASH="true"         # allow monero-bash updates to be downloaded
-OLD_FOLDER="true"                 # move old /cli/ and monero-bash files into /.old/ instead of deleting them
-ADD_TO_PATH="true"                # allow monero-bash to edit your bashrc to add to PATH
+PRICE_API_IP_WARNING="true"             warn when checking price
+OLD_FOLDER="true"                       move old packages into old, instead of deleting
+
+# p2pool
+SYSTEMD_P2POOL="true"                   use systemd to control p2pool
+
+# xmrig
+SYSTEMD_XMRIG="true"                    use systemd to control xmrig
+
+# updates (only checks)
+AUTO_UPDATE_MONERO="false"              check for update on startup
+AUTO_UPDATE_MONERO_BASH="false"
+AUTO_UPDATE_P2POOL="false"
+AUTO_UPDATE_XMRIG="false"
 ```
+If `SYSTEMD_x` is set to `false`, monero-bash will directly invoke the program. if set to `true`, monero-bash will create a `.service` file and launch the program as a `systemd` service instead. `systemd` MUST be used if you want to use the `monero-bash watch` command, as it uses `journalctl`

@@ -4,20 +4,23 @@
 #
 upgrade_Template()
 {
-	if [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
+	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
+		$white; echo -n "$NAME_PRETTY: "
+		$ired; echo "is not installed"
+	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date" ;$off
 	else
 		prompt_Sudo;error_Sudo
-		echo;safety_HashList;echo
+		echo;safety_HashList
 		tmp_Create;error_Exit "Could not create tmp folder"
-		print_GreenHash "Downloading - [$NAME_PRETTY]"
+		print_GreenHash "Downloading [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
-		error_Exit "Downloading failed - [$NAME_PRETTY]"
-		print_RedHash "Verifying"
+		code_Wget
+		print_WhiteHash "Verifying"
 		verify_hash_"$NAME_FUNC"
 		if [[ "$verifyOK" = "true" ]]; then
-			print_RedHash "Extracting"
+			print_WhiteHash "Extracting"
 			tar -xf "$tmp/$tarName" -C "$tmp" &&
 			rm -f "$tmp/$tarName" &&
 			$white; echo -n "$tarName: "
@@ -28,32 +31,37 @@ upgrade_Template()
 				$white; echo "Exiting for safety..."
 				exit
 			fi
-			build_Bin
-			if [[ $OLD_FOLDER = "true" ]]; then
+			if [[ $OLD_FOLDER = "true" && -d "$DIRECTORY" ]]; then
 				mkdir -p "$old/$currentDayTime"
 				sudo mv "$DIRECTORY" "$old/$currentDayTime/"
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
+			sudo mkdir -p "$DIRECTORY"
 			sudo mv "$tmp/$folderName"/* "$DIRECTORY"
-			print_RedHash "Updating local state"
-			version_New"$NAME_FUNC"
+			print_WhiteHash "Updating local state"
+			version_"$NAME_FUNC"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 			PRODUCE_HASH_LIST
-			$white; echo -n "$NewVer - "
+			$white; echo -n "$NewVer: "
 			$igreen; echo "NEW VERSION"
 		else
 			compromised_"$NAME_FUNC"_Hash
 			exit
 		fi
 		tmp_Del;error_Exit "Could not cleanup tmp folder"
-		print_GreenHash "Upgraded - [$NAME_PRETTY]"
+		if [[ "$INSTALL" = "true" ]]; then
+			print_GreenHash "Installed [$NAME_PRETTY]"
+		else
+			print_GreenHash "Upgraded [$NAME_PRETTY]"
+		fi
 	fi
 }
 
 upgrade_Monero()
 {
+	NAME_VER="$MONERO_VER"
 	NAME_OLD="$MONERO_OLD"
 	NAME_PRETTY="Monero"
 	NAME_FUNC="Monero"
@@ -64,6 +72,7 @@ upgrade_Monero()
 
 upgrade_MoneroBash()
 {
+	NAME_VER="$MONERO_BASH_VER"
 	NAME_OLD="$MONERO_BASH_OLD"
 	NAME_PRETTY="monero-bash"
 	NAME_FUNC="MoneroBash"
@@ -74,6 +83,7 @@ upgrade_MoneroBash()
 
 upgrade_XMRig()
 {
+	NAME_VER="$XMRIG_VER"
 	NAME_OLD="$XMRIG_OLD"
 	NAME_PRETTY="XMRig"
 	NAME_FUNC="XMRig"
@@ -84,6 +94,7 @@ upgrade_XMRig()
 
 upgrade_P2Pool()
 {
+	NAME_VER="$P2POOL_VER"
 	NAME_OLD="$P2POOL_OLD"
 	NAME_PRETTY="P2Pool"
 	NAME_FUNC="P2Pool"
@@ -94,8 +105,8 @@ upgrade_P2Pool()
 
 upgrade_All()
 {
-	upgrade_MoneroBash
-	upgrade_Monero
-	upgrade_XMRig
-	upgrade_P2Pool
+	[[ $MONERO_BASH_VER != "" ]]&& upgrade_MoneroBash
+	[[ $MONERO_VER != "" ]]&& upgrade_Monero
+	[[ $XMRIG_VER != "" ]]&& upgrade_XMRig
+	[[ $P2POOL_VER != "" ]]&& upgrade_P2Pool
 }

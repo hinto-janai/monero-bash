@@ -4,12 +4,17 @@
 #
 print_GreenHash()
 {
-	$bgreen; echo "######   $1" ;$off
+	$bgreen; echo "###### $1" ;$off
 }
 
 print_RedHash()
 {
-	$ired; echo "######   $1" ;$off
+	$ired; echo "### $1" ;$off
+}
+
+print_WhiteHash()
+{
+	$bwhite; echo "### $1" ;$off
 }
 
 print_MoneroBashTitle()
@@ -35,7 +40,7 @@ print_Version()
 		$bgreen; echo "$MONERO_VER"
 	fi
 	$white; echo -n "XMRig: "
-	if [[ "$XMIRG_OLD" = "true" ]]; then
+	if [[ "$XMRIG_OLD" = "true" ]]; then
 		$bred; echo "$XMRIG_VER"
 	else
 		$bgreen; echo "$XMRIG_VER"

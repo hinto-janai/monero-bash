@@ -85,15 +85,32 @@ if [[ $options = "true" ]]; then
 	case $1 in
 		uninstall) monerobash_Uninstall ;;
 		update) update_All ;;
+		daemon)
+			case $2 in
+				start) daemon_StartDetached ;;
+				stop) daemon_Stop ;;
+				full) daemon_StartAttached ;;
+				kill) daemon_Kill ;;
+				status|"") status_Daemon ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		version) print_Version ;;
+		list) wallet_Count && wallet_List ;;
+		size) print_Size ;;
+		price) check_Price ;;
+		status) status_All ;;
+		integrity) CHECK_HASH_LIST ;;
+		help) print_Usage ;;
 		upgrade)
-			[[ $3 = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!"
+			[[ $3 = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
 			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
 				echo -n "Upgrade monero-bash? (Y/n) "
 				Yes(){ upgrade_MoneroBash ;}
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
 			fi
-			if [[ $2 = *"monero"* || $2 = *"Monero"* || $2 = *"MONERO"* ]]; then
+			if [[ $2 = "monero" || $2 = "Monero" || $2 = "MONERO" ]]; then
 				echo -n "Upgrade Monero? (Y/n) "
 				Yes(){ upgrade_Monero ;}
 				No(){ echo "Exiting..." ;exit;}
@@ -120,23 +137,40 @@ if [[ $options = "true" ]]; then
 				print_Error "Pick a package or <all>"
 			fi
 			;;
-		daemon)
-			case $2 in
-				start) daemon_StartDetached ;;
-				stop) daemon_Stop ;;
-				full) daemon_StartAttached ;;
-				kill) daemon_Kill ;;
-				status|"") daemon_Status ;;
-				*) error_Unknown ;;
-			esac
+		install)
+			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
+				echo -n "Install monero-bash? (Y/n) "
+				Yes(){ install_MoneroBash ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = *"monero"* || $2 = *"Monero"* || $2 = *"MONERO"* ]]; then
+				echo -n "Install Monero? (Y/n) "
+				Yes(){ install_Monero ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = *"xmrig"* || $2 = *"XMRig"* || $2 = *"XMRIG"* || $2 = *"Xmrig"* ]]; then
+				echo -n "Install XMRig? (Y/n) "
+				Yes(){ install_XMRig ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = *"p2p"* || $2 = *"P2P"* || $2 = *"P2p"* ]]; then
+				echo -n "Install P2Pool? (Y/n) "
+				Yes(){ install_P2Pool ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			fi
+			if [[ $2 = "all" ]]; then
+				echo -n "Install all packages? (Y/n) "
+				Yes(){ install_All ;}
+				No(){ echo "Exiting..." ;exit;}
+				prompt_YESno
+			elif [[ $2 = "" ]]; then
+				print_Error "Pick a package or <all>"
+			fi
 			;;
-		version) print_Version ;;
-		list) wallet_Count && wallet_List ;;
-		size) print_Size ;;
-		price) check_Price ;;
-		status) status_All ;;
-		integrity) CHECK_HASH_LIST ;;
-		help) print_Usage ;;
 		*)
 			$ired; echo "monero-bash: invalid option!"
 			$white; echo -n "for help, type: "

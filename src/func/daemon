@@ -50,7 +50,7 @@ daemon_Stop()
 			sleep 1
 		done
 	}
-	daemon_Stop_Template
+	daemon_stop_Template
 }
 
 daemon_Kill()
@@ -65,7 +65,7 @@ daemon_Kill()
 			print_Error "Monero daemon was not killed"
 		fi
 	}
-	daemon_Stop_Template
+	daemon_stop_Template
 }
 
 daemon_systemd_Start()

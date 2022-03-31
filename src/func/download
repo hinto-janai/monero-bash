@@ -7,11 +7,22 @@ download_Template()
 	tmp="$(find /tmp/monero-bash.*)"
 	if [[ $downloadMonero = "true" ]]; then
 		wget -P "$tmp" -q --show-progress --content-disposition "$link"
+		code_Wget
 	else
 		link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" \
 			| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 			| sed 's/\"//g')"
 		wget -P "$tmp" -q --show-progress "$link"
+		if [[ $? != "0" ]]; then
+			$ired; echo "GitHub API error detected..."
+			$white; echo "Trying GitHub HTML filter instead..."
+			link="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest" \
+				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
+				| awk '{print $1}' \
+				| sed 's/\"//g')"
+			wget -P "$tmp" -q --show-progress "https://github.com/$link"
+			code_Wget
+		fi
 	fi
 }
 download_Monero()

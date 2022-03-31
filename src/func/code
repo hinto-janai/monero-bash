@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# functions that handle exit codes and prints proper messages
+code_Wget()
+{
+	case $? in
+		0) : ;;
+		1) error_Exit "wget - Generic error" ;;
+		2) error_Exit "wget - Parse error" ;;
+		3) error_Exit "wget - File I/O error" ;;
+		4) error_Exit "wget - Network failure" ;;
+		5) error_Exit "wget - SSL verification failure" ;;
+		6) error_Exit "wget - Username/password authentication failure" ;;
+		7) error_Exit "wget - Protocol errors" ;;
+		8) error_Exit "wget - Rate limit" ;;
+		*) error_Exit "wget - Unknown error"
+	esac
+}
