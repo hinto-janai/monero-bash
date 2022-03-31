@@ -5,7 +5,7 @@
 #						turns them into usable variables
 version_Template()
 {
-	local link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags")"
+	link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags")"
 		if [[ $? != "0" ]]; then
 			$ired; echo "GitHub API error detected..."
 			$white; echo "Trying GitHub HTML filter instead..."

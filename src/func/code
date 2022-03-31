@@ -11,6 +11,7 @@ code_Wget()
 		5) error_Exit "wget - SSL verification failure" ;;
 		6) error_Exit "wget - Username/password authentication failure" ;;
 		7) error_Exit "wget - Protocol errors" ;;
+		8) error_Exit "wget - Rate limit" ;;
 		*) error_Exit "wget - Unknown error"
 	esac
 }
