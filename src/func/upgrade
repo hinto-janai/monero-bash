@@ -4,7 +4,10 @@
 #
 upgrade_Template()
 {
-	if [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
+	if [[ "$NAME_VER" = "" ]]; then
+		$white; echo -n "$NAME_PRETTY: "
+		$ired; echo "is not installed"
+	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date" ;$off
 	else
@@ -28,13 +31,13 @@ upgrade_Template()
 				$white; echo "Exiting for safety..."
 				exit
 			fi
-			build_Bin
 			if [[ $OLD_FOLDER = "true" ]]; then
 				mkdir -p "$old/$currentDayTime"
 				sudo mv "$DIRECTORY" "$old/$currentDayTime/"
 			else
 				sudo rm -rf "$DIRECTORY"
 			fi
+			sudo mkdir -p "$DIRECTORY"
 			sudo mv "$tmp/$folderName"/* "$DIRECTORY"
 			print_RedHash "Updating local state"
 			version_New"$NAME_FUNC"
@@ -54,6 +57,7 @@ upgrade_Template()
 
 upgrade_Monero()
 {
+	NAME_VER="$MONERO_VER"
 	NAME_OLD="$MONERO_OLD"
 	NAME_PRETTY="Monero"
 	NAME_FUNC="Monero"
@@ -64,6 +68,7 @@ upgrade_Monero()
 
 upgrade_MoneroBash()
 {
+	NAME_VER="$MONERO_BASH_VER"
 	NAME_OLD="$MONERO_BASH_OLD"
 	NAME_PRETTY="monero-bash"
 	NAME_FUNC="MoneroBash"
@@ -74,6 +79,7 @@ upgrade_MoneroBash()
 
 upgrade_XMRig()
 {
+	NAME_VER="$XMRIG_VER"
 	NAME_OLD="$XMRIG_OLD"
 	NAME_PRETTY="XMRig"
 	NAME_FUNC="XMRig"
@@ -84,6 +90,7 @@ upgrade_XMRig()
 
 upgrade_P2Pool()
 {
+	NAME_VER="$P2POOL_VER"
 	NAME_OLD="$P2POOL_OLD"
 	NAME_PRETTY="P2Pool"
 	NAME_FUNC="P2Pool"

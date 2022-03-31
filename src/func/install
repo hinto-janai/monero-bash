@@ -3,7 +3,7 @@
 install_Template()
 {
 	if [[ "$VER" != "" ]]; then
-		$white; echo "$NAME ($VER)"
+		$white; echo -n "$NAME ($VER)"
 		$white; echo "is already installed"
 	else
 		upgrade_"$FUNC"
