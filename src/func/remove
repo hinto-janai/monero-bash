@@ -51,3 +51,10 @@ remove_P2Pool()
 	DIRECTORY="$binP2Pool"
 	remove_Template
 }
+
+remove_All()
+{
+	remove_Monero
+	remove_XMRig
+	remove_P2Pool
+}

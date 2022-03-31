@@ -22,12 +22,6 @@ LIST()
 	cat "src/var" | grep -v "#" | grep -v "\033"
 }
 
-# puts installed packages into variables
-#WHICH_PACKAGES()
-#{
-#	
-#}
-
 # produce a hash list for important monero-bash files /monero-bash/src/txt/hashlist
 PRODUCE_HASH_LIST()
 {
@@ -200,7 +194,7 @@ QUIET_HASH_LIST()
 		$white; echo -n "config: "
 		$bred; echo "FAILED"
 	else
-		$white; echo -n "text: " ;$white
+		$white; echo -n "config: " ;$white
 		$bgreen; echo "OK" ;$white
 	fi
 	# if any fail, print error
