@@ -71,6 +71,9 @@ upgrade <all/name>          upgrade <all> or a specific package
 upgrade <all/name> force    forcefully upgrade packages
 version                     print installed package versions
 
+# WALLET #
+monero-bash                 the default command will open wallet selection
+
 # MONERO DAEMON #
 daemon                      print status of daemon
 daemon start                start the daemon (detached)
@@ -168,7 +171,6 @@ OR
 ```
 monero-bash remove <package> &&
 monero-bash install <package>
-
 ```
 
 ---
@@ -204,9 +206,9 @@ The user folder is in
 ```
 monero-bash uninstall
 ```
-This will delete all monero-bash files AND `.monero-bash`
+This will delete all `monero-bash` files AND `.monero-bash`
 
-If your monero-bash is bugged and not uninstalling, you can manually remove everything like so:
+If your monero-bash is bugged and not uninstalling, you can manually remove everything like this:
 ```
 sudo rm -r "/usr/local/share/monero-bash" &&
 sudo rm "/usr/local/bin/monero-bash" &&
