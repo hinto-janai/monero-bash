@@ -12,7 +12,7 @@ upgrade_Template()
 		$bgreen; echo "up to date" ;$off
 	else
 		prompt_Sudo;error_Sudo
-		echo;safety_HashList;echo
+		echo;safety_HashList
 		tmp_Create;error_Exit "Could not create tmp folder"
 		print_GreenHash "Downloading [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
@@ -40,7 +40,7 @@ upgrade_Template()
 			sudo mkdir -p "$DIRECTORY"
 			sudo mv "$tmp/$folderName"/* "$DIRECTORY"
 			print_WhiteHash "Updating local state"
-			version_New"$NAME_FUNC"
+			version_"$NAME_FUNC"
 			sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 			sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 			PRODUCE_HASH_LIST

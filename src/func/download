@@ -7,6 +7,7 @@ download_Template()
 	tmp="$(find /tmp/monero-bash.*)"
 	if [[ $downloadMonero = "true" ]]; then
 		wget -P "$tmp" -q --show-progress --content-disposition "$link"
+		code_Wget
 	else
 		link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" \
 			| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
@@ -20,6 +21,8 @@ download_Template()
 				| awk '{print $1}' \
 				| sed 's/\"//g')"
 			wget -P "$tmp" -q --show-progress "https://github.com/$link"
+			code_Wget
+		else
 			code_Wget
 		fi
 	fi

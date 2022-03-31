@@ -55,5 +55,6 @@ safety_HashList()
 	if [[ $alreadyCheckedHashList != "true" ]]; then
 		QUIET_HASH_LIST
 		alreadyCheckedHashList="true"
+		echo
 	fi
 }

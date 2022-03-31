@@ -18,28 +18,28 @@ version_Template()
 			NewVer="$(echo "$link" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
 		fi
 }
-version_NewMonero()
+version_Monero()
 {
 	local AUTHOR="monero-project"
 	local PROJECT="monero"
 	version_Template
 }
 
-version_NewMoneroBash()
+version_MoneroBash()
 {
 	local AUTHOR="hinto-janaiyo"
 	local PROJECT="monero-bash"
 	version_Template
 }
 
-version_NewXMRig()
+version_XMRig()
 {
 	local AUTHOR="xmrig"
 	local PROJECT="xmrig"
 	version_Template
 }
 
-version_NewP2Pool()
+version_P2Pool()
 {
 	local AUTHOR="SChernykh"
 	local PROJECT="p2pool"
