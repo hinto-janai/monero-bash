@@ -113,7 +113,7 @@ help                        show this help message
 
 ---
 
-[No. Click here for a quick explaination of what monero-bash does.](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
+[No. Click here for a quick explaination of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
 
 ---
 </details>
@@ -136,6 +136,7 @@ Every other package hash is found on its GitHub page.
 Unfortunately, there is no "official" central repo for all these programs, so `monero-bash` individually seeks out the links/hashes (makes my life very hard)
 
 ---
+
 </details>
 
 <details>
@@ -186,6 +187,10 @@ monero-bash makes and uses a temporary folder until it's ready to swap your curr
 Canceling, exiting the terminal, or shutting down your computer is still not recommended while upgrading as you could cancel the actual swapping of software, which would leave you with corrupted binaries and local state file.
 
 This is especially true when upgrading `monero-bash`, itself. Thankfully, `monero-bash` is only 200KB~, so you'd be pretty unlucky if you canceled ***right*** as the the actual `mv` operation was happening.
+
+---
+
+</details>
 
 <details>
 <summary>Where does monero-bash install itself?</summary>
