@@ -14,7 +14,7 @@ print_RedHash()
 
 print_WhiteHash()
 {
-	$iwhite; echo "### $1" ;$off
+	$bwhite; echo "### $1" ;$off
 }
 
 print_MoneroBashTitle()

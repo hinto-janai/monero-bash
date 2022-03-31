@@ -5,10 +5,11 @@
 status_All()
 {
 	print_MoneroBashTitle
-	QUIET_HASH_LIST
 	wallet_Count
 	wallet_List
+	echo
 	print_Version
+	echo
 	status_Daemon
 	status_XMRig
 	status_P2Pool

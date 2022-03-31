@@ -91,7 +91,7 @@ if [[ $options = "true" ]]; then
 				stop) daemon_Stop ;;
 				full) daemon_StartAttached ;;
 				kill) daemon_Kill ;;
-				status|"") daemon_Status ;;
+				status|"") status_Daemon ;;
 				*) error_Unknown ;;
 			esac
 			;;
@@ -110,7 +110,7 @@ if [[ $options = "true" ]]; then
 				No(){ echo "Exiting..." ;exit;}
 				prompt_YESno
 			fi
-			if [[ $2 = *"monero"* || $2 = *"Monero"* || $2 = *"MONERO"* ]]; then
+			if [[ $2 = "monero" || $2 = "Monero" || $2 = "MONERO" ]]; then
 				echo -n "Upgrade Monero? (Y/n) "
 				Yes(){ upgrade_Monero ;}
 				No(){ echo "Exiting..." ;exit;}
