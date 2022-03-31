@@ -63,11 +63,11 @@ If the verification **fails,** `monero-bash`:
 Since `monero-bash` gets installed in `/usr/local/share/monero-bash/`, sudo is required to edit the `state` file when upgrading/installing
 
 ## Details
-For the sake of being simple and easy to read, the functions presented in the examples above were ***HEAVILY*** reduced and turned into pseudo-code. The `Verify` function shown is not even a valid command. 
+For the sake of being simple and easy to read, the functions presented in the examples above were ***HEAVILY*** reduced and turned into pseudo-code. The `verify` function shown is not even a valid command. 
 
 [I highly encourage you to click here to see the actual upgrade function](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/upgrade)
 
-And here for some of the important functions it's made out of:  [Download](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)  [Verify](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify)  [Version](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version)
+And here for some of the important functions it's made out of:  [Download](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download) -  [Verify](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify) - [Version](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version)
 
 What you'll find is a bunch of grep/awk/sed, error handling, cleanup, and safety checks.
 
