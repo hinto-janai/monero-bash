@@ -108,12 +108,15 @@ help                        show this help message
 <details>
 <summary>Is this a virus?</summary>
 
+---
 [No. Click here for a quick explaination of what monero-bash does.](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
+---
 </details>
 
 <details>
 <summary>Where does monero-bash download packages from?</summary>
 
+---
 * Monero - `https://downloads.getmonero.org/cli/linux64`
 * monero-bash - `https://github.com/hinto-janaiyo/monero-bash`
 * XMRig - `https://github.com/xmrig/xmrig`
@@ -125,11 +128,13 @@ Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.tx
 Every other package hash is found on its GitHub page.
 
 Unfortunately, there is no "official" central repo for all these programs, so `monero-bash` individually seeks out the links/hashes (makes my life very hard)
+---
 </details>
 
 <details>
 <summary>Does monero-bash have dependencies?</summary>
 
+---
 ***monero-bash does not have any hard dependencies***
 
 If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work
@@ -139,11 +144,13 @@ If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.)
 * systemd
 * GNU coreutils
 * GNU grep/awk/sed
+---
 </details>
 
 <details>
 <summary>monero-bash says I have a package but I don't and can't upgrade!</summary>
 
+---
 ```
 monero-bash upgrade <package> force
 ```
@@ -156,11 +163,13 @@ monero-bash remove <package> &&
 monero-bash install <package>
 
 ```
+---
 </details>
 
 <details>
-
 <summary>Where does monero-bash install itself?</summary>
+
+---
 The source folder gets installed in
 ```
 /usr/local/share/monero-bash
@@ -174,11 +183,13 @@ The user folder is in
 ```
 /home/user/.monero-bash
 ```
+---
 </details>
 
 <details>
-
 <summary>How to uninstall?</summary>
+
+---
 ```
 monero-bash uninstall
 ```
@@ -191,6 +202,7 @@ sudo rm "/usr/local/bin/monero-bash" &&
 sudo rm -r "$HOME/.monero-bash"
 ```
 Please be careful, remember to move your `/wallets/` before uninstalling!
+---
 </details>
 
 
