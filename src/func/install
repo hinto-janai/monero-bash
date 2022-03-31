@@ -42,3 +42,11 @@ install_P2Pool()
 	local FUNC="P2Pool"
 	install_Template
 }
+
+install_All()
+{
+	install_MoneroBash
+	install_Monero
+	install_XMRig
+	install_P2Pool
+}
