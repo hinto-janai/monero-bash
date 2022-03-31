@@ -4,7 +4,7 @@
 #
 upgrade_Template()
 {
-	if [[ "$NAME_VER" = "" ]]; then
+	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
 	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
@@ -16,7 +16,7 @@ upgrade_Template()
 		tmp_Create;error_Exit "Could not create tmp folder"
 		print_GreenHash "Downloading - [$NAME_PRETTY]"
 		download_"$NAME_FUNC"
-		error_Exit "Downloading failed - [$NAME_PRETTY]"
+		code_Wget
 		print_RedHash "Verifying"
 		verify_hash_"$NAME_FUNC"
 		if [[ "$verifyOK" = "true" ]]; then
@@ -51,7 +51,11 @@ upgrade_Template()
 			exit
 		fi
 		tmp_Del;error_Exit "Could not cleanup tmp folder"
-		print_GreenHash "Upgraded - [$NAME_PRETTY]"
+		if [[ "$INSTALL" = "true" ]]; then
+			print_GreenHash "Installed - [$NAME_PRETTY]"
+		else
+			print_GreenHash "Upgraded - [$NAME_PRETTY]"
+		fi
 	fi
 }
 

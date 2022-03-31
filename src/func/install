@@ -6,6 +6,7 @@ install_Template()
 		$white; echo -n "$NAME ($VER)"
 		$white; echo "is already installed"
 	else
+		local INSTALL="true"
 		upgrade_"$FUNC"
 	fi
 }
