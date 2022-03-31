@@ -42,7 +42,7 @@ upgrade_Template()
 			fi
 			if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
 				sudo cp -f "$tmp/$folderName/monero-bash" "$installDirectory"
-				sudo cp -fr "$tmp/folderName/src" "$installDirectory"
+				sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
 				sudo cp -f "$old/src/txt/state" "$state"
 			else
 				sudo mkdir -p "$DIRECTORY"
