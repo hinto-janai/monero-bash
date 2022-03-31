@@ -177,6 +177,17 @@ monero-bash install <package>
 </details>
 
 <details>
+<summary>What happens if I cancel/shutdown mid-upgrade?</summary>
+
+---
+
+monero-bash makes and uses a temporary folder until it's ready to swap your current binaries with the new.
+
+Canceling, exiting the terminal, or shutting down your computer is still not recommended while upgrading as you could cancel the actual swapping of software, which would leave you with corrupted binaries and local state file.
+
+This is especially true when upgrading `monero-bash`, itself. Thankfully, `monero-bash` is only 200KB~, so you'd be pretty unlucky if you canceled ***right*** as the the actual `mv` operation was happening.
+
+<details>
 <summary>Where does monero-bash install itself?</summary>
 
 ---
@@ -199,8 +210,20 @@ The user folder is in
 </details>
 
 <details>
-<summary>How to uninstall?</summary>
+<summary>Where does monero-bash install packages?</summary>
 
+---
+
+```
+/usr/local/share/monero-bash/bin/
+```
+is where packages live, with respective folder names
+
+---
+</details>
+
+<details>
+<summary>How to uninstall?</summary>
 
 ---
 ```
