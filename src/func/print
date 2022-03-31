@@ -9,7 +9,7 @@ print_GreenHash()
 
 print_RedHash()
 {
-	$ired; echo "### $1" ;$off
+	$ired; echo "###### $1" ;$off
 }
 
 print_WhiteHash()
