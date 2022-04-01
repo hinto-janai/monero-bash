@@ -98,6 +98,7 @@ wallet_Count()
 	elif [[ $walletCount > "1" ]]; then
 		echo "wallets found: "
 	elif [[ $walletCount = "0" ]]; then
+		ZERO_WALLETS="true"
 		echo "wallets found"
 		if [[ $interactive = "true" ]]; then
 			echo -n "Create one? (Y/n) " ;$iwhite
