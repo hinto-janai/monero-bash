@@ -143,7 +143,7 @@ monerobash_Uninstall()
 			echo
 			$bwhite; echo -n "@@@@@@@@@@@@"
 			$bred; echo -n "      WALLETS FOUND      "
-			$bred; echo "@@@@@@"
+			$bwhite; echo "@@@@@@@@@@@@"
 			$bwhite; ls "$wallets"
 			$bred; echo -n "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N)"
 			Yes(){ : ;}
