@@ -2,7 +2,7 @@
 #
 #						messages for when hash/gpg is incorrect
 #
-compromised_Monero_Hash()
+compromised_hash_Monero()
 {
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     $bwhite; echo -n "@   "
@@ -22,7 +22,7 @@ compromised_Monero_Hash()
     echo "EXITING FOR SAFTEY..."
 }
 
-compromised_MoneroBash_Hash()
+compromised_hash_MoneroBash()
 {
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "@   "
@@ -42,7 +42,7 @@ compromised_MoneroBash_Hash()
 	echo "EXITING FOR SAFTEY..."
 }
 
-compromised_XMRig_Hash()
+compromised_hash_XMRig()
 {
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "@   "
@@ -62,7 +62,7 @@ compromised_XMRig_Hash()
 	echo "EXITING FOR SAFTEY..."
 }
 
-compromised_XMRig_Hash()
+compromised_hash_P2Pool()
 {
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "@   "
