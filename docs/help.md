@@ -29,10 +29,17 @@ daemon stop                 gracefully stop the daemon
 daemon kill                 forcefully kill all daemon processes
 daemon full                 start the daemon attached
 
+# MINE #
+mine start                  start monerod, xmrig, p2pool in the background
+mine stop                   stop monerod, xmrig, p2pool
+
 # WATCH #
 watch daemon                show live daemon output
 watch xmrig                 show live xmrig output
 watch p2pool                show live p2pool output
+
+# BACKUP #
+backup                      encrypt and backup your /wallets/
 
 # STATS #
 status                      print useful stats
@@ -52,7 +59,7 @@ The `/monero-bash/` folder starts like this:
 monero-bash/
 ├─ monero-bash       main script
 ├─ bin               where package binaries live
-├─ config            config files for all packages
+├─ config            backup config files for all packages
 ├─ src               monero-bash source code
 ├─ old               temp folder when upgrading
 ```
@@ -69,11 +76,8 @@ After installation, monero-bash will:
 ```
 *note:* the `.bitmonero/` folder path can be set anywhere
 
-When upgrading, `monero-bash` moves packages into a timestamped folder inside `old` instead of deleting them (to change that, see the next section)
-
-
 ## Configuration
-If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, just put them in your `.bitmonero` folder and monero-bash will use them
+If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them
 
 [Refer to this documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
 
@@ -103,9 +107,6 @@ SYSTEMD_P2POOL="true"                   use systemd to control p2pool
 SYSTEMD_XMRIG="true"                    use systemd to control xmrig
 
 # updates (only checks)
-AUTO_UPDATE_MONERO="false"              check for update on startup
-AUTO_UPDATE_MONERO_BASH="false"
-AUTO_UPDATE_P2POOL="false"
-AUTO_UPDATE_XMRIG="false"
+AUTO_UPDATE="false"                     check for updates on startup
 ```
 If `SYSTEMD_x` is set to `false`, monero-bash will directly invoke the program. if set to `true`, monero-bash will create a `.service` file and launch the program as a `systemd` service instead. `systemd` MUST be used if you want to use the `monero-bash watch` command, as it uses `journalctl`
