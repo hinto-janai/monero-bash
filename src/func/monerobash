@@ -70,6 +70,7 @@ done
 	[[ -f "$installDirectory/.gitignore" ]]&& sudo rm -r "$installDirectory/.gitignore"
 	[[ -f "$installDirectory/LICENSE" ]]&& sudo rm "$installDirectory/LICENSE"
 	[[ -f "$installDirectory/README.md" ]]&& sudo rm "$installDirectory/README.md"
+	[[ -f "$installDirectory/CHANGELOG.md" ]]&& sudo rm "$installDirectory/CHANGELOG.md"
 	[[ -d "$installDirectory/docs" ]]&& sudo rm -r "$installDirectory/docs"
 	[[ -d "$installDirectory/.old" ]]&& sudo rm -r "$installDirectory/.old"
 

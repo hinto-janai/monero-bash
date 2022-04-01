@@ -113,7 +113,7 @@ help                        show this help message
 
 ---
 
-[No. Click here for a quick explaination of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explaination.md)
+[No. Click here for a quick explanation of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
 
 ---
 </details>
