@@ -58,10 +58,8 @@ The `/monero-bash/` folder starts like this:
 ```
 monero-bash/
 ├─ monero-bash       main script
-├─ bin               where package binaries live
 ├─ config            backup config files for all packages
 ├─ src               monero-bash source code
-├─ old               temp folder when upgrading
 ```
 After installation, monero-bash will:
 * move itself to `/usr/local/share/monero-bash`
@@ -74,7 +72,7 @@ After installation, monero-bash will:
 ├─ wallets              wallet files
 ├─ .bitmonero           monero blockchain/data folder
 ```
-*note:* the `.bitmonero/` folder path can be set anywhere
+*note:* the `.bitmonero` folder path can be set anywhere
 
 ## Configuration
 If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them
@@ -98,7 +96,6 @@ AUTO_STOP_DAEMON="true"                 auto-stop daemon on wallet close
 
 # monero-bash
 PRICE_API_IP_WARNING="true"             warn when checking price
-OLD_FOLDER="true"                       move old packages into old, instead of deleting
 
 # p2pool
 SYSTEMD_P2POOL="true"                   use systemd to control p2pool
