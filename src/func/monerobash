@@ -128,11 +128,11 @@ $white; echo "to get started"
 
 monerobash_Uninstall()
 {
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "@   "
 	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE /.monero-bash/ AND EVERYTHING INSIDE IT"
-	$bwhite; echo "  @"
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	$bwhite; echo "   @"
+	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "Uninstall "
 	$ired; echo -n "monero-bash? "
 	$bwhite; echo -n "(y/N) "
@@ -145,7 +145,7 @@ monerobash_Uninstall()
 			$bred; echo -n "      WALLETS FOUND      "
 			$bwhite; echo "@@@@@@@@@@@@"
 			$bwhite; ls "$wallets"
-			$bred; echo -n "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N)"
+			$bred; echo -n "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) " ;$bwhite
 			Yes(){ : ;}
 			No(){ $white; echo "Exiting..." ;exit;}
 			prompt_NOyes
@@ -169,13 +169,13 @@ monerobash_Uninstall()
 		# Hash Integrity Check
 		print_GreenHash "Checking monero-bash hash integrity"
 		QUIET_HASH_LIST
-		print_RedHash "Removing $dotMoneroBash"
+		print_WhiteHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
 			error_Continue "$dotMoneroBash not removed"
-		print_RedHash "Removing from PATH"
+		print_WhiteHash "Removing from PATH"
 			path_Remove
 			error_Continue "PATH not removed"
-		print_RedHash "Removing /usr/local/share/monero-bash/"
+		print_WhiteHash "Removing /usr/local/share/monero-bash/"
 			sudo rm -rf "/usr/local/share/monero-bash"
 			error_Exit "monero-bash not removed"
 		print_GreenHash "monero-bash has been uninstalled"
