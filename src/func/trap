@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# trap that handles exits (and cleansup)
+trap_Template()
+{
+	trap "" 1 2 3 6
+}
+
+# delete tmp folder
+trap_Tmp()
+{
+	trap_Template
+	error_Trap "CLEANING TEMP FILES"
+	rm -rf "$tmp"
+}
+
+# cancel binary upgrades
+trap_Bin()
+{
+	trap_Template
+	error_Trap "RESTORING OLD BINARIES"
+}

@@ -20,6 +20,7 @@ compromised_hash_Monero()
     $bwhite; echo "   @"
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     echo "EXITING FOR SAFTEY..."
+	exit
 }
 
 compromised_hash_MoneroBash()
@@ -40,6 +41,7 @@ compromised_hash_MoneroBash()
 	$bwhite; echo "   @"
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	echo "EXITING FOR SAFTEY..."
+	exit
 }
 
 compromised_hash_XMRig()
@@ -60,6 +62,7 @@ compromised_hash_XMRig()
 	$bwhite; echo "   @"
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	echo "EXITING FOR SAFTEY..."
+	exit
 }
 
 compromised_hash_P2Pool()
@@ -80,4 +83,5 @@ compromised_hash_P2Pool()
 	$bwhite; echo "   @"
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	echo "EXITING FOR SAFTEY..."
+	exit
 }
