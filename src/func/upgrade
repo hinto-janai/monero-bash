@@ -59,7 +59,7 @@ upgrade_Template()
 			$igreen; echo "VERSION" ;$off
 			PRODUCE_HASH_LIST
 		else
-			compromised_"$NAME_FUNC"_Hash
+			compromised_hash_"$NAME_FUNC"
 			exit
 		fi
 		tmp_Del;error_Exit "Could not cleanup tmp folder"

@@ -19,7 +19,7 @@ daemon_stop_Template()
 		DAEMON_COMMANDS
 	else
 		$white; echo "Monero daemon: "
-		$bred; echo "not online" ;$off
+		$bred; echo -n "not online" ;$off
 	fi
 }
 
