@@ -19,9 +19,12 @@ verify_hash_Monero()
 verify_hash_MoneroBash()
 {
 	tarName="$(ls "$tmp")"
-	echo "$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
-		| grep -A1 "SHA256SUM*" | awk '{print $1}' | head -n 2 | tail -n 1)" \
-		"$tmp/$tarName" | sha256sum -c &>/dev/null
+	moneroBash_hashfile="$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
+		| grep -o "/hinto-janaiyo/monero-bash/releases/download/.*/SHA256SUM" \
+		| awk '{print $1}' | sed 's/"//g')"
+	moneroBash_hashfile2="$(wget -qO- "https://github.com/$moneroBash_hashfile" \
+		| awk '{print $1}')"
+	echo "$moneroBash_hashfile2" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
 }
 
