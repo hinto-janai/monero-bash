@@ -131,7 +131,8 @@ help                        show this help message
 The latest packages are always downloaded through the GitHub API. If the API fails for whatever reason, monero-bash will attempt to find a download link by HTML filtering the package's `/releases/latest/` GitHub page.
 
 Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.txt`
-Every other package hash is found on its GitHub page.
+
+Every other package hash is found on its respective GitHub page.
 
 Unfortunately, there is no "official" central repo for all these programs, so `monero-bash` individually seeks out the links/hashes (makes my life very hard)
 

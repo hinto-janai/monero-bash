@@ -64,6 +64,15 @@ done
 	print_GreenHash "Checking monero-bash hash integrity"
 	CHECK_HASH_LIST
 
+# Deleting Git Files
+	print_GreenHash "Cleaning up git files"
+	[[ -d "$installDirectory/.git" ]]&& sudo rm -r "$installDirectory/.git"
+	[[ -f "$installDirectory/.gitignore" ]]&& sudo rm -r "$installDirectory/.gitignore"
+	[[ -f "$installDirectory/LICENSE" ]]&& sudo rm "$installDirectory/LICENSE"
+	[[ -f "$installDirectory/README.md" ]]&& sudo rm "$installDirectory/README.md"
+	[[ -d "$installDirectory/docs" ]]&& sudo rm -r "$installDirectory/docs"
+	[[ -d "$installDirectory/.old" ]]&& sudo rm -r "$installDirectory/.old"
+
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
 	sudo mv "$installDirectory" "/usr/local/share/"
