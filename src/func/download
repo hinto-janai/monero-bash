@@ -1,34 +1,45 @@
 #!/usr/bin/env bash
 #
-#						Download Functions
-#
+# Download Functions
+# the "$DUMP" variable is reused in
+# "version_" functions so there only needs
+# to be 1 http request for all the data needed
 download_Template()
 {
 	tmp="$(find /tmp/monero-bash.*)"
+	HTML="false"
+	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+	if [[ $? != "0" ]]; then
+		$ired; echo "GitHub API error detected..."
+		$white; echo "Trying GitHub HTML filter instead..."
+		DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+		HTML="true"
+	fi
 	if [[ $downloadMonero = "true" ]]; then
 		wget -P "$tmp" -q --show-progress --content-disposition "$link"
 		code_Wget
 	else
-		link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" \
-			| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
-			| sed 's/\"//g')"
-		wget -P "$tmp" -q --show-progress "$link"
-		if [[ $? != "0" ]]; then
-			$ired; echo "GitHub API error detected..."
-			$white; echo "Trying GitHub HTML filter instead..."
-			link="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest" \
+		if [[ "$HTML" = "true" ]]; then
+			local link="$(echo "$DUMP" \
 				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 				| awk '{print $1}' \
-				| sed 's/\"//g')"
-			wget -P "$tmp" -q --show-progress "https://github.com/$link"
-			code_Wget
+				| tr -d '"' \
+				| sed 's@^@https://github.com@')"
+		else
+			local link="$(echo "$DUMP" \
+				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
+				| tr -d '"')"
 		fi
+		wget -P "$tmp" -q --show-progress "$link"
+		code_Wget
 	fi
 }
 download_Monero()
 {
 	local link="https://downloads.getmonero.org/cli/linux64"
 	local downloadMonero="true"
+	local AUTHOR="monero-project"
+	local PROJECT="monero"
 	download_Template
 }
 

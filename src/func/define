@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+#
+# defines variables for packages
+# to be used in "x_Template" functions
+define_Monero()
+{
+	
+}

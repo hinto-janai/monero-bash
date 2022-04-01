@@ -1,23 +1,42 @@
 #!/usr/bin/env bash
 #
-#						Version Functions
-#						these fetch the new version and
-#						turns them into usable variables
-version_Template()
+# Version Functions
+# fetchs latest version, defines it as a variable
+
+# invoked by "monero-bash update"
+version_Update()
 {
 	link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags")"
-		if [[ $? != "0" ]]; then
-			$ired; echo "GitHub API error detected..."
-			$white; echo "Trying GitHub HTML filter instead..."
-			NewVer="$(wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
-				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
-				| awk '{print $1}' | head -n1 \
-				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
-			[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
-		else
-			NewVer="$(echo "$link" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
-		fi
+	if [[ $? != "0" && "$HTML" != "true" ]]; then
+		$ired; echo "GitHub API error detected..."
+		$white; echo "Trying GitHub HTML filter instead..."
+		HTML="true"
+	fi
+	if [[ "$HTML" = "true" ]]; then
+		NewVer="$(wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
+			| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+			| awk '{print $1}' | head -n1 \
+			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	else
+		NewVer="$(echo "$link" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
+	fi
 }
+
+# invoked by "download_Template" function, reuses the "$DUMP" variable
+version_Template()
+{
+	if [[ "$HTML" = "true" ]]; then
+		NewVer="$(echo "$DUMP" \
+			| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+			| awk '{print $1}' | head -n1 \
+			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	else
+		NewVer="$(echo "$DUMP" | grep "tag_name.*v.*" | awk '{print $2}' | tr -d '",')"
+	fi
+}
+
 version_Monero()
 {
 	local AUTHOR="monero-project"
