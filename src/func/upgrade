@@ -48,6 +48,7 @@ upgrade_Template()
 		sudo mv "$tmp/$folderName"/* "$DIRECTORY"
 	fi
 	sudo rm -rf "$old"
+	upgrade_Post
 }
 
 upgrade_Pre()
