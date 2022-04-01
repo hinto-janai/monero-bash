@@ -33,7 +33,7 @@ version_Template()
 			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
 		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	else
-		NewVer="$(echo "$DUMP" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
+		NewVer="$(echo "$DUMP" | grep "tag_name.*v.*" | awk '{print $2}' | tr -d '",')"
 	fi
 }
 
