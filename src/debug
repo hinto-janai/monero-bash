@@ -149,7 +149,7 @@ QUIET_HASH_LIST()
 	for i in src/* ;do
 		if [[ -f "$i" ]]; then
 			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			[[ $? != "0" ]]&& hashFail="true"
+			[[ $? != "0" ]]&& hashFail="true" && srcHashFail="true"
 		fi
 	done
 	if [[ $srcHashFail = "true" ]]; then
@@ -162,7 +162,7 @@ QUIET_HASH_LIST()
 	# function hashes
 	for i in src/func/* ;do
 		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		[[ $? != "0" ]]&& hashFail="true"
+		[[ $? != "0" ]]&& hashFail="true" && funcHashFail="true"
 	done
 	if [[ $funcHashFail = "true" ]]; then
 		$white; echo -n "functions: "
@@ -175,7 +175,7 @@ QUIET_HASH_LIST()
 	for i in src/txt/* ;do
 		if [[ $i != "src/txt/hashlist" ]]; then
 			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			[[ $? != "0" ]]&& hashFail="true"
+			[[ $? != "0" ]]&& hashFail="true" && txtHashFail="true"
 		fi
 	done
 	if [[ $txtHashFail = "true" ]]; then
@@ -188,9 +188,9 @@ QUIET_HASH_LIST()
 	# config hashes
 	for i in config/* ;do
 		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		[[ $? != "0" ]]&& hashFail="true"
+		[[ $? != "0" ]]&& hashFail="true" && confHashFail="true"
 	done
-	if [[ $txtHashFail = "true" ]]; then
+	if [[ $confHashFail = "true" ]]; then
 		$white; echo -n "config: "
 		$bred; echo "FAILED"
 	else

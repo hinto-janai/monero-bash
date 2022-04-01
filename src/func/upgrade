@@ -24,8 +24,8 @@ upgrade_Template()
 	download_"$NAME_FUNC"
 	print_WhiteHash "Verifying"
 	verify_hash_"$NAME_FUNC"
-	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 
+	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 	print_WhiteHash "Extracting"
 	tar -xf "$tmp/$tarName" -C "$tmp"
 	rm -f "$tmp/$tarName"
