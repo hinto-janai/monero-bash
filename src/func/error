@@ -39,6 +39,6 @@ error_Sudo()
 
 error_Unknown()
 {
-	printf "\033[1;31mmonero-bash error:\033[0;97mUnknown command\n"
+	printf "\033[1;31mmonero-bash error: \033[0;97mUnknown command\n"
 	exit
 }
