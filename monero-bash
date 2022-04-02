@@ -137,6 +137,7 @@ if [[ $options = "true" ]]; then
 				prompt_YESno
 			elif [[ $2 = "" ]]; then
 				print_Error "Pick a package or <all>"
+				print_Version
 			else
 				error_Unknown
 			fi
@@ -169,6 +170,7 @@ if [[ $options = "true" ]]; then
 				prompt_YESno
 			elif [[ $2 = "" ]]; then
 				print_Error "Pick a package or <all>"
+				print_Version
 			else
 				error_Unknown
 			fi
@@ -199,6 +201,7 @@ if [[ $options = "true" ]]; then
 				prompt_YESno
 			elif [[ $2 = "" ]]; then
 				print_Error "Pick a package or <all>"
+				print_Version
 			else
 				error_Unknown
 			fi

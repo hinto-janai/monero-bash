@@ -64,6 +64,9 @@ done
 	print_GreenHash "Checking monero-bash hash integrity"
 	CHECK_HASH_LIST
 
+# TRAP
+trap_No
+
 # Deleting Git Files
 	print_GreenHash "Cleaning up git files"
 	[[ -d "$installDirectory/.git" ]]&& sudo rm -r "$installDirectory/.git"
@@ -170,6 +173,7 @@ monerobash_Uninstall()
 		# Hash Integrity Check
 		print_GreenHash "Checking monero-bash hash integrity"
 		QUIET_HASH_LIST
+		trap_No
 		print_WhiteHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
 			error_Continue "$dotMoneroBash not removed"
