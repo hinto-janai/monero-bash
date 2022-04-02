@@ -1,8 +1,30 @@
 #!/usr/bin/env bash
-# trap that handles exits (and cleansup)
+# trap that handles exits (and cleanup)
 trap_Template()
 {
 	trap "" 1 2 3 6
+}
+
+# continue current operation until finished (then revert)
+trap_No()
+{
+	trap_Template
+	trapSet="true"
+	error_Trap "LETTING DATA TRANSFER FINISH TO PREVENT CORRUPTION"
+}
+
+# does everything POST install (rm temp files, state, hash)
+trap_Post()
+{
+    trap_Template
+    error_Trap "WRITING TO STATE BEFORE EXITING"
+	version_"$NAME_FUNC"
+	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
+	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+	PRODUCE_HASH_LIST
+	[[ -d "$old" ]]&& sudo rm -rf "$old"
+	[[ -d "$tmp" ]]&& sudo rm -rf "$tmp"
+	exit
 }
 
 # delete tmp folder
@@ -10,12 +32,27 @@ trap_Tmp()
 {
 	trap_Template
 	error_Trap "CLEANING TEMP FILES"
-	rm -rf "$tmp"
+	[[ -d "$tmp" ]]&& rm -rf "$tmp"
+	exit
 }
 
-# cancel binary upgrades
-trap_Bin()
+# revert monero-bash upgrades
+trap_MoneroBash()
 {
 	trap_Template
-	error_Trap "RESTORING OLD BINARIES"
+	error_Trap "RESTORING OLD MONERO-BASH"
+	sudo mv -f "$old/monero-bash" "$installDirectory"
+	sudo mv -fr "$old/src" "$installDirectory"
+	sudo mv -fr "$old/config" "$installDirectory"
+	sudo mv -f "$old/src/txt/state" "$state"
+	exit
+}
+
+# delete old folder
+trap_Old()
+{
+	trap_Template
+	error_Trap "CLEANING OLD FOLDER"
+	[[ -d "$old" ]]&& rm -rf "$old"
+	exit
 }

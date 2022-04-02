@@ -15,3 +15,13 @@ code_Wget()
 		*) error_Exit "wget - Unknown error"
 	esac
 }
+
+code_Tar()
+{
+	case $? in
+		0) : ;;
+		1) error_Exit "tar - Some files differ" ;;
+		2) error_Exit "tar - Fatal error" ;;
+		*) error_Exit "tar - Unknown error"
+	esac
+}

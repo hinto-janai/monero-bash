@@ -28,25 +28,45 @@ upgrade_Template()
 	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 	print_WhiteHash "Extracting"
 	tar -xf "$tmp/$tarName" -C "$tmp"
+	code_Tar
 	rm -f "$tmp/$tarName"
-	$white; echo -n "$tarName: "
-	$igreen; echo "EXTRACTED" ;$off
+	error_Exit "rm - error"
+	$white; echo -n "$tarName: " ;$igreen; echo "EXTRACTED" ;$off
 
 	local folderName="$(ls "$tmp")"
+	[[ -d "$old" ]]&& sudo rm -rf "$old"
+	error_Exit "Could not remove old folder"
 	mkdir -p "$old"
 	if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
+		trap "trap_Old" 1 2 3 6
 		sudo cp "$installDirectory/monero-bash" "$old"
 		sudo cp -r "$installDirectory/src" "$old"
 		sudo cp -r "$installDirectory/config" "$old"
+		trap "trap_MoneroBash" 1 2 3 6
 		sudo cp -f "$tmp/$folderName/monero-bash" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/config" "$installDirectory"
 		sudo cp -f "$old/src/txt/state" "$state"
 	else
-		[[ -d "$DIRECTORY" ]]&& sudo mv "$DIRECTORY" "$old"
+		trap "trap_No" 1 2 3 6
+		if [[ -d "$DIRECTORY" ]]; then
+			sudo mv -f "$DIRECTORY" "$old"
+		fi
+		if [[ -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
+			error_Trap "RESTORING OLD [$NAME_PRETTY]"
+			sudo mv -f "$old/$FOLDER" "$DIRECTORY"
+			exit
+		fi
 		sudo mkdir -p "$DIRECTORY"
 		sudo mv "$tmp/$folderName"/* "$DIRECTORY"
+		if [[  -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
+			error_Trap "RESTORING OLD [$NAME_PRETTY]"
+			sudo rm -fr "$DIRECTORY"
+			sudo mv -f "$old/$FOLDER" "$DIRECTORY"
+			exit
+		fi
 	fi
+	trap_State
 	sudo rm -rf "$old"
 	upgrade_Post
 }
@@ -64,6 +84,7 @@ upgrade_Pre()
 	else
 		prompt_Sudo ; error_Sudo
 		echo ; safety_HashList
+		trap "trap_Tmp" 1 2 3 6
 		tmp_Create ; error_Exit "Could not create tmp folder"
 	fi
 }
@@ -74,10 +95,10 @@ upgrade_Post()
 	version_"$NAME_FUNC"
 	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-	$white; echo -n "$NewVer: "
-	$igreen; echo "VERSION" ;$off
+	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
 	PRODUCE_HASH_LIST
-	tmp_Del;error_Exit "Could not cleanup tmp folder"
+	tmp_Del
+	error_Exit "Could not cleanup tmp folder"
 	if [[ "$INSTALL" = "true" ]]; then
 		print_GreenHash "Installed [$NAME_PRETTY]"
 	else
@@ -93,6 +114,7 @@ upgrade_Monero()
 	NAME_FUNC="Monero"
 	DIRECTORY="$binMonero"
 	NAME_CAPS="MONERO"
+	FOLDER="monero"
 	upgrade_Template
 }
 
@@ -115,6 +137,7 @@ upgrade_XMRig()
 	NAME_FUNC="XMRig"
 	DIRECTORY="$binXMRig"
 	NAME_CAPS="XMRIG"
+	FOLDER="xmrig"
 	upgrade_Template
 }
 
@@ -126,6 +149,7 @@ upgrade_P2Pool()
 	NAME_FUNC="P2Pool"
 	DIRECTORY="$binP2Pool"
 	NAME_CAPS="P2POOL"
+	FOLDER="p2pool"
 	upgrade_Template
 }
 
