@@ -68,7 +68,7 @@ upgrade_Template()
 			exit
 		fi
 	fi
-	trap_State
+	trap_Post
 	sudo rm -rf "$old"
 	upgrade_Post
 }
