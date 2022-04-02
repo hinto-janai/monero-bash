@@ -34,8 +34,10 @@ upgrade_Template()
 	$white; echo -n "$tarName: " ;$igreen; echo "EXTRACTED" ;$off
 
 	local folderName="$(ls "$tmp")"
-	[[ -d "$old" ]]&& sudo rm -rf "$old"
-	error_Exit "Could not remove old folder"
+	if [[ -d "$old" ]]; then
+		sudo rm -rf "$old"
+		error_Exit "Could not remove old folder"
+	fi
 	mkdir -p "$old"
 	if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
 		trap "trap_Old" 1 2 3 6
