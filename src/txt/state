@@ -6,7 +6,7 @@ FIRST_TIME="true"
 
 # versions
 MONERO_VER=""
-MONERO_BASH_VER="v0.5"
+MONERO_BASH_VER="v0.6"
 XMRIG_VER=""
 P2POOL_VER=""
 

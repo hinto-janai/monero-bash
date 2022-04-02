@@ -147,7 +147,7 @@ Unfortunately, there is no "official" central repo for all these programs, so `m
 
 ***monero-bash does not have any hard dependencies***
 
-If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work
+If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work:
 * bash
 * wget
 * procfs
@@ -159,7 +159,7 @@ If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.)
 </details>
 
 <details>
-<summary>monero-bash says I have a package but I don't and can't upgrade!</summary>
+<summary>monero-bash won't let me upgrade!</summary>
 
 ---
 
@@ -179,15 +179,36 @@ monero-bash install <package>
 </details>
 
 <details>
+<summary>What is the hash check before every upgrade?</summary>
+
+---
+
+For safety, monero-bash checks its own source code hash integrity before any manipulation of data. If any hash check fails, any command involving data manipulation will also fail.
+
+If you've deleted some files and now it won't work, remove monero-bash manually and install a fresh copy:
+```
+sudo rm -r "/usr/local/share/monero-bash" &&
+sudo rm "/usr/local/bin/monero-bash" &&
+sudo rm -r "$HOME/.monero-bash"
+```
+If you're manually editing the code and forcing it to work, please be careful. Shell scripts are one empty variable away from wiping your drive. Definitely not speaking from experience.
+
+---
+
+</details>
+
+<details>
 <summary>What happens if I cancel/shutdown mid-upgrade?</summary>
 
 ---
 
 monero-bash makes and uses a temporary folder until it's ready to swap your current binaries with the new.
 
-Canceling, exiting the terminal, or shutting down your computer is still not recommended while upgrading as you could cancel the actual swapping of software, which would leave you with corrupted binaries and local state file.
+If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old software, and clean up temporary files.
 
-This is especially true when upgrading `monero-bash`, itself. Thankfully, `monero-bash` is only 200KB~, so you'd be pretty unlucky if you canceled ***right*** as the the actual `mv` operation was happening.
+If you cancel ***after*** software is installed, but before the local state is updated, monero-bash will force update it and clean up.
+
+**There's nothing monero-bash can do to help if you shutdown your computer mid-upgrade**
 
 ---
 
