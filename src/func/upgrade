@@ -91,7 +91,7 @@ upgrade_Pre()
 
 upgrade_Post()
 {
-	trap_Post 1 2 3 6 15
+	trap "trap_Post" 1 2 3 6 15
 	sudo rm -rf "$old"
 	print_WhiteHash "Updating local state"
 	version_"$NAME_FUNC"
