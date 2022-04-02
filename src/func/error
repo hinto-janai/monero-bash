@@ -45,6 +45,7 @@ error_Unknown()
 
 error_Trap()
 {
+	echo
 	printf "\033[1;31mMONERO-BASH: "
 	printf "\033[1;37mEXIT SIGNAL DETECTED - $1\n"
 }
