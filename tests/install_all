@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+#
+# install all packages and output
+# all important variables at the end
+#
+
+install()
+{
+	printf "\n" | monero-bash install "$1"
+	echo "NAME_VER - $NAME_VER"
+	echo "NAME_OLD - $NAME_OLD"
+	echo "NAME_PRETTY - $NAME_PRETTY"
+	echo "NAME_FUNC - $NAME_FUNC"
+	echo "DIRECTORY - $DIRECTORY"
+	echo "NAME_CAPS - $NAME_CAPS"
+	echo "AUTHOR - $AUTHOR"
+	echo "PROJECT - $PROJECT"
+	echo "PACKAGE - $PACKAGE"
+	echo "SHA - $SHA"
+	echo "tarFile - $tarFile"
+	echo "hashFile - $hashFile"
+	echo "hashSTDOUT - $hashSTDOUT"
+	echo "HASH - $HASH"
+	echo "NewVer - $NewVer"
+}
+install monero
+install xmrig
+install p2p
+install bash
