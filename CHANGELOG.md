@@ -1,3 +1,7 @@
+# v0.6.1
+## Updates
+* GPG
+
 # v0.6
 ## Updates
 * Package manager is 2x~ faster (less API calls)

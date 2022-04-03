@@ -3,8 +3,6 @@
 
 update_Template()
 {
-	prompt_Sudo
-	error_Sudo
 	version_Update
 	if [[ "$NAME_VER" != "$NewVer" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
@@ -67,6 +65,9 @@ update_P2Pool()
 
 update_All()
 {
+	prompt_Sudo
+	error_Sudo
+	$bwhite; echo "Checking for updates..."
 	update_MoneroBash
 	[[ $MONERO_VER != "" ]]&& update_Monero
 	[[ $XMRIG_VER != "" ]]&& update_XMRig
