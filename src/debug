@@ -25,8 +25,8 @@ LIST()
 # produce a hash list for important monero-bash files /monero-bash/src/txt/hashlist
 PRODUCE_HASH_LIST_TEMPLATE()
 {
-	for i in $DIR ;do
-		if [[ -f "$i" ]]; then
+	for i in $DIR/* ;do
+		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
 			sudo sha256sum $i >> "$hashlist"
 		fi
 	done
@@ -34,43 +34,38 @@ PRODUCE_HASH_LIST_TEMPLATE()
 PRODUCE_HASH_LIST()
 {
 	prompt_Sudo
-	echo "producing hashlist"
+	echo "producing hashlist..."
 	sudo echo -n > "$hashlist"
-	# monero-bash hash
 	sudo sha256sum "monero-bash" >> "$hashlist"
-	# src file hashes
-	for i in src/* ;do
-		if [[ -f "$i" ]]; then
-			sudo sha256sum $i >> "$hashlist"
-		fi
-	done
-	# function hashes
-	for i in src/func/* ;do
-		if [[ -f "$i" ]]; then
-			sudo sha256sum $i >> "$hashlist"
-		fi
-	done
-	# txt hashes
-	for i in src/txt/* ;do
-		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
-			sudo sha256sum $i >> "$hashlist"
-		fi
-	done
-	# config hashes
-	for i in config/* ;do
-		if [[ -f "$i" ]]; then
-			sudo sha256sum $i >> "$hashlist"
-		fi
-	done
-	# GPG hashes
-	for i in gpg/* ;do
-		if [[ -f "$i" ]]; then
-			sudo sha256sum $i >> "$hashlist"
-		fi
-	done
+	local DIR="src"
+	PRODUCE_HASH_LIST_TEMPLATE
+	local DIR="src/func"
+	PRODUCE_HASH_LIST_TEMPLATE
+	local DIR="src/txt"
+	PRODUCE_HASH_LIST_TEMPLATE
+	local DIR="config"
+	PRODUCE_HASH_LIST_TEMPLATE
+	local DIR="gpg"
+	PRODUCE_HASH_LIST_TEMPLATE
 }
 
 # check hash list against current monero-bash files (with color coded output)
+CHECK_HASH_LIST_TEMPLATE()
+{
+	for i in $DIR/* ;do
+		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
+			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+			if [[ $? = "0" ]]; then
+				echo -n "$i: "
+				$bgreen; echo "OK" ;$white
+			else
+				echo -n "$i: "
+				$bred; echo "FAILED" ;$white
+				hashFail="true"
+			fi
+		fi
+	done
+}
 CHECK_HASH_LIST()
 {
 	# monero-bash hash
@@ -83,70 +78,19 @@ CHECK_HASH_LIST()
 		$bred; echo "FAILED" ;$white
 		hashFail="true"
 	fi
-	# src file hashes
-	for i in src/* ;do
-		if [[ -f "$i" ]]; then
-			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			if [[ $? = "0" ]]; then
-				echo -n "$i: "
-				$bgreen; echo "OK" ;$white
-			else
-				echo -n "$i: "
-				$bred; echo "FAILED" ;$white
-				hashFail="true"
-			fi
-		fi
-	done
-	# function hashes
-	for i in src/func/* ;do
-		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		if [[ $? = "0" ]]; then
-			echo -n "$i: "
-			$bgreen; echo "OK" ;$white
-		else
-			echo -n "$i: "
-			$bred; echo "FAILED" ;$white
-			hashFail="true"
-		fi
-	done
-	# txt hashes
-	for i in src/txt/* ;do
-		if [[ $i != "src/txt/hashlist" ]]; then
-			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			if [[ $? = "0" ]]; then
-				echo -n "$i: "
-				$bgreen; echo "OK" ;$white
-			else
-				echo -n "$i: "
-				$bred; echo "FAILED" ;$white
-				hashFail="true"
-			fi
-		fi
-	done
-	# config hashes
-	for i in config/* ;do
-		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		if [[ $? = "0" ]]; then
-			echo -n "$i: "
-			$bgreen; echo "OK" ;$white
-		else
-			echo -n "$i: "
-			$bred; echo "FAILED" ;$white
-			hashFail="true"
-		fi
-	done
-	# GPG hashes
-	for i in gpg/* ;do
-		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		if [[ $? = "0" ]]; then
-			echo -n "$i: "
-			$bgreen; echo "OK" ;$white
-		else
-			echo -n "$i: "
-			$bred; echo "FAILED" ;$white
-			hashFail="true"
-		fi
-	done
+
+	# the rest
+	local DIR="src"
+	CHECK_HASH_LIST_TEMPLATE
+	local DIR="src/func"
+	CHECK_HASH_LIST_TEMPLATE
+	local DIR="src/txt"
+	CHECK_HASH_LIST_TEMPLATE
+	local DIR="src/config"
+	CHECK_HASH_LIST_TEMPLATE
+	local DIR="gpg"
+	CHECK_HASH_LIST_TEMPLATE
+
 	if [[ $hashFail = "true" ]]; then
 		$bred; echo -n "monero-bash error: "
 		$bwhite; echo "hash check has failed"
@@ -159,6 +103,22 @@ CHECK_HASH_LIST()
 }
 
 # checks the hash list less verbosely
+QUIET_HASH_LIST_TEMPLATE()
+{
+	for i in $DIR/* ;do
+		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
+			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+			[[ $? != "0" ]]&& hashFail="true" && local localHashFail="true"
+		fi
+	done
+	if [[ $localHashFail = "true" ]]; then
+		$white; echo -n "$NAME: "
+		$bred; echo "FAILED"
+	else
+		$white; echo -n "$NAME: " ;$white
+		$bgreen; echo "OK" ;$white
+	fi
+}
 QUIET_HASH_LIST()
 {
 	# monero-bash hash
@@ -171,71 +131,24 @@ QUIET_HASH_LIST()
 		$bred; echo "FAILED" ;$white
 		hashFail="true"
 	fi
-	# src file hashes
-	for i in src/* ;do
-		if [[ -f "$i" ]]; then
-			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			[[ $? != "0" ]]&& hashFail="true" && srcHashFail="true"
-		fi
-	done
-	if [[ $srcHashFail = "true" ]]; then
-		$white; echo -n "source: "
-		$bred; echo "FAILED"
-	else
-		$white; echo -n "source: " ;$white
-		$bgreen; echo "OK" ;$white
-	fi
-	# function hashes
-	for i in src/func/* ;do
-		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		[[ $? != "0" ]]&& hashFail="true" && funcHashFail="true"
-	done
-	if [[ $funcHashFail = "true" ]]; then
-		$white; echo -n "functions: "
-		$bred; echo "FAILED"
-	else
-		$white; echo -n "functions: " ;$white
-		$bgreen; echo "OK" ;$white
-	fi
-	# txt hashes
-	for i in src/txt/* ;do
-		if [[ $i != "src/txt/hashlist" ]]; then
-			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			[[ $? != "0" ]]&& hashFail="true" && txtHashFail="true"
-		fi
-	done
-	if [[ $txtHashFail = "true" ]]; then
-		$white; echo -n "text: "
-		$bred; echo "FAILED"
-	else
-		$white; echo -n "text: " ;$white
-		$bgreen; echo "OK" ;$white
-	fi
-	# config hashes
-	for i in config/* ;do
-		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		[[ $? != "0" ]]&& hashFail="true" && confHashFail="true"
-	done
-	if [[ $confHashFail = "true" ]]; then
-		$white; echo -n "config: "
-		$bred; echo "FAILED"
-	else
-		$white; echo -n "config: " ;$white
-		$bgreen; echo "OK" ;$white
-	fi
-	# GPG hashes
-	for i in gpg/* ;do
-		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-		[[ $? != "0" ]]&& hashFail="true" && gpgHashFail="true"
-	done
-	if [[ $gpgHashFail = "true" ]]; then
-		$white; echo -n "gpg: "
-		$bred; echo "FAILED"
-	else
-		$white; echo -n "gpg: " ;$white
-		$bgreen; echo "OK" ;$white
-	fi
-	# if any fail, print error
+
+	# the rest
+	local NAME="source"
+	local DIR="src"
+	QUIET_HASH_LIST_TEMPLATE
+	local NAME="functions"
+	local DIR="src/func"
+	QUIET_HASH_LIST_TEMPLATE
+	local NAME="txt"
+	local DIR="src/txt"
+	QUIET_HASH_LIST_TEMPLATE
+	local NAME="config"
+	local DIR="config"
+	QUIET_HASH_LIST_TEMPLATE
+	local NAME="gpg"
+	local DIR="gpg"
+	QUIET_HASH_LIST_TEMPLATE
+
 	if [[ $hashFail = "true" ]]; then
 		$bred; echo -n "monero-bash error: "
 		$bwhite; echo "hash check has failed"
