@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
-# check for crucial monero-bash source files
+# installDirectory = where ever /monero-bash/ is
 scriptPath="$(realpath $0)"
 installDirectory="$(dirname "$scriptPath")"
+
+# check for crucial monero-bash source files
 if [[ $installDirectory == *"/monero-bash" ]]; then
 	cd "$installDirectory"
 	source "$installDirectory/src/source"
@@ -15,15 +17,13 @@ if [[ $installDirectory == *"/monero-bash" ]]; then
 		printf "\033[0;31mExiting for safety...\n"
 		exit
 	fi
-	[[ $1 = "" ]]&& interactive="true"
-	[[ $1 != "" ]]&& options="true"
 else
 	printf "\033[1;31mExecuting monero-bash while it isn't in the /monero-bash/ folder is DANGEROUS\n"
 	printf "\033[0;31mExiting for safety...\n"
 	exit
 fi
 
-# DEBUG COMMANDS
+# DEBUG COMMAND - read /src/debug for more info
 if [[ $1 = "DEBUG_04e3be9" ]]; then
 	case $2 in
 		"") DEBUG_04e3be9 ;;
@@ -46,13 +46,11 @@ if [[ $FIRST_TIME != "true" ]]; then
 	safety_DotMoneroBash
 fi
 
-#
+# interactive/option check
+[[ $1 = "" ]]&& interactive="true"
+[[ $1 != "" ]]&& options="true"
+
 # Interactive Wallet Selection
-#
-# this is the default behavior when
-# invoking "monero-bash" after
-# initial configuration
-#
 if [[ $interactive = "true" ]]; then
 	print_MoneroBashTitle
 	if [[ $AUTO_UPDATE = "true" ]]; then
