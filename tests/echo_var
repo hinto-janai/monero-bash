@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# echos important variables after upgrade
+# to trigger: "DEBUG_04e3be9" must = "true"
+
+echo "NAME_VER - $NAME_VER"
+echo "NAME_OLD - $NAME_OLD"
+echo "NAME_PRETTY - $NAME_PRETTY"
+echo "NAME_FUNC - $NAME_FUNC"
+echo "DIRECTORY - $DIRECTORY"
+echo "NAME_CAPS - $NAME_CAPS"
+echo "AUTHOR - $AUTHOR"
+echo "PROJECT - $PROJECT"
+echo "PACKAGE - $PACKAGE"
+echo "SHA - $SHA"
+echo "tarFile - $tarFile"
+echo "hashFile - $hashFile"
+echo "hashSTDOUT - $hashSTDOUT"
+echo "HASH - $HASH"
+echo "NewVer - $NewVer"

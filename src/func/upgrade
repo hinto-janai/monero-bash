@@ -105,6 +105,7 @@ upgrade_Post()
 	else
 		print_GreenHash "Upgraded [$NAME_PRETTY]"
 	fi
+	[[ "$DEBUG_04e3be9" = "true" ]]&& "$installDirectory"/tests/echo_var
 }
 
 upgrade_Monero()
