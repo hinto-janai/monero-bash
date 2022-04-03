@@ -105,7 +105,7 @@ upgrade_Post()
 	else
 		print_GreenHash "Upgraded [$NAME_PRETTY]"
 	fi
-	source /tmp/monero-bash_04e3be9/tests/echo_var && echo_var
+	# source /tmp/monero-bash_04e3be9/tests/echo_var && echo_var
 }
 
 upgrade_Monero()

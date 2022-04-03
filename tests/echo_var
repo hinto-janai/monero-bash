@@ -2,21 +2,24 @@
 #
 # echos important variables after upgrade
 #
+sed -i \
+	's@# source /tmp/monero-bash_04e3be9/tests/echo_var && echo_var@source /tmp/monero-bash_04e3be9/tests/echo_var && echo_var@' \
+	/usr/local/share/monero-bash/src/func/upgrade
 echo_var()
 {
-	echo "NAME_VER - $NAME_VER"
-	echo "NAME_OLD - $NAME_OLD"
-	echo "NAME_PRETTY - $NAME_PRETTY"
-	echo "NAME_FUNC - $NAME_FUNC"
-	echo "DIRECTORY - $DIRECTORY"
-	echo "NAME_CAPS - $NAME_CAPS"
-	echo "AUTHOR - $AUTHOR"
-	echo "PROJECT - $PROJECT"
-	echo "PACKAGE - $PACKAGE"
-	echo "SHA - $SHA"
-	echo "tarFile - $tarFile"
-	echo "hashFile - $hashFile"
-	echo "hashSTDOUT - $hashSTDOUT"
-	echo "HASH - $HASH"
-	echo "NewVer - $NewVer"
+	echo -e "\033[1;37mNAME_VER - \033[0m$NAME_VER"
+	echo -e "\033[1;37mNAME_OLD - \033[0m$NAME_OLD"
+	echo -e "\033[1;37mNAME_PRETTY - \033[0m$NAME_PRETTY"
+	echo -e "\033[1;37mNAME_FUNC - \033[0m$NAME_FUNC"
+	echo -e "\033[1;37mDIRECTORY - \033[0m$DIRECTORY"
+	echo -e "\033[1;37mNAME_CAPS - \033[0m$NAME_CAPS"
+	echo -e "\033[1;37mAUTHOR - \033[0m$AUTHOR"
+	echo -e "\033[1;37mPROJECT - \033[0m$PROJECT"
+	echo -e "\033[1;37mPACKAGE - \033[0m$PACKAGE"
+	echo -e "\033[1;37mSHA - \033[0m$SHA"
+	echo -e "\033[1;37mtarName - \033[0m$tarName"
+	echo -e "\033[1;37mhashFile - \033[0m$hashFile"
+	echo -e "\033[1;37mhashSTDOUT - \033[0m$hashSTDOUT"
+	echo -e "\033[1;37mHASH - \033[0m$HASH"
+	echo -e "\033[1;37mNewVer - \033[0m$NewVer"
 }
