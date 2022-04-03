@@ -55,6 +55,7 @@ if [[ $interactive = "true" ]]; then
 	print_MoneroBashTitle
 	if [[ $AUTO_UPDATE = "true" ]]; then
 		update_All
+		echo
 	fi
 	$white; wallet_Count ; wallet_List ; echo
 	while true ;do
