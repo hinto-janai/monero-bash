@@ -23,6 +23,14 @@ LIST()
 }
 
 # produce a hash list for important monero-bash files /monero-bash/src/txt/hashlist
+PRODUCE_HASH_LIST_TEMPLATE()
+{
+	for i in $DIR ;do
+		if [[ -f "$i" ]]; then
+			sudo sha256sum $i >> "$hashlist"
+		fi
+	done
+}
 PRODUCE_HASH_LIST()
 {
 	prompt_Sudo
@@ -50,6 +58,12 @@ PRODUCE_HASH_LIST()
 	done
 	# config hashes
 	for i in config/* ;do
+		if [[ -f "$i" ]]; then
+			sudo sha256sum $i >> "$hashlist"
+		fi
+	done
+	# GPG hashes
+	for i in gpg/* ;do
 		if [[ -f "$i" ]]; then
 			sudo sha256sum $i >> "$hashlist"
 		fi
@@ -111,6 +125,18 @@ CHECK_HASH_LIST()
 	done
 	# config hashes
 	for i in config/* ;do
+		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+		if [[ $? = "0" ]]; then
+			echo -n "$i: "
+			$bgreen; echo "OK" ;$white
+		else
+			echo -n "$i: "
+			$bred; echo "FAILED" ;$white
+			hashFail="true"
+		fi
+	done
+	# GPG hashes
+	for i in gpg/* ;do
 		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
 		if [[ $? = "0" ]]; then
 			echo -n "$i: "
@@ -195,6 +221,18 @@ QUIET_HASH_LIST()
 		$bred; echo "FAILED"
 	else
 		$white; echo -n "config: " ;$white
+		$bgreen; echo "OK" ;$white
+	fi
+	# GPG hashes
+	for i in gpg/* ;do
+		grep "$i" "$hashlist" | sha256sum -c &>/dev/null
+		[[ $? != "0" ]]&& hashFail="true" && gpgHashFail="true"
+	done
+	if [[ $gpgHashFail = "true" ]]; then
+		$white; echo -n "gpg: "
+		$bred; echo "FAILED"
+	else
+		$white; echo -n "gpg: " ;$white
 		$bgreen; echo "OK" ;$white
 	fi
 	# if any fail, print error

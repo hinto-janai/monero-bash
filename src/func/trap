@@ -2,7 +2,7 @@
 # trap that handles exits (and cleanup)
 trap_Template()
 {
-	trap "" 1 2 3 6
+	trap "" 1 2 3 6 15
 }
 
 # continue current operation until finished (then revert)
