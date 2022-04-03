@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# turns github link into "asdf" which
+# forces HTML filter instead of API
+#
+sed -i 's@api.github.com@asdf@' /usr/local/share/monero-bash/src/func/download
+monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST
+install()
+{
+    printf "\n" | monero-bash install all verbose
+}
+install

@@ -2,44 +2,36 @@
 # install functions
 install_Template()
 {
-	if [[ "$VER" != "" ]]; then
-		$white; echo -n "$NAME ($VER) "
+	if [[ "$NAME_VER" != "" ]]; then
+		$white; echo -n "$NAME_PRETTY ($NAME_VER) "
 		$white; echo "is already installed"
 	else
 		local INSTALL="true"
-		upgrade_"$FUNC"
+		upgrade_"$NAME_FUNC"
 	fi
 }
 
 install_Monero()
 {
-	local VER="$MONERO_VER"
-	local NAME="Monero"
-	local FUNC="Monero"
+	define_Monero
 	install_Template
 }
 
 install_MoneroBash()
 {
-	local VER="$MONERO_BASH_VER"
-	local NAME="monero-bash"
-	local FUNC="MoneroBash"
+	define_MoneroBash
 	install_Template
 }
 
 install_XMRig()
 {
-	local VER="$XMRIG_VER"
-	local NAME="XMRig"
-	local FUNC="XMRig"
+	define_XMRig
 	install_Template
 }
 
 install_P2Pool()
 {
-	local VER="$P2POOL_VER"
-	local NAME="P2Pool"
-	local FUNC="P2Pool"
+	define_P2Pool
 	install_Template
 }
 

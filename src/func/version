@@ -6,6 +6,7 @@
 # invoked by "monero-bash update"
 version_Update()
 {
+	define_All
 	link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags")"
 	if [[ $? != "0" && "$HTML" != "true" ]]; then
 		$ired; echo "GitHub API error detected..."
@@ -35,32 +36,4 @@ version_Template()
 	else
 		NewVer="$(echo "$DUMP" | grep "tag_name.*v.*" | awk '{print $2}' | tr -d '",')"
 	fi
-}
-
-version_Monero()
-{
-	local AUTHOR="monero-project"
-	local PROJECT="monero"
-	version_Template
-}
-
-version_MoneroBash()
-{
-	local AUTHOR="hinto-janaiyo"
-	local PROJECT="monero-bash"
-	version_Template
-}
-
-version_XMRig()
-{
-	local AUTHOR="xmrig"
-	local PROJECT="xmrig"
-	version_Template
-}
-
-version_P2Pool()
-{
-	local AUTHOR="SChernykh"
-	local PROJECT="p2pool"
-	version_Template
 }

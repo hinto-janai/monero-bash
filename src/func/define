@@ -1,8 +1,69 @@
 #!/usr/bin/env bash
-#
-# defines variables for packages
-# to be used in "x_Template" functions
+# defines variables of packages
 define_Monero()
 {
-	
+	NAME_VER="$MONERO_VER"
+	NAME_OLD="$MONERO_OLD"
+	NAME_PRETTY="Monero"
+	NAME_FUNC="Monero"
+	DIRECTORY="$binMonero"
+	NAME_CAPS="MONERO"
+	FOLDER="monero"
+	AUTHOR="monero-project"
+	PROJECT="monero"
+	PACKAGE=""
+	SHA=""
+	downloadMonero="true"
+}
+
+define_MoneroBash()
+{
+	NAME_VER="$MONERO_BASH_VER"
+	NAME_OLD="$MONERO_BASH_OLD"
+	NAME_PRETTY="monero-bash"
+	NAME_FUNC="MoneroBash"
+	DIRECTORY="$installDirectory"
+	NAME_CAPS="MONERO_BASH"
+	AUTHOR="hinto-janaiyo"
+	PROJECT="monero-bash"
+	PACKAGE="monero-bash-v.*"
+	SHA="SHA256SUM.*"
+}
+
+define_XMRig()
+{
+	NAME_VER="$XMRIG_VER"
+	NAME_OLD="$XMRIG_OLD"
+	NAME_PRETTY="XMRig"
+	NAME_FUNC="XMRig"
+	DIRECTORY="$binXMRig"
+	NAME_CAPS="XMRIG"
+	FOLDER="xmrig"
+	AUTHOR="xmrig"
+	PROJECT="xmrig"
+	PACKAGE="xmrig.*linux-static-x64.*"
+    SHA="SHA256SUM.*"
+}
+
+define_P2Pool()
+{
+	NAME_VER="$P2POOL_VER"
+	NAME_OLD="$P2POOL_OLD"
+	NAME_PRETTY="P2Pool"
+	NAME_FUNC="P2Pool"
+	DIRECTORY="$binP2Pool"
+	NAME_CAPS="P2POOL"
+	FOLDER="p2pool"
+	AUTHOR="SChernykh"
+	PROJECT="p2pool"
+	PACKAGE="p2pool.*linux-x64.*"
+	SHA="sha256sum.*"
+}
+
+define_All()
+{
+	define_MoneroBash
+	define_Monero
+	define_XMRig
+	define_P2Pool
 }

@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+#
+# 1. install/pull testing branch into /tmp/
+# 2. remove old copies
+# 3. copy /tmp/monero-bash_04e3be9 into new folder
+# 4. install that copy
+
+# 1
+if [[ -d /tmp/monero-bash_04e3be9 ]]; then
+	cd /tmp/monero-bash_04e3be9
+	git checkout testing
+	git pull -f
+else
+	cd /tmp
+	git clone https://github.com/hinto-janaiyo/monero-bash
+	mv monero-bash monero-bash_04e3be9
+fi
+
+# 2
+sudo rm -r /usr/local/share/monero-bash
+sudo rm /usr/local/bin/monero-bash
+sudo rm -r ~/.monero-bash
+sudo rm -r ~/.bitmonero
+sudo rm -r /tmp/monero-bash
+
+# 3/4
+sudo cp -r /tmp/monero-bash_04e3be9 /tmp/monero-bash
+printf "\n\n\n" | /tmp/monero-bash/monero-bash

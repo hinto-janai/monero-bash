@@ -1,68 +1,40 @@
 #!/usr/bin/env bash
 #
-# Download Functions
+# Download Function
 # the "$DUMP" variable is reused in
 # "version_" functions so there only needs
 # to be 1 http request for all the data needed
 download_Template()
 {
 	tmp="$(find /tmp/monero-bash.*)"
+	API="true"
 	HTML="false"
 	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	if [[ $? != "0" ]]; then
 		$ired; echo "GitHub API error detected..."
 		$white; echo "Trying GitHub HTML filter instead..."
 		DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+		API="false"
 		HTML="true"
 	fi
 	if [[ $downloadMonero = "true" ]]; then
-		wget -P "$tmp" -q --show-progress --content-disposition "$link"
+		LINK="https://downloads.getmonero.org/cli/linux64"
+		downloadMonero="false"
+		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		code_Wget
 	else
 		if [[ "$HTML" = "true" ]]; then
-			local link="$(echo "$DUMP" \
+			LINK="$(echo "$DUMP" \
 				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 				| awk '{print $1}' \
 				| tr -d '"' \
 				| sed 's@^@https://github.com@')"
 		else
-			local link="$(echo "$DUMP" \
+			LINK="$(echo "$DUMP" \
 				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 				| tr -d '"')"
 		fi
-		wget -P "$tmp" -q --show-progress "$link"
+		wget -P "$tmp" -q --show-progress "$LINK"
 		code_Wget
 	fi
-}
-download_Monero()
-{
-	local link="https://downloads.getmonero.org/cli/linux64"
-	local downloadMonero="true"
-	local AUTHOR="monero-project"
-	local PROJECT="monero"
-	download_Template
-}
-
-download_MoneroBash()
-{
-	local AUTHOR="hinto-janaiyo"
-	local PROJECT="monero-bash"
-	local PACKAGE="monero-bash-v.*"
-	download_Template
-}
-
-download_XMRig()
-{
-	local AUTHOR="xmrig"
-	local PROJECT="xmrig"
-	local PACKAGE="xmrig.*linux-static-x64.*"
-	download_Template
-}
-
-download_P2Pool()
-{
-	local AUTHOR="SChernykh"
-	local PROJECT="p2pool"
-	local PACKAGE="p2pool.*linux-x64.*"
-	download_Template
 }

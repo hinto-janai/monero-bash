@@ -38,7 +38,7 @@ upgrade_Pre()
 upgrade_Template()
 {
 	print_GreenHash "Downloading [$NAME_PRETTY]"
-	download_"$NAME_FUNC"
+	download_Template
 	print_WhiteHash "Verifying"
 	verify_hash_"$NAME_FUNC"
 
@@ -93,7 +93,7 @@ upgrade_Post()
 	trap "trap_Post" 1 2 3 6 15
 	sudo rm -rf "$old"
 	print_WhiteHash "Updating local state"
-	version_"$NAME_FUNC"
+	version_Template
 	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
@@ -105,52 +105,30 @@ upgrade_Post()
 	else
 		print_GreenHash "Upgraded [$NAME_PRETTY]"
 	fi
+	[[ "$VERBOSE" = "true" ]]&& verbose_Upgrade
 }
 
 upgrade_Monero()
 {
-	NAME_VER="$MONERO_VER"
-	NAME_OLD="$MONERO_OLD"
-	NAME_PRETTY="Monero"
-	NAME_FUNC="Monero"
-	DIRECTORY="$binMonero"
-	NAME_CAPS="MONERO"
-	FOLDER="monero"
+	define_Monero
 	upgrade_Pre
 }
 
 upgrade_MoneroBash()
 {
-	NAME_VER="$MONERO_BASH_VER"
-	NAME_OLD="$MONERO_BASH_OLD"
-	NAME_PRETTY="monero-bash"
-	NAME_FUNC="MoneroBash"
-	DIRECTORY="$installDirectory"
-	NAME_CAPS="MONERO_BASH"
+	define_MoneroBash
 	upgrade_Pre
 }
 
 upgrade_XMRig()
 {
-	NAME_VER="$XMRIG_VER"
-	NAME_OLD="$XMRIG_OLD"
-	NAME_PRETTY="XMRig"
-	NAME_FUNC="XMRig"
-	DIRECTORY="$binXMRig"
-	NAME_CAPS="XMRIG"
-	FOLDER="xmrig"
+	define_XMRig
 	upgrade_Pre
 }
 
 upgrade_P2Pool()
 {
-	NAME_VER="$P2POOL_VER"
-	NAME_OLD="$P2POOL_OLD"
-	NAME_PRETTY="P2Pool"
-	NAME_FUNC="P2Pool"
-	DIRECTORY="$binP2Pool"
-	NAME_CAPS="P2POOL"
-	FOLDER="p2pool"
+	define_P2Pool
 	upgrade_Pre
 }
 

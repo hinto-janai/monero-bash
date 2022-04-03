@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# aliases to make things quicker
+# (source in bashrc)
+alias hl="monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST"
+alias hlc="monero-bash DEBUG_04e3be9 CHECK_HASH_LIST"
+
+alias t="/tmp/monero-bash_04e3be9/tests/tmp_install"
+alias ti="/tmp/monero-bash_04e3be9/tests/tmp_install ; /usr/local/share/monero-bash/tests/install_all"
+alias tih="/tmp/monero-bash_04e3be9/tests/tmp_install ; /usr/local/share/monero-bash/tests/install_all_HTML"
