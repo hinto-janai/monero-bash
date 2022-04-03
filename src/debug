@@ -39,7 +39,7 @@ PRODUCE_HASH_LIST()
 	sudo sha256sum "monero-bash" >> "$hashlist"
 	local DIR="src"
 	PRODUCE_HASH_LIST_TEMPLATE
-	local DIR="func"
+	local DIR="src/func"
 	PRODUCE_HASH_LIST_TEMPLATE
 	local DIR="src/txt"
 	PRODUCE_HASH_LIST_TEMPLATE
@@ -136,18 +136,23 @@ QUIET_HASH_LIST()
 	# the rest
 	MAGIC_NAME(){ srcHashFail="true" ;}
 	local NAME="source"
+	local DIR="src"
 	QUIET_HASH_LIST_TEMPLATE
 	MAGIC_NAME(){ funcHashFail="true" ;}
 	local NAME="functions"
+	local DIR="src/func"
 	QUIET_HASH_LIST_TEMPLATE
 	MAGIC_NAME(){ txtHashFail="true" ;}
 	local NAME="txt"
+	local DIR="src/txt"
 	QUIET_HASH_LIST_TEMPLATE
 	MAGIC_NAME(){ confHashFail="true" ;}
 	local NAME="config"
+	local DIR="config"
 	QUIET_HASH_LIST_TEMPLATE
 	MAGIC_NAME(){ gpgHashFail="true" ;}
 	local NAME="gpg"
+	local DIR="gpg"
 	QUIET_HASH_LIST_TEMPLATE
 
 	if [[ $hashFail = "true" ]]; then
