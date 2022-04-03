@@ -16,7 +16,7 @@ download_Template()
 		HTML="true"
 	fi
 	if [[ $downloadMonero = "true" ]]; then
-		wget -P "$tmp" -q --show-progress --content-disposition "$link"
+		wget -P "$tmp" -q --show-progress --content-disposition "$linkMonero"
 		code_Wget
 	else
 		if [[ "$HTML" = "true" ]]; then

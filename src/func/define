@@ -11,8 +11,8 @@ define_Monero()
 	FOLDER="monero"
 	AUTHOR="monero-project"
 	PROJECT="monero"
-	local link="https://downloads.getmonero.org/cli/linux64"
-	local downloadMonero="true"
+	linkMonero="https://downloads.getmonero.org/cli/linux64"
+	downloadMonero="true"
 }
 
 define_MoneroBash()
