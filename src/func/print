@@ -113,6 +113,7 @@ print_OKFAILED()
 	else
 		$white; echo -n "$1: "
 		$bred; echo "FAILED" ;$white
+		verifyOK="false"
 	fi
 }
 
