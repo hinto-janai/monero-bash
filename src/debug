@@ -26,7 +26,7 @@ LIST()
 PRODUCE_HASH_LIST_TEMPLATE()
 {
 	for i in $DIR/* ;do
-		if [[ -f "$i" ]]; then
+		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
 			sudo sha256sum $i >> "$hashlist"
 		fi
 	done
