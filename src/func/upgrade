@@ -4,11 +4,11 @@
 # all the commands back to back was getting unreadable (even for me)
 #
 # rough order of operations:
-# 1. Pre-hooks
+# 1. upgrade_Pre
 # 2. Download, Verify, Extract, Move
 # 3. Edit the local state file
 # 4. Recreate the local hashlist
-# 5. Post-hooks
+# 5. upgrade_Post
 #
 # there are messages/checks mixed in between
 # all the steps, which makes it a bit confusing.
@@ -17,9 +17,26 @@
 #
 # other than that, the functions that make up "upgrade_Template"
 # should be self-evident
+
+upgrade_Pre()
+{
+	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
+		$white; echo -n "$NAME_PRETTY: "
+		$ired; echo "is not installed"
+	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
+		$white; echo -n "$NAME_PRETTY: "
+		$bgreen; echo "up to date" ;$off
+	else
+		prompt_Sudo ; error_Sudo
+		echo ; safety_HashList
+		trap "trap_Tmp" 1 2 3 6
+		tmp_Create ; error_Exit "Could not create tmp folder"
+		upgrade_Template
+	fi
+}
+
 upgrade_Template()
 {
-	upgrade_Pre
 	print_GreenHash "Downloading [$NAME_PRETTY]"
 	download_"$NAME_FUNC"
 	print_WhiteHash "Verifying"
@@ -71,22 +88,6 @@ upgrade_Template()
 	upgrade_Post
 }
 
-upgrade_Pre()
-{
-	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
-		$white; echo -n "$NAME_PRETTY: "
-		$ired; echo "is not installed"
-	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
-		$white; echo -n "$NAME_PRETTY: "
-		$bgreen; echo "up to date" ;$off
-	else
-		prompt_Sudo ; error_Sudo
-		echo ; safety_HashList
-		trap "trap_Tmp" 1 2 3 6
-		tmp_Create ; error_Exit "Could not create tmp folder"
-	fi
-}
-
 upgrade_Post()
 {
 	trap "trap_Post" 1 2 3 6 15
@@ -115,7 +116,7 @@ upgrade_Monero()
 	DIRECTORY="$binMonero"
 	NAME_CAPS="MONERO"
 	FOLDER="monero"
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_MoneroBash()
@@ -126,7 +127,7 @@ upgrade_MoneroBash()
 	NAME_FUNC="MoneroBash"
 	DIRECTORY="$installDirectory"
 	NAME_CAPS="MONERO_BASH"
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_XMRig()
@@ -138,7 +139,7 @@ upgrade_XMRig()
 	DIRECTORY="$binXMRig"
 	NAME_CAPS="XMRIG"
 	FOLDER="xmrig"
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_P2Pool()
@@ -150,7 +151,7 @@ upgrade_P2Pool()
 	DIRECTORY="$binP2Pool"
 	NAME_CAPS="P2POOL"
 	FOLDER="p2pool"
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_All()
