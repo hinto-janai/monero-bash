@@ -76,11 +76,9 @@ upgrade_Pre()
 	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
-		exit
 	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date" ;$off
-		exit
 	else
 		prompt_Sudo ; error_Sudo
 		echo ; safety_HashList
