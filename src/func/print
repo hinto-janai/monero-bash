@@ -111,7 +111,7 @@ print_OKFAILED()
 		$igreen; echo "OK" ;$white
 		verifyOK="true"
 	else
-		$white; echo -n "$1: "
+		$white; echo -n "$tarName: "
 		$bred; echo "FAILED" ;$white
 		verifyOK="false"
 	fi
