@@ -6,7 +6,7 @@
 
 install()
 {
-	readonly DEBUG_04e3be9="true"
+	DEBUG_04e3be9="true"
 	printf "\n" | monero-bash install "$1"
 }
 install monero
