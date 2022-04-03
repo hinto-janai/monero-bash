@@ -6,6 +6,21 @@
 # that fits for all. everyone has a slightly differently
 # named sha256sum file, with slightly different
 # internal formatting.
+verify_hash_Template()
+{
+	tarName="$(ls "$tmp")"
+	if [[ "$HTML" = "true" ]]; then
+		hashFile="$(echo "$DUMP" \
+		| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+		| awk '{print $1}' | head -n1 \
+		| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+	else
+		hashFile="$(echo "$DUMP" \
+			| grep "browser_download_url.*$SHA" \
+			| awk '{print $2}' | head -n1 | tr -d '"')"
+	fi
+	hashSTDOUT="$(wget -qO- "$hashFile")"
+}
 
 verify_hash_Monero()
 {
@@ -18,34 +33,28 @@ verify_hash_Monero()
 
 verify_hash_MoneroBash()
 {
-	tarName="$(ls "$tmp")"
-	moneroBash_hashfile="$(wget -qO- https://github.com/hinto-janaiyo/monero-bash/releases/latest \
-		| grep -o "/hinto-janaiyo/monero-bash/releases/download/.*/SHA256SUM" \
-		| awk '{print $1}' | sed 's/"//g')"
-	moneroBash_hashfile2="$(wget -qO- "https://github.com/$moneroBash_hashfile" \
-		| awk '{print $1}')"
-	echo "$moneroBash_hashfile2" "$tmp/$tarName" | sha256sum -c &>/dev/null
+	verify_hash_Template
+	HASH="$(echo "$hashSTDOUT" | grep "$PACKAGE" | awk '{print $1}')"
+	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
 }
 
 verify_hash_XMRig()
 {
-	tarName="$(ls "$tmp")"
-	echo "$(wget -qO- https://github.com/xmrig/xmrig/releases/latest \
-		| grep "*xmrig-.*-linux-static-x64.*" | awk '{print $1}' | head -n 1)" \
-		"$tmp/$tarName" | sha256sum -c &>/dev/null
+	verify_hash_Template
+	HASH="$(echo "$hashSTDOUT" | grep "$PACKAGE" | awk '{print $1}')"
+	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
 }
 
 verify_hash_P2Pool()
 {
-	tarName="$(ls "$tmp")"
-	p2pool_hashfile="$(wget -qO- https://github.com/SChernykh/p2pool/releases/latest \
-		| grep -o "/SChernykh/p2pool/releases/download/.*/sha256sum.*" \
-		| awk '{print $1}' | sed 's/"//g')"
-	p2pool_hashfile2="$(wget -qO- "https://github.com/$p2pool_hashfile" \
-		| grep -A2 "linux-x64" | grep "SHA256" | awk '{print $2}')"
-	echo "$p2pool_hashfile2" "$tmp/$tarName" | sha256sum -c &>/dev/null
+	verify_hash_Template
+	HASH="$(echo "$hashSTDOUT" | grep -A2 "$PACKAGE" | grep "SHA256" | awk '{print $2}')"
+	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
 }
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Download Functions
+# Download Function
 # the "$DUMP" variable is reused in
 # "version_" functions so there only needs
 # to be 1 http request for all the data needed
@@ -33,36 +33,4 @@ download_Template()
 		wget -P "$tmp" -q --show-progress "$link"
 		code_Wget
 	fi
-}
-download_Monero()
-{
-	local link="https://downloads.getmonero.org/cli/linux64"
-	local downloadMonero="true"
-	local AUTHOR="monero-project"
-	local PROJECT="monero"
-	download_Template
-}
-
-download_MoneroBash()
-{
-	local AUTHOR="hinto-janaiyo"
-	local PROJECT="monero-bash"
-	local PACKAGE="monero-bash-v.*"
-	download_Template
-}
-
-download_XMRig()
-{
-	local AUTHOR="xmrig"
-	local PROJECT="xmrig"
-	local PACKAGE="xmrig.*linux-static-x64.*"
-	download_Template
-}
-
-download_P2Pool()
-{
-	local AUTHOR="SChernykh"
-	local PROJECT="p2pool"
-	local PACKAGE="p2pool.*linux-x64.*"
-	download_Template
 }
