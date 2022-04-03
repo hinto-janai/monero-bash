@@ -13,6 +13,8 @@ verify_hash_Template()
 		hashFile="$(echo "$DUMP" \
 		| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SHA" \
 		| head -n1 \
+		| awk '{print $1}' \
+		| tr -d '"' \
 		| sed 's@^@https://github.com@')"
 	else
 		hashFile="$(echo "$DUMP" \
