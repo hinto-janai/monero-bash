@@ -11,9 +11,9 @@ verify_hash_Template()
 	tarName="$(ls "$tmp")"
 	if [[ "$HTML" = "true" ]]; then
 		hashFile="$(echo "$DUMP" \
-		| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
-		| awk '{print $1}' | head -n1 \
-		| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+		| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SHA" \
+		| head -n1 \
+		| sed's@^@https://github.com@')"
 	else
 		hashFile="$(echo "$DUMP" \
 			| grep "browser_download_url.*$SHA" \
