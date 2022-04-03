@@ -8,7 +8,7 @@ monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST
 readonly HTML="true"
 install()
 {
-	DEBUG_04e3be9="true"
+	readonly DEBUG_04e3be9="true"
     printf "\n" | monero-bash install "$1"
 }
 install monero
