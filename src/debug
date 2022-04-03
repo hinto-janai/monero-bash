@@ -108,17 +108,16 @@ QUIET_HASH_LIST_TEMPLATE()
 	for i in $DIR/* ;do
 		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
 			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			if [[ $? != "0" ]]; then
-				hashFail="true"
-				MAGIC_NAME
-				$white; echo -n "$NAME: "
-				$bred; echo "FAILED"
-			else
-				$white; echo -n "$NAME: " ;$white
-				$bgreen; echo "OK" ;$white
-			fi
+			[[ $? != "0" ]]&& hashFail="true" && local localHashFail="true"
 		fi
 	done
+	if [[ $localHashFail = "true" ]]; then
+		$white; echo -n "$NAME: "
+		$bred; echo "FAILED"
+	else
+		$white; echo -n "$NAME: " ;$white
+		$bgreen; echo "OK" ;$white
+	fi
 }
 QUIET_HASH_LIST()
 {
@@ -134,23 +133,18 @@ QUIET_HASH_LIST()
 	fi
 
 	# the rest
-	MAGIC_NAME(){ srcHashFail="true" ;}
 	local NAME="source"
 	local DIR="src"
 	QUIET_HASH_LIST_TEMPLATE
-	MAGIC_NAME(){ funcHashFail="true" ;}
 	local NAME="functions"
 	local DIR="src/func"
 	QUIET_HASH_LIST_TEMPLATE
-	MAGIC_NAME(){ txtHashFail="true" ;}
 	local NAME="txt"
 	local DIR="src/txt"
 	QUIET_HASH_LIST_TEMPLATE
-	MAGIC_NAME(){ confHashFail="true" ;}
 	local NAME="config"
 	local DIR="config"
 	QUIET_HASH_LIST_TEMPLATE
-	MAGIC_NAME(){ gpgHashFail="true" ;}
 	local NAME="gpg"
 	local DIR="gpg"
 	QUIET_HASH_LIST_TEMPLATE
