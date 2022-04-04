@@ -59,11 +59,3 @@ define_P2Pool()
 	PACKAGE="p2pool.*linux-x64.*"
 	SHA="sha256sum.*"
 }
-
-define_All()
-{
-	define_MoneroBash
-	define_Monero
-	define_XMRig
-	define_P2Pool
-}

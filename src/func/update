@@ -21,45 +21,25 @@ update_Template()
 
 update_Monero()
 {
-	NAME_FUNC="Monero"
-	NAME_PRETTY="Monero"
-	NAME_VER="$MONERO_VER"
-	NAME_OLD="MONERO_OLD"
-	AUTHOR="monero-project"
-	PROJECT="monero"
+	define_Monero
 	update_Template
 }
 
 update_MoneroBash()
 {
-	NAME_FUNC="MoneroBash"
-	NAME_PRETTY="monero-bash"
-	NAME_VER="$MONERO_BASH_VER"
-	NAME_OLD="MONERO_BASH_OLD"
-	AUTHOR="hinto-janaiyo"
-	PROJECT="monero-bash"
+	define_MoneroBash
 	update_Template
 }
 
 update_XMRig()
 {
-	NAME_FUNC="XMRig"
-	NAME_PRETTY="XMRig"
-	NAME_VER="$XMRIG_VER"
-	NAME_OLD="XMRIG_OLD"
-	AUTHOR="xmrig"
-	PROJECT="xmrig"
+	define_XMRig
 	update_Template
 }
 
 update_P2Pool()
 {
-	NAME_FUNC="P2Pool"
-	NAME_PRETTY="P2Pool"
-	NAME_VER="$P2POOL_VER"
-	NAME_OLD="P2POOL_OLD"
-	AUTHOR="SChernykh"
-	PROJECT="p2pool"
+	define_P2Pool
 	update_Template
 }
 
