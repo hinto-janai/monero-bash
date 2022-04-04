@@ -7,7 +7,7 @@ sed -i 's@api.github.com@asdf@' /usr/local/share/monero-bash/src/func/download
 monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST
 install()
 {
-	VERBOSE="true"
+	export VERBOSE="true"
     printf "\n" | monero-bash install all
 }
 install
