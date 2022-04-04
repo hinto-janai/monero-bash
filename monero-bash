@@ -40,10 +40,11 @@ fi
 
 # even more safety checks
 if [[ $FIRST_TIME != "true" ]]; then
+	safety_Home
 	safety_LinuxFolders
 	safety_UsrLocalShare
-	safety_Home
 	safety_DotMoneroBash
+	missing_ConfigAll
 fi
 
 # interactive/option check
