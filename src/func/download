@@ -19,6 +19,7 @@ download_Template()
 	fi
 	if [[ $downloadMonero = "true" ]]; then
 		LINK="https://downloads.getmonero.org/cli/linux64"
+		downloadMonero="false"
 		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		code_Wget
 	else

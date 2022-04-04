@@ -11,6 +11,8 @@ define_Monero()
 	FOLDER="monero"
 	AUTHOR="monero-project"
 	PROJECT="monero"
+	PACKAGE=""
+	SHA=""
 	downloadMonero="true"
 }
 
