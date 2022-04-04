@@ -3,6 +3,7 @@
 daemon_start_Template()
 {
 	missing_MoneroDaemon
+	[[ $SYSTEMD_MONEROD = "true" ]]&& missing_
 	if pgrep monerod &>/dev/null ; then
         $bred; echo "Monero daemon already detected..." ;$off
     else

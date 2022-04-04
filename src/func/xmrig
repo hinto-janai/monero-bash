@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
 #
-#						XMRig Functions
-#
+# xmrig functions for systemd/non-systemd
+
+xmrig_Start()
+{
+	sudo $binXMRig/xmrig --config $config/xmrig.json
+}
+
+xmrig_systemd_Start()
+{
+	sudo systemctl start monero-bash-xmrig
+}

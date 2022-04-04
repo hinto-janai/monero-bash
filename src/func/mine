@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+#
+# all-in-one mining functions
+# combines multiple functions
+# that invoke monerod,xmrig,p2pool
+#
+
+mine_Start()
+{
+	case $AUTO_MONEROD_P2POOL in
+		true)
+			[[ $SYSTEMD_MONEROD = "true" ]]&& daemon_systemd_Monerod
+			[[ $SYSTEMD_MONEROD != "true" ]]&& daemon_StartAttached
+			[[ $SYSTEMD_XMRIG = "true" ]]&& systemd_XMRig
+			[[ $SYSTEMD_
+}
+
+mine_Configure()
+{
+	# First Time = false
+	sudo sed -i "s@.*MINE_FIRST_TIME.*@MINE_FIRST_TIME=\"false\"@" "$state"
+	PRODUCE_HASH_LIST
+}

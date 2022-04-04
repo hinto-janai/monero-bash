@@ -3,6 +3,7 @@
 
 # first time check
 FIRST_TIME="true"
+MINE_FIRST_TIME="true"
 
 # versions
 MONERO_VER=""
