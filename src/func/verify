@@ -27,8 +27,9 @@ verify_hash_Template()
 verify_hash_Monero()
 {
 	tarName="$(ls "$tmp")"
-	echo "$(wget -qO- "https://www.getmonero.org/downloads/hashes.txt" \
-		| grep "monero-linux-x64" | awk '{print $1}')" \
+	hashFile="https://www.getmonero.org/downloads/hashes.txt"
+	hashSTDOUT="$(wget -qO- "$hashFile")"
+	HASH="$(echo "hashSTDOUT" | grep "monero-linux-x64" | awk '{print $1}')" \
 		"$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
 }
