@@ -18,11 +18,11 @@ verbose_Upgrade()
 	$bwhite; echo -n "PACKAGE: " ;$off; echo "$PACKAGE"
 	$bwhite; echo -n "SHA: " ;$off; echo "$SHA"
 	$bwhite; echo -n "tarName: " ;$off; echo "$tarName"
+	$bwhite; echo -n "NewVer: " ;$off; echo "$NewVer"
 	$bwhite; echo -n "LINK: " ;$off; echo "$LINK"
 	$bwhite; echo -n "hashFile: " ;$off; echo "$hashFile"
 	$bwhite; echo "hashSTDOUT: " ;$off
 	export GREP_COLOR="1;34"
 	echo "$hashSTDOUT" | grep --color -z "$HASH"
 	$bwhite; echo -n "HASH: " ;$bblue; echo "$HASH"
-	$bwhite; echo -n "NewVer: " ;$off; echo "$NewVer"
 }
