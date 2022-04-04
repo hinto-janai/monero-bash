@@ -10,3 +10,4 @@ install()
 	VERBOSE="true"
     printf "\n" | monero-bash install all
 }
+install
