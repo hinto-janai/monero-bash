@@ -6,10 +6,7 @@
 
 install()
 {
-	DEBUG_04e3be9="true"
-	printf "\n" | monero-bash install "$1"
+	VERBOSE="true"
+	printf "\n" | monero-bash install all
 }
-install monero
-install xmrig
-install p2p
-install bash
+install

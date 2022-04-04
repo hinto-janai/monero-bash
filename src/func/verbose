@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# echo all the variable definitions
+# after upgrading
+#
+verbose_Upgrade()
+{
+	$bwhite; echo "NAME_VER - " ;$off; echo "$NAME_VER"
+	$bwhite; echo "NAME_OLD - " ;$off; echo "$NAME_OLD"
+	$bwhite; echo "NAME_PRETTY - " ;$off; echo "$NAME_PRETTY"
+	$bwhite; echo "NAME_FUNC - " ;$off; echo "$NAME_FUNC"
+	$bwhite; echo "DIRECTORY - " ;$off; echo "$DIRECTORY"
+	$bwhite; echo "NAME_CAPS - " ;$off; echo "$NAME_CAPS"
+	$bwhite; echo "AUTHOR - " ;$off; echo "$AUTHOR"
+	$bwhite; echo "PROJECT - " ;$off; echo "$PROJECT"
+	$bwhite; echo "PACKAGE - " ;$off; echo "$PACKAGE"
+	$bwhite; echo "SHA - " ;$off; echo "$SHA"
+	$bwhite; echo "tarName - " ;$off; echo "$tarName"
+	$bwhite; echo "hashFile - " ;$off; echo "$hashFile"
+	$bwhite; echo "hashSTDOUT - " ;$off; echo "$hashSTDOUT"
+	$bwhite; echo "HASH - " ;$off; echo "$HASH"
+	$bwhite; echo "NewVer - " ;$off; echo "$NewVer"
+	$bwhite; echo "linkMonero - " ;$off; echo "$linkMonero"
+	$bwhite; echo "downloadMonero - " ;$off; echo "$downloadMonero"
+}
