@@ -16,19 +16,19 @@ gpg_import_Template()
 gpg_import_All()
 {
 	local NAME="binaryfate"
-	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
 	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)"
 	gpg_import_Template
 	local NAME="hinto-janaiyo"
-	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
 	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc)"
 	gpg_import_Template
 	local NAME="SChernykh"
-	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
 	local ONLINE="$(wget -qO- https://p2pool.io/SChernykh.asc)"
 	gpg_import_Template
 	local NAME="xmrig"
-	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
 	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc)"
 	gpg_import_Template
 }
