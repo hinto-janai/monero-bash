@@ -6,8 +6,7 @@
 # invoked by "monero-bash update"
 version_Update()
 {
-	define_All
-	link="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags")"
+	LINK="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/tags")"
 	if [[ $? != "0" && "$HTML" != "true" ]]; then
 		$ired; echo "GitHub API error detected..."
 		$white; echo "Trying GitHub HTML filter instead..."
@@ -20,7 +19,7 @@ version_Update()
 			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
 		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	else
-		NewVer="$(echo "$link" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
+		NewVer="$(echo "$LINK" | grep -m1 "name" | awk '{print $2}' | tr -d '\",')"
 	fi
 }
 

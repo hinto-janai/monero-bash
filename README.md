@@ -124,7 +124,10 @@ help                        show this help message
 
 ---
 
-If you'd like to see detailed output when installing/upgrading, type: `monero-bash install/upgrade <package> verbose`
+If you'd like to see detailed output when installing/upgrading, type:
+```
+monero-bash install/upgrade <package> verbose
+```
 
 * Monero - `https://downloads.getmonero.org/cli/linux64`
 * monero-bash - `https://github.com/hinto-janaiyo/monero-bash`
