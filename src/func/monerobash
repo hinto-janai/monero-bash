@@ -76,6 +76,7 @@ trap "trap_No" 1 2 3 6 15
 	[[ -f "$installDirectory/CHANGELOG.md" ]]&& sudo rm "$installDirectory/CHANGELOG.md"
 	[[ -d "$installDirectory/docs" ]]&& sudo rm -r "$installDirectory/docs"
 	[[ -d "$installDirectory/.old" ]]&& sudo rm -r "$installDirectory/.old"
+	[[ -d "$installDirectory/tests" ]]&& sudo rm -r "$installDirectory/tests"
 
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"

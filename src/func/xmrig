@@ -2,12 +2,3 @@
 #
 #						XMRig Functions
 #
-xmrig_Status()
-{
-	$white; echo -n "XMRig is: "
-	if pgrep xmrig &>/dev/null ;then
-		$bgreen; echo "online"
-	else
-		$bred; echo "offline"
-	fi
-}

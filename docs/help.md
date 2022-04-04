@@ -17,6 +17,7 @@ remove <all/name> force     forcefully remove a package
 update                      only CHECK for updates
 upgrade <all/name>          upgrade <all> or a specific package
 upgrade <all/name> force    forcefully upgrade packages
+upgrade <all/name> verbose  print detailed download information
 version                     print installed package versions
 
 # WALLET #
