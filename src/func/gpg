@@ -6,7 +6,7 @@ gpg_import_Template()
 {
 	if [[ "$LOCAL" = "$ONLINE" ]]; then
 		$bwhite; echo -n "$NAME: "
-		$bgreen; echo "OK"
+		$bgreen; echo "OK" ;$off
 		gpg --import "$installDirectory/gpg/${NAME}.asc"
 	else
 		gpg_Diff
