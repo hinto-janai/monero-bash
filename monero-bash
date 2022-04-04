@@ -108,6 +108,7 @@ if [[ $options = "true" ]]; then
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		upgrade)
+			[[ $* = *"verbose"* ]]&& VERBOSE="true"
 			[[ $3 = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
 			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
 				echo -n "Upgrade monero-bash? (Y/n) "
@@ -142,6 +143,7 @@ if [[ $options = "true" ]]; then
 			fi
 			;;
 		install)
+			[[ $* = *"verbose"* ]]&& VERBOSE="true"
 			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
 				echo -n "Install monero-bash? (Y/n) "
 				Yes(){ install_MoneroBash ;}
