@@ -25,5 +25,5 @@ sudo rm -r /tmp/monero-bash
 
 # 3/4
 sudo cp -r /tmp/monero-bash_04e3be9 /tmp/monero-bash
-sudo cp -r /tmp/monero-bash_04e3be9/tests /tmp/monero-bash/
+sudo cp -r /tmp/monero-bash_04e3be9/tests /usr/local/share/monero-bash/
 printf "\n\n\n" | /tmp/monero-bash/monero-bash
