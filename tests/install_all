@@ -6,7 +6,6 @@
 
 install()
 {
-	export VERBOSE="true"
-	printf "\n" | monero-bash install all
+	printf "\n" | monero-bash install all verbose
 }
 install
