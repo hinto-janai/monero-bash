@@ -32,7 +32,7 @@ missing_P2Pool()
 
 missing_XMRig()
 {
-	if [[ ! -f "$binXMRig" ]]; then
+	if [[ ! -f "$binXMRig/xmrig" ]]; then
 		print_Error_Exit "XMRig missing!"
     fi
 }
@@ -106,4 +106,12 @@ missing_ConfigP2Pool()
 {
 	local conf="p2pool.json"
 	missing_ConfigTemplate
+}
+
+missing_ConfigAll()
+{
+	missing_ConfigMoneroBash
+	[[ $MONERO_VER != "" ]]&& missing_ConfigMonerod && missing_ConfigWallet
+	[[ $XMRIG_VER != "" ]]&& missing_ConfigXMRig
+	[[ $P2POOL_VER != "" ]]&& missing_ConfigP2Pool
 }
