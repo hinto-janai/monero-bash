@@ -32,6 +32,7 @@ verify_hash_Monero()
 	HASH="$(echo "$hashSTDOUT" | grep "monero-linux-x64" | awk '{print $1}')"
 	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
+	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
 }
 
 verify_hash_MoneroBash()
@@ -41,6 +42,7 @@ verify_hash_MoneroBash()
 	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
+	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
 }
 
 verify_hash_XMRig()
@@ -50,6 +52,7 @@ verify_hash_XMRig()
 	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
+	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
 }
 
 verify_hash_P2Pool()
@@ -59,5 +62,6 @@ verify_hash_P2Pool()
 	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
 	print_OKFAILED
+	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
 }
 
