@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# for importing gpgs keys and
+# checking LOCAL/ONLINE diff
+
+gpg_import_Template()
+{
+	if [[ "$LOCAL" = "$ONLINE" ]]; then
+		$bwhite; echo -n "$NAME: "
+		$bgreen; echo "OK"
+		gpg --import "$installDirectory/gpg/${NAME}.asc"
+	else
+		gpg_Diff
+	fi
+}
+
+gpg_import_All()
+{
+	local NAME="binaryfate"
+	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)"
+	gpg_import_Template
+	local NAME="hinto-janaiyo"
+	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc)"
+	gpg_import_Template
+	local NAME="SChernykh"
+	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local ONLINE="$(wget -qO- https://p2pool.io/SChernykh.asc)"
+	gpg_import_Template
+	local NAME="xmrig"
+	local LOCAL="$(cat "$installDirectory/${NAME}.asc")"
+	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc)"
+	gpg_import_Template
+}
+
+gpg_Diff()
+{
+	$bwhite; echo -n "The LOCAL and ONLINE gpg keys of "
+	$bred; echo -n "$NAME "
+	$bwhite; echo "are different!" ;$off
+	while true ;do
+		echo -n "What to do? [show / pick / skip] "
+		read OPTION
+		case $OPTION in
+			show)
+				$bblue; echo "LOCAL KEY:"
+				$off; echo "$LOCAL"
+				$bgreen; echo "ONLINE KEY:"
+				$off; echo "$ONLINE"
+				;;
+			pick)
+				while true; do
+					echo -n "Which key to pick? [local / online]"
+					read KEYPICK
+					case $KEYPICK in
+						local) gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
+						online) gpg_Overwrite && PRODUCE_HASH_LIST &&  gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
+						*) error_Continue "Invalid option"
+					esac
+				done
+				;;
+			skip)
+				$iwhite; echo "Skipping..."
+				break
+				;;
+			*)
+				error_Continue "Invalid option"
+				;;
+		esac
+	done
+}
+
+gpg_Overwrite()
+{
+	prompt_Sudo
+	error_Sudo
+	echo "Overwriting LOCAL keys..."
+	wget -P "$installDirectory/gpg/" "$LINK"
+	code_Wget
+}
