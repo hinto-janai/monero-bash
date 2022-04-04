@@ -69,6 +69,7 @@ remove <all/name> force     forcefully remove a package
 update                      only CHECK for updates
 upgrade <all/name>          upgrade <all> or a specific package
 upgrade <all/name> force    forcefully upgrade packages
+upgrade <all/name> verbose  print detailed download information
 version                     print installed package versions
 
 # WALLET #
@@ -122,6 +123,8 @@ help                        show this help message
 <summary>Where does monero-bash download packages from?</summary>
 
 ---
+
+If you'd like to see detailed output when installing/upgrading, type: `monero-bash install/upgrade <package> verbose`
 
 * Monero - `https://downloads.getmonero.org/cli/linux64`
 * monero-bash - `https://github.com/hinto-janaiyo/monero-bash`

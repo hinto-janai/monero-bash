@@ -1,6 +1,7 @@
 # v0.6.1
 ## Updates
 * GPG
+* verbose
 
 # v0.6
 ## Updates
