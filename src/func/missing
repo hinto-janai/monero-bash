@@ -2,39 +2,45 @@
 #
 #							Missing "x" Functions
 #
+missing_Template()
+{
+    if [[ ! -e "$DIR" ]]; then
+        error_Exit "$THING missing!"
+    fi
+}
 missing_MoneroDaemon()
 {
-	if [[ ! -f "$binMonero/monerod" ]]; then
-		error_Exit "monerod missing!"
-	fi
+	local DIR="$binMonero/monerod"
+	local THING="monerod"
+	missing_Template
 }
 
 missing_MoneroCLI()
 {
-	if [[ ! -f "$binMonero/monero-wallet-cli" ]]; then
-		error_Exit "monero-wallet-cli missing!"
-	fi
+	local DIR="$binMonero/monero-wallet-cli"
+	local THING="monero-wallet-cli"
+	missing_Template
 }
 
 missing_BinMonero()
 {
-	if [[ ! -d "$binMonero" ]]; then
-		error_Exit "$binMonero missing!"
-	fi
+	local DIR="$binMonero"
+	local THING="$binMonero"
+	missing_Template
 }
 
 missing_P2Pool()
 {
-	if [[ ! -f "$binP2Pool/p2pool" ]]; then
-		error_Exit "P2Pool missing!"
-	fi
+	local DIR="$binP2Pool/p2pool"
+	local THING="P2Pool"
+	missing_Template
 }
 
 missing_XMRig()
 {
-	if [[ ! -f "$binXMRig/xmrig" ]]; then
-		error_Exit "XMRig missing!"
-    fi
+	local DIR="$binXMRig/xmrig"
+	local THING="XMRig"
+	missing_Template
 }
 
 missing_DotMoneroBash()
