@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
-# functions that create systemd .service files
-systemd_Template()
+# functions FOR CREATING systemd .service files
+systemd_create_Template()
 {
+if [[ -f /etc/systemd/system/monero-bash-$name.service ]]; then
+	error_Exit "monero-bash-$name.service already exists"
+else
+	$bwhite; echo "Creating monero-bash-$name.service..."
 prompt_Sudo
 error_Sudo
 sudo sh -c "cat <<EOM > /etc/systemd/system/monero-bash-$name.service
@@ -13,29 +17,36 @@ After=network.target
 User=$USER
 Group=$USER
 Type=simple
-ExecStart=$command
+ExecStart=\"$command\"
 Restart=always
 
 [Install]
 WantedBy=multi-user.target"
+EOM
+$bwhite; echo "Reloading systemd..."
+sudo systemctl daemon-reload
+$green; echo "Done!"
+fi
 }
-systemd_Monerod()
+
+systemd_create_Monerod()
 {
 	local name="monerod"
 	local command="$binMonero/monerod --data-dir $DATA_DIRECTORY --config-file $config/monerod.conf --non-interactive"
-	systemd_Template
+	systemd_create_Template
 }
 
 systemd_XMRig()
 {
 	local name="xmrig"
+	local USER="root"
 	local command="$binXMRig/xmrig --config $config/xmrig.json"
-	systemd_Template
+	systemd_create_Template
 }
 
 systemd_P2Pool()
 {
 	local name="p2pool"
 	local command=""
-	systemd_Template
+	systemd_create_Template
 }

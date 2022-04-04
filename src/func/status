@@ -40,6 +40,7 @@ status_XMRig()
 {
 	local NAME="XMRig"
 	local PROCESS="xmrig"
+	EXTRA_STATS(){ :;}
 	status_Template
 }
 
@@ -47,5 +48,6 @@ status_P2Pool()
 {
 	local NAME="P2Pool"
 	local PROCESS="p2pool"
+	EXTRA_STATS(){ :;}
 	status_Template
 }

@@ -2,6 +2,7 @@
 #
 # aliases to make things quicker
 # (source in bashrc)
+alias de="monero-bash DEBUG_04e3be9"
 alias hl="monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST"
 alias hlc="monero-bash DEBUG_04e3be9 CHECK_HASH_LIST"
 

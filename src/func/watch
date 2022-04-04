@@ -13,7 +13,7 @@
 watch_Template()
 {
 	while true ;do
-		trap "break" INT
+		trap "break" 1 2 3 6 15
 		watch -t -c "journalctl -u monero-bash-$NAME --output cat | tail -n $(tput lines)"
 		sleep 1
 	done

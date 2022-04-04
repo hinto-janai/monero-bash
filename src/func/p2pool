@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
 #
-#                       P2Pool Functions
+# individual functions for non-systemd
+# invoking of p2pool
 #
+
+p2pool_Start()
+{
+
+}
