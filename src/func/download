@@ -7,31 +7,33 @@
 download_Template()
 {
 	tmp="$(find /tmp/monero-bash.*)"
+	API="true"
 	HTML="false"
 	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	if [[ $? != "0" ]]; then
 		$ired; echo "GitHub API error detected..."
 		$white; echo "Trying GitHub HTML filter instead..."
 		DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+		API="false"
 		HTML="true"
 	fi
 	if [[ $downloadMonero = "true" ]]; then
-		downloadMonero="false"
-		wget -P "$tmp" -q --show-progress --content-disposition "$linkMonero"
+		LINK="https://downloads.getmonero.org/cli/linux64"
+		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		code_Wget
 	else
 		if [[ "$HTML" = "true" ]]; then
-			local link="$(echo "$DUMP" \
+			LINK="$(echo "$DUMP" \
 				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 				| awk '{print $1}' \
 				| tr -d '"' \
 				| sed 's@^@https://github.com@')"
 		else
-			local link="$(echo "$DUMP" \
+			LINK="$(echo "$DUMP" \
 				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
 				| tr -d '"')"
 		fi
-		wget -P "$tmp" -q --show-progress "$link"
+		wget -P "$tmp" -q --show-progress "$LINK"
 		code_Wget
 	fi
 }

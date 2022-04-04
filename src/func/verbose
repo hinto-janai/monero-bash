@@ -5,17 +5,18 @@
 #
 verbose_Upgrade()
 {
-	$bwhite; echo -n "linkMonero - " ;$off; echo "$linkMonero"
-	$bwhite; echo -n "downloadMonero - " ;$off; echo "$downloadMonero"
 	$bwhite; echo -n "NAME_VER - " ;$off; echo "$NAME_VER"
 	$bwhite; echo -n "NAME_OLD - " ;$off; echo "$NAME_OLD"
 	$bwhite; echo -n "NAME_PRETTY - " ;$off; echo "$NAME_PRETTY"
 	$bwhite; echo -n "NAME_FUNC - " ;$off; echo "$NAME_FUNC"
 	$bwhite; echo -n "NAME_CAPS - " ;$off; echo "$NAME_CAPS"
 	$bwhite; echo -n "DIRECTORY - " ;$off; echo "$DIRECTORY"
+	$bwhite; echo -n "API - " ;$off; echo "$API"
+	$bwhite; echo -n "HTML - " ;$off; echo "$HTML"
 	$bwhite; echo -n "AUTHOR - " ;$off; echo "$AUTHOR"
 	$bwhite; echo -n "PROJECT - " ;$off; echo "$PROJECT"
 	$bwhite; echo -n "PACKAGE - " ;$off; echo "$PACKAGE"
+	$bwhite; echo -n "LINK - " ;$off; echo "$LINK"
 	$bwhite; echo -n "SHA - " ;$off; echo "$SHA"
 	$bwhite; echo -n "tarName - " ;$off; echo "$tarName"
 	$bwhite; echo -n "hashFile - " ;$off; echo "$hashFile"
