@@ -13,7 +13,7 @@ define_Monero()
 	PROJECT="monero"
 	PACKAGE="monero-linux-x64*"
 	SHA="hashes.txt"
-	SIG="hashes.txt"
+	SIG="$SHA"
 	downloadMonero="true"
 }
 
@@ -28,8 +28,8 @@ define_MoneroBash()
 	AUTHOR="hinto-janaiyo"
 	PROJECT="monero-bash"
 	PACKAGE="monero-bash-v*"
-	SHA="SHA256SUM*"
-	SIG="SHA256SUM*"
+	SHA="SHA256SUM"
+	SIG="$SHA"
 }
 
 define_XMRig()
@@ -44,8 +44,8 @@ define_XMRig()
 	AUTHOR="xmrig"
 	PROJECT="xmrig"
 	PACKAGE="xmrig*linux-static-x64*"
-    SHA="SHA256SUM*"
-	SIG="SHA256SUM.sig"
+    SHA="SHA256SUMS"
+	SIG="${SHA}.sig"
 }
 
 define_P2Pool()
@@ -60,7 +60,7 @@ define_P2Pool()
 	AUTHOR="SChernykh"
 	PROJECT="p2pool"
 	PACKAGE="p2pool*linux-x64*"
-	SHA="sha256sum*"
-	SIG="sha256sum*"
+	SHA="sha256sum.txt.asc"
+	SIG="$SHA"
 	downloadP2Pool="true"
 }
