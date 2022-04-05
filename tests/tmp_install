@@ -30,4 +30,4 @@ printf "\n\n\n" | /tmp/monero-bash/monero-bash
 sudo cp -r /tmp/monero-bash_04e3be9/tests /usr/local/share/monero-bash/tests
 
 # 5
-printf "\n" | monero-bash gpg
+printf "y\n" | monero-bash gpg
