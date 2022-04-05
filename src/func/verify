@@ -32,9 +32,9 @@ verify_hash_Template()
 
 	# comparison of hashes (and are we downloading p2pool?)
 	if [[ $downloadP2Pool = "true" ]]; then
-		HASH="$(grep -A2 "$PACKAGE" "$tmpHash/$hashFile" | grep "SHA256" | awk '{print $2}')"
+		HASH="$(grep -A2 "$DOT_PKG" "$tmpHash/$hashFile" | grep "SHA256" | awk '{print $2}')"
 	else
-		HASH="$(grep "$PACKAGE" "$tmpHash/$hashFile" | awk '{print $1}')"
+		HASH="$(grep "$DOT_PKG" "$tmpHash/$hashFile" | awk '{print $1}')"
 	fi
 	[[ "$HASH" = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
