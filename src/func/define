@@ -64,7 +64,7 @@ define_P2Pool()
 	PROJECT="p2pool"
 	STAR_PKG="p2pool*linux-x64*"
 	DOT_PKG="p2pool.*linux-x64.*"
-	SHA="sha256sum.txt.asc"
+	SHA="sha256sums.txt.asc"
 	SIG="$SHA"
 	downloadP2Pool="true"
 }
