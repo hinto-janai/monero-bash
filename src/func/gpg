@@ -16,6 +16,7 @@ gpg_Toggle()
 		prompt_Sudo ; error_Sudo
 		[[ $VERIFY_GPG = "true" ]]&& sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state"
 		[[ $VERIFY_GPG != "true" ]]&& sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"true\"@" "$state"
+		source "$state"
 		echo -n "GPG Verify is now "
 		[[ $VERIFY_GPG = "true" ]]&&$bgreen&& echo "ON"
 		[[ $VERIFY_GPG != "true" ]]&&$bred&& echo "OFF"
