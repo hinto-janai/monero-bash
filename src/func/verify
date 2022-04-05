@@ -24,10 +24,10 @@ verify_hash_Template()
 	fi
 
 	# setting of variables
-	wget -q -O "$tmpHash/$SHA" "$hashLink"
+	wget -q -O "$tmpHash" "$hashLink"
 	code_Wget
 	tarFile="$(ls "$tmp")"
-	hashFile="$(find $tmpHash/$SHA)"
+	hashFile="$(ls "$tmpHash")"
 	hashSTDOUT="$(cat "$hashFile")"
 
 	# comparison of hashes (and are we downloading p2pool?)
