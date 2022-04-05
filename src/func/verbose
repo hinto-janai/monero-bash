@@ -19,6 +19,7 @@ verbose_Upgrade()
 	$bwhite; echo -n "SHA: " ;$off; echo "$SHA"
 	$bwhite; echo -n "NewVer: " ;$off; echo "$NewVer"
 	$bwhite; echo -n "LINK: " ;$off; echo "$LINK"
+	$bwhite; echo -n "hashLink: " ;$off; echo "$hashLink"
 	$bwhite; echo -n "hashFile: " ;$off; echo "$hashFile"
 	$bwhite; echo -n "SIG: " ;$off; echo "$SIG"
 	$bwhite; echo "hashSTDOUT: " ;$off
