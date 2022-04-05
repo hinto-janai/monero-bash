@@ -31,13 +31,12 @@ upgrade_Pre()
 		echo ; safety_HashList
 		trap "trap_Tmp" 1 2 3 6
 		tmp_Create ; error_Exit "Could not create tmp folder"
+		upgrade_Template
 	fi
 }
 
 upgrade_Template()
 {
-	upgrade_Pre
-
 	print_GreenHash "Downloading [$NAME_PRETTY]"
 	download_Template
 	print_WhiteHash "Verifying"
@@ -111,26 +110,26 @@ upgrade_Post()
 upgrade_Monero()
 {
 	define_Monero
-	upgrade_Template
+	upgrade_Pre
 	downloadMonero="false"
 }
 
 upgrade_MoneroBash()
 {
 	define_MoneroBash
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_XMRig()
 {
 	define_XMRig
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_P2Pool()
 {
 	define_P2Pool
-	upgrade_Template
+	upgrade_Pre
 }
 
 upgrade_All()
