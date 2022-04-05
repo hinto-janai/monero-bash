@@ -11,7 +11,7 @@ define_Monero()
 	FOLDER="monero"
 	AUTHOR="monero-project"
 	PROJECT="monero"
-	PACKAGE="monero-linux-x64"
+	PACKAGE="monero-linux-x64.*"
 	SHA="hashes.txt"
 	SIG="hashes.txt"
 	downloadMonero="true"
