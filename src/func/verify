@@ -72,14 +72,13 @@ verify_Template()
 	# gpg check
 	if [[ $VERIFY_GPG = "true" ]]; then
 		if [[ $downloadXMRig = "true" ]]; then
-			gpg --verify "$tmpSig/$sigFile" "$tmpHash/$hashFile"
+			gpg --verify "$tmpSig/$sigFile" "$tmpHash/$hashFile" > /tmp/monero-bash-gpg
 			print_GPG
 		else
-			gpg --verify "$sigFile"
+			gpg --verify "$sigFile" > /tmp/monero-bash-gpg
 			print_GPG
 		fi
-		if [[ "$gpgOK" != "true" ]]; then
-			compromised_GPG
-		fi
+		gpgSTDOUT="$(cat /tmp/monero-bash-gpg)"
+		[[ "$gpgOK" != "true" ]]&& compromised_GPG
 	fi
 }
