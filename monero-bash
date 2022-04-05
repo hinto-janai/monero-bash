@@ -117,7 +117,7 @@ if [[ $options = "true" ]]; then
 			;;
 		upgrade)
 			[[ $* = *"verbose"* ]]&& VERBOSE="true"
-			[[ $* = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
+			[[ $* = *"force"* ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
 			if [[ $2 = *"bash"* || $2 = *"Bash"* || $2 = *"BASH"* ]]; then
 				echo -n "Upgrade monero-bash? (Y/n) "
 				Yes(){ upgrade_MoneroBash ;}
