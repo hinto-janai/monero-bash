@@ -91,6 +91,20 @@ if [[ $options = "true" ]]; then
 		mine) print_NotYet ;;
 		uninstall) monerobash_Uninstall ;;
 		update) update_All ;;
+		version) print_Version ;;
+		list) wallet_Count && wallet_List ;;
+		size) print_Size ;;
+		price) check_Price ;;
+		status) status_All ;;
+		integrity) CHECK_HASH_LIST ;;
+		help) print_Usage ;;
+		gpg)
+			case $2 in
+				"") gpg_Toggle ;;
+				import) gpg_import_All ;;
+				*) error_Unknown ;;
+			esac
+			;;
 		daemon)
 			case $2 in
 				start) daemon_StartDetached ;;
@@ -101,13 +115,6 @@ if [[ $options = "true" ]]; then
 				*) error_Unknown ;;
 			esac
 			;;
-		version) print_Version ;;
-		list) wallet_Count && wallet_List ;;
-		size) print_Size ;;
-		price) check_Price ;;
-		status) status_All ;;
-		integrity) CHECK_HASH_LIST ;;
-		help) print_Usage ;;
 		upgrade)
 			[[ $* = *"verbose"* ]]&& VERBOSE="true"
 			[[ $3 = "force" ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
