@@ -11,6 +11,7 @@ gpg_import_Template()
 	else
 		gpg_Diff
 	fi
+	echo
 }
 
 gpg_import_All()
