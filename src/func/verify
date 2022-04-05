@@ -29,9 +29,10 @@ verify_Template()
 		wget -q -P "$tmpHash" "$hashLink"
 		code_Wget
 		hashFile="$(ls "$tmpHash")"
+		sigFile="$hashFile"
 		hashSTDOUT="$(cat "$tmpHash/$hashFile")"
 
-		# xmrig author pls include the sig in the hash file
+	# xmrig author pls include the sig in the hash file
 		if [[ $downloadXMRig = "true" ]]; then
 			if [[ $HTML = "true" ]]; then
 				sigLink="$(echo "$DUMP" \
@@ -48,8 +49,6 @@ verify_Template()
 			wget -q -P "$tmpSig" "$sigLink"
 			code_Wget
 			sigFile="$(ls "$tmpSig")"
-		else
-			sigFile="$hashFile"
 		fi
 	else
 		hashSTDOUT="$(wget -qO- "$hashLink")"
@@ -75,7 +74,7 @@ verify_Template()
 			gpg --verify "$tmpSig/$sigFile" "$tmpHash/$hashFile" &> /tmp/monero-bash-gpg
 			print_GPG
 		else
-			gpg --verify "$sigFile" &> /tmp/monero-bash-gpg
+			gpg --verify "$tmpHash/$sigFile" &> /tmp/monero-bash-gpg
 			print_GPG
 		fi
 		gpgSTDOUT="$(cat /tmp/monero-bash-gpg*)"
