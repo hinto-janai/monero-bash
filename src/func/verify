@@ -24,17 +24,17 @@ verify_hash_Template()
 	fi
 
 	# setting of variables
-	tarFile="$(ls "$tmp")"
-	wget -q -O "$tmp/$SHA" "$hashLink"
+	wget -q -O "$tmpHash/$SHA" "$hashLink"
 	code_Wget
-	hashFile="$(find $tmp/$SHA)"
+	tarFile="$(ls "$tmp")"
+	hashFile="$(find $tmpHash/$SHA)"
 	hashSTDOUT="$(cat "$hashFile")"
 
 	# comparison of hashes (and are we downloading p2pool?)
 	if [[ $downloadP2Pool = "true" ]]; then
-		HASH="$(echo "$hashSTDOUT" | grep -A2 "$PACKAGE" | grep "SHA256" | awk '{print $2}')"
+		HASH="$(grep -A2 "$PACKAGE" "$hashFile" | grep "SHA256" | awk '{print $2}')"
 	else
-		HASH="$(echo "$hashSTDOUT" | grep "$PACKAGE" | awk '{print $1}')"
+		HASH="$(grep "$PACKAGE" "$hashFile" | awk '{print $1}')"
 	fi
 	[[ "$HASH" = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null

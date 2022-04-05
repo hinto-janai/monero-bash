@@ -50,7 +50,7 @@ upgrade_Template()
 	error_Exit "rm - error"
 	$white; echo -n "$tarFile: " ;$igreen; echo "EXTRACTED" ;$off
 
-	local folderName="$(find $tmp/$PACKAGE)"
+	folderName="$(ls $tmp)"
 	if [[ -d "$old" ]]; then
 		sudo rm -rf "$old"
 		error_Exit "Could not remove old folder"

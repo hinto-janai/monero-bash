@@ -7,6 +7,7 @@
 download_Template()
 {
 	tmp="$(find /tmp/monero-bash.*)"
+	tmpHash="$(find /tmp/monero-bash-hash.*)"
 	API="true"
 	HTML="false"
 	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"

@@ -22,6 +22,7 @@ verbose_Upgrade()
 	$bwhite; echo -n "hashLink: " ;$off; echo "$hashLink"
 	$bwhite; echo -n "hashFile: " ;$off; echo "$hashFile"
 	$bwhite; echo -n "SIG: " ;$off; echo "$SIG"
+	$bwhite; echo -n "folderName: " ;$bblue; echo "$folderName"
 	$bwhite; echo "hashSTDOUT: " ;$off
 	export GREP_COLOR="1;34"
 	echo "$hashSTDOUT" | grep --color -z "$HASH\|$tarFile"

@@ -5,6 +5,7 @@ tmp_Create()
 {
 	tmp_Del
 	mktemp -d /tmp/monero-bash.XXXXXXXXXX &>/dev/null
+	mktemp -d /tmp/monero-bash-hash.XXXXXXXXXX &>/dev/null
 }
 
 tmp_Del()
