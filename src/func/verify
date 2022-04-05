@@ -25,7 +25,7 @@ verify_hash_Template()
 
 	# setting of variables
 	wget -P "$tmp/$SHA" -q "$hashLink"
-	tarFile="$(ls "$tmp")"
+	tarFile="$(find "$tmp/$PACKAGE")"
 	hashFile="$(find "$tmp/$SHA")"
 	hashSTDOUT="$(cat "$hashFile")"
 
