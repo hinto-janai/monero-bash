@@ -41,7 +41,7 @@ upgrade_Template()
 	print_GreenHash "Downloading [$NAME_PRETTY]"
 	download_Template
 	print_WhiteHash "Verifying"
-	verify_hash_Template
+	verify_Template
 
 	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 	print_WhiteHash "Extracting"

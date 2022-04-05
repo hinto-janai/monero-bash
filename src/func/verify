@@ -5,7 +5,7 @@
 # everyone has a slightly differently named sha256sum
 # file, with slightly different internal formatting.
 # makes this function a bit long.
-verify_hash_Template()
+verify_Template()
 {
 	# api or html? (or are we downloading monero?)
 	if [[ "$HTML" = "true" && "$downloadMonero" != "true" ]]; then
@@ -24,19 +24,23 @@ verify_hash_Template()
 	fi
 
 	# setting of variables
-	wget -q -P "$tmpHash" "$hashLink"
-	code_Wget
 	tarFile="$(ls "$tmp")"
-	hashFile="$(ls "$tmpHash")"
-	hashSTDOUT="$(cat "$tmpHash/$hashFile")"
+	if [[ $VERIFY_GPG = "true" ]]; then
+		wget -q -P "$tmpHash" "$hashLink"
+		code_Wget
+		hashFile="$(ls "$tmpHash")"
+		hashSTDOUT="$(cat "$tmpHash/$hashFile")"
+	else
+		hashSTDOUT="$(wget -qO- "$hashLink")"
+	fi
 
 	# comparison of hashes (and are we downloading p2pool?)
 	if [[ $downloadP2Pool = "true" ]]; then
-		HASH="$(grep -A2 "$DOT_PKG" "$tmpHash/$hashFile" | grep "SHA256" | awk '{print $2}')"
+		HASH="$(echo "$hashSTDOUT" | grep -A2 "$DOT_PKG" | grep "SHA256" | awk '{print $2}')"
 	else
-		HASH="$(grep "$DOT_PKG" "$tmpHash/$hashFile" | awk '{print $1}')"
+		HASH="$(echo "$hashSTDOUT" | grep "$DOT_PKG" | awk '{print $1}')"
 	fi
-	[[ "$HASH" = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	[[ "$HASH" = "" ]]&& error_Exit "Hash file was empty"
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
 	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum $tmp/$tarFile | awk '{print $1}' | tr -d " -")"
