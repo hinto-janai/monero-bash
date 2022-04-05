@@ -17,12 +17,6 @@ install_Monero()
 	install_Template
 }
 
-install_MoneroBash()
-{
-	define_MoneroBash
-	install_Template
-}
-
 install_XMRig()
 {
 	define_XMRig
@@ -37,7 +31,6 @@ install_P2Pool()
 
 install_All()
 {
-	install_MoneroBash
 	install_Monero
 	install_XMRig
 	install_P2Pool

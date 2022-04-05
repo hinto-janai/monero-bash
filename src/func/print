@@ -107,11 +107,11 @@ print_Error_Exit()
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
-		$white; echo -n "$tarFile: "
+		$white; echo -n "$NAME_PRETTY: "
 		$igreen; echo "HASH OK" ;$white
 		verifyOK="true"
 	else
-		$white; echo -n "$tarFile: "
+		$white; echo -n "$NAME_PRETTY: "
 		$bred; echo "HASH FAILED" ;$white
 		verifyOK="false"
 	fi
@@ -120,11 +120,11 @@ print_OKFAILED()
 print_GPG()
 {
 	if [[ $? = "0" ]]; then
-		$white; echo -n "$tarFile: "
+		$white; echo -n "$NAME_PRETTY: "
 		$igreen; echo "GPG OK" ;$white
 		gpgOK="true"
 	else
-		$white; echo -n "$tarFile: "
+		$white; echo -n "$NAME_PRETTY: "
 		$bred; echo "GPG FAILED" ;$white
 		gpgOK="false"
 	fi
