@@ -24,7 +24,7 @@ verify_hash_Template()
 	fi
 
 	# setting of variables
-	wget -q -O "$tmpHash" "$hashLink"
+	wget -q -P "$tmpHash" "$hashLink"
 	code_Wget
 	tarFile="$(ls "$tmp")"
 	hashFile="$(ls "$tmpHash")"
