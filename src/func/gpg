@@ -43,9 +43,9 @@ gpg_Diff()
 	$bred; echo -n "$NAME "
 	$bwhite; echo "are different!" ;$off
 	$bblue; echo -n "LOCAL: "
-	$bwhite; echo "$installDirectory/gpg/${NAME}.asc"
+	$white; echo "$installDirectory/gpg/${NAME}.asc"
 	$bgreen; echo -n "ONLINE: "
-	$bwhite; echo "$LINK"
+	$white; echo "$LINK"
 	while true ;do
 		echo -n "What to do? [show / pick / skip] "
 		read OPTION
@@ -58,11 +58,11 @@ gpg_Diff()
 				;;
 			pick)
 				while true; do
-					echo -n "Which key to pick? [local / online]"
+					echo -n "Which key to pick? [local / online] "
 					read KEYPICK
 					case $KEYPICK in
 						local) gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
-						online) gpg_Overwrite && PRODUCE_HASH_LIST &&  gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
+						online) gpg_Overwrite && PRODUCE_HASH_LIST && gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
 						*) error_Continue "Invalid option"
 					esac
 				done
@@ -83,6 +83,6 @@ gpg_Overwrite()
 	prompt_Sudo
 	error_Sudo
 	echo "Overwriting LOCAL keys..."
-	wget -P "$installDirectory/gpg/" "$LINK"
+	wget -P "$installDirectory/gpg/${NAME}.asc" "$LINK"
 	code_Wget
 }
