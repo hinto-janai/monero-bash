@@ -8,10 +8,10 @@ gpg_import_Template()
 		$bwhite; echo -n "$NAME: "
 		$bgreen; echo "OK" ;$off
 		gpg --import "$installDirectory/gpg/${NAME}.asc"
+		echo
 	else
 		gpg_Diff
 	fi
-	echo
 }
 
 gpg_import_All()
