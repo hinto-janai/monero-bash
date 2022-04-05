@@ -83,6 +83,6 @@ gpg_Overwrite()
 	prompt_Sudo
 	error_Sudo
 	echo "Overwriting LOCAL keys..."
-	wget -P "$installDirectory/gpg/${NAME}.asc" "$LINK"
+	wget -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
 	code_Wget
 }
