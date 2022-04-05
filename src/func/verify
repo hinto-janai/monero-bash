@@ -72,7 +72,7 @@ verify_Template()
 	# gpg check
 	if [[ $VERIFY_GPG = "true" ]]; then
 		if [[ $downloadXMRig = "true" ]]; then
-			gpg --verify "$tmpSig/$sigFile"
+			gpg --verify "$tmpSig/$sigFile" "$tmpHash/$hashFile"
 			print_GPG
 		else
 			gpg --verify "$sigFile"
