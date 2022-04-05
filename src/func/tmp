@@ -5,11 +5,24 @@ tmp_Create()
 {
 	tmp_Del
 	mktemp -d /tmp/monero-bash.XXXXXXXXXX &>/dev/null
+	tmp="$(find /tmp/monero-bash.*)"
+	if [[ $VERIFY_GPG = "true" ]]; then
+		mktemp -d /tmp/monero-bash-hash.XXXXXXXXXX &>/dev/null
+		mktemp -d /tmp/monero-bash-sig.XXXXXXXXXX &>/dev/null
+		tmpHash="$(find /tmp/monero-bash-hash.*)"
+		tmpSig="$(find /tmp/monero-bash-sig.*)"
+	fi
 }
 
 tmp_Del()
 {
 	if find /tmp/monero-bash.* &>/dev/null ; then
 		rm -rf /tmp/monero-bash.*
+	fi
+	if find /tmp/monero-bash-hash.* &>/dev/null ; then
+		rm -rf /tmp/monero-bash-hash.*
+	fi
+	if find /tmp/monero-bash-sig.* &>/dev/null ; then
+		rm -rf /tmp/monero-bash-sig.*
 	fi
 }

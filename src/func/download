@@ -6,7 +6,6 @@
 # to be 1 http request for all the data needed
 download_Template()
 {
-	tmp="$(find /tmp/monero-bash.*)"
 	API="true"
 	HTML="false"
 	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
@@ -19,19 +18,18 @@ download_Template()
 	fi
 	if [[ $downloadMonero = "true" ]]; then
 		LINK="https://downloads.getmonero.org/cli/linux64"
-		downloadMonero="false"
 		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		code_Wget
 	else
 		if [[ "$HTML" = "true" ]]; then
 			LINK="$(echo "$DUMP" \
-				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
+				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \
 				| awk '{print $1}' \
 				| tr -d '"' \
 				| sed 's@^@https://github.com@')"
 		else
 			LINK="$(echo "$DUMP" \
-				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$PACKAGE" \
+				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \
 				| tr -d '"')"
 		fi
 		wget -P "$tmp" -q --show-progress "$LINK"

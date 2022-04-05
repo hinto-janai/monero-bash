@@ -3,6 +3,7 @@
 trap_Template()
 {
 	trap "" 1 2 3 6 15
+	[[ $VERBOSE = "true" ]] verbose_Upgrade
 }
 
 # continue current operation until finished (then revert)

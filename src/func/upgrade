@@ -31,26 +31,27 @@ upgrade_Pre()
 		echo ; safety_HashList
 		trap "trap_Tmp" 1 2 3 6
 		tmp_Create ; error_Exit "Could not create tmp folder"
-		upgrade_Template
 	fi
 }
 
 upgrade_Template()
 {
+	upgrade_Pre
+
 	print_GreenHash "Downloading [$NAME_PRETTY]"
 	download_Template
 	print_WhiteHash "Verifying"
-	verify_hash_"$NAME_FUNC"
+	verify_Template
 
 	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 	print_WhiteHash "Extracting"
-	tar -xf "$tmp/$tarName" -C "$tmp"
+	tar -xf "$tmp/$tarFile" -C "$tmp"
 	code_Tar
-	rm -f "$tmp/$tarName"
+	rm -f "$tmp/$tarFile"
 	error_Exit "rm - error"
-	$white; echo -n "$tarName: " ;$igreen; echo "EXTRACTED" ;$off
+	$white; echo -n "$tarFile: " ;$igreen; echo "EXTRACTED" ;$off
 
-	local folderName="$(ls "$tmp")"
+	folderName="$(ls $tmp)"
 	if [[ -d "$old" ]]; then
 		sudo rm -rf "$old"
 		error_Exit "Could not remove old folder"
@@ -111,25 +112,26 @@ upgrade_Post()
 upgrade_Monero()
 {
 	define_Monero
-	upgrade_Pre
+	upgrade_Template
+	downloadMonero="false"
 }
 
 upgrade_MoneroBash()
 {
 	define_MoneroBash
-	upgrade_Pre
+	upgrade_Template
 }
 
 upgrade_XMRig()
 {
 	define_XMRig
-	upgrade_Pre
+	upgrade_Template
 }
 
 upgrade_P2Pool()
 {
 	define_P2Pool
-	upgrade_Pre
+	upgrade_Template
 }
 
 upgrade_All()

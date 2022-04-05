@@ -16,3 +16,6 @@ MONERO_OLD="true"
 MONERO_BASH_OLD="false"
 XMRIG_OLD="true"
 P2POOL_OLD="true"
+
+# gpg
+VERIFY_GPG="false"
