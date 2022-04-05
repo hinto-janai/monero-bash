@@ -78,7 +78,7 @@ verify_Template()
 			gpg --verify "$sigFile" &> /tmp/monero-bash-gpg
 			print_GPG
 		fi
-		gpgSTDOUT="$(cat /tmp/monero-bash-gpg)"
+		gpgSTDOUT="$(cat /tmp/monero-bash-gpg*)"
 		[[ "$gpgOK" != "true" ]]&& compromised_GPG
 	fi
 }

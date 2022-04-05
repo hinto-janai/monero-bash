@@ -24,7 +24,7 @@ trap_Post()
 	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	PRODUCE_HASH_LIST
 	[[ -d "$old" ]]&& sudo rm -rf "$old"
-	[[ -d "$tmp" ]]&& sudo rm -rf "$tmp"
+	[[ -d "$tmp" ]]&& tmp_Del
 	exit
 }
 
@@ -33,7 +33,7 @@ trap_Tmp()
 {
 	trap_Template
 	error_Trap "CLEANING TEMP FILES"
-	[[ -d "$tmp" ]]&& rm -rf "$tmp"
+	[[ -d "$tmp" ]]&& tmp_Del
 	exit
 }
 
