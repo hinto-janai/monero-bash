@@ -104,6 +104,7 @@ if [[ $options = "true" ]]; then
 				import) gpg_import_All ;;
 				*) error_Unknown ;;
 			esac
+			;;
 		daemon)
 			case $2 in
 				start) daemon_StartDetached ;;
