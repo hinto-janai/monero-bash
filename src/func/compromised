@@ -2,22 +2,13 @@
 #
 #						messages for when hash/gpg is incorrect
 #
-compromised_hash_Monero()
+compromised_Hash()
 {
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-    $bwhite; echo -n "@   "
-    $bred; echo -n "WARNING: HASH ERROR!"
-    $bwhite; echo "                   @"
-    $bwhite; echo "@                                          @"
-    $bwhite; echo -n "@   "
-    $bred; echo -n "[Monero] hash did not match!"
-    $bwhite; echo "           @"
-    $bwhite; echo -n "@   "
-    $bred; echo -n "Monero might be compromised"
-    $bwhite; echo "            @"
-    $bwhite; echo -n "@   "
-    $bred; echo -n "(or more likely, there was an error)"
-    $bwhite; echo "   @"
+    $bred; echo "  WARNING: HASH ERROR!"
+    $bred; echo "  [$NAME_PRETTY] hash did not match!"
+    $bred; echo "  [$AUTHOR] might be compromised"
+    $bred; echo  "  (or more likely, there was an error)"
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
@@ -26,71 +17,14 @@ compromised_hash_Monero()
 	exit
 }
 
-compromised_hash_MoneroBash()
+compromised_GPG()
 {
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "WARNING: HASH ERROR!"
-	$bwhite; echo "                   @"
-	$bwhite; echo "@                                          @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "[monero-bash] hash did not match!"
-	$bwhite; echo "      @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "hinto.janaiyo might be compromised"
-	$bwhite; echo "     @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "(or more likely, there was an error)"
-	$bwhite; echo "   @"
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
-	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
-	echo "EXITING FOR SAFTEY..."
-	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
-	exit
-}
-
-compromised_hash_XMRig()
-{
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "WARNING: HASH ERROR!"
-	$bwhite; echo "                   @"
-	$bwhite; echo "@                                          @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "[XMRig] hash did not match!"
-	$bwhite; echo "            @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "XMRig might be compromised"
-	$bwhite; echo "             @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "(or more likely, there was an error)"
-	$bwhite; echo "   @"
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
-	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
-	echo "EXITING FOR SAFTEY..."
-	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
-	exit
-}
-
-compromised_hash_P2Pool()
-{
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "WARNING: HASH ERROR!"
-	$bwhite; echo "                   @"
-	$bwhite; echo "@                                          @"
-	$bwhite; echo -n "@   "
-    $bred; echo -n "[P2Pool] hash did not match!"
-    $bwhite; echo "           @"
-    $bwhite; echo -n "@   "
-    $bred; echo -n "SChernykh might be compromised"
-    $bwhite; echo "         @"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "(or more likely, there was an error)"
-	$bwhite; echo "   @"
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    $bblue; echo "  WARNING: GPG SIGNATURE ERROR!"
+    $bblue; echo "  [$NAME_PRETTY] GPG Signature did not match!"
+    $bblue; echo "  [$AUTHOR] might be compromised"
+    $bblue; echo  "  (or more likely, there was an error)"
+    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
 	echo "EXITING FOR SAFTEY..."
