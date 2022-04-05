@@ -22,7 +22,7 @@ compromised_hash_Monero()
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
 	echo "EXITING FOR SAFTEY..."
-	[[ $VERBOSE = "true" ]] verbose_Upgrade
+	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
 }
 
@@ -46,7 +46,7 @@ compromised_hash_MoneroBash()
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
 	echo "EXITING FOR SAFTEY..."
-	[[ $VERBOSE = "true" ]] verbose_Upgrade
+	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
 }
 
@@ -70,7 +70,7 @@ compromised_hash_XMRig()
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
 	echo "EXITING FOR SAFTEY..."
-	[[ $VERBOSE = "true" ]] verbose_Upgrade
+	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
 }
 
@@ -94,6 +94,6 @@ compromised_hash_P2Pool()
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$BAD_HASH"
 	echo "EXITING FOR SAFTEY..."
-	[[ $VERBOSE = "true" ]] verbose_Upgrade
+	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
 }
