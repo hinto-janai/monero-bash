@@ -26,6 +26,7 @@ verify_hash_Template()
 	# setting of variables
 	tarFile="$(ls "$tmp")"
 	wget -q -O "$tmp/$SHA" "$hashLink"
+	code_Wget
 	hashFile="$(find $tmp/$SHA)"
 	hashSTDOUT="$(cat "$hashFile")"
 
@@ -38,5 +39,5 @@ verify_hash_Template()
 	[[ "$HASH" = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
-	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarFile" | tr -d " -")"
+	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum $tmp/$tarFile | awk '{print $1}' | tr -d " -")"
 }
