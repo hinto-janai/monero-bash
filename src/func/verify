@@ -2,66 +2,41 @@
 #
 # hash & GPG verification of binaries
 #
-# haven't found a way to make a "template" function
-# that fits for all. everyone has a slightly differently
-# named sha256sum file, with slightly different
-# internal formatting.
+# everyone has a slightly differently named sha256sum
+# file, with slightly different internal formatting.
+# makes this function a bit long.
 verify_hash_Template()
 {
-	tarName="$(ls "$tmp")"
-	if [[ "$HTML" = "true" ]]; then
-		hashFile="$(echo "$DUMP" \
+	# api or html? (or are downloading monero?)
+	if [[ "$HTML" = "true" && $downloadMonero != "true" ]]; then
+		hashLink="$(echo "$DUMP" \
 		| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SHA" \
 		| head -n1 \
 		| awk '{print $1}' \
 		| tr -d '"' \
 		| sed 's@^@https://github.com@')"
-	else
-		hashFile="$(echo "$DUMP" \
+	elif [[ "$API" = "true" && $downloadMonero != "true" ]]; then
+		hashLink="$(echo "$DUMP" \
 			| grep "browser_download_url.*$SHA" \
 			| awk '{print $2}' | head -n1 | tr -d '"')"
+	else
+		hashLink="https://www.getmonero.org/downloads/hashes.txt"
 	fi
-	hashSTDOUT="$(wget -qO- "$hashFile")"
-}
 
-verify_hash_Monero()
-{
-	tarName="$(ls "$tmp")"
-	hashFile="https://www.getmonero.org/downloads/hashes.txt"
-	hashSTDOUT="$(wget -qO- "$hashFile")"
-	HASH="$(echo "$hashSTDOUT" | grep "monero-linux-x64" | awk '{print $1}')"
-	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
+	# setting of variables
+	wget -P "$tmp/$SHA" -q "$hashLink"
+	tarFile="$(ls "$tmp")"
+	hashFile="$(find "$tmp/$SHA")"
+	hashSTDOUT="$(cat "$hashFile")"
+
+	# comparison of hashes (and are we downloading p2pool?)
+	if [[ $downloadP2Pool = "true" ]]; then
+		HASH="$(echo "$hashSTDOUT" | grep -A2 "$PACKAGE" | grep "SHA256" | awk '{print $2}')"
+	else
+		HASH="$(echo "$hashSTDOUT" | grep "$PACKAGE" | awk '{print $1}')"
+	fi
+	[[ "$HASH" = "" ]]&& error_Exit "GitHub HTML filter failed..."
+	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
-	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
+	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarFile" | tr -d " -")"
 }
-
-verify_hash_MoneroBash()
-{
-	verify_hash_Template
-	HASH="$(echo "$hashSTDOUT" | grep "$PACKAGE" | awk '{print $1}')"
-	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
-	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
-	print_OKFAILED
-	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
-}
-
-verify_hash_XMRig()
-{
-	verify_hash_Template
-	HASH="$(echo "$hashSTDOUT" | grep "$PACKAGE" | awk '{print $1}')"
-	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
-	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
-	print_OKFAILED
-	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
-}
-
-verify_hash_P2Pool()
-{
-	verify_hash_Template
-	HASH="$(echo "$hashSTDOUT" | grep -A2 "$PACKAGE" | grep "SHA256" | awk '{print $2}')"
-	[[ $HASH = "" ]]&& error_Exit "GitHub HTML filter failed..."
-	echo "$HASH" "$tmp/$tarName" | sha256sum -c &>/dev/null
-	print_OKFAILED
-	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum "$tmp/$tarName")"
-}
-

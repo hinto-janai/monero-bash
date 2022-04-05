@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-# for importing gpgs keys and
-# checking LOCAL/ONLINE diff
+# gpg functions for:
+# 	-importing gpgs keys and
+#	-checking LOCAL/ONLINE diff
+#	-overwriting LOCAL keys with ONLINE
 
 gpg_import_Template()
 {

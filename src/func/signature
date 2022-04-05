@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# for verifying sha/package gpg signatures
+
+signature_Template()
+{
+	echo "$hashSTDOUT" > "$tmp/$SHA"
+	sigFile="$(ls "$tmp/$SIG")"
+	gpg --verify
+}
+
