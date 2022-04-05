@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# tar + gpg backups
+
+backup_Wallets()
+{
+	if [[ -e "$dotMoneroBash/wallets.tar" ]]; then
+		error_Exit "$dotMoneroBash/wallets.tar already exists!"
+	elif [[ -e "$dotMoneroBash/wallets.tar.gpg" ]]; then
+		error_Exit "$dotMoneroBash/wallets.tar.gpg already exists!"
+	fi
+	$bblue; echo "Backing up wallets..."
+	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
+	$bwhite; echo -n "Key type: " ;$white; echo "Passphrase"
+	tar -cz "$wallets" | gpg -c --no-symkey-cache --cipher-algo AES256 -o "$installDirectory/wallets.tar.gpg"
+	error_Exit "Exiting..."
+	$bwhite; echo -n "Encrypted wallet tar: " ;$white; echo "$installDirectory/wallets.tar.gpg"
+	$bwhite; echo -n "To decrypt: " ;$bred; echo -n "monero-bash decrypt"
+	$bwhite; echo -n "OR " ;$bred; echo "gpg -d wallets.tar.gpg | tar -xzf -"
+}
+
+backup_Decrypt()
+{
+	if [[ -e "$wallets" ]]; then
+		error_Exit "$wallets already exists, please move!"
+	elif [[ ! -e "$dotMoneroBash/wallets.tar.gpg" ]]; then
+		error_Exit "$dotMoneroBash/wallets.tar.gpg was not found!"
+	fi
+	$bblue; echo "Decrypting wallets..."
+	cd "$wallets"
+	gpg -d wallets.tar.gpg | tar -xzf -
+	error_Exit "Decrypt failed"
+	$bwhite; echo -n "Decrypted wallets: " ;$white; echo "$wallets"
+}
