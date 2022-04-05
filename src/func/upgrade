@@ -44,11 +44,11 @@ upgrade_Template()
 
 	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 	print_WhiteHash "Extracting"
-	tar -xf "$tmp/$tarName" -C "$tmp"
+	tar -xf "$tmp/$tarFile" -C "$tmp"
 	code_Tar
-	rm -f "$tmp/$tarName"
+	rm -f "$tmp/$tarFile"
 	error_Exit "rm - error"
-	$white; echo -n "$tarName: " ;$igreen; echo "EXTRACTED" ;$off
+	$white; echo -n "$tarFile: " ;$igreen; echo "EXTRACTED" ;$off
 
 	local folderName="$(ls "$tmp")"
 	if [[ -d "$old" ]]; then

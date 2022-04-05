@@ -20,10 +20,11 @@ verbose_Upgrade()
 	$bwhite; echo -n "NewVer: " ;$off; echo "$NewVer"
 	$bwhite; echo -n "LINK: " ;$off; echo "$LINK"
 	$bwhite; echo -n "hashFile: " ;$off; echo "$hashFile"
+	$bwhite; echo -n "SIG: " ;$off; echo "$SIG"
 	$bwhite; echo "hashSTDOUT: " ;$off
 	export GREP_COLOR="1;34"
-	echo "$hashSTDOUT" | grep --color -z "$HASH\|$tarName"
-	$bwhite; echo -n "tarName: " ;$bblue; echo "$tarName"
+	echo "$hashSTDOUT" | grep --color -z "$HASH\|$tarFile"
+	$bwhite; echo -n "tarFile: " ;$bblue; echo "$tarFile"
 	$bwhite; echo -n "HASH: " ;$bblue; echo "$HASH"
 	$bwhite; echo -n "BAD_HASH: " ;$bred; echo "$BAD_HASH"
 }
