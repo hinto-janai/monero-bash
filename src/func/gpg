@@ -71,6 +71,7 @@ gpg_Diff()
 				;;
 			skip)
 				$bwhite; echo "Skipping..."
+				echo
 				break
 				;;
 			*)
