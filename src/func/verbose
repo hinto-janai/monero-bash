@@ -25,6 +25,8 @@ verbose_Upgrade()
 	$bwhite; echo -n "hashLink: " ;$off; echo "$hashLink"
 	$bwhite; echo -n "sigLink: " ;$off; echo "$sigLink"
 	$bwhite; echo -n "tmp: " ;$off; echo "$tmp"
+	$bwhite; echo -n "tmpHash: " ;$off; echo "$tmpHash"
+	$bwhite; echo -n "tmpSig: " ;$off; echo "$tmpSig"
 	$bwhite; echo -n "hashFile: " ;$off; echo "$hashFile"
 	$bwhite; echo -n "sigFile: " ;$off; echo "$sigFile"
 	$bwhite; echo -n "folderName: " ;$off; echo "$folderName"
