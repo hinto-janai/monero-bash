@@ -47,7 +47,7 @@ upgrade_Template()
 	code_Tar
 	rm -f "$tmp/$tarFile"
 	error_Exit "rm - error"
-	$white; echo -n "$tarFile: " ;$igreen; echo "EXTRACTED" ;$off
+	$white; echo -n "$NAME_PRETTY: " ;$igreen; echo "EXTRACTED" ;$off
 
 	folderName="$(ls $tmp)"
 	if [[ -d "$old" ]]; then
