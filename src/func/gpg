@@ -10,7 +10,7 @@ gpg_Toggle()
 	echo -n "GPG Verify is: "
 	[[ $VERIFY_GPG = "true" ]]&&$bgreen&& echo "ON"
 	[[ $VERIFY_GPG != "true" ]]&&$bred&& echo "OFF"
-	$bwhite; echo -n "Toggle? " ;$off
+	$bwhite; echo -n "Toggle? (y/N) " ;$off
 	Yes()
 	{
 		prompt_Sudo ; error_Sudo
