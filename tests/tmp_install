@@ -4,6 +4,7 @@
 # 2. remove old copies
 # 3. copy /tmp/monero-bash_04e3be9 into new folder
 # 4. install that copy
+# 5. enable gpg
 
 # 1
 if [[ -d /tmp/monero-bash_04e3be9 ]]; then
@@ -27,3 +28,6 @@ sudo rm -r /tmp/monero-bash
 sudo cp -r /tmp/monero-bash_04e3be9 /tmp/monero-bash
 printf "\n\n\n" | /tmp/monero-bash/monero-bash
 sudo cp -r /tmp/monero-bash_04e3be9/tests /usr/local/share/monero-bash/tests
+
+# 5
+printf "y\n" | monero-bash gpg

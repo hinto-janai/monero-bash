@@ -124,12 +124,14 @@ upgrade_XMRig()
 {
 	define_XMRig
 	upgrade_Pre
+	downloadXMRig="false"
 }
 
 upgrade_P2Pool()
 {
 	define_P2Pool
 	upgrade_Pre
+	downloadP2Pool="false"
 }
 
 upgrade_All()

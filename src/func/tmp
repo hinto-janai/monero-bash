@@ -8,9 +8,13 @@ tmp_Create()
 	tmp="$(find /tmp/monero-bash.*)"
 	if [[ $VERIFY_GPG = "true" ]]; then
 		mktemp -d /tmp/monero-bash-hash.XXXXXXXXXX &>/dev/null
-		[[ $downloadXMRig = "true" ]]&& mktemp -d /tmp/monero-bash-sig.XXXXXXXXXX &>/dev/null
+		mktemp /tmp/monero-bash-gpg.XXXXXXXXXX &>/dev/null
 		tmpHash="$(find /tmp/monero-bash-hash.*)"
-		tmpSig="$(find /tmp/monero-bash-sig.*)"
+		tmpGPG="$(find /tmp/monero-bash-gpg.*)"
+		if [[ $downloadXMRig = "true" ]]; then
+			mktemp -d /tmp/monero-bash-sig.XXXXXXXXXX &>/dev/null
+			tmpSig="$(find /tmp/monero-bash-sig.*)"
+		fi
 	fi
 }
 
@@ -25,7 +29,7 @@ tmp_Del()
 	if find /tmp/monero-bash-sig.* &>/dev/null ; then
 		rm -rf /tmp/monero-bash-sig.*
 	fi
-	if find /tmp/monero-bash-gpg &>/dev/null ; then
-		rm -rf /tmp/monero-bash.gpg
+	if find /tmp/monero-bash-gpg.* &>/dev/null ; then
+		rm -rf /tmp/monero-bash-gpg.*
 	fi
 }
