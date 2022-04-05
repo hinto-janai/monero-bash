@@ -25,8 +25,8 @@ verify_hash_Template()
 
 	# setting of variables
 	wget -P "$tmp/$SHA" -q "$hashLink"
-	tarFile="$(find "$tmp/$PACKAGE")"
-	hashFile="$(find "$tmp/$SHA")"
+	tarFile="$(find $tmp/$PACKAGE)"
+	hashFile="$(find $tmp/$SHA)"
 	hashSTDOUT="$(cat "$hashFile")"
 
 	# comparison of hashes (and are we downloading p2pool?)
