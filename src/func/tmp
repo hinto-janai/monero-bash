@@ -13,4 +13,7 @@ tmp_Del()
 	if find /tmp/monero-bash.* &>/dev/null ; then
 		rm -rf /tmp/monero-bash.*
 	fi
+	if find /tmp/monero-bash-hash.* &>/dev/null ; then
+		rm -rf /tmp/monero-bash-hash.*
+	fi
 }
