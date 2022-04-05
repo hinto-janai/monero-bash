@@ -62,7 +62,7 @@ gpg_Diff()
 					read KEYPICK
 					case $KEYPICK in
 						local) gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
-						online) gpg_Overwrite && PRODUCE_HASH_LIST && gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
+						online) gpg_Overwrite && break ;;
 						*) error_Continue "Invalid option"
 					esac
 				done
@@ -82,7 +82,9 @@ gpg_Overwrite()
 {
 	prompt_Sudo
 	error_Sudo
-	echo "Overwriting LOCAL keys..."
-	wget -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
+	$bwhite; echo "Overwriting LOCAL keys..."
+	wget -q -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
 	code_Wget
+	PRODUCE_HASH_LIST
+	gpg --import "$installDirectory/gpg/${NAME}.asc"
 }
