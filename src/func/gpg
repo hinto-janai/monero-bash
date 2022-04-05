@@ -66,6 +66,7 @@ gpg_Diff()
 						*) error_Continue "Invalid option"
 					esac
 				done
+				break
 				;;
 			skip)
 				$iwhite; echo "Skipping..."
@@ -82,7 +83,7 @@ gpg_Overwrite()
 {
 	prompt_Sudo
 	error_Sudo
-	$bwhite; echo "Overwriting LOCAL keys..."
+	$bwhite; echo "Overwriting LOCAL keys..." ;$off
 	wget -q -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
 	code_Wget
 	PRODUCE_HASH_LIST
