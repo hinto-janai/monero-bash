@@ -7,15 +7,15 @@
 # makes this function a bit long.
 verify_hash_Template()
 {
-	# api or html? (or are downloading monero?)
-	if [[ "$HTML" = "true" && $downloadMonero != "true" ]]; then
+	# api or html? (or are we downloading monero?)
+	if [[ "$HTML" = "true" && "$downloadMonero" != "true" ]]; then
 		hashLink="$(echo "$DUMP" \
 		| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SHA" \
 		| head -n1 \
 		| awk '{print $1}' \
 		| tr -d '"' \
 		| sed 's@^@https://github.com@')"
-	elif [[ "$API" = "true" && $downloadMonero != "true" ]]; then
+	elif [[ "$API" = "true" && "$downloadMonero" != "true" ]]; then
 		hashLink="$(echo "$DUMP" \
 			| grep "browser_download_url.*$SHA" \
 			| awk '{print $2}' | head -n1 | tr -d '"')"

@@ -112,6 +112,7 @@ upgrade_Monero()
 {
 	define_Monero
 	upgrade_Pre
+	downloadMonero="false"
 }
 
 upgrade_MoneroBash()
