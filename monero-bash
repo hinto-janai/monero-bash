@@ -44,6 +44,8 @@ if [[ $FIRST_TIME != "true" ]]; then
 	safety_LinuxFolders
 	safety_UsrLocalShare
 	safety_DotMoneroBash
+	missing_Wallets
+	missing_ConfigFolder
 	missing_ConfigAll
 fi
 
@@ -87,7 +89,8 @@ fi
 if [[ $options = "true" ]]; then
 	case $1 in
 		watch) print_NotYet ;;
-		backup) print_NotYet ;;
+		backup) backup_Wallets ;;
+		decrypt) backup_Decrypt ;;
 		mine) print_NotYet ;;
 		uninstall) monerobash_Uninstall ;;
 		update) update_All ;;

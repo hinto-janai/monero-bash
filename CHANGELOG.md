@@ -1,3 +1,24 @@
+# v0.6.2
+## Updates
+* `GPG` integrated
+	- `monero-bash gpg` toggle on/off GPG verification when upgrading/installing
+	- `monero-bash gpg import` compare local/online keys, import if OK
+		- `Monero` - [binaryfate](https://github.com/monero-project/monero/blob/master/utils/gpg_keys/binaryfate.asc)
+		- `monero-bash` - [hinto-janaiyo](https://github.com/hinto-janaiyo/monero-bash/blob/master/gpg/hinto-janaiyo.asc)
+		- `XMRig` - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
+		- `P2Pool` - [SChernykh](https://p2pool.io/SChernykh.asc)
+	- `monero-bash backup` 
+
+## To be added
+* Automatic P2Pool mining
+* RPC/Daemon API integration
+
+## Added but not usable yet
+* XMRig, P2Pool can be installed but not invoked
+* systemd intergrated, but not invokable
+* `watch` command works, but not invokable
+
+
 # v0.6.1
 ## Updates
 * `monero-bash install/upgrade <package> verbose` option to print detailed download information

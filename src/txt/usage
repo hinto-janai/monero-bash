@@ -28,6 +28,7 @@ watch p2pool                  show live p2pool output
 gpg                           toggle GPG verification of binaries
 gpg import                    import GPG keys of package authors
 backup                        encrypt and backup your /wallets/
+decrypt                       decrypt wallets.tar.gpg
 
 status                        print useful stats
 list                          list wallets
