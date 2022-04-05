@@ -30,6 +30,6 @@ tmp_Del()
 		rm -rf /tmp/monero-bash-sig.*
 	fi
 	if find /tmp/monero-bash-gpg.* &>/dev/null ; then
-		rm -rf /tmp/monero-bash.gpg.*
+		rm -rf /tmp/monero-bash-gpg.*
 	fi
 }
