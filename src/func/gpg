@@ -47,7 +47,7 @@ gpg_Diff()
 	$bgreen; echo -n "ONLINE: "
 	$white; echo "$LINK"
 	while true ;do
-		echo -n "What to do? [show / pick / skip] "
+		$bwhite; echo -n "What to do? [show / pick / skip] " ;$off
 		read OPTION
 		case $OPTION in
 			show)
@@ -87,5 +87,5 @@ gpg_Overwrite()
 	wget -q -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
 	code_Wget
 	PRODUCE_HASH_LIST
-	gpg --import "$installDirectory/gpg/${NAME}.asc"
+	gpg_import_Template
 }
