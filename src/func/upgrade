@@ -112,26 +112,26 @@ upgrade_Post()
 upgrade_Monero()
 {
 	define_Monero
-	upgrade_Pre
+	upgrade_Template
 	downloadMonero="false"
 }
 
 upgrade_MoneroBash()
 {
 	define_MoneroBash
-	upgrade_Pre
+	upgrade_Template
 }
 
 upgrade_XMRig()
 {
 	define_XMRig
-	upgrade_Pre
+	upgrade_Template
 }
 
 upgrade_P2Pool()
 {
 	define_P2Pool
-	upgrade_Pre
+	upgrade_Template
 }
 
 upgrade_All()
