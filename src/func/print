@@ -108,11 +108,11 @@ print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
 		$white; echo -n "$tarFile: "
-		$igreen; echo "OK" ;$white
+		$igreen; echo "HASH OK" ;$white
 		verifyOK="true"
 	else
 		$white; echo -n "$tarFile: "
-		$bred; echo "FAILED" ;$white
+		$bred; echo "HASH FAILED" ;$white
 		verifyOK="false"
 	fi
 }
