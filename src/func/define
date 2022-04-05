@@ -49,6 +49,7 @@ define_XMRig()
 	DOT_PKG="xmrig.*linux-static-x64.*"
     SHA="SHA256SUMS"
 	SIG="${SHA}.sig"
+	downloadXMRig="true"
 }
 
 define_P2Pool()

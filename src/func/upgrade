@@ -43,7 +43,6 @@ upgrade_Template()
 	print_WhiteHash "Verifying"
 	verify_Template
 
-	[[ "$verifyOK" != "true" ]]&& compromised_hash_"$NAME_FUNC"
 	print_WhiteHash "Extracting"
 	tar -xf "$tmp/$tarFile" -C "$tmp"
 	code_Tar

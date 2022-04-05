@@ -103,7 +103,7 @@ print_Error_Exit()
 	exit
 }
 
-# used for color coding sha256sum output (FOR UPGRADE FUNCTION)
+# used for color coding sha256sum/gpg output (FOR UPGRADE FUNCTION)
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
@@ -114,6 +114,19 @@ print_OKFAILED()
 		$white; echo -n "$tarFile: "
 		$bred; echo "FAILED" ;$white
 		verifyOK="false"
+	fi
+}
+
+print_GPG()
+{
+	if [[ $? = "0" ]]; then
+		$white; echo -n "$tarFile: "
+		$igreen; echo "GPG OK" ;$white
+		gpgOK="true"
+	else
+		$white; echo -n "$tarFile: "
+		$bred; echo "GPG FAILED" ;$white
+		gpgOK="false"
 	fi
 }
 

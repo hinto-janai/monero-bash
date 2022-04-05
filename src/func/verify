@@ -23,13 +23,34 @@ verify_Template()
 		hashLink="https://www.getmonero.org/downloads/hashes.txt"
 	fi
 
-	# setting of variables
+	# setting of variables (and gpg)
 	tarFile="$(ls "$tmp")"
 	if [[ $VERIFY_GPG = "true" ]]; then
 		wget -q -P "$tmpHash" "$hashLink"
 		code_Wget
 		hashFile="$(ls "$tmpHash")"
 		hashSTDOUT="$(cat "$tmpHash/$hashFile")"
+
+		# xmrig author pls include the sig in the hash file
+		if [[ $downloadXMRig = "true" ]]; then
+			if [[ $HTML = "true" ]]; then
+				sigLink="$(echo "$DUMP" \
+				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SIG" \
+				| head -n1 \
+				| awk '{print $1}' \
+				| tr -d '"' \
+				| sed 's@^@https://github.com@')"
+			elif [[ "$API" = "true" ]]; then
+				sigLink="$(echo "$DUMP" \
+				| grep "browser_download_url.*$SIG" \
+				| awk '{print $2}' | head -n1 | tr -d '"')"
+			fi
+			wget -q -P "$tmpSig" "$sigLink"
+			code_Wget
+			sigFile="$(ls "$tmpSig")"
+		else
+			sigFile="$hashFile"
+		fi
 	else
 		hashSTDOUT="$(wget -qO- "$hashLink")"
 	fi
@@ -43,5 +64,22 @@ verify_Template()
 	[[ "$HASH" = "" ]]&& error_Exit "Hash file was empty"
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
-	[[ "$verifyOK" != "true" ]]&& BAD_HASH="$(sha256sum $tmp/$tarFile | awk '{print $1}' | tr -d " -")"
+	if [[ "$verifyOK" != "true" ]]; then
+		BAD_HASH="$(sha256sum $tmp/$tarFile | awk '{print $1}' | tr -d " -")"
+		compromised_Hash
+	fi
+
+	# gpg check
+	if [[ $VERIFY_GPG = "true" ]]; then
+		if [[ $downloadXMRig = "true" ]]; then
+			gpg --verify "$tmpSig/$sigFile"
+			print_GPG
+		else
+			gpg --verify "$sigFile"
+			print_GPG
+		fi
+		if [[ "$gpgOK" != "true" ]]; then
+			compromised_GPG
+		fi
+	fi
 }
