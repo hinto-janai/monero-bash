@@ -17,19 +17,23 @@ gpg_import_All()
 {
 	local NAME="binaryfate"
 	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
-	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)"
+	local LINK="https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc"
+	local ONLINE="$(wget -qO- "$LINK")"
 	gpg_import_Template
 	local NAME="hinto-janaiyo"
 	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
-	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc)"
+	local LINK="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
+	local ONLINE="$(wget -qO- "$LINK")"
 	gpg_import_Template
 	local NAME="SChernykh"
 	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
-	local ONLINE="$(wget -qO- https://p2pool.io/SChernykh.asc)"
+	local LINK="https://p2pool.io/SChernykh.asc"
+	local ONLINE="$(wget -qO- "$LINK")"
 	gpg_import_Template
 	local NAME="xmrig"
 	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
-	local ONLINE="$(wget -qO- https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc)"
+	local LINK="https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc"
+	local ONLINE="$(wget -qO- "$LINK")"
 	gpg_import_Template
 }
 
@@ -38,6 +42,10 @@ gpg_Diff()
 	$bwhite; echo -n "The LOCAL and ONLINE gpg keys of "
 	$bred; echo -n "$NAME "
 	$bwhite; echo "are different!" ;$off
+	$bblue; echo -n "LOCAL: "
+	$bwhite; echo "$installDirectory/gpg/${NAME}.asc"
+	$bgreen; echo -n "ONLINE: "
+	$bwhite; echo "$LINK"
 	while true ;do
 		echo -n "What to do? [show / pick / skip] "
 		read OPTION
