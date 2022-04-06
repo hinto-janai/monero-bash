@@ -28,10 +28,10 @@ backup_Decrypt()
 	[[ ! -f "$dotMoneroBash/backup.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar.gpg was not found!"
 	$bblue; echo "Decrypting backup..." ;$off
 	cd "$dotMoneroBash"
-	gpg -d "backup.tar.gpg"
+	gpg "backup.tar.gpg"
 	error_Exit "Decrypt failed"
 	tar -xf "backup.tar"
-	error_Exit "Decrypt failed"
+	error_Exit "tar failed"
 	rm "backup.tar"
 	$bwhite; echo -n "Decrypted backup: " ;$white; echo "$dotMoneroBash/backup"
 }
