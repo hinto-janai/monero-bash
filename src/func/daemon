@@ -21,6 +21,7 @@ daemon_stop_Template()
 		$bred; echo -n "not online" ;$off
 	fi
 }
+
 daemon_Start()
 {
 	DAEMON_COMMANDS()

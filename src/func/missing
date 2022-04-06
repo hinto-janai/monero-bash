@@ -8,6 +8,7 @@ missing_Template()
         error_Exit "$THING missing!"
     fi
 }
+
 missing_MoneroDaemon()
 {
 	local DIR="$binMonero/monerod"
