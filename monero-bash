@@ -103,6 +103,7 @@ if [[ $options = "true" ]]; then
 				p2pool) watch_P2Pool ;;
 				*) error_Unknown ;;
 			esac
+			;;
 		mine) print_NotYet ;;
 		backup) backup_Wallets ;;
 		decrypt) backup_Decrypt ;;
