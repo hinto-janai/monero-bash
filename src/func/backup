@@ -8,10 +8,10 @@ backup_Wallets()
 	elif [[ -f "$dotMoneroBash/backup.tar.gpg" ]]; then
 		print_Error_Exit "$dotMoneroBash/backup.tar.gpg already exists!"
 	fi
-	$bblue; echo "Backing up wallets..."
+	$bblue; echo "Backing up wallets..." ;$off
 	cd "$dotMoneroBash"
 	tar -cf "backup.tar" "wallets" --transform 's/wallets/backup/'
-	gpg --no-symkey-cache --cipher-algo AES256 -c "backup.tar" 2>/dev/null
+	gpg --no-symkey-cache --cipher-algo AES256 -c "backup.tar"
 	if [[ $? != 0 ]]; then
 		rm "backup.tar"
 		print_error_Exit "GPG error"
@@ -31,7 +31,7 @@ backup_Decrypt()
 	[[ ! -f "$dotMoneroBash/backup.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar.gpg was not found!"
 	$bblue; echo "Decrypting backup..." ;$off
 	cd "$dotMoneroBash"
-	gpg "backup.tar.gpg" 2>/dev/null
+	gpg "backup.tar.gpg"
 	error_Exit "Decrypt failed"
 	tar -xf "backup.tar"
 	error_Exit "tar failed"
