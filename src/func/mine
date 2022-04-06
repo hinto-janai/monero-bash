@@ -7,7 +7,7 @@
 
 mine_Start()
 {
-	if [[ "$MINE_FIRST_TIME" = "true" ]]; then
+	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
 		mine_Config
 	else
 		daemon_Start
