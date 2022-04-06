@@ -13,7 +13,7 @@ mine_Start()
 		daemon_Start
 		p2pool_Start
 		xmrig_Start
-		echo "Watch with: "
+		printf "Watch with: "
 		$bwhite; echo "monero-bash watch <daemon/xmrig/p2pool>"
 	fi
 }
@@ -55,7 +55,7 @@ mine_Config()
 		prompt_Sudo ; error_Sudo
 		safety_HashList
 		trap "trap_No" 1 2 3 6 15
-		export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET"
+		export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE"
 		systemd_P2Pool
 		echo "Editing monero-bash.conf..."
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
