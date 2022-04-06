@@ -48,8 +48,8 @@ if [[ $FIRST_TIME != "true" ]]; then
 	safety_UsrLocalShare
 	safety_DotMoneroBash
 	missing_Wallets
-	missing_ConfigFolder
-	missing_ConfigAll
+	missing_config_Folder
+	missing_config_All
 fi
 
 # interactive/option check

@@ -8,7 +8,8 @@ missing_Template()
         error_Exit "$THING missing!"
     fi
 }
-missing_MoneroDaemon()
+
+missing_Monerod()
 {
 	local DIR="$binMonero/monerod"
 	local THING="monerod"
