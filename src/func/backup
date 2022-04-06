@@ -10,7 +10,7 @@ backup_Wallets()
 	fi
 	$bblue; echo "Backing up wallets..."
 	cd "$dotMoneroBash"
-	cp "wallets" "backup"
+	cp -r "wallets" "backup"
 	tar -cz "backup.tar" "backup" &>/dev/null | gpg -c --no-symkey-cache --cipher-algo AES256 -o "backup.tar.gpg" &>/dev/null
 	error_Exit "GPG error"
 	rm "backup"
