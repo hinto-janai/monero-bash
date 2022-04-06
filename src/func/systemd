@@ -2,15 +2,15 @@
 # functions FOR CREATING systemd .service files
 systemd_Template()
 {
-if [[ -f /etc/systemd/system/monero-bash-$name.service ]]; then
-	print_Error "monero-bash-$name.service already exists"
+if [[ -f /etc/systemd/system/monero-bash-$NAME.service ]]; then
+	print_Error "monero-bash-${NAME}.service already exists"
 else
-	$white; echo "Creating monero-bash-$name.service..."
+	$white; echo "Creating monero-bash-$NAME.service..."
 prompt_Sudo
 error_Sudo
-sudo sh -c "cat <<EOM > /etc/systemd/system/monero-bash-$name.service
+sudo sh -c "cat <<EOM > /etc/systemd/system/monero-bash-$NAME.service
 [Unit]
-Description=monero-bash-$name
+Description=monero-bash-$NAME
 After=network.target
 
 [Service]
@@ -29,14 +29,14 @@ fi
 
 systemd_Monero()
 {
-	local name="monerod"
+	local NAME="monerod"
 	local COMMAND="$binMonero/monerod --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" --non-interactive --zmq-pub tcp://127.0.0.1:18083"
 	systemd_Template
 }
 
 systemd_XMRig()
 {
-	local name="xmrig"
+	local NAME="xmrig"
 	local USER="root"
 	local COMMAND="$binXMRig/xmrig --config $config/xmrig.json"
 	systemd_Template
@@ -44,7 +44,7 @@ systemd_XMRig()
 
 systemd_P2Pool()
 {
-	local name="p2pool"
+	local NAME="p2pool"
 	local COMMAND=""
 	systemd_Template
 }

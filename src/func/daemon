@@ -38,9 +38,10 @@ daemon_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping Monero daemon gracefully..." ;$off
-		"$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" exit
+		sudo systemctl stop monero-bash-monerod
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
+				echo
 				print_Error "Monero daemon not responding, killing..."
 				daemon_Kill
 			fi
