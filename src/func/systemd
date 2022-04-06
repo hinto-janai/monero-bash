@@ -21,7 +21,6 @@ WantedBy=multi-user.target
 EOM"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
-fi
 }
 
 systemd_Monero()
