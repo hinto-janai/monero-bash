@@ -8,8 +8,10 @@ remove_Template()
 	else
 		prompt_Sudo;error_Sudo
 		echo;safety_HashList
+		trap "trap_No" 1 2 3 6 15
 		print_RedHash "Removing [$NAME_PRETTY]"
 		sudo rm -rf "$DIRECTORY"
+		sudo rm "$sysd/monero-bash-$name"
 		print_WhiteHash "Updating local state"
 		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\"\"@" "$state"
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
@@ -20,10 +22,8 @@ remove_Template()
 
 remove_Monero()
 {
-	NAME_VER="MONERO_VER"
-	NAME_PRETTY="Monero"
-	NAME_CAPS="MONERO"
-	DIRECTORY="$binMonero"
+	define_Monero
+	local name="monerod"
 	remove_Template
 }
 
@@ -36,19 +36,15 @@ remove_MoneroBash()
 
 remove_XMRig()
 {
-	NAME_VER="XMRIG_VER"
-	NAME_PRETTY="XMRig"
-	NAME_CAPS="XMRIG"
-	DIRECTORY="$binXMRig"
+	define_XMRig
+	local name="xmrig"
 	remove_Template
 }
 
 remove_P2Pool()
 {
-	NAME_VER="P2POOL_VER"
-	NAME_PRETTY="P2Pool"
-	NAME_CAPS="P2POOL"
-	DIRECTORY="$binP2Pool"
+	define_P2Pool
+	local name="p2pool"
 	remove_Template
 }
 

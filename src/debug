@@ -34,7 +34,7 @@ PRODUCE_HASH_LIST_TEMPLATE()
 PRODUCE_HASH_LIST()
 {
 	prompt_Sudo
-	echo "producing hashlist..."
+	echo "Producing hashlist..."
 	sudo echo -n > "$hashlist"
 	sudo sha256sum "monero-bash" >> "$hashlist"
 	local DIR="src"

@@ -17,6 +17,7 @@ binXMRig="$bin/xmrig"
 binP2Pool="$bin/p2pool"
 hashlist="$installDirectory/src/txt/hashlist"
 state="$installDirectory/src/txt/state"
+sysd="/etc/systemd/system"
 
 #
 #						Colors

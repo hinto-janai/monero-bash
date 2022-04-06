@@ -67,3 +67,12 @@ safety_Root()
 		exit
 	fi
 }
+
+safety_Systemd()
+{
+	if [[ ! -e "/usr/bin/systemctl" ]]; then
+		print_Error_Exit "/usr/bin/systemctl (systemd) not found!"
+	elif [[ ! -e "$sysd" ]]; then
+		print_Error_Exit "$sysd not found!"
+	fi
+}

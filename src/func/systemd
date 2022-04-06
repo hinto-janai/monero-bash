@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # functions FOR CREATING systemd .service files
-systemd_create_Template()
+systemd_Template()
 {
 if [[ -f /etc/systemd/system/monero-bash-$name.service ]]; then
-	error_Exit "monero-bash-$name.service already exists"
+	print_Error "monero-bash-$name.service already exists"
 else
-	$bwhite; echo "Creating monero-bash-$name.service..."
+	$white; echo "Creating monero-bash-$name.service..."
 prompt_Sudo
 error_Sudo
 sudo sh -c "cat <<EOM > /etc/systemd/system/monero-bash-$name.service
@@ -15,38 +15,36 @@ After=network.target
 
 [Service]
 User=$USER
-Group=$USER
 Type=simple
-ExecStart=\"$command\"
+ExecStart=\"$COMMAND\"
 Restart=always
 
 [Install]
-WantedBy=multi-user.target"
-EOM
-$bwhite; echo "Reloading systemd..."
+WantedBy=multi-user.target
+EOM"
+$white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
-$green; echo "Done!"
 fi
 }
 
-systemd_create_Monerod()
+systemd_Monero()
 {
 	local name="monerod"
-	local command="$binMonero/monerod --data-dir $DATA_DIRECTORY --config-file $config/monerod.conf --non-interactive"
-	systemd_create_Template
+	local COMMAND="$binMonero/monerod --data-dir "$DATA_DIRECTORY" --config-file "$config/monerod.conf" --non-interactive --zmq-pub tcp://127.0.0.1:18083"
+	systemd_Template
 }
 
 systemd_XMRig()
 {
 	local name="xmrig"
 	local USER="root"
-	local command="$binXMRig/xmrig --config $config/xmrig.json"
-	systemd_create_Template
+	local COMMAND="$binXMRig/xmrig --config $config/xmrig.json"
+	systemd_Template
 }
 
 systemd_P2Pool()
 {
 	local name="p2pool"
-	local command=""
-	systemd_create_Template
+	local COMMAND=""
+	systemd_Template
 }
