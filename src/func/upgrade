@@ -96,6 +96,7 @@ upgrade_Post()
 	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
+	systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	tmp_Del
 	error_Exit "Could not cleanup tmp folder"
