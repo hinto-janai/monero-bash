@@ -30,7 +30,7 @@ fi
 systemd_Monero()
 {
 	local name="monerod"
-	local COMMAND="$binMonero/monerod --data-dir $DATA_DIRECTORY --config-file $config/monerod.conf --non-interactive --zmq-pub tcp://127.0.0.1:18083"
+	local COMMAND="$binMonero/monerod --data-dir "$DATA_DIRECTORY" --config-file "$config/monerod.conf" --non-interactive --zmq-pub tcp://127.0.0.1:18083"
 	systemd_Template
 }
 
