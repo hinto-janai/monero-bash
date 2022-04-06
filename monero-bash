@@ -115,9 +115,9 @@ if [[ $options = "true" ]]; then
 			;;
 		daemon)
 			case $2 in
-				start) daemon_StartDetached ;;
+				start) daemon_Start ;;
 				stop) daemon_Stop ;;
-				full) daemon_StartAttached ;;
+				full) daemon_start_Full ;;
 				kill) daemon_Kill ;;
 				status|"") status_Daemon ;;
 				*) error_Unknown ;;

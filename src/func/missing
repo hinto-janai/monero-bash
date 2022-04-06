@@ -63,7 +63,7 @@ missing_Wallets()
 	fi
 }
 
-missing_ConfigFolder()
+missing_config_Folder()
 {
 	if [[ ! -d "$config" ]]; then
 		print_Error "$config missing!"
@@ -72,7 +72,7 @@ missing_ConfigFolder()
 	fi
 }
 
-missing_ConfigTemplate()
+missing_config_Template()
 {
 	if [[ ! -f "$config/$conf" ]]; then
 		print_Error "$conf missing!"
@@ -81,45 +81,45 @@ missing_ConfigTemplate()
 	fi
 }
 
-missing_ConfigMonerod()
+missing_config_Monerod()
 {
 	local conf="monerod.conf"
-	missing_ConfigTemplate
+	missing_config_Template
 }
 
-missing_ConfigWallet()
+missing_config_Wallet()
 {
 	local conf="monero-wallet-cli.conf"
-	missing_ConfigTemplate
+	missing_config_Template
 }
 
 
-missing_ConfigMoneroBash()
+missing_config_MoneroBash()
 {
 	local conf="monero-bash.conf"
-	missing_ConfigTemplate
+	missing_config_Template
 }
 
 
-missing_ConfigXMRig()
+missing_config_XMRig()
 {
 	local conf="xmrig.json"
-	missing_ConfigTemplate
+	missing_config_Template
 }
 
 
-missing_ConfigP2Pool()
+missing_config_P2Pool()
 {
 	local conf="p2pool.json"
-	missing_ConfigTemplate
+	missing_config_Template
 }
 
-missing_ConfigAll()
+missing_config_All()
 {
-	missing_ConfigMoneroBash
-	[[ $MONERO_VER != "" ]]&& missing_ConfigMonerod && missing_ConfigWallet
-	[[ $XMRIG_VER != "" ]]&& missing_ConfigXMRig
-	[[ $P2POOL_VER != "" ]]&& missing_ConfigP2Pool
+	missing_config_MoneroBash
+	[[ $MONERO_VER != "" ]]&& missing_config_Monerod && missing_config_Wallet
+	[[ $XMRIG_VER != "" ]]&& missing_config_XMRig
+	[[ $P2POOL_VER != "" ]]&& missing_config_P2Pool
 }
 
 missing_systemd_Monerod()
