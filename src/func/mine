@@ -61,7 +61,7 @@ mine_Config()
 		echo "Editing xmrig.json..."
 		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$config/config.json"
 		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$config/config.json"
-		sudo sed -i "s@.*MINE_FIRST_TIME.*@MINE_FIRST_TIME=\"false\"@" "$state"
+		sudo sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
 		PRODUCE_HASH_LIST
 		$bgreen; echo "Mining configuration complete"
 	}
