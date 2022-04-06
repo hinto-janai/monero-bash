@@ -9,10 +9,10 @@
 To quickly start mining on P2Pool, make sure you have all the packages:
 * `monero-bash install all`
 
-And then:
+To configure basic mining settings:
 * `monero-bash mine config`
 
-This will prompt you for basic mining configuration. You can then:
+You can then:
 * `monero-bash mine start`
 
 Remember, you are using your own node to mine. The blockchain has to be fully synced!
@@ -84,7 +84,7 @@ After installation, monero-bash will:
 ## Configuration
 If you already have a custom `monerod.conf` or xmrig `config.json`, put them in your `.bitmonero` folder and monero-bash will use them
 
-[Refer to this documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
+[Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
 [And here for xmrig configuration](https://xmrig.com/docs/miner/config)
 
 For `monero-bash` configuration, edit `/.monero-bash/config/monero-bash.conf`
@@ -120,8 +120,6 @@ monero-bash creates and uses systemd service files to control:
 
 This allows these program to auto-restart, start on boot, and allows monero-bash to use `journalctl`. The `monero-bash watch` command uses the output of journalctl to show live, refreshing output of the programs.
 
-If you'd like to directly invoke `monerod`, `XMRig` and `P2Pool`:
-* `monero-bash daemon full`
-* `monero-bash xmrig full`
-* `monero-bash p2pool full`
-These will launch them in the current terminal
+If you'd like to directly invoke a program:
+* `monero-bash full <daemon/p2pool/xmrig>`
+This will launch them in the current terminal
