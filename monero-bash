@@ -88,10 +88,12 @@ fi
 # Option Flags
 if [[ $options = "true" ]]; then
 	case $1 in
+		xmrig) print_NotYet ;;
+		p2pool) print_NotYet ;;
 		watch) print_NotYet ;;
+		mine) print_NotYet ;;
 		backup) backup_Wallets ;;
 		decrypt) backup_Decrypt ;;
-		mine) print_NotYet ;;
 		uninstall) monerobash_Uninstall ;;
 		update) update_All ;;
 		version) print_Version ;;

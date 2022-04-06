@@ -21,6 +21,9 @@ daemon full                   start the daemon attached
 mine start                    start monerod, xmrig, p2pool in the background
 mine stop                     stop monerod, xmrig, p2pool
 
+xmrig full                    start xmrig attached
+p2pool full                   start p2pool attached
+
 watch daemon                  show live daemon output
 watch xmrig                   show live xmrig output
 watch p2pool                  show live p2pool output
@@ -28,7 +31,7 @@ watch p2pool                  show live p2pool output
 gpg                           toggle GPG verification of binaries
 gpg import                    import GPG keys of package authors
 backup                        encrypt and backup your /wallets/
-decrypt                       decrypt wallets.tar.gpg
+decrypt                       decrypt backup.tar.gpg
 
 status                        print useful stats
 list                          list wallets

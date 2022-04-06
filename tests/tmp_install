@@ -9,7 +9,7 @@
 # 1
 if [[ -d /tmp/monero-bash_04e3be9 ]]; then
 	cd /tmp/monero-bash_04e3be9
-	git checkout testing
+	git checkout dev
 	git pull -f
 else
 	cd /tmp

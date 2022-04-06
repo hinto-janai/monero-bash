@@ -2,66 +2,58 @@
 * [Usage](#usage)
 * [Folder Structure](#folder-structure)
 * [Configuration](#configuration)
+* [systemd](#systemd)
 
 ## Usage
 ```
-monero-bash usage:          monero-bash <option> <more options>
+monero-bash usage:            monero-bash <option> <more options>
 
-# UNINSTALL #
-uninstall                   uninstall monero-bash and remove /.monero-bash/
+monero-bash                   the default command will open wallet selection
+uninstall                     uninstall monero-bash and remove /.monero-bash/
 
-# PACKAGES #
-install <all/name>          install <all> or a specific package
-remove <all/name>           remove <all> or a specific package
-remove <all/name> force     forcefully remove a package
-update                      only CHECK for updates
-upgrade <all/name>          upgrade <all> or a specific package
-upgrade <all/name> force    forcefully upgrade packages
-upgrade <all/name> verbose  print detailed download information
-version                     print installed package versions
+install <pkg>                 install <all> or a specific package
+install <pkg> verbose         print detailed download information
+remove <pkg>                  remove <all> or a specific package
+remove <pkg> force            forcefully remove a package
 
-# WALLET #
-monero-bash                 the default command will open wallet selection
+update                        only CHECK for updates
+upgrade <pkg>                 upgrade <all> or a specific package
+upgrade <pkg> force           forcefully upgrade packages
+upgrade <pkg> verbose         print detailed download information
+version                       print installed package versions
 
-# MONERO DAEMON #
-daemon                      print status of daemon
-daemon start                start the daemon (detached)
-daemon stop                 gracefully stop the daemon
-daemon kill                 forcefully kill all daemon processes
-daemon full                 start the daemon attached
+daemon                        print status of daemon
+daemon start                  start the daemon (detached)
+daemon stop                   gracefully stop the daemon
+daemon kill                   forcefully kill all daemon processes
+daemon full                   start the daemon attached
 
-# MINE #
-mine start                  start monerod, xmrig, p2pool in the background
-mine stop                   stop monerod, xmrig, p2pool
+mine start                    start monerod, xmrig, p2pool in the background
+mine stop                     stop monerod, xmrig, p2pool
 
-# WATCH #
-watch daemon                show live daemon output
-watch xmrig                 show live xmrig output
-watch p2pool                show live p2pool output
+xmrig full                    start xmrig attached
+p2pool full                   start p2pool attached
 
-# BACKUP #
-backup                      encrypt and backup your /wallets/
+watch daemon                  show live daemon output
+watch xmrig                   show live xmrig output
+watch p2pool                  show live p2pool output
 
-# STATS #
-status                      print useful stats
-list                        list wallets
-size                        show size of monero-bash folders
-price                       fetch price data from cryptocompare.com API
-integrity                   check hash integrity of monero-bash
+gpg                           toggle GPG verification of binaries
+gpg import                    import GPG keys of package authors
+backup                        encrypt and backup your /wallets/
+decrypt                       decrypt wallets.tar.gpg
 
-# HELP #
-help                        show this help message
+status                        print useful stats
+list                          list wallets
+size                          show size of monero-bash folders
+price                         fetch price data from cryptocompare.com API
+integrity                     check hash integrity of monero-bash
+
+help                          show this help message
 ```
 
 ## Folder Structure
-The `/monero-bash/` folder starts like this:
 
-```
-monero-bash/
-├─ monero-bash       main script
-├─ config            backup config files for all packages
-├─ src               monero-bash source code
-```
 After installation, monero-bash will:
 * move itself to `/usr/local/share/monero-bash`
 * add itself to PATH
@@ -86,25 +78,31 @@ For `monero-bash` specific configuration, edit `/.monero-bash/config/monero-bash
 # monero-bash config #
 ######################
 # monerod
-DATA_PATH=""                            the path of /.bitmonero/
-SYSTEMD_MONEROD="false"                 use systemd to control monerod 
+DATA_PATH=""                     path of .bitmonero
 
 # monero-wallet-cli
-AUTO_START_DAEMON="true"                auto-start daemon on wallet open
-AUTO_STOP_DAEMON="true"                 auto-stop daemon on wallet close
+AUTO_START_DAEMON="true"         auto-start daemon on wallet open
+AUTO_STOP_DAEMON="true"          auto-stop daemon on wallet close
 
 # monero-rpc
 
 # monero-bash
-PRICE_API_IP_WARNING="true"             warn when checking price
-
-# p2pool
-SYSTEMD_P2POOL="true"                   use systemd to control p2pool
-
-# xmrig
-SYSTEMD_XMRIG="true"                    use systemd to control xmrig
+PRICE_API_IP_WARNING="true"      warn when checking price API
 
 # updates (only checks)
-AUTO_UPDATE="false"                     check for updates on startup
+AUTO_UPDATE="false"              check for updates on wallet open
 ```
-If `SYSTEMD_x` is set to `false`, monero-bash will directly invoke the program. if set to `true`, monero-bash will create a `.service` file and launch the program as a `systemd` service instead. `systemd` MUST be used if you want to use the `monero-bash watch` command, as it uses `journalctl`
+
+## systemd
+monero-bash creates and uses systemd service files to control:
+* `monerod`
+* `xmrig`
+* `p2pool`
+
+This allows these program to auto-restart, start on boot, and allows monero-bash to use `journalctl`. The `monero-bash watch` command uses the output of journalctl to show live, refreshing output of the programs.
+
+If you'd like to directly invoke `monerod`, `XMRig` and `P2Pool`:
+* `monero-bash daemon full`
+* `monero-bash xmrig full`
+* `monero-bash p2pool full`
+These will launch them in the current terminal

@@ -58,53 +58,48 @@ cd monero-bash &&
 
 ```
 monero-bash usage:          monero-bash <option> <more options>
+monero-bash                   the default command will open wallet selection
+uninstall                     uninstall monero-bash and remove /.monero-bash/
 
-# UNINSTALL #
-uninstall                   uninstall monero-bash and remove /.monero-bash/
+install <pkg>                 install <all> or a specific package
+install <pkg> verbose         print detailed download information
+remove <pkg>                  remove <all> or a specific package
+remove <pkg> force            forcefully remove a package
 
-# PACKAGES #
-install <all/name>          install <all> or a specific package
-remove <all/name>           remove <all> or a specific package
-remove <all/name> force     forcefully remove a package
-update                      only CHECK for updates
-upgrade <all/name>          upgrade <all> or a specific package
-upgrade <all/name> force    forcefully upgrade packages
-upgrade <all/name> verbose  print detailed download information
-version                     print installed package versions
+update                        only CHECK for updates
+upgrade <pkg>                 upgrade <all> or a specific package
+upgrade <pkg> force           forcefully upgrade packages
+upgrade <pkg> verbose         print detailed download information
+version                       print installed package versions
 
-# WALLET #
-monero-bash                 the default command will open wallet selection
+daemon                        print status of daemon
+daemon start                  start the daemon (detached)
+daemon stop                   gracefully stop the daemon
+daemon kill                   forcefully kill all daemon processes
+daemon full                   start the daemon attached
 
-# MONERO DAEMON #
-daemon                      print status of daemon
-daemon start                start the daemon (detached)
-daemon stop                 gracefully stop the daemon
-daemon kill                 forcefully kill all daemon processes
-daemon full                 start the daemon attached
+mine start                    start monerod, xmrig, p2pool in the background
+mine stop                     stop monerod, xmrig, p2pool
 
-# MINE #
-mine                        print status of mining
-mine start                  start monerod, xmrig, p2pool in the background
-mine stop                   stop monerod, xmrig, p2pool
-mine kill                   forcefully kill all mining processes
+xmrig full                    start xmrig attached
+p2pool full                   start p2pool attached
 
-# WATCH #
-watch daemon                show live daemon output
-watch xmrig                 show live xmrig output
-watch p2pool                show live p2pool output
+watch daemon                  show live daemon output
+watch xmrig                   show live xmrig output
+watch p2pool                  show live p2pool output
 
-# BACKUP #
-backup                      encrypt and backup your /wallets/
+gpg                           toggle GPG verification of binaries
+gpg import                    import GPG keys of package authors
+backup                        encrypt and backup your /wallets/
+decrypt                       decrypt backup.tar.gpg
 
-# STATS #
-status                      print useful stats
-list                        list wallets
-size                        show size of monero-bash folders
-price                       fetch price data from cryptocompare.com API
-integrity                   check hash integrity of monero-bash
+status                        print useful stats
+list                          list wallets
+size                          show size of monero-bash folders
+price                         fetch price data from cryptocompare.com API
+integrity                     check hash integrity of monero-bash
 
-# HELP #
-help                        show this help message
+help                          show this help message
 ```
 </details>
 
