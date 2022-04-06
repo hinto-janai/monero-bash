@@ -15,14 +15,12 @@ version                       print installed package versions
 mine start                    start monerod, xmrig, p2pool in the background
 mine stop                     stop monerod, xmrig, p2pool
 
-daemon/xmrig/p2pool start     start process detached (background)
-daemon/xmrig/p2pool stop      gracefully stop the process
-daemon/xmrig/p2pool kill      forcefully kill the process
-daemon/xmrig/p2pool full      start the daemon attached (foreground)
+start <daemon/xmrig/p2pool>   start process detached (background)
+stop <daemon/xmrig/p2pool>    gracefully stop the process
+kill <daemon/xmrig/p2pool>    forcefully kill the process
+full <daemon/xmrig/p2pool>    start the process attached (foreground)
 
-watch daemon                  show live daemon output
-watch xmrig                   show live xmrig output
-watch p2pool                  show live p2pool output
+watch <daemon/xmrig/p2pool>   watch live output of process
 
 gpg                           toggle GPG verification of binaries
 gpg import                    import GPG keys of package authors

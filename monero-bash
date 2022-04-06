@@ -93,8 +93,38 @@ fi
 # Option Flags
 if [[ $options = "true" ]]; then
 	case $1 in
-		xmrig) print_NotYet ;;
-		p2pool) print_NotYet ;;
+		start)
+			case $2 in
+				daemon) daemon_Start ;;
+				xmrig) xmrig_Start ;;
+				p2pool) p2pool_Start ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		stop)
+			case $2 in
+				daemon) daemon_Stop ;;
+				xmrig) xmrig_Stop ;;
+				p2pool) p2pool_Stop ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		kill)
+			case $2 in
+				daemon) daemon_Kill ;;
+				xmrig) xmrig_Kill ;;
+				p2pool) p2pool_Kill ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		full)
+			case $2 in
+				daemon) daemon_Full ;;
+				xmrig) xmrig_Full ;;
+				p2pool) p2pool_Full ;;
+				*) error_Unknown ;;
+			esac
+			;;
 		watch)
 			case $2 in
 				monero) watch_Monerod ;;
@@ -121,16 +151,6 @@ if [[ $options = "true" ]]; then
 			case $2 in
 				"") gpg_Toggle ;;
 				import) gpg_import_All ;;
-				*) error_Unknown ;;
-			esac
-			;;
-		daemon)
-			case $2 in
-				start) daemon_Start ;;
-				stop) daemon_Stop ;;
-				full) daemon_start_Full ;;
-				kill) daemon_Kill ;;
-				status|"") status_Daemon ;;
 				*) error_Unknown ;;
 			esac
 			;;
