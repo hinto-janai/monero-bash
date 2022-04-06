@@ -30,6 +30,13 @@ missing_BinMonero()
 	missing_Template
 }
 
+missing_P2Pool()
+{
+	local DIR="$binP2Pool/p2pool"
+	local THING="P2Pool"
+	missing_Template
+}
+
 missing_XMRig()
 {
 	local DIR="$binXMRig/xmrig"

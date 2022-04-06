@@ -73,6 +73,6 @@ p2pool_Kill()
 
 p2pool_Full()
 {
-	COMMANDS(){ "$binP2Pool/p2pool" --host "$HOST_IP" --wallet "$WALLET_ADDRESS" ;}
+	COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" ;}
 	p2pool_start_Template
 }
