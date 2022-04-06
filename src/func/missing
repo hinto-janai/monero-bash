@@ -110,10 +110,9 @@ missing_config_All()
 
 missing_systemd_Template()
 {
-	if [[ "$NAME_VER" != "" && ! -f /etc/systemd/system/monero-bash-${SERVICE}.service ]]; then
-		print_Error "monero-bash-${SERVICE}.service missing!"
-		echo "Creating default monero-bash-${SERVICE}.service..."
-		exit
+	if [[ "$NAME_VER" != "" && ! -f $sysd/$SERVICE ]]; then
+		print_Error "${SERVICE} missing!"
+		echo "Creating default..."
 	fi
 }
 
