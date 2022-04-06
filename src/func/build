@@ -5,8 +5,8 @@
 # builds everything in monero-bash with default settings
 build_Template()
 {
-	prompt_Sudo
-	error_Sudo
+	prompt_Sudo ; error_Sudo
+	safety_HashList
 	mkdir -p "$dotMoneroBash"
 	mkdir -p "$wallets"
 	build_Config
@@ -21,18 +21,15 @@ build_DotMoneroBash()
 # just build monero-bash config
 build_Config()
 {
-	prompt_Sudo
-	error_Sudo
+	prompt_Sudo ; error_Sudo
+	safety_HashList
 	sudo cp -r "$installDirectory/config" "$config"
 	sudo chown -R "$USER:" "$config"
 }
 
 build_Bin()
 {
-	prompt_Sudo
-	error_Sudo
+	prompt_Sudo ; error_Sudo
+	safety_HashList
 	sudo mkdir -p "$bin"
-	sudo mkdir -p "$binMonero"
-	sudo mkdir -p "$binXMRig"
-	sudo mkdir -p "$binP2Pool"
 }

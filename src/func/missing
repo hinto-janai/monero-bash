@@ -104,7 +104,7 @@ missing_config_MoneroBash()
 
 missing_config_XMRig()
 {
-	local conf="xmrig.json"
+	local conf="config.json"
 	missing_config_Template
 }
 

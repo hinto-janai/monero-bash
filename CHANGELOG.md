@@ -1,5 +1,13 @@
-# v0.6.2
+# v0.7
 ## Updates
+* `P2Pool` mining integrated
+	- `monero-bash mine config` to configure basic mining settings
+	- `monero-bash mine start` to start `monerod, p2pool, xmrig`
+	- `monero-bash mine stop` to stop them
+
+* `watch` command integrated
+	- `monero-bash watch <daemon/p2pool/xmrig>` to watch live output of process
+
 * `GPG` integrated
 	- `monero-bash gpg` toggle on/off GPG verification when upgrading/installing
 	- `monero-bash gpg import` compare local/online keys, import if OK
@@ -7,17 +15,13 @@
 		- `monero-bash` - [hinto-janaiyo](https://github.com/hinto-janaiyo/monero-bash/blob/master/gpg/hinto-janaiyo.asc)
 		- `XMRig` - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
 		- `P2Pool` - [SChernykh](https://p2pool.io/SChernykh.asc)
+
+* `backup` command integrated
 	- `monero-bash backup` encrypt and backup your /wallet/ folder
 	- `monero-bash decrypt` decrypt the encrypted tar
 
 ## To be added
-* Automatic P2Pool mining
 * RPC/Daemon API integration
-
-## Added but not usable yet
-* XMRig, P2Pool can be installed but not invoked
-* systemd intergrated, but not invokable
-* `watch` command works, but not invokable
 
 
 # v0.6.1

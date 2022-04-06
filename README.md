@@ -53,56 +53,6 @@ cd monero-bash &&
 ## Usage
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
 
-<details>
-<summary>Click to reveal command usage</summary>
-
-```
-monero-bash usage:          monero-bash <option> <more options>
-monero-bash                   the default command will open wallet selection
-uninstall                     uninstall monero-bash and remove /.monero-bash/
-
-install <pkg>                 install <all> or a specific package
-install <pkg> verbose         print detailed download information
-remove <pkg>                  remove <all> or a specific package
-remove <pkg> force            forcefully remove a package
-
-update                        only CHECK for updates
-upgrade <pkg>                 upgrade <all> or a specific package
-upgrade <pkg> force           forcefully upgrade packages
-upgrade <pkg> verbose         print detailed download information
-version                       print installed package versions
-
-daemon                        print status of daemon
-daemon start                  start the daemon (detached)
-daemon stop                   gracefully stop the daemon
-daemon kill                   forcefully kill all daemon processes
-daemon full                   start the daemon attached
-
-mine start                    start monerod, xmrig, p2pool in the background
-mine stop                     stop monerod, xmrig, p2pool
-
-xmrig full                    start xmrig attached
-p2pool full                   start p2pool attached
-
-watch daemon                  show live daemon output
-watch xmrig                   show live xmrig output
-watch p2pool                  show live p2pool output
-
-gpg                           toggle GPG verification of binaries
-gpg import                    import GPG keys of package authors
-backup                        encrypt and backup your /wallets/
-decrypt                       decrypt backup.tar.gpg
-
-status                        print useful stats
-list                          list wallets
-size                          show size of monero-bash folders
-price                         fetch price data from cryptocompare.com API
-integrity                     check hash integrity of monero-bash
-
-help                          show this help message
-```
-</details>
-
 ## FAQ
 <details>
 <summary>Is this a virus?</summary>
