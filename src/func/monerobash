@@ -177,10 +177,10 @@ monerobash_Uninstall()
 		trap "trap_No" 1 2 3 6 15
 		print_WhiteHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
-			error_Continue "$dotMoneroBash not removed"
+			error_Exit "$dotMoneroBash not removed"
 		print_WhiteHash "Removing from PATH"
 			path_Remove
-			error_Continue "PATH not removed"
+			error_Exit "PATH not removed"
 		print_WhiteHash "Removing /usr/local/share/monero-bash/"
 			sudo rm -rf "/usr/local/share/monero-bash"
 			error_Exit "monero-bash not removed"
