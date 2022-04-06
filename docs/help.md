@@ -1,10 +1,27 @@
 # monero-bash guide:
+* [Mining](#mining)
 * [Usage](#usage)
 * [Folder Structure](#folder-structure)
 * [Configuration](#configuration)
 * [systemd](#systemd)
 
+## Mining
+To quickly start mining on P2Pool, make sure you have all the packages:
+* `monero-bash install all`
+
+And then:
+* `monero-bash mine config`
+
+This will prompt you for basic mining configuration. You can then:
+* `monero-bash mine start`
+
+Remember, you are using your own node to mine. The blockchain has to be fully synced!
+
+
 ## Usage
+<details>
+<summary>Click to reveal full command usage</summary>
+
 ```
 monero-bash usage:            monero-bash <option> <more options>
 
@@ -22,35 +39,32 @@ upgrade <pkg> force           forcefully upgrade packages
 upgrade <pkg> verbose         print detailed download information
 version                       print installed package versions
 
-daemon                        print status of daemon
-daemon start                  start the daemon (detached)
-daemon stop                   gracefully stop the daemon
-daemon kill                   forcefully kill all daemon processes
-daemon full                   start the daemon attached
-
+mine config                   configure mining settings
 mine start                    start monerod, xmrig, p2pool in the background
 mine stop                     stop monerod, xmrig, p2pool
 
-xmrig full                    start xmrig attached
-p2pool full                   start p2pool attached
+start <daemon/xmrig/p2pool>   start process detached (background)
+stop <daemon/xmrig/p2pool>    gracefully stop the process
+kill <daemon/xmrig/p2pool>    forcefully kill the process
+full <daemon/xmrig/p2pool>    start the process attached (foreground)
 
-watch daemon                  show live daemon output
-watch xmrig                   show live xmrig output
-watch p2pool                  show live p2pool output
+watch <daemon/xmrig/p2pool>   watch live output of process
 
 gpg                           toggle GPG verification of binaries
 gpg import                    import GPG keys of package authors
 backup                        encrypt and backup your /wallets/
-decrypt                       decrypt wallets.tar.gpg
+decrypt                       decrypt backup.tar.gpg
 
-status                        print useful stats
+status                        print status of all running processes
 list                          list wallets
 size                          show size of monero-bash folders
 price                         fetch price data from cryptocompare.com API
 integrity                     check hash integrity of monero-bash
 
 help                          show this help message
+
 ```
+</details>
 
 ## Folder Structure
 
@@ -68,17 +82,22 @@ After installation, monero-bash will:
 *note:* the `.bitmonero` folder path can be set anywhere
 
 ## Configuration
-If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them
+If you already have a custom `monerod.conf` or xmrig `config.json`, put them in your `.bitmonero` folder and monero-bash will use them
 
 [Refer to this documentation to learn more](https://monerodocs.org/interacting/monero-config-file)
+[And here for xmrig configuration](https://xmrig.com/docs/miner/config)
 
-For `monero-bash` specific configuration, edit `/.monero-bash/config/monero-bash.conf`
+For `monero-bash` configuration, edit `/.monero-bash/config/monero-bash.conf`
 ```
 ######################
 # monero-bash config #
 ######################
 # monerod
 DATA_PATH=""                     path of .bitmonero
+
+# p2pool
+DAEMON_IP="127.0.0.1"            IP used if P2Pool is invoked directly
+WALLET=""                        wallet used if P2Pool is invoked directly
 
 # monero-wallet-cli
 AUTO_START_DAEMON="true"         auto-start daemon on wallet open

@@ -13,6 +13,13 @@ mine_Start()
 	xmrig_Start
 }
 
+mine_Stop()
+{
+	daemon_Stop
+	p2pool_Stop
+	xmrig_Stop
+}
+
 mine_Config()
 {
 	print_MoneroBashTitle
