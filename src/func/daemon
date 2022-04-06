@@ -3,7 +3,6 @@
 daemon_start_Template()
 {
 	missing_MoneroDaemon
-	[[ $SYSTEMD_MONEROD = "true" ]]&& missing_
 	if pgrep monerod &>/dev/null ; then
         $bred; echo "Monero daemon already detected..." ;$off
     else
@@ -15,7 +14,6 @@ daemon_start_Template()
 
 daemon_stop_Template()
 {
-	missing_MoneroDaemon
 	if pgrep monerod &>/dev/null ; then
 		DAEMON_COMMANDS
 	else
@@ -23,16 +21,14 @@ daemon_stop_Template()
 		$bred; echo -n "not online" ;$off
 	fi
 }
-
-daemon_StartAttached()
+daemon_Start()
 {
-	DAEMON_COMMANDS(){ "$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;}
-	daemon_start_Template
-}
-
-daemon_StartDetached()
-{
-	DAEMON_COMMANDS(){ "$binMonero/monerod" --detach --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;}
+	DAEMON_COMMANDS()
+	{
+		$bred; echo "Starting Monero daemon..."
+		missing_systemd_Monerod
+		sudo systemctl start monero-bash-monerod
+	}
 	daemon_start_Template
 }
 
@@ -42,7 +38,11 @@ daemon_Stop()
 	{
 		$ired; echo "Stopping Monero daemon gracefully..." ;$off
 		"$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" exit
-		while true ;do
+		for i in {1..30} ;do
+			if [[ "$i" = "30" ]]; then
+				print_Error "Monero daemon not responding, killing..."
+				daemon_Kill
+			fi
 			if pgrep monerod &>/dev/null ;then
 				echo -n "."
 			else
@@ -70,22 +70,8 @@ daemon_Kill()
 	daemon_stop_Template
 }
 
-daemon_systemd_Start()
+daemon_start_Full()
 {
-	DAEMON_COMMANDS()
-	{
-		$bred; echo "Starting Monero daemon..."
-		sudo systemctl start monero-bash-monerod
-	}
+	DAEMON_COMMANDS(){ "$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;}
 	daemon_start_Template
-}
-
-daemon_systemd_Stop()
-{
-	DAEMON_COMMANDS()
-	{
-		$bred; echo "Stopping Monero daemon gracefully..."
-		sudo systemctl stop monero-bash-monerod
-	}
-	daemon_stop_Template
 }
