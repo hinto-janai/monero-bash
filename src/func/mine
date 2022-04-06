@@ -7,10 +7,13 @@
 
 mine_Start()
 {
-	[[ "$MINE_FIRST_TIME" = "true" ]]&& mine_Config
-	daemon_Start
-	p2pool_Start
-	xmrig_Start
+	if [[ "$MINE_FIRST_TIME" = "true" ]]; then
+		mine_Config
+	else
+		daemon_Start
+		p2pool_Start
+		xmrig_Start
+	fi
 }
 
 mine_Stop()
