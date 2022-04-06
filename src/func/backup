@@ -11,7 +11,7 @@ backup_Wallets()
 	$bblue; echo "Backing up wallets..."
 	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
 	$bwhite; echo -n "Key type: " ;$white; echo "Passphrase"
-	tar -cz "$wallets" | gpg -c --no-symkey-cache --cipher-algo AES256 -o "$dotMoneroBash"
+	tar -cz "$wallets" | gpg -c --no-symkey-cache --cipher-algo AES256 -o "$dotMoneroBash/wallets.tar.gpg" &>/dev/null
 	error_Exit "GPG error"
 	$bwhite; echo -n "Encrypted wallet tar: " ;$white; echo "$dotMoneroBash/wallets.tar.gpg"
 	$bwhite; echo -n "To decrypt: " ;$bred; echo -n "monero-bash decrypt"
