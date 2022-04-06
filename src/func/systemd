@@ -16,7 +16,7 @@ After=network.target
 [Service]
 User=$USER
 Type=simple
-ExecStart=\"$COMMAND\"
+ExecStart=$COMMAND
 Restart=always
 
 [Install]

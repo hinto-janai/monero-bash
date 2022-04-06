@@ -7,7 +7,7 @@ daemon_start_Template()
         $bred; echo "Monero daemon already detected..." ;$off
     else
 		missing_config_Monerod
-		$bred; echo "Starting Monero daemon..."
+		$bred; echo "Starting Monero daemon..." ;$off
 		COMMANDS
 		error_Exit "Could not start monerod"
 	fi
