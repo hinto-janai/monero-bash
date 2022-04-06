@@ -59,8 +59,8 @@ mine_Config()
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET\"@" "$config/monero-bash.conf"
 		echo "Editing xmrig.json..."
-		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$config/xmrig.json"
-		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$config/xmrig.json"
+		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$config/config.json"
+		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$config/config.json"
 		sudo sed -i "s@.*MINE_FIRST_TIME.*@MINE_FIRST_TIME=\"false\"@" "$state"
 		PRODUCE_HASH_LIST
 		$bgreen; echo "Mining configuration complete"
