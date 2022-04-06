@@ -12,8 +12,8 @@ remove_Template()
 		print_RedHash "Removing [$NAME_PRETTY]"
 		print_WhiteHash "${DIRECTORY}..."
 		sudo rm -rf "$DIRECTORY"
-		print_WhiteHash "$monero-bash-${name}.service..."
-		sudo rm "$sysd/monero-bash-${name}.service"
+		print_WhiteHash "$monero-bash-${SERVICE}.service..."
+		sudo rm "$sysd/monero-bash-${SERVICE}.service"
 		print_WhiteHash "Updating local state"
 		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\"\"@" "$state"
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
@@ -25,7 +25,6 @@ remove_Template()
 remove_Monero()
 {
 	define_Monero
-	local name="monerod"
 	remove_Template
 }
 
@@ -39,14 +38,12 @@ remove_MoneroBash()
 remove_XMRig()
 {
 	define_XMRig
-	local name="xmrig"
 	remove_Template
 }
 
 remove_P2Pool()
 {
 	define_P2Pool
-	local name="p2pool"
 	remove_Template
 }
 
