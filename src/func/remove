@@ -10,7 +10,9 @@ remove_Template()
 		echo;safety_HashList
 		trap "trap_No" 1 2 3 6 15
 		print_RedHash "Removing [$NAME_PRETTY]"
+		print_WhiteHash "${DIRECTORY}..."
 		sudo rm -rf "$DIRECTORY"
+		print_WhiteHash "$monero-bash-${name}.service..."
 		sudo rm "$sysd/monero-bash-${name}.service"
 		print_WhiteHash "Updating local state"
 		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\"\"@" "$state"
