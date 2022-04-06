@@ -95,7 +95,16 @@ if [[ $options = "true" ]]; then
 	case $1 in
 		xmrig) print_NotYet ;;
 		p2pool) print_NotYet ;;
-		watch) print_NotYet ;;
+		watch)
+			case $2 in
+				monero) watch_Monerod ;;
+				monerod) watch_Monerod ;;
+				daemon) watch_Monerod ;;
+				xmrig) watch_XMRig ;;
+				p2pool) watch_P2Pool ;;
+				*) error_Unknown ;;
+			esac
+			;;
 		mine) print_NotYet ;;
 		backup) backup_Wallets ;;
 		decrypt) backup_Decrypt ;;
