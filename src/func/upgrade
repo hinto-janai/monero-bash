@@ -110,9 +110,10 @@ upgrade_Post()
 
 upgrade_Monero()
 {
+	local downloadMonero="true"
 	define_Monero
 	upgrade_Pre
-	downloadMonero="false"
+	local downloadMonero="false"
 }
 
 upgrade_MoneroBash()
@@ -123,16 +124,18 @@ upgrade_MoneroBash()
 
 upgrade_XMRig()
 {
+	local downloadXMRig="true"
 	define_XMRig
 	upgrade_Pre
-	downloadXMRig="false"
+	local downloadXMRig="false"
 }
 
 upgrade_P2Pool()
 {
+	local downloadP2Pool="true"
 	define_P2Pool
 	upgrade_Pre
-	downloadP2Pool="false"
+	local downloadP2Pool="false"
 }
 
 upgrade_All()
