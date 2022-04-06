@@ -93,48 +93,6 @@ fi
 # Option Flags
 if [[ $options = "true" ]]; then
 	case $1 in
-		start)
-			case $2 in
-				daemon) daemon_Start ;;
-				xmrig) xmrig_Start ;;
-				p2pool) p2pool_Start ;;
-				*) error_Unknown ;;
-			esac
-			;;
-		stop)
-			case $2 in
-				daemon) daemon_Stop ;;
-				xmrig) xmrig_Stop ;;
-				p2pool) p2pool_Stop ;;
-				*) error_Unknown ;;
-			esac
-			;;
-		kill)
-			case $2 in
-				daemon) daemon_Kill ;;
-				xmrig) xmrig_Kill ;;
-				p2pool) p2pool_Kill ;;
-				*) error_Unknown ;;
-			esac
-			;;
-		full)
-			case $2 in
-				daemon) daemon_Full ;;
-				xmrig) xmrig_Full ;;
-				p2pool) p2pool_Full ;;
-				*) error_Unknown ;;
-			esac
-			;;
-		watch)
-			case $2 in
-				monero) watch_Monerod ;;
-				monerod) watch_Monerod ;;
-				daemon) watch_Monerod ;;
-				xmrig) watch_XMRig ;;
-				p2pool) watch_P2Pool ;;
-				*) error_Unknown ;;
-			esac
-			;;
 		mine) print_NotYet ;;
 		backup) backup_Wallets ;;
 		decrypt) backup_Decrypt ;;
@@ -147,6 +105,51 @@ if [[ $options = "true" ]]; then
 		status) status_All ;;
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
+		start)
+			case $2 in
+				daemon) daemon_Start ;;
+				xmrig) xmrig_Start ;;
+				p2pool) p2pool_Start ;;
+				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		stop)
+			case $2 in
+				daemon) daemon_Stop ;;
+				xmrig) xmrig_Stop ;;
+				p2pool) p2pool_Stop ;;
+				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		kill)
+			case $2 in
+				daemon) daemon_Kill ;;
+				xmrig) xmrig_Kill ;;
+				p2pool) p2pool_Kill ;;
+				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		full)
+			case $2 in
+				daemon) daemon_Full ;;
+				xmrig) xmrig_Full ;;
+				p2pool) p2pool_Full ;;
+				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				*) error_Unknown ;;
+			esac
+			;;
+		watch)
+			case $2 in
+				daemon) watch_Monerod ;;
+				xmrig) watch_XMRig ;;
+				p2pool) watch_P2Pool ;;
+				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				*) error_Unknown ;;
+			esac
+			;;
 		gpg)
 			case $2 in
 				"") gpg_Toggle ;;
