@@ -7,6 +7,7 @@ daemon_start_Template()
         $bred; echo "Monero daemon already detected..." ;$off
     else
 		missing_config_Monerod
+		$bred; echo "Starting Monero daemon..."
 		COMMANDS
 		error_Exit "Could not start monerod"
 	fi
@@ -17,8 +18,8 @@ daemon_stop_Template()
 	if pgrep monerod &>/dev/null ; then
 		COMMANDS
 	else
-		$white; echo "Monero daemon: "
-		$bred; echo -n "not online" ;$off
+		$white; echo -n "Monero daemon: "
+		$bred; echo "not online" ;$off
 	fi
 }
 
@@ -26,7 +27,6 @@ daemon_Start()
 {
 	COMMANDS()
 	{
-		$bred; echo "Starting Monero daemon..."
 		missing_systemd_Monerod
 		sudo systemctl start monero-bash-monerod
 	}
