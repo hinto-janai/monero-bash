@@ -20,14 +20,14 @@ ExecStart=\"$COMMAND\"
 Restart=always
 
 [Install]
-WantedBy=multi-user.target"
-EOM
+WantedBy=multi-user.target
+EOM"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
 fi
 }
 
-systemd_Monerod()
+systemd_Monero()
 {
 	local name="monerod"
 	local COMMAND="$binMonero/monerod --data-dir $DATA_DIRECTORY --config-file $config/monerod.conf --non-interactive --zmq-pub tcp://127.0.0.1:18083"
