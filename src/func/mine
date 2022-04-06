@@ -13,6 +13,8 @@ mine_Start()
 		daemon_Start
 		p2pool_Start
 		xmrig_Start
+		echo "Watch with: "
+		$bwhite; echo "monero-bash watch <daemon/xmrig/p2pool>"
 	fi
 }
 
@@ -31,7 +33,7 @@ mine_Config()
 	$bwhite; printf "POOL IP [default - 127.0.0.1:3333]: " ;$off
 	read POOL
 	$bwhite; printf "WALLET ADDRESS: " ;$off
-	read WALLET
+	read WALLET_INTERACTIVE
 	$bblue; printf "DAEMON IP: " ;$off
 	if [[ "$IP" = "" ]]; then
 		echo "127.0.0.1"
@@ -46,7 +48,7 @@ mine_Config()
 	else
 		echo "$POOL"
 	fi
-	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET"
+	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET_INTERACTIVE"
 	$bwhite; printf "Use these settings? (Y/n) "
 	Yes()
 	{
