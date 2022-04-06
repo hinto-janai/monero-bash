@@ -27,7 +27,7 @@ daemon_Start()
 {
 	COMMANDS()
 	{
-		missing_systemd_Monerod
+		missing_systemd_Monero
 		sudo systemctl start monero-bash-monerod
 	}
 	daemon_start_Template
