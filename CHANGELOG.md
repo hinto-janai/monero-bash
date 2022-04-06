@@ -7,7 +7,8 @@
 		- `monero-bash` - [hinto-janaiyo](https://github.com/hinto-janaiyo/monero-bash/blob/master/gpg/hinto-janaiyo.asc)
 		- `XMRig` - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
 		- `P2Pool` - [SChernykh](https://p2pool.io/SChernykh.asc)
-	- `monero-bash backup` 
+	- `monero-bash backup` encrypt and backup your /wallet/ folder
+	- `monero-bash decrypt` decrypt the encrypted tar
 
 ## To be added
 * Automatic P2Pool mining
