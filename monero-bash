@@ -96,9 +96,10 @@ if [[ $options = "true" ]]; then
 		xmrig) print_NotYet ;;
 		p2pool) print_NotYet ;;
 		watch)
-			case $* in
+			case $2 in
 				monero) watch_Monerod ;;
 				monerod) watch_Monerod ;;
+				daemon) watch_Monerod ;;
 				xmrig) watch_XMRig ;;
 				p2pool) watch_P2Pool ;;
 				*) error_Unknown ;;
