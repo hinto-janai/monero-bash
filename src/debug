@@ -98,7 +98,7 @@ CHECK_HASH_LIST()
 		exit 1
 	else
 		$bwhite; echo -n "monero-bash: "
-		$bgreen; echo "hash check success!"
+		$bgreen; echo "hash check success!" ;$off
 	fi
 }
 
@@ -156,6 +156,6 @@ QUIET_HASH_LIST()
 		exit 1
 	else
 		$bwhite; echo -n "monero-bash: "
-		$bgreen; echo "hash check success!"
+		$bgreen; echo "hash check success!" ;$off
 	fi
 }
