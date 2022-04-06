@@ -14,25 +14,25 @@ watch_Template()
 {
 	while true ;do
 		trap "break" 1 2 3 6 15
-		watch -t -c "journalctl -u monero-bash-$NAME --output cat | tail -n $(tput lines)"
+		watch -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
 		sleep 1
 	done
 }
 
 watch_Monerod()
 {
-	local NAME="monerod"
+	define_Monero
 	watch_Template
 }
 
 watch_XMRig()
 {
-	local NAME="xmrig"
+	define_XMRig
 	watch_Template
 }
 
 watch_P2Pool()
 {
-	local NAME="p2pool"
+	define_P2Pool
 	watch_Template
 }
