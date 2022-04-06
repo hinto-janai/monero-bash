@@ -45,3 +45,8 @@ systemd_P2Pool()
 	local COMMAND=""
 	systemd_Template
 }
+
+systemd_MoneroBash()
+{
+	echo "monero-bash: systemd not needed"
+}

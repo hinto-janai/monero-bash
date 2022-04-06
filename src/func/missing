@@ -101,13 +101,6 @@ missing_config_XMRig()
 	missing_config_Template
 }
 
-
-missing_config_P2Pool()
-{
-	local conf="p2pool.json"
-	missing_config_Template
-}
-
 missing_config_All()
 {
 	missing_config_MoneroBash
