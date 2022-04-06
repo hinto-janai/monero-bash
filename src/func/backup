@@ -11,7 +11,7 @@ backup_Wallets()
 	$bblue; echo "Backing up wallets..."
 	cd "$dotMoneroBash"
 	tar -cf "backup.tar" "wallets" --transform 's/wallets/backup/'
-	gpg -c "backup.tar" --no-symkey-cache --cipher-algo AES256
+	gpg --no-symkey-cache --cipher-algo AES256 -c "backup.tar"
 	error_Exit "GPG error"
 	rm "backup.tar"
 	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
