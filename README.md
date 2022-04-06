@@ -20,14 +20,14 @@ monero-bash is a wrapper/manager for:
 * `xmrig`
 * `p2pool`
 
-monero-bash abstracts/automates these programs into simple interactive prompts and `linux-like` commands
+monero-bash automates these programs into interactive prompts and `linux-like` commands
 
-[This project is a CCS Proposal](https://repo.getmonero.org/monero-project/ccs-proposals/-/merge_requests/297)
+[This project was a community funded CCS Proposal](https://ccs.getmonero.org/proposals/monero-bash.html)
 
-If this program is useful to you, please show support to get it funded!
+Thanks to all who donated
 
 ## Features
-* 📦 `PACKAGE MANAGER` automated downloading, verifying and upgrading of packages
+* 📦 `PACKAGE MANAGER` downloading, verifying and upgrading of packages
 * 💵 `WALLET` wallet menu to display names/amounts of wallets
 * 👺 `DAEMON` control `monerod` more easily/automatically
 * ⛏️  `MINING` automated mining, **default is P2Pool**
@@ -51,23 +51,14 @@ cd monero-bash &&
 **ALWAYS clone the main branch,** the other branches are not tested and may result in system damage
 
 ## Usage
-[For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
+[For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
 
 ## FAQ
-<details>
-<summary>Is this a virus?</summary>
-
----
-
-[No. Click here for a quick explanation of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
-
----
-</details>
-
 <details>
 <summary>Where does monero-bash download packages from?</summary>
 
 ---
+[Click here for a quick explanation of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
 
 If you'd like to see detailed output when installing/upgrading, type:
 ```
@@ -130,36 +121,39 @@ monero-bash install <package>
 </details>
 
 <details>
-<summary>What is the hash check before every upgrade?</summary>
+<summary>What happens if I cancel/shutdown mid-upgrade?</summary>
 
 ---
 
-For safety, monero-bash checks its own source code hash integrity before any manipulation of data. If any hash check fails, any command involving data manipulation will also fail.
+monero-bash uses a temporary folder until it's ready to swap binaries:
+```
+/tmp/monero-bash.XXXXXXXXX
+```
 
-If you've deleted some files and now it won't work, remove monero-bash manually and install a fresh copy:
-```
-sudo rm -r "/usr/local/share/monero-bash" &&
-sudo rm "/usr/local/bin/monero-bash" &&
-sudo rm -r "$HOME/.monero-bash"
-```
-If you're manually editing the code and forcing it to work, please be careful. Shell scripts are one empty variable away from wiping your drive. Definitely not speaking from experience.
+If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old binaries, and clean up temporary files.
+
+If you cancel ***after*** software is installed, but before the local state is updated, monero-bash will force update it and clean up.
+
+**There's nothing monero-bash can do to help if you shutdown your computer mid-upgrade**
 
 ---
 
 </details>
 
 <details>
-<summary>What happens if I cancel/shutdown mid-upgrade?</summary>
+<summary>What is the hash check before every upgrade?</summary>
 
 ---
 
-monero-bash makes and uses a temporary folder until it's ready to swap your current binaries with the new.
+monero-bash checks its own hash integrity before any manipulation of data. If any hash check fails, any command involving data manipulation will also fail.
 
-If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old software, and clean up temporary files.
-
-If you cancel ***after*** software is installed, but before the local state is updated, monero-bash will force update it and clean up.
-
-**There's nothing monero-bash can do to help if you shutdown your computer mid-upgrade**
+If you've edited some files and now it won't work, remove monero-bash manually and install a fresh copy:
+```
+sudo rm -r "/usr/local/share/monero-bash" &&
+sudo rm "/usr/local/bin/monero-bash" &&
+sudo rm -r "$HOME/.monero-bash"
+```
+If you're manually editing the code and forcing it to work, please be careful. Shell scripts are one empty variable away from wiping your drive. Definitely not speaking from experience.
 
 ---
 
@@ -215,6 +209,13 @@ sudo rm -r "/usr/local/share/monero-bash" &&
 sudo rm "/usr/local/bin/monero-bash" &&
 sudo rm -r "$HOME/.monero-bash"
 ```
+`systemd` files are also made, to delete:
+```
+sudo rm "/etc/systemd/system/monero-bash-monerod.service"
+sudo rm "/etc/systemd/system/monero-bash-xmrig.service"
+sudo rm "/etc/systemd/system/monero-bash-p2pool.service"
+```
+
 Please be careful, remember to move your `/wallets/` before uninstalling!
 
 ---
@@ -223,12 +224,4 @@ Please be careful, remember to move your `/wallets/` before uninstalling!
 
 ## Todo
 ***To be added***
-* Automatic P2Pool mining
-* GPG key verification for binaries
 * RPC/Daemon API integration
-* Automatic encrypted wallet backups
-
-*Added but not usable yet*
-* XMRig, P2Pool can be installed but not invoked
-* systemd intergrated, but not invokable
-* `watch` command works, but no XMRig/P2Pool instance to watch
