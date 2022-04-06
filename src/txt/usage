@@ -12,6 +12,7 @@ upgrade <pkg> force           forcefully upgrade packages
 upgrade <pkg> verbose         print detailed download information
 version                       print installed package versions
 
+mine config                   configure mining settings
 mine start                    start monerod, xmrig, p2pool in the background
 mine stop                     stop monerod, xmrig, p2pool
 
