@@ -17,15 +17,16 @@ backup_Wallets()
 	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
 	$bwhite; echo -n "Key type: " ;$white; echo "Passphrase"
 	$bwhite; echo -n "Encrypted wallet tar: " ;$white; echo "$dotMoneroBash/backup.tar.gpg"
-	$bwhite; echo -n "To decrypt: " ;$bred; echo -n "monero-bash decrypt"
-	$bwhite; echo -n " OR " ;$bred; echo "gpg backup.tar.gpg && tar -xf backup.tar"
+	$bwhite; echo -n "To decrypt: " ;$bgreen; echo -n "monero-bash decrypt"
+	$bwhite; echo -n " OR " ;$bgreen; echo "gpg backup.tar.gpg && tar -xf backup.tar"
 }
 
 backup_Decrypt()
 {
 	[[ -d "$dotMoneroBash/backup" ]]&& print_Error_Exit "$dotMoneroBash/backup already exists, please move!"
+	[[ -f "$dotMoneroBash/backup.tar" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar already exists!"
 	[[ ! -f "$dotMoneroBash/backup.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar.gpg was not found!"
-	$bblue; echo "Decrypting backup..."
+	$bblue; echo "Decrypting backup..." ;$off
 	cd "$dotMoneroBash"
 	gpg -d "backup.tar.gpg"
 	error_Exit "Decrypt failed"
