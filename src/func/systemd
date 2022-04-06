@@ -2,15 +2,15 @@
 # functions FOR CREATING systemd .service files
 systemd_Template()
 {
-if [[ -f /etc/systemd/system/monero-bash-$SERVICE.service ]]; then
-	print_Error "monero-bash-${SERVICE}.service already exists"
+if [[ -f /etc/systemd/system/$SERVICE ]]; then
+	print_Error "$SERVICE already exists"
 else
-	$white; echo "Creating monero-bash-$SERVICE.service..."
+	$white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
-sudo sh -c "cat <<EOM > /etc/systemd/system/monero-bash-$SERVICE.service
+sudo sh -c "cat <<EOM > $sysd/$SERVICE
 [Unit]
-Description=monero-bash-$SERVICE
+Description=$SERVICE
 After=network.target
 
 [Service]

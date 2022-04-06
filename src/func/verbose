@@ -10,6 +10,7 @@ verbose_Upgrade()
 	$bwhite; echo -n "NAME_PRETTY: " ;$off; echo "$NAME_PRETTY"
 	$bwhite; echo -n "NAME_FUNC: " ;$off; echo "$NAME_FUNC"
 	$bwhite; echo -n "NAME_CAPS: " ;$off; echo "$NAME_CAPS"
+	$bwhite; echo -n "SERVICE: " ;$off; echo "$SERVICE"
 	$bwhite; echo -n "DIRECTORY: " ;$off; echo "$DIRECTORY"
 	$bwhite; echo -n "API: " ;$off; echo "$API"
  	$bwhite; echo -n "HTML: " ;$off; echo "$HTML"
