@@ -12,6 +12,7 @@ trap_No()
 	trap_Template
 	trapSet="true"
 	error_Trap "LETTING DATA TRANSFER FINISH TO PREVENT CORRUPTION"
+	exit
 }
 
 # does everything POST install (rm temp files, state, hash)
