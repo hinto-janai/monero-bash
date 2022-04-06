@@ -58,3 +58,12 @@ safety_HashList()
 		echo
 	fi
 }
+
+safety_Root()
+{
+	if [[ "$EUID" = 0 ]]; then
+		printf "\033[1;31mMONERO-BASH ERROR: "
+		printf "\033[1;37mDO NOT RUN AS ROOT\n"
+		exit
+	fi
+}
