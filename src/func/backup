@@ -3,29 +3,31 @@
 
 backup_Wallets()
 {
-	if [[ -f "$dotMoneroBash/wallets.tar" ]]; then
-		print_Error_Exit "$dotMoneroBash/wallets.tar already exists!"
-	elif [[ -f "$dotMoneroBash/wallets.tar.gpg" ]]; then
-		print_Error_Exit "$dotMoneroBash/wallets.tar.gpg already exists!"
+	if [[ -f "$dotMoneroBash/backup.tar" ]]; then
+		print_Error_Exit "$dotMoneroBash/backup.tar already exists!"
+	elif [[ -f "$dotMoneroBash/backup.tar.gpg" ]]; then
+		print_Error_Exit "$dotMoneroBash/backup.tar.gpg already exists!"
 	fi
 	$bblue; echo "Backing up wallets..."
+	cd "$dotMoneroBash"
+	cp "wallets" "backup"
+	tar -cz "backup.tar" "backup" &>/dev/null | gpg -c --no-symkey-cache --cipher-algo AES256 -o "backup.tar.gpg" &>/dev/null
+	error_Exit "GPG error"
+	rm "backup"
 	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
 	$bwhite; echo -n "Key type: " ;$white; echo "Passphrase"
-	cd "$dotMoneroBash"
-	tar -cz "backup.tar" "wallets" &>/dev/null | gpg -c --no-symkey-cache --cipher-algo AES256 -o "wallets.tar.gpg" &>/dev/null
-	error_Exit "GPG error"
-	$bwhite; echo -n "Encrypted wallet tar: " ;$white; echo "$dotMoneroBash/wallets.tar.gpg"
+	$bwhite; echo -n "Encrypted wallet tar: " ;$white; echo "$dotMoneroBash/backup.tar.gpg"
 	$bwhite; echo -n "To decrypt: " ;$bred; echo -n "monero-bash decrypt"
 	$bwhite; echo -n " OR " ;$bred; echo "gpg -d wallets.tar.gpg | tar -xzf -"
 }
 
 backup_Decrypt()
 {
-	[[ -d "$wallets" ]]&& print_Error_Exit "$wallets already exists, please move!"
-	[[ ! -f "$dotMoneroBash/wallets.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/wallets.tar.gpg was not found!"
-	$bblue; echo "Decrypting wallets..."
+	[[ -d "$dotMoneroBash/backup" ]]&& print_Error_Exit "$dotMoneroBash/backup already exists, please move!"
+	[[ ! -f "$dotMoneroBash/backup.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar.gpg was not found!"
+	$bblue; echo "Decrypting backup..."
 	cd "$dotMoneroBash"
-	gpg -d wallets.tar.gpg | tar -xzf -
+	gpg -d backup.tar.gpg | tar -xzf -
 	error_Exit "Decrypt failed"
-	$bwhite; echo -n "Decrypted wallets: " ;$white; echo "$wallets"
+	$bwhite; echo -n "Decrypted backup: " ;$white; echo "$dotMoneroBash/backup"
 }
