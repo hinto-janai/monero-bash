@@ -1,13 +1,79 @@
 #!/usr/bin/env bash
-#
-# xmrig functions for systemd/non-systemd
+
+xmrig_start_Template()
+{
+	missing_XMRig
+	if pgrep xmrig &>/dev/null ; then
+        $bred; echo "XMRig already detected..." ;$off
+    else
+		missing_config_XMRig
+		$bred; echo "Starting XMRig..." ;$off
+		COMMANDS
+		error_Exit "Could not start XMRig"
+	fi
+}
+
+xmrig_stop_Template()
+{
+	if pgrep xmrig &>/dev/null ; then
+		COMMANDS
+	else
+		$white; echo -n "XMRig: "
+		$bred; echo "not online" ;$off
+	fi
+}
 
 xmrig_Start()
 {
-	sudo $binXMRig/xmrig --config $config/xmrig.json
+	COMMANDS()
+	{
+		missing_systemd_XMRig
+		sudo systemctl start monero-bash-xmrig
+	}
+	xmrig_start_Template
 }
 
-xmrig_systemd_Start()
+xmrig_Stop()
 {
-	sudo systemctl start monero-bash-xmrig
+	COMMANDS()
+	{
+		$ired; echo "Stopping XMRig gracefully..." ;$off
+		sudo systemctl stop monero-bash-xmrig
+		for i in {1..30} ;do
+			if [[ "$i" = "30" ]]; then
+				echo
+				print_Error "XMRig not responding, killing..."
+				xmrig_Kill
+			fi
+			if pgrep xmrig &>/dev/null ;then
+				echo -n "."
+			else
+				echo "."
+				break
+			fi
+			sleep 1
+		done
+	}
+	xmrig_stop_Template
+}
+
+xmrig_Kill()
+{
+	COMMANDS()
+	{
+		$ired; echo "Killing XMRig..."
+		killall xmrig
+		if [[ $? = 0 ]]; then
+			$white; echo "XMRig killed"
+		else
+			print_Error "XMRig was not killed"
+		fi
+	}
+	xmrig_stop_Template
+}
+
+xmrig_start_Full()
+{
+	COMMANDS(){ sudo $binXMRig/xmrig --config $config/xmrig.json ;}
+	xmrig_start_Template
 }
