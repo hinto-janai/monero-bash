@@ -30,13 +30,6 @@ missing_BinMonero()
 	missing_Template
 }
 
-missing_P2Pool()
-{
-	local DIR="$binP2Pool/p2pool"
-	local THING="P2Pool"
-	missing_Template
-}
-
 missing_XMRig()
 {
 	local DIR="$binXMRig/xmrig"
@@ -120,36 +113,38 @@ missing_config_All()
 	missing_config_MoneroBash
 	[[ $MONERO_VER != "" ]]&& missing_config_Monerod && missing_config_Wallet
 	[[ $XMRIG_VER != "" ]]&& missing_config_XMRig
-	[[ $P2POOL_VER != "" ]]&& missing_config_P2Pool
 }
 
-missing_systemd_Monerod()
+missing_systemd_Template()
 {
-	if [[ $SYSTEMD_MONEROD = "true" && ! -f /etc/systemd/system/monero-bash-monerod.service ]]; then
-		print_Error "monero-bash-monerod.service missing!"
-		$bwhite; echo "To make one: "
-		$bred; echo "monero-bash mine configure"
+	if [[ "$NAME_VER" != "" && ! -f /etc/systemd/system/monero-bash-${SERVICE}.service ]]; then
+		print_Error "monero-bash-${SERVICE}.service missing!"
+		echo "Creating default monero-bash-${SERVICE}.service..."
 		exit
 	fi
+}
+
+missing_systemd_Monero()
+{
+	define_Monero
+	missing_systemd_Template
 }
 
 missing_systemd_XMRig()
 {
-	if [[ ! -f /etc/systemd/system/monero-bash-xmrig.service ]]; then
-		print_Error "monero-bash-xmrig.service missing!"
-		$bwhite; echo "To make one: "
-		$bred; echo "monero-bash mine configure"
-		exit
-	fi
+	define_XMRig
+	missing_systemd_Template
 }
 
 missing_systemd_P2Pool()
 {
-	if [[ ! -f /etc/systemd/system/monero-bash-p2pool.service ]]; then
-		print_Error "monero-bash-p2pool.service missing!"
-		$bwhite; echo "To make one: "
-		$bred; echo "monero-bash mine configure"
-		exit
-	fi
+	define_P2Pool
+	missing_systemd_Template
 }
 
+missing_systemd_All()
+{
+	missing_systemd_Monero
+	missing_systemd_XMRig
+	missing_systemd_P2Pool
+}
