@@ -4,7 +4,7 @@
 scriptPath="$(realpath $0)"
 installDirectory="$(dirname "$scriptPath")"
 
-# check for crucial monero-bash source files
+# check for monero-bash source files
 if [[ $installDirectory == *"/monero-bash" ]]; then
 	cd "$installDirectory"
 	source "$installDirectory/src/source"
@@ -32,6 +32,11 @@ if [[ $1 = "DEBUG_04e3be9" ]]; then
 	exit
 fi
 
+# safety checks
+safety_Root
+safety_LinuxFolders
+safety_Home
+
 # Installation
 if [[ $FIRST_TIME = "true" ]]; then
 	monerobash_Install
@@ -40,8 +45,6 @@ fi
 
 # even more safety checks
 if [[ $FIRST_TIME != "true" ]]; then
-	safety_Home
-	safety_LinuxFolders
 	safety_UsrLocalShare
 	safety_DotMoneroBash
 	missing_Wallets

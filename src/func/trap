@@ -60,3 +60,22 @@ trap_Old()
 	tmp_Del
 	exit
 }
+
+# revert gpg toggle
+trap_GPG()
+{
+	trap_Template
+	error_Trap "REVERTING GPG TOGGLE"
+	sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state"
+	PRODUCE_HASH_LIST
+	exit
+}
+
+# recreate hash list
+trap_Hash()
+{
+	trap_Template
+	error_Trap "RE-PRODUCING HASHLIST"
+	PRODUCE_HASH_LIST
+	exit
+}

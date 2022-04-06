@@ -14,6 +14,8 @@ gpg_Toggle()
 	Yes()
 	{
 		prompt_Sudo ; error_Sudo
+		safety_HashList
+		trap "trap_GPG" 1 2 3 6 15
 		[[ $VERIFY_GPG = "true" ]]&& sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state" && PRODUCE_HASH_LIST
 		[[ $VERIFY_GPG != "true" ]]&& sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"true\"@" "$state" && PRODUCE_HASH_LIST
 		source "$state"
@@ -108,7 +110,9 @@ gpg_Overwrite()
 {
 	prompt_Sudo
 	error_Sudo
+	safety_HashList
 	$bwhite; echo "Overwriting LOCAL keys..." ;$off
+	trap "trap_Hash" 1 2 3 6 15
 	wget -q -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
 	code_Wget
 	PRODUCE_HASH_LIST
