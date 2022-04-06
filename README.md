@@ -49,7 +49,7 @@ cd monero-bash &&
 **ALWAYS clone the main branch,** the other branches are not tested and may result in system damage
 
 ## Usage
-[For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/help.md)
+[For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
 
 ## FAQ
 <details>
@@ -123,9 +123,12 @@ monero-bash install <package>
 
 ---
 
-monero-bash makes and uses a temporary folder until it's ready to swap your current binaries with the new.
+monero-bash uses a temporary folder until it's ready to swap binaries:
+```
+/tmp/monero-bash.XXXXXXXXX
+```
 
-If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old software, and clean up temporary files.
+If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old binaries, and clean up temporary files.
 
 If you cancel ***after*** software is installed, but before the local state is updated, monero-bash will force update it and clean up.
 
@@ -140,9 +143,9 @@ If you cancel ***after*** software is installed, but before the local state is u
 
 ---
 
-For safety, monero-bash checks its own source code hash integrity before any manipulation of data. If any hash check fails, any command involving data manipulation will also fail.
+monero-bash checks its own hash integrity before any manipulation of data. If any hash check fails, any command involving data manipulation will also fail.
 
-If you've deleted some files and now it won't work, remove monero-bash manually and install a fresh copy:
+If you've edited some files and now it won't work, remove monero-bash manually and install a fresh copy:
 ```
 sudo rm -r "/usr/local/share/monero-bash" &&
 sudo rm "/usr/local/bin/monero-bash" &&
