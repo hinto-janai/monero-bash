@@ -7,17 +7,50 @@
 
 mine_Start()
 {
-	case $AUTO_MONEROD_P2POOL in
-		true)
-			[[ $SYSTEMD_MONEROD = "true" ]]&& daemon_systemd_Monerod
-			[[ $SYSTEMD_MONEROD != "true" ]]&& daemon_StartAttached
-			[[ $SYSTEMD_XMRIG = "true" ]]&& systemd_XMRig
-			[[ $SYSTEMD_
+	[[ "$MINE_FIRST_TIME" = "true" ]]&& mine_Config
+	daemon_Start
+	p2pool_Start
+	xmrig_Start
 }
 
-mine_Configure()
+mine_Config()
 {
-	# First Time = false
-	sudo sed -i "s@.*MINE_FIRST_TIME.*@MINE_FIRST_TIME=\"false\"@" "$state"
-	PRODUCE_HASH_LIST
+	print_MoneroBashTitle
+	$bwhite; printf "DAEMON IP [default - 127.0.0.1]: " ;$off
+	read IP
+	$bwhite; printf "POOL IP [default - 127.0.0.1:3333]: " ;$off
+	read POOL
+	$bwhite; printf "WALLET ADDRESS: " ;$off
+	read WALLET
+	$bblue; printf "DAEMON IP: " ;$off
+	if [[ "$IP" = "" ]]; then
+		echo "127.0.0.1"
+		IP="127.0.0.1"
+	else
+		echo "$IP"
+	fi
+	$bblue; printf "POOL IP: " ;$off
+	if [[ "$POOL" = "" ]]; then
+		echo "127.0.0.1:3333"
+		POOL="127.0.0.1:3333"
+	else
+		echo "$POOL"
+	fi
+	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET"
+	$bwhite; printf "Use these settings? (Y/n) "
+	Yes()
+	{
+		prompt_Sudo ; error_Sudo
+		safety_HashList
+		trap "trap_No" 1 2 3 6 15
+		export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET"
+		systemd_P2Pool
+		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$config/xmrig.json"
+		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$config/xmrig.json"
+		sudo sed -i "s@.*MINE_FIRST_TIME.*@MINE_FIRST_TIME=\"false\"@" "$state"
+		PRODUCE_HASH_LIST
+		$bgreen; echo "Mining configuration complete"
+	}
+	No(){ echo "Exiting..." ;exit;}
+	prompt_YESno
 }
