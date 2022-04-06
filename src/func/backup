@@ -4,9 +4,9 @@
 backup_Wallets()
 {
 	if [[ -f "$dotMoneroBash/wallets.tar" ]]; then
-		error_Exit "$dotMoneroBash/wallets.tar already exists!"
+		print_Error_Exit "$dotMoneroBash/wallets.tar already exists!"
 	elif [[ -f "$dotMoneroBash/wallets.tar.gpg" ]]; then
-		error_Exit "$dotMoneroBash/wallets.tar.gpg already exists!"
+		print_Error_Exit "$dotMoneroBash/wallets.tar.gpg already exists!"
 	fi
 	$bblue; echo "Backing up wallets..."
 	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
@@ -20,8 +20,8 @@ backup_Wallets()
 
 backup_Decrypt()
 {
-	[[ -d "$wallets" ]]&& error_Exit "$wallets already exists, please move!"
-	[[ ! -f "$dotMoneroBash/wallets.tar.gpg" ]]&& error_Exit "$dotMoneroBash/wallets.tar.gpg was not found!"
+	[[ -d "$wallets" ]]&& print_Error_Exit "$wallets already exists, please move!"
+	[[ ! -f "$dotMoneroBash/wallets.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/wallets.tar.gpg was not found!"
 	$bblue; echo "Decrypting wallets..."
 	cd "$wallets"
 	gpg -d wallets.tar.gpg | tar -xzf -
