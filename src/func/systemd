@@ -2,10 +2,7 @@
 # functions FOR CREATING systemd .service files
 systemd_Template()
 {
-if [[ -f /etc/systemd/system/$SERVICE ]]; then
-	print_Error "$SERVICE already exists"
-else
-	$white; echo "Creating $SERVICE..."
+$white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
 sudo sh -c "cat <<EOM > $sysd/$SERVICE
@@ -24,17 +21,18 @@ WantedBy=multi-user.target
 EOM"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
-fi
 }
 
 systemd_Monero()
 {
+	define_Monero
 	local COMMAND="$binMonero/monerod --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" --non-interactive --zmq-pub tcp://127.0.0.1:18083"
 	systemd_Template
 }
 
 systemd_XMRig()
 {
+	define_XMRig
 	local USER="root"
 	local COMMAND="$binXMRig/xmrig --config $config/xmrig.json"
 	systemd_Template
@@ -42,7 +40,7 @@ systemd_XMRig()
 
 systemd_P2Pool()
 {
-	local COMMAND=""
+	define_P2Pool
 	systemd_Template
 }
 
