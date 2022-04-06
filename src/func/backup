@@ -14,7 +14,7 @@ backup_Wallets()
 	gpg --no-symkey-cache --cipher-algo AES256 -c "backup.tar"
 	if [[ $? != 0 ]]; then
 		rm "backup.tar"
-		print_error_Exit "GPG error"
+		print_Error_Exit "GPG error"
 	fi
 	rm "backup.tar"
 	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
