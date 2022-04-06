@@ -12,17 +12,13 @@ upgrade <pkg> force           forcefully upgrade packages
 upgrade <pkg> verbose         print detailed download information
 version                       print installed package versions
 
-daemon                        print status of daemon
-daemon start                  start the daemon (detached)
-daemon stop                   gracefully stop the daemon
-daemon kill                   forcefully kill all daemon processes
-daemon full                   start the daemon attached
-
 mine start                    start monerod, xmrig, p2pool in the background
 mine stop                     stop monerod, xmrig, p2pool
 
-xmrig full                    start xmrig attached
-p2pool full                   start p2pool attached
+daemon/xmrig/p2pool start     start process detached (background)
+daemon/xmrig/p2pool stop      gracefully stop the process
+daemon/xmrig/p2pool kill      forcefully kill the process
+daemon/xmrig/p2pool full      start the daemon attached (foreground)
 
 watch daemon                  show live daemon output
 watch xmrig                   show live xmrig output
@@ -33,7 +29,7 @@ gpg import                    import GPG keys of package authors
 backup                        encrypt and backup your /wallets/
 decrypt                       decrypt backup.tar.gpg
 
-status                        print useful stats
+status                        print status of all running processes
 list                          list wallets
 size                          show size of monero-bash folders
 price                         fetch price data from cryptocompare.com API
