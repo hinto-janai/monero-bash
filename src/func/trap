@@ -20,12 +20,12 @@ trap_Post()
 {
 	trap_Template
 	error_Trap "WRITING TO STATE BEFORE EXITING"
-	version_"$NAME_FUNC"
+	version_Template
 	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	PRODUCE_HASH_LIST
 	[[ -d "$old" ]]&& sudo rm -rf "$old"
-	[[ -d "$tmp" ]]&& tmp_Del
+	tmp_Del
 	exit
 }
 
@@ -34,7 +34,7 @@ trap_Tmp()
 {
 	trap_Template
 	error_Trap "CLEANING TEMP FILES"
-	[[ -d "$tmp" ]]&& tmp_Del
+	tmp_Del
 	exit
 }
 
@@ -47,6 +47,7 @@ trap_MoneroBash()
 	sudo mv -fr "$old/src" "$installDirectory"
 	sudo mv -fr "$old/config" "$installDirectory"
 	sudo mv -f "$old/src/txt/state" "$state"
+	tmp_Del
 	exit
 }
 
@@ -56,5 +57,6 @@ trap_Old()
 	trap_Template
 	error_Trap "CLEANING OLD FOLDER"
 	[[ -d "$old" ]]&& rm -rf "$old"
+	tmp_Del
 	exit
 }
