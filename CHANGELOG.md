@@ -8,7 +8,7 @@
 * **watch command**
 	- `monero-bash watch <daemon/p2pool/xmrig>` to watch live output of process
 
-* **GPG integrated*
+* **GPG integrated**
 	- `monero-bash gpg` toggle on/off GPG verification when upgrading/installing
 	- `monero-bash gpg import` compare local/online keys, import if OK
 		- `Monero` - [binaryfate](https://github.com/monero-project/monero/blob/master/utils/gpg_keys/binaryfate.asc)
