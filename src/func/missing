@@ -104,7 +104,13 @@ missing_config_MoneroBash()
 
 missing_config_XMRig()
 {
-	local conf="config.json"
+	local conf="xmrig.json"
+	missing_config_Template
+}
+
+missing_config_P2Pool()
+{
+	local conf="p2pool.json"
 	missing_config_Template
 }
 
@@ -113,6 +119,7 @@ missing_config_All()
 	missing_config_MoneroBash
 	[[ $MONERO_VER != "" ]]&& missing_config_Monerod && missing_config_Wallet
 	[[ $XMRIG_VER != "" ]]&& missing_config_XMRig
+	[[ $P2POOl_VER != "" ]]&& missing_config_P2Pool
 }
 
 missing_systemd_Template()

@@ -28,13 +28,18 @@ mine_Stop()
 mine_Config()
 {
 	print_MoneroBashTitle
+	$bwhite; printf "WALLET ADDRESS: " ;$off
+	read WALLET_INTERACTIVE
 	$bwhite; printf "DAEMON IP [default - 127.0.0.1]: " ;$off
 	read IP
 	$bwhite; printf "POOL IP [default - 127.0.0.1:3333]: " ;$off
 	read POOL
-	$bwhite; printf "WALLET ADDRESS: " ;$off
-	read WALLET_INTERACTIVE
+	$bwhite; printf "Use P2Pool Mini-Pool? (Y/n): " ;$off
+	Yes(){ MINI="true" ;}
+	No(){ MINI="false" ;}
+	prompt_YESno
 	$bblue; printf "DAEMON IP: " ;$off
+	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET_INTERACTIVE"
 	if [[ "$IP" = "" ]]; then
 		echo "127.0.0.1"
 		IP="127.0.0.1"
@@ -48,14 +53,19 @@ mine_Config()
 	else
 		echo "$POOL"
 	fi
-	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET_INTERACTIVE"
+	$bblue; printf "P2POOL MINI: " ;$off
+		echo "$MINI"
 	$bwhite; printf "Use these settings? (Y/n) "
 	Yes()
 	{
 		prompt_Sudo ; error_Sudo
 		safety_HashList
 		trap "trap_No" 1 2 3 6 15
-		export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE"
+		if [[ "$MINI" = "true" ]]; then
+			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel 2 --mini"
+		else
+			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel 2"
+		fi
 		systemd_P2Pool
 		echo "Editing monero-bash.conf..."
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"

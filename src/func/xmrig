@@ -7,7 +7,7 @@ xmrig_start_Template()
         $bred; echo "XMRig already detected..." ;$off
     else
 		missing_config_XMRig
-		$bred; echo "Starting XMRig..." ;$off
+		$bgreen; echo "Starting XMRig..." ;$off
 		COMMANDS
 		error_Exit "Could not start XMRig"
 	fi
@@ -74,6 +74,6 @@ xmrig_Kill()
 
 xmrig_Full()
 {
-	COMMANDS(){ sudo $binXMRig/xmrig --config $config/config.json ;}
+	COMMANDS(){ sudo $binXMRig/xmrig --config $config/xmrig.json ;}
 	xmrig_start_Template
 }
