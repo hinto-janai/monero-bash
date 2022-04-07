@@ -32,7 +32,7 @@ define_MoneroBash()
 	PROJECT="monero-bash"
 	STAR_PKG="monero-bash-v*"
 	DOT_PKG="monero-bash-v.*"
-	SHA="SHA256SUM"
+	SHA="SHA256SUM.txt"
 	SIG="$SHA"
 	GPG_OWNER="hinto-janaiyo"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
