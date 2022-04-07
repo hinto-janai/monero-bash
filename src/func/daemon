@@ -38,7 +38,7 @@ daemon_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping Monero daemon gracefully..." ;$off
-		sudo systemctl stop monero-bash-monerod
+		sudo systemctl stop monero-bash-monerod &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo

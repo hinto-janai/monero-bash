@@ -38,7 +38,7 @@ xmrig_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping XMRig gracefully..." ;$off
-		sudo systemctl stop monero-bash-xmrig
+		sudo systemctl stop monero-bash-xmrig &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo
