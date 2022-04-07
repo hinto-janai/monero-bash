@@ -12,11 +12,7 @@
 
 watch_Template()
 {
-	while true ;do
-		trap "break" 1 2 3 6 15
-		watch -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
-		sleep 1
-	done
+	watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
 }
 
 watch_Monerod()
