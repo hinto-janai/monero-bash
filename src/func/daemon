@@ -72,7 +72,7 @@ daemon_Kill()
 	daemon_stop_Template
 }
 
-daemon_start_Full()
+daemon_Full()
 {
 	COMMANDS(){ "$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf --zmq-pub tcp://127.0.0.1:18083" ;}
 	daemon_start_Template
