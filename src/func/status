@@ -40,7 +40,7 @@ status_XMRig()
 {
 	local NAME="XMRig"
 	local PROCESS="xmrig"
-	EXTRA_STATS(){ journalctl -u monero-bash-xmrig --output cat | tail -n5 :;}
+	EXTRA_STATS(){ journalctl -u monero-bash-xmrig --output cat | tail -n5 ;}
 	status_Template
 }
 
@@ -48,6 +48,6 @@ status_P2Pool()
 {
 	local NAME="P2Pool"
 	local PROCESS="p2pool"
-	EXTRA_STATS(){ journalctl -u monero-bash-p2pool --output cat | tail -n5 :;}
+	EXTRA_STATS(){ journalctl -u monero-bash-p2pool --output cat | tail -n5 ;}
 	status_Template
 }

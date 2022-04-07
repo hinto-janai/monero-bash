@@ -91,6 +91,8 @@ If you have a custom xmrig or p2pool `config.json`, rename them to:
 * `p2pool.json`
 and put them in the `.monero-bash/config` folder
 
+`P2Pool` does not use `xmrig.json` config settings! Please setup P2Pool with `monero-bash mine config`
+
 [Check here for xmrig configuration](https://xmrig.com/docs/miner/config)
 
 For `monero-bash` configuration, edit `/.monero-bash/config/monero-bash.conf`
@@ -102,8 +104,8 @@ For `monero-bash` configuration, edit `/.monero-bash/config/monero-bash.conf`
 DATA_PATH=""                     path of .bitmonero
 
 # p2pool
-DAEMON_IP="127.0.0.1"            IP used if P2Pool is invoked directly
-WALLET=""                        wallet used if P2Pool is invoked directly
+DAEMON_IP="127.0.0.1"            IP used if P2Pool is invoked directly/config is not setup
+WALLET=""                        wallet used if P2Pool is invoked directly/config is not setup
 
 # monero-wallet-cli
 AUTO_START_DAEMON="true"         auto-start daemon on wallet open
