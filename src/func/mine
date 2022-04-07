@@ -7,6 +7,9 @@
 
 mine_Start()
 {
+	missing_Monerod
+	missing_XMRig
+	missing_P2Pool
 	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
 		mine_Config
 	else
