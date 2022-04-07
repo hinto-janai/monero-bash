@@ -22,9 +22,10 @@ monero-bash is a wrapper/manager for:
 
 monero-bash automates these programs into interactive prompts and `linux-like` commands
 
-[This project was a community funded CCS Proposal](https://ccs.getmonero.org/proposals/monero-bash.html)
+Installing `monero-bash` and mining on P2Pool in ***45 seconds:***
+![45](https://streamable.com/e/79a9vr)
 
-Thanks to all who donated
+[This project was a community funded CCS Proposal](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
 * 📦 `PACKAGE MANAGER` downloading, verifying and upgrading of packages
