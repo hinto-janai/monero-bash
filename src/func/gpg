@@ -42,22 +42,22 @@ gpg_import_Template()
 gpg_import_All()
 {
 	define_Monero
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 
 	define_MoneroBash
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 
 	define_XMRig
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 
 	define_P2Pool
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 }
