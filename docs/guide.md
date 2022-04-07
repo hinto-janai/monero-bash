@@ -9,7 +9,7 @@
 To quickly start mining on P2Pool, make sure you have all the packages:
 * `monero-bash install all`
 
-To configure basic mining settings:
+Configure basic mining settings:
 * `monero-bash mine config`
 
 You can then:
@@ -82,7 +82,7 @@ After installation, monero-bash will:
 *note:* the `.bitmonero` folder path can be set anywhere
 
 ## Configuration
-If you already have a custom `monerod.conf` or `monero-wallet-cli.con`, put them in your `.bitmonero` folder and monero-bash will use them
+If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them
 
 [Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
 

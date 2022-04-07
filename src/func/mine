@@ -29,7 +29,9 @@ mine_Stop()
 
 mine_Config()
 {
-	print_MoneroBashTitle
+    $bred; echo "###########################################################"
+    $bred; echo "#            monero-bash mining configuration             #"
+    $bred; echo "###########################################################"
 	$bwhite; printf "WALLET ADDRESS: " ;$off
 	read WALLET_INTERACTIVE
 	$bwhite; printf "DAEMON IP [default - 127.0.0.1]: " ;$off
@@ -78,6 +80,8 @@ mine_Config()
 		sudo sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
 		PRODUCE_HASH_LIST
 		$bgreen; echo "Mining configuration complete"
+		$white; echo -n "To get started: "
+		$bwhite; echo "monero-bash mine start"
 	}
 	No(){ echo "Exiting..." ;exit;}
 	prompt_YESno

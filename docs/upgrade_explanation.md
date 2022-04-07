@@ -1,17 +1,16 @@
-# is monero-bash a virus?
-* [Intro](#Intro)
+# How does monero-bash upgrade packages?
 * [Download](#Download)
 * [Verify](#Verify)
 * [Upgrade](#Upgrade)
 * [Details](#Details)
-* [Conclusion](#Conclusion)
 * Date: 2022-04-06
 
 ## Intro
-Is monero-bash a virus? Will it steal my Monero? Is it downloading malware instead of the real packages?
-```
-No
-```
+The monero-bash upgrade process is:
+* Download
+* Verify (hash & GPG if enabled)
+* Upgrade
+
 Here's a very simplified step-by-step explanation of what happens when you `monero-bash upgrade`
 
 ## Download
@@ -70,9 +69,3 @@ For the sake of being simple and easy to read, the functions presented in the ex
 And here for some of the important functions it's made out of:  [Define](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/define)  -  [Download](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download) -  [Verify](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify) - [Version](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version)
 
 What you'll find is a bunch of grep/awk/sed, error handling, cleanup, and safety checks.
-
-## Conclusion
-I'm far too concerned with making sure `monero-bash` doesn't blow up anyone's files to have the time to:
-1. Learn how to write malware
-2. Implement the malware
-3. Try to obfuscate the malware
