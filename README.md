@@ -36,6 +36,7 @@ https://user-images.githubusercontent.com/101352116/162113926-f78571df-add8-46fe
 * 👺 `DAEMON` control `monerod` more easily/automatically
 * ⛏️  `MINING` automated mining, **default is P2Pool**
 * 👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+* 🔒 `GPG` verify packages with GPG, and `backup/decrypt` your wallets
 * 📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
