@@ -185,8 +185,15 @@ monerobash_Uninstall()
 			sudo rm -rf "/usr/local/share/monero-bash"
 			error_Exit "monero-bash not removed"
 		print_WhiteHash "Removing systemd services"
-			sudo rm /etc/systemd/system/monero-bash-*.service
-			error_Exit "systemd services not removed"
+			define_Monero
+				[[ -e sudo rm "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
+				error_Continue "$SERVICE not removed"
+			define_XMRig
+				[[ -e sudo rm "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
+				error_Continue "$SERVICE not removed"
+			define_P2Pool
+				[[ -e sudo rm "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
+				error_Continue "$SERVICE not removed"
 		print_GreenHash "monero-bash has been uninstalled"
 	}
 	No(){ $white; echo "Exiting..." ;exit;}
