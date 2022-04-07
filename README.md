@@ -33,15 +33,16 @@ https://user-images.githubusercontent.com/101352116/162113926-f78571df-add8-46fe
 ## Features
 * 📦 `PACKAGE MANAGER` downloading, verifying and upgrading of packages
 * 💵 `WALLET` wallet menu to display names/amounts of wallets
-* 👺 `DAEMON` control `monerod` more easily/automatically
-* ⛏️  `MINING` automated mining, **default is P2Pool**
+* 👺 `DAEMON` control `monerod` more automatically
+* ⛏️  `MINING` easy mining setup, **default is P2Pool**
 * 👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+* 🔒 `GPG` verify packages with GPG, and `backup/decrypt` your wallets
 * 📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
 **NOTE: THIS PROJECT IS STILL IN DEVELOPMENT, USING A VM IS RECOMMENDED**
 
-[To install monero-bash, download the latest release here](https://github.com/hinto-janaiyo/monero-bash/releases/latest) and
+[To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
 ./monero-bash
 ```
@@ -59,11 +60,58 @@ cd monero-bash &&
 ## Usage
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
 
+<details>
+<summary>Click for command usage</summary>
+
+```
+monero-bash usage:            monero-bash <option> <more options>
+
+monero-bash                   the default command will open wallet selection
+uninstall                     uninstall monero-bash and remove /.monero-bash/
+
+install <pkg>                 install <all> or a specific package
+install <pkg> verbose         print detailed download information
+remove <pkg>                  remove <all> or a specific package
+remove <pkg> force            forcefully remove a package
+
+update                        only CHECK for updates
+upgrade <pkg>                 upgrade <all> or a specific package
+upgrade <pkg> force           forcefully upgrade packages
+upgrade <pkg> verbose         print detailed download information
+version                       print installed package versions
+
+mine config                   configure mining settings
+mine start                    start monerod, xmrig, p2pool in the background
+mine stop                     stop monerod, xmrig, p2pool
+
+start <daemon/xmrig/p2pool>   start process detached (background)
+stop <daemon/xmrig/p2pool>    gracefully stop the process
+kill <daemon/xmrig/p2pool>    forcefully kill the process
+full <daemon/xmrig/p2pool>    start the process attached (foreground)
+
+watch <daemon/xmrig/p2pool>   watch live output of process
+
+gpg                           toggle GPG verification of binaries
+gpg import                    import GPG keys of package authors
+backup                        encrypt and backup your /wallets/
+decrypt                       decrypt backup.tar.gpg
+
+status                        print status of all running processes
+list                          list wallets
+size                          show size of monero-bash folders
+price                         fetch price data from cryptocompare.com API
+integrity                     check hash integrity of monero-bash
+
+help                          show this help message
+```
+</details>
+
 ## FAQ
 <details>
 <summary>Where does monero-bash download packages from?</summary>
 
 ---
+
 [Click here for a quick explanation of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
 
 If you'd like to see detailed output when installing/upgrading, type:

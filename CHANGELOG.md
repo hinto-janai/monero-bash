@@ -18,7 +18,7 @@
 
 * **backup**
 	- `monero-bash backup` encrypt and backup your /wallet/ folder
-	- `monero-bash decrypt` decrypt the encrypted tar
+	- `monero-bash decrypt` decrypt the encrypted backup.tar.gpg
 
 ## To be added
 * RPC/Daemon API integration
