@@ -68,11 +68,18 @@ safety_Root()
 	fi
 }
 
-safety_Systemd()
+# checks if basic linux dependencies are installed
+safety_Deps()
 {
 	if [[ ! -e "/usr/bin/systemctl" ]]; then
 		print_Error_Exit "/usr/bin/systemctl (systemd) not found!"
 	elif [[ ! -e "$sysd" ]]; then
 		print_Error_Exit "$sysd not found!"
+	elif [[ ! -e "/usr/bin/gpg" ]]; then
+		print_Error_Exit "/usr/bin/gpg (GPG) not found!"
+	elif [[ ! -e "/usr/bin/wget" ]]; then
+		print_Error_Exit "/usr/bin/gpg (wget) not found!"
+	elif [[ ! -e "/usr/bin/sed" || -e "/usr/bin/awk" || -e "/usr/bin/grep" || -e "/usr/bin/tail" || -e "/usr/bin/head" ]]; then
+		print_Error_Exit "Basic GNU tools not found!"
 	fi
 }
