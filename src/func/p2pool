@@ -6,7 +6,7 @@ p2pool_start_Template()
 	if pgrep p2pool &>/dev/null ; then
         $bred; echo "P2Pool already detected..." ;$off
     else
-		$bred; echo "Starting P2Pool..." ;$off
+		$bgreen; echo "Starting P2Pool..." ;$off
 		COMMANDS
 		error_Exit "Could not start P2Pool"
 	fi
@@ -73,6 +73,6 @@ p2pool_Kill()
 
 p2pool_Full()
 {
-	COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" ;}
+	COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" --loglevel 2;}
 	p2pool_start_Template
 }

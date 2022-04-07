@@ -7,7 +7,7 @@ xmrig_start_Template()
         $bred; echo "XMRig already detected..." ;$off
     else
 		missing_config_XMRig
-		$bred; echo "Starting XMRig..." ;$off
+		$bgreen; echo "Starting XMRig..." ;$off
 		COMMANDS
 		error_Exit "Could not start XMRig"
 	fi
