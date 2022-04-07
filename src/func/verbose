@@ -23,6 +23,7 @@ verbose_Upgrade()
 	$bwhite; echo -n "VERIFY_GPG: " ;$off; echo "$VERIFY_GPG"
 	$bwhite; echo -n "NewVer: " ;$off; echo "$NewVer"
 	$bwhite; echo -n "LINK: " ;$off; echo "$LINK"
+	$bwhite; echo -n "GPG_PUB_KEY: " ;$off; echo "$GPG_PUB_KEY"
 	$bwhite; echo -n "hashLink: " ;$off; echo "$hashLink"
 	$bwhite; echo -n "sigLink: " ;$off; echo "$sigLink"
 	$bwhite; echo -n "tmp: " ;$off; echo "$tmp"
