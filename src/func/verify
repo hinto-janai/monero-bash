@@ -64,7 +64,7 @@ verify_Template()
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
 	if [[ "$verifyOK" != "true" ]]; then
-		BAD_HASH="$(sha256sum $tmp/$tarFile | awk '{print $1}' | tr -d " -")"
+		LOCAL_HASH="$(sha256sum "$tmp/$tarFile" | awk '{print $1}' | tr -d " -")"
 		compromised_Hash
 	fi
 
@@ -78,6 +78,8 @@ verify_Template()
 			print_GPG
 		fi
 		gpgSTDOUT="$(cat /tmp/monero-bash-gpg.*)"
-		[[ "$gpgOK" != "true" ]]&& compromised_GPG
+		if [[ "$gpgOK" != "true" ]]; then
+		LOCAL_HASH="$(sha256sum "$tmp/$tarFile" | awk '{print $1}' | tr -d " -")"
+		compromised_GPG
 	fi
 }
