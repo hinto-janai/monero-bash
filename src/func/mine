@@ -10,6 +10,7 @@ mine_Start()
 	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
 		mine_Config
 	else
+		prompt_Sudo ; error_Sudo
 		daemon_Start
 		p2pool_Start
 		xmrig_Start
@@ -20,6 +21,7 @@ mine_Start()
 
 mine_Stop()
 {
+	prompt_Sudo ; error_Sudo
 	daemon_Stop
 	p2pool_Stop
 	xmrig_Stop
