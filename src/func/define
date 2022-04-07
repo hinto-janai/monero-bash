@@ -26,6 +26,7 @@ define_MoneroBash()
 	NAME_OLD="$MONERO_BASH_OLD"
 	NAME_PRETTY="monero-bash"
 	NAME_FUNC="MoneroBash"
+	SERVICE=""
 	DIRECTORY="$installDirectory"
 	NAME_CAPS="MONERO_BASH"
 	AUTHOR="hinto-janaiyo"
