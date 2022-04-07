@@ -34,7 +34,7 @@ systemd_XMRig()
 {
 	define_XMRig
 	local USER="root"
-	local COMMAND="$binXMRig/xmrig --config $config/xmrig.json"
+	local COMMAND="$binXMRig/xmrig --config $xmrigConf"
 	systemd_Template
 }
 
