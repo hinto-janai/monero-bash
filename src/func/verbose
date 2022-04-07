@@ -31,8 +31,8 @@ verbose_Upgrade()
 	$bwhite; echo -n "hashFile: " ;$off; echo "$hashFile"
 	$bwhite; echo -n "sigFile: " ;$off; echo "$sigFile"
 	$bwhite; echo -n "folderName: " ;$off; echo "$folderName"
-	$bwhite; echo -n "tarFile: " ;$off; echo "$tarFile"
-	$bwhite; echo -n "HASH: " ;$off; echo "$HASH"
+	$bwhite; echo -n "tarFile: " ;$bblue; echo "$tarFile"
+	$bwhite; echo -n "HASH: " ;$bblue; echo "$HASH"
 	$bwhite; echo -n "LOCAL_HASH: " ;$bred; echo "$LOCAL_HASH"
 	$bwhite; echo "hashSTDOUT: " ;$off
 	export GREP_COLOR="1;34"
