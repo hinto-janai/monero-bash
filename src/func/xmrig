@@ -74,6 +74,6 @@ xmrig_Kill()
 
 xmrig_Full()
 {
-	COMMANDS(){ sudo $binXMRig/xmrig --config $config/xmrig.json ;}
+	COMMANDS(){ sudo $binXMRig/xmrig --config $config/$xmrigConf ;}
 	xmrig_start_Template
 }

@@ -38,8 +38,8 @@ mine_Config()
 	Yes(){ MINI="true" ;}
 	No(){ MINI="false" ;}
 	prompt_YESno
-	$bblue; printf "DAEMON IP: " ;$off
 	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET_INTERACTIVE"
+	$bblue; printf "DAEMON IP: " ;$off
 	if [[ "$IP" = "" ]]; then
 		echo "127.0.0.1"
 		IP="127.0.0.1"
@@ -71,8 +71,8 @@ mine_Config()
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET\"@" "$config/monero-bash.conf"
 		echo "Editing xmrig.json..."
-		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$config/config.json"
-		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$config/config.json"
+		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$config/$xmrigConf"
+		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$config/$xmrigConf"
 		sudo sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
 		PRODUCE_HASH_LIST
 		$bgreen; echo "Mining configuration complete"

@@ -18,6 +18,8 @@ binP2Pool="$bin/p2pool"
 hashlist="$installDirectory/src/txt/hashlist"
 state="$installDirectory/src/txt/state"
 sysd="/etc/systemd/system"
+xmrigConf="$config/xmrig.json"
+p2poolConf="$config/p2pool.json"
 
 #
 #						Colors
