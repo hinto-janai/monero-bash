@@ -3,6 +3,7 @@
 p2pool_start_Template()
 {
 	missing_P2Pool
+	[[ "$MINE_UNCONFIGURED" = "true" ]]&& mine_Config
 	if pgrep p2pool &>/dev/null ; then
         $bred; echo "P2Pool already detected..." ;$off
     else

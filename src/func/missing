@@ -127,6 +127,8 @@ missing_systemd_Template()
 	if [[ "$NAME_VER" != "" && ! -f $sysd/$SERVICE ]]; then
 		print_Error "${SERVICE} missing!"
 		echo "Creating default..."
+		systemd_$NAME_FUNC
+		${NAME_FUNC}_Start
 	fi
 }
 
