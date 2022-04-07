@@ -82,10 +82,16 @@ After installation, monero-bash will:
 *note:* the `.bitmonero` folder path can be set anywhere
 
 ## Configuration
-If you already have a custom `monerod.conf` or xmrig `config.json`, put them in your `.bitmonero` folder and monero-bash will use them
+If you already have a custom `monerod.conf` or `monero-wallet-cli.con`, put them in your `.bitmonero` folder and monero-bash will use them
 
 [Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
-[And here for xmrig configuration](https://xmrig.com/docs/miner/config)
+
+If you have a custom xmrig or p2pool `config.json`, rename them to:
+* `xmrig.json`
+* `p2pool.json`
+and put them in the `.monero-bash/config` folder
+
+[Check here for xmrig configuration](https://xmrig.com/docs/miner/config)
 
 For `monero-bash` configuration, edit `/.monero-bash/config/monero-bash.conf`
 ```

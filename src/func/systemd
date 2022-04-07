@@ -34,13 +34,14 @@ systemd_XMRig()
 {
 	define_XMRig
 	local USER="root"
-	local COMMAND="$binXMRig/xmrig --config $config/config.json"
+	local COMMAND="$binXMRig/xmrig --config $config/xmrig.json"
 	systemd_Template
 }
 
 systemd_P2Pool()
 {
 	define_P2Pool
+	local USER="root"
 	systemd_Template
 }
 
