@@ -23,7 +23,7 @@ trap_Post()
 	version_Template
 	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-	systemd_"$NAME_FUNC"
+	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	[[ -d "$old" ]]&& sudo rm -rf "$old"
 	tmp_Del
