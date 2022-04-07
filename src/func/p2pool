@@ -37,7 +37,7 @@ p2pool_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping P2Pool gracefully..." ;$off
-		sudo systemctl stop monero-bash-p2pool
+		sudo systemctl stop monero-bash-p2pool &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo

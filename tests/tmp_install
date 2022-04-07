@@ -21,7 +21,6 @@ fi
 sudo rm -r /usr/local/share/monero-bash
 sudo rm /usr/local/bin/monero-bash
 sudo rm -r ~/.monero-bash
-sudo rm -r ~/.bitmonero
 sudo rm -r /tmp/monero-bash
 sudo rm /etc/systemd/system/monero-bash-*.service
 
