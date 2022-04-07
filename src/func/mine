@@ -65,12 +65,16 @@ mine_Config()
 		prompt_Sudo ; error_Sudo
 		safety_HashList
 		trap "trap_No" 1 2 3 6 15
+
+	    define_P2Pool
+	    local USER="root"
 		if [[ "$MINI" = "true" ]]; then
 			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel 2 --mini"
 		else
 			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel 2"
 		fi
-		systemd_P2Pool
+	    systemd_Template
+
 		echo "Editing monero-bash.conf..."
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET\"@" "$config/monero-bash.conf"
