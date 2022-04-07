@@ -5,7 +5,7 @@
 	- `monero-bash mine start` to start `monerod, p2pool, xmrig`
 	- `monero-bash mine stop` to stop them
 
-* **watch command**
+* **watch**
 	- `monero-bash watch <daemon/p2pool/xmrig>` to watch live output of process
 
 * **GPG integrated**
@@ -16,7 +16,7 @@
 		- XMRig - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
 		- P2Pool - [SChernykh](https://p2pool.io/SChernykh.asc)
 
-* **backup command**
+* **backup**
 	- `monero-bash backup` encrypt and backup your /wallet/ folder
 	- `monero-bash decrypt` decrypt the encrypted tar
 
