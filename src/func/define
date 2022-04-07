@@ -16,6 +16,7 @@ define_Monero()
 	DOT_PKG="monero-linux-x64.*"
 	SHA="hashes.txt"
 	SIG="$SHA"
+	GPG_OWNER="binaryfate"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc"
 }
 
@@ -33,6 +34,7 @@ define_MoneroBash()
 	DOT_PKG="monero-bash-v.*"
 	SHA="SHA256SUM"
 	SIG="$SHA"
+	GPG_OWNER="hinto-janaiyo"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
 }
 
@@ -52,6 +54,7 @@ define_XMRig()
 	DOT_PKG="xmrig.*linux-static-x64.*"
     SHA="SHA256SUMS"
 	SIG="${SHA}.sig"
+    GPG_OWNER="xmrig"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc"
 }
 
@@ -71,5 +74,6 @@ define_P2Pool()
 	DOT_PKG="p2pool.*linux-x64.*"
 	SHA="sha256sums.txt.asc"
 	SIG="$SHA"
+    GPG_OWNER="SChernykh"
 	GPG_PUB_KEY="https://p2pool.io/SChernykh.asc"
 }

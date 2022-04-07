@@ -30,9 +30,9 @@ gpg_Toggle()
 gpg_import_Template()
 {
 	if [[ "$LOCAL" = "$ONLINE" ]]; then
-		$bwhite; echo -n "$NAME: "
+		$bwhite; echo -n "$GPG_OWNER: "
 		$bgreen; echo "OK" ;$off
-		gpg --import "$installDirectory/gpg/${NAME}.asc"
+		gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
 		echo
 	else
 		gpg_Diff
@@ -42,22 +42,22 @@ gpg_import_Template()
 gpg_import_All()
 {
 	define_Monero
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 
 	define_MoneroBash
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 
 	define_XMRig
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 
 	define_P2Pool
-	local LOCAL="$(cat "$installDirectory/gpg/${AUTHOR}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
 }
@@ -65,12 +65,12 @@ gpg_import_All()
 gpg_Diff()
 {
 	$bwhite; echo -n "The LOCAL and ONLINE gpg keys of "
-	$bred; echo -n "$NAME "
+	$bred; echo -n "$GPG_OWNER "
 	$bwhite; echo "are different!" ;$off
 	$bblue; echo -n "LOCAL: "
-	$white; echo "$installDirectory/gpg/${NAME}.asc"
+	$white; echo "$installDirectory/gpg/${GPG_OWNER}.asc"
 	$bgreen; echo -n "ONLINE: "
-	$white; echo "$LINK"
+	$white; echo "$GPG_PUB_KEY"
 	while true ;do
 		$bwhite; echo -n "What to do? [show / pick / skip] " ;$off
 		read OPTION
@@ -86,7 +86,7 @@ gpg_Diff()
 					$bwhite; echo -n "Which key to pick? [local / online] " ;$off
 					read KEYPICK
 					case $KEYPICK in
-						local) gpg --import "$installDirectory/gpg/${NAME}.asc" && break ;;
+						local) gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc" && break ;;
 						online) gpg_Overwrite && break ;;
 						*) error_Continue "Invalid option"
 					esac
@@ -112,9 +112,9 @@ gpg_Overwrite()
 	safety_HashList
 	$bwhite; echo "Overwriting LOCAL keys..." ;$off
 	trap "trap_Hash" 1 2 3 6 15
-	wget -q -O "$installDirectory/gpg/${NAME}.asc" "$LINK"
+	wget -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
 	code_Wget
 	PRODUCE_HASH_LIST
-	local LOCAL="$(cat "$installDirectory/gpg/${NAME}.asc")"
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	gpg_import_Template
 }
