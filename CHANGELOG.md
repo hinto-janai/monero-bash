@@ -1,14 +1,14 @@
 # v0.7
 ## Updates
-* `P2Pool` mining integrated
+* **P2Pool mining integrated**
 	- `monero-bash mine config` to configure basic mining settings
 	- `monero-bash mine start` to start `monerod, p2pool, xmrig`
 	- `monero-bash mine stop` to stop them
 
-* `watch` command
+* **watch command**
 	- `monero-bash watch <daemon/p2pool/xmrig>` to watch live output of process
 
-* `GPG` integrated
+* **GPG integrated*
 	- `monero-bash gpg` toggle on/off GPG verification when upgrading/installing
 	- `monero-bash gpg import` compare local/online keys, import if OK
 		- `Monero` - [binaryfate](https://github.com/monero-project/monero/blob/master/utils/gpg_keys/binaryfate.asc)
@@ -16,7 +16,7 @@
 		- `XMRig` - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
 		- `P2Pool` - [SChernykh](https://p2pool.io/SChernykh.asc)
 
-* `backup` command
+* **backup command**
 	- `monero-bash backup` encrypt and backup your /wallet/ folder
 	- `monero-bash decrypt` decrypt the encrypted tar
 

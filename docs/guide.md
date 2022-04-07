@@ -62,7 +62,6 @@ price                         fetch price data from cryptocompare.com API
 integrity                     check hash integrity of monero-bash
 
 help                          show this help message
-
 ```
 </details>
 
@@ -82,16 +81,15 @@ After installation, monero-bash will:
 *note:* the `.bitmonero` folder path can be set anywhere
 
 ## Configuration
-If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them
-
-[Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
+If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them. [Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
 
 If you have a custom xmrig or p2pool `config.json`, rename them to:
 * `xmrig.json`
 * `p2pool.json`
+
 and put them in the `.monero-bash/config` folder
 
-`P2Pool` does not use `xmrig.json` config settings! Please setup P2Pool with `monero-bash mine config`
+P2Pool does not use xmrig.json config settings! Please setup P2Pool with `monero-bash mine config`
 
 [Check here for xmrig configuration](https://xmrig.com/docs/miner/config)
 
@@ -130,4 +128,5 @@ This allows these program to auto-restart, start on boot, and allows monero-bash
 
 If you'd like to directly invoke a program:
 * `monero-bash full <daemon/p2pool/xmrig>`
+
 This will launch them in the current terminal
