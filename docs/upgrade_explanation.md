@@ -1,9 +1,10 @@
 # How does monero-bash upgrade packages?
+* [Intro](#Intro)
 * [Download](#Download)
 * [Verify](#Verify)
 * [Upgrade](#Upgrade)
 * [Details](#Details)
-* Date: 2022-04-06
+* Date: 2022-04-07
 
 ## Intro
 The monero-bash upgrade process is:
