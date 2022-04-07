@@ -39,6 +39,8 @@ https://user-images.githubusercontent.com/101352116/162113926-f78571df-add8-46fe
 * 📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
+**NOTE: THIS PROJECT IS STILL IN DEVELOPMENT, USING A VM IS RECOMMENDED**
+
 [To install monero-bash, download the latest release here](https://github.com/hinto-janaiyo/monero-bash/releases/latest) and
 ```
 ./monero-bash
