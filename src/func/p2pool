@@ -27,6 +27,7 @@ p2pool_Start()
 	COMMANDS()
 	{
 		missing_systemd_P2Pool
+		prompt_Sudo ; error_Sudo
 		sudo systemctl start monero-bash-p2pool
 	}
 	p2pool_start_Template
@@ -37,6 +38,7 @@ p2pool_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping P2Pool gracefully..." ;$off
+		prompt_Sudo ; error_Sudo
 		sudo systemctl stop monero-bash-p2pool &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then

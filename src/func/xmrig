@@ -28,6 +28,7 @@ xmrig_Start()
 	COMMANDS()
 	{
 		missing_systemd_XMRig
+		prompt_Sudo ; error_Sudo
 		sudo systemctl start monero-bash-xmrig
 	}
 	xmrig_start_Template
@@ -38,6 +39,7 @@ xmrig_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping XMRig gracefully..." ;$off
+		prompt_Sudo ; error_Sudo
 		sudo systemctl stop monero-bash-xmrig &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
