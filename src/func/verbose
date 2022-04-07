@@ -33,7 +33,7 @@ verbose_Upgrade()
 	$bwhite; echo -n "folderName: " ;$off; echo "$folderName"
 	$bwhite; echo -n "tarFile: " ;$off; echo "$tarFile"
 	$bwhite; echo -n "HASH: " ;$off; echo "$HASH"
-	$bwhite; echo -n "BAD_HASH: " ;$bred; echo "$BAD_HASH"
+	$bwhite; echo -n "LOCAL_HASH: " ;$bred; echo "$LOCAL_HASH"
 	$bwhite; echo "hashSTDOUT: " ;$off
 	export GREP_COLOR="1;34"
 	echo "$hashSTDOUT" | grep --color -z "$HASH\|$tarFile"
