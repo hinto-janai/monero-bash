@@ -22,11 +22,12 @@ compromised_GPG()
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
     $bblue; echo "  WARNING: GPG SIGNATURE ERROR!"
     $bblue; echo "  [$NAME_PRETTY] GPG Signature did not match!"
-    $bblue; echo "  [$AUTHOR] might be compromised"
+    $bblue; echo "  [$GPG_OWNER] might be compromised"
     $bblue; echo  "  (or more likely, there was an error)"
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
+	$bwhite; echo "gpgSTDOUT: " ;$off; echo "$gpgSTDOUT"
 	echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
