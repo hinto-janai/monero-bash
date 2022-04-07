@@ -11,7 +11,7 @@ compromised_Hash()
     $bred; echo  "  (or more likely, there was an error)"
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
-	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
+	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
 	echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
@@ -26,7 +26,7 @@ compromised_GPG()
     $bblue; echo  "  (or more likely, there was an error)"
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
-	$bred; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
+	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
 	echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
