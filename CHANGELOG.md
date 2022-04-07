@@ -11,10 +11,10 @@
 * **GPG integrated**
 	- `monero-bash gpg` toggle on/off GPG verification when upgrading/installing
 	- `monero-bash gpg import` compare local/online keys, import if OK
-		- `Monero` - [binaryfate](https://github.com/monero-project/monero/blob/master/utils/gpg_keys/binaryfate.asc)
-		- `monero-bash` - [hinto-janaiyo](https://github.com/hinto-janaiyo/monero-bash/blob/master/gpg/hinto-janaiyo.asc)
-		- `XMRig` - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
-		- `P2Pool` - [SChernykh](https://p2pool.io/SChernykh.asc)
+		- Monero - [binaryfate](https://github.com/monero-project/monero/blob/master/utils/gpg_keys/binaryfate.asc)
+		- monero-bash - [hinto-janaiyo](https://github.com/hinto-janaiyo/monero-bash/blob/master/gpg/hinto-janaiyo.asc)
+		- XMRig - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
+		- P2Pool - [SChernykh](https://p2pool.io/SChernykh.asc)
 
 * **backup command**
 	- `monero-bash backup` encrypt and backup your /wallet/ folder
