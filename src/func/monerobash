@@ -175,6 +175,7 @@ monerobash_Uninstall()
 		print_GreenHash "Checking monero-bash hash integrity"
 		QUIET_HASH_LIST
 		trap "trap_No" 1 2 3 6 15
+		mine_Stop
 		print_WhiteHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
 			error_Exit "$dotMoneroBash not removed"
@@ -186,13 +187,13 @@ monerobash_Uninstall()
 			error_Exit "monero-bash not removed"
 		print_WhiteHash "Removing systemd services"
 			define_Monero
-				[[ -e sudo rm "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
+				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
 				error_Continue "$SERVICE not removed"
 			define_XMRig
-				[[ -e sudo rm "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
+				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
 				error_Continue "$SERVICE not removed"
 			define_P2Pool
-				[[ -e sudo rm "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
+				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
 				error_Continue "$SERVICE not removed"
 		print_GreenHash "monero-bash has been uninstalled"
 	}
