@@ -15,7 +15,7 @@ watch_Template()
 	watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
 }
 
-watch_Monerod()
+watch_Monero()
 {
 	define_Monero
 	watch_Template
