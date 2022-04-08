@@ -25,7 +25,7 @@ WantedBy=multi-user.target
 EOM"
 
 sudo chmod -R 600 "$tmpService"
-mv -f "$tmpService/$SERVICE" "$sysd"
+sudo mv -f "$tmpService/$SERVICE" "$sysd"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
 }
