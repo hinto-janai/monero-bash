@@ -16,8 +16,10 @@ After=network.target
 
 [Service]
 User=$USER
+GROUP=$USER
 Type=simple
 ExecStart=$COMMAND
+WorkingDirectory=$DIRECTORY
 Restart=always
 
 [Install]
@@ -33,7 +35,7 @@ sudo systemctl daemon-reload
 systemd_Monero()
 {
 	define_Monero
-	local COMMAND="$binMonero/monerod --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" --non-interactive --zmq-pub tcp://127.0.0.1:18083"
+	local COMMAND="$binMonero/monerod --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" --non-interactive"
 	systemd_Template
 }
 
