@@ -91,4 +91,6 @@ safety_User()
 		printf "\033[1;31mmonero-bash error: "
 		printf "\033[0mOnly this user is allowed: "
 		printf "\033[1;37m$INSTALLED_USER\n"
+		exit
+	fi
 }
