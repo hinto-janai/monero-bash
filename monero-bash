@@ -37,6 +37,7 @@ safety_Root
 safety_Deps
 safety_LinuxFolders
 safety_Home
+safety_User
 
 # Installation
 if [[ $FIRST_TIME = "true" ]]; then
