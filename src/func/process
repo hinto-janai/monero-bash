@@ -7,7 +7,7 @@ process_Start_Template()
 	if pgrep $PROCESS &>/dev/null ; then
         $bred; echo "$PROCESS already detected..." ;$off
     else
-		missing_config_Monerod
+		missing_config_"$NAME_FUNC"
 		$bgreen; echo "Starting $PROCESS..." ;$off
 		COMMANDS
 		error_Exit "Could not start $PROCESS"
