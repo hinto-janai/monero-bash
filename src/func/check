@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 #						Check "x" (used by update command)
 #						for fetching internet stats

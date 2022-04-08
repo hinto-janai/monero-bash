@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # for interacting with monerod/p2pool/xmrig
+
 process_Start_Template()
 {
 	missing_"$NAME_FUNC"

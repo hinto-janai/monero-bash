@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
-#							Missing "x" Functions
-#
+# Missing "x" Functions
+
 missing_Template()
 {
 	if [[ ! -e "$DIR" ]]; then
-	print_Error_Exit "$THING missing!"
+		print_Error_Exit "$THING missing!"
 	fi
 }
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 #
-#						Saftey checks so monero-bash doesn't blow something up
-#
+# Safety checks so monero-bash doesn't blow something up
+
 # checks if /.monero-bash/ exists, if not, build default
 safety_DotMoneroBash()
 {
     if [[ ! -d "$dotMoneroBash" ]]; then
-        $ired; echo "$HOME/.monero-bash/ folder not found!"
+        print_Error "$HOME/.monero-bash/ folder not found!"
         $white; printf "Build a default folder? (Y/n) "
 		Yes()
 		{
