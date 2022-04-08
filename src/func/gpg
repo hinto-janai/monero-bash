@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#
 # gpg functions for:
 #	-toggling $VERIFY_GPG
 # 	-importing gpgs keys and

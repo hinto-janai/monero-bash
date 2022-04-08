@@ -9,14 +9,12 @@
 * [Install](#Install)
 * [Usage](#Usage)
 * [FAQ](#FAQ)
-* [Todo](#Todo)
 
 ## About
 monero-bash is a wrapper/manager for:
 
 * `monerod`
 * `monero-wallet-cli`
-* `monero-rpc`
 * `xmrig`
 * `p2pool`
 
@@ -40,8 +38,6 @@ https://user-images.githubusercontent.com/101352116/162113926-f78571df-add8-46fe
 * 📈 `STATS` various stats to display (processes, price, disk usage, etc)
 
 ## Install
-**NOTE: THIS PROJECT IS STILL IN DEVELOPMENT, USING A VM IS RECOMMENDED**
-
 [To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
 ./monero-bash
@@ -124,7 +120,7 @@ monero-bash install/upgrade <package> verbose
 * XMRig - `https://github.com/xmrig/xmrig`
 * P2Pool - `https://github.com/SChernykh/p2pool`
 
-The latest packages are always downloaded through the GitHub API. If the API fails for whatever reason, monero-bash will attempt to find a download link by HTML filtering the package's `/releases/latest/` GitHub page.
+The latest packages are downloaded through the GitHub API. If the API fails, monero-bash will attempt to find a download link by HTML filtering the package's `/releases/latest/` GitHub page.
 
 Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.txt`
 
@@ -203,8 +199,8 @@ monero-bash checks its own hash integrity before any manipulation of data. If an
 
 If you've edited some files and now it won't work, remove monero-bash manually and install a fresh copy:
 ```
-sudo rm -r "/usr/local/share/monero-bash" &&
-sudo rm "/usr/local/bin/monero-bash" &&
+sudo rm -r /usr/local/share/monero-bash
+sudo rm /usr/local/bin/monero-bash
 sudo rm -r "$HOME/.monero-bash"
 ```
 If you're manually editing the code and forcing it to work, please be careful. Shell scripts are one empty variable away from wiping your drive. Definitely not speaking from experience.
@@ -259,23 +255,18 @@ This will delete all `monero-bash` files AND `.monero-bash`
 
 If your monero-bash is bugged and not uninstalling, you can manually remove everything like this:
 ```
-sudo rm -r "/usr/local/share/monero-bash" &&
-sudo rm "/usr/local/bin/monero-bash" &&
+sudo rm -r /usr/local/share/monero-bash
+sudo rm /usr/local/bin/monero-bash
 sudo rm -r "$HOME/.monero-bash"
 ```
-`systemd` files are also made, to delete:
+To delete `systemd` files:
 ```
-sudo rm "/etc/systemd/system/monero-bash-monerod.service"
-sudo rm "/etc/systemd/system/monero-bash-xmrig.service"
-sudo rm "/etc/systemd/system/monero-bash-p2pool.service"
+sudo rm /etc/systemd/system/monero-bash-monerod.service
+sudo rm /etc/systemd/system/monero-bash-xmrig.service
+sudo rm /etc/systemd/system/monero-bash-p2pool.service
 ```
 
 Please be careful, remember to move your `/wallets/` before uninstalling!
 
 ---
 </details>
-
-
-## Todo
-***To be added***
-* RPC/Daemon API integration

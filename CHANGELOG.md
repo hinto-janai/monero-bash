@@ -1,3 +1,8 @@
+# v1.0.0
+## Official Release
+* See the [main repo](https://github.com/hinto-janaiyo/monero-bash) for all information on monero-bash
+
+
 # v0.7
 ## Updates
 * **P2Pool mining integrated**

@@ -2,8 +2,6 @@
 #
 #                       Global Variables
 #
-# timestamp for .old folder
-currentDayTime="$(date '+%Y-%m-%d@%H-%M-%S')"
 # file/folder paths
 usrLocalShare="/usr/local/share"
 dotMoneroBash="$HOME/.monero-bash"

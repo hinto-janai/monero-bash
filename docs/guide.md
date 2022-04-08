@@ -81,7 +81,7 @@ After installation, monero-bash will:
 *note:* the `.bitmonero` folder path can be set anywhere
 
 ## Configuration
-If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in your `.bitmonero` folder and monero-bash will use them. [Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
+If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in `.monero-bash/config/` folder and monero-bash will use them. [Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
 
 If you have a custom xmrig or p2pool `config.json`, rename them to:
 * `xmrig.json`
@@ -93,7 +93,7 @@ P2Pool does not use xmrig.json config settings! Please setup P2Pool with `monero
 
 [Check here for xmrig configuration](https://xmrig.com/docs/miner/config)
 
-For `monero-bash` configuration, edit `/.monero-bash/config/monero-bash.conf`
+For `monero-bash` configuration, edit `.monero-bash/config/monero-bash.conf`
 ```
 ######################
 # monero-bash config #
@@ -108,8 +108,6 @@ WALLET=""                        wallet used if P2Pool is invoked directly/confi
 # monero-wallet-cli
 AUTO_START_DAEMON="true"         auto-start daemon on wallet open
 AUTO_STOP_DAEMON="true"          auto-stop daemon on wallet close
-
-# monero-rpc
 
 # monero-bash
 PRICE_API_IP_WARNING="true"      warn when checking price API
