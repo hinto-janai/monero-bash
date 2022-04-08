@@ -41,7 +41,7 @@ process_Stop()
 	{
 		$ired; echo "Stopping $PROCESS gracefully..." ;$off
 		prompt_Sudo ; error_Sudo
-		sudo systemctl "$SERVICE" &
+		sudo systemctl stop "$SERVICE" &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo
@@ -65,7 +65,7 @@ process_Kill()
 	COMMANDS()
 	{
 		$ired; echo "Killing $PROCESS..."
-		killall $PROCESS
+		killall "$PROCESS"
 		if [[ $? = 0 ]]; then
 			$white; echo "$PROCESS killed"
 		else
