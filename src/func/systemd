@@ -5,7 +5,7 @@ systemd_Template()
 $white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
-mktemp -d /tmp/monero-bash-service.XXXXXXX
+mktemp -d /tmp/monero-bash-service.XXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
 sudo chmod -R 600 "$tmpService"
 
