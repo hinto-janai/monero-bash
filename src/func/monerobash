@@ -84,7 +84,6 @@ trap "trap_No" 1 2 3 6 15
 	installDirectory="/usr/local/share/monero-bash"
 	hashlist="$installDirectory/src/txt/hashlist"
 	state="$installDirectory/src/txt/state"
-	sudo chown -R "$USER:" "$installDirectory"
 
 # Adding to PATH
 	print_GreenHash "Adding monero-bash to PATH"
@@ -109,8 +108,10 @@ trap "trap_No" 1 2 3 6 15
 	fi
 	source "$config/monero-bash.conf"
 
-# First Time = false
+# First Time = false , Set Installed User , chown
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
+sudo sed -i "s@.*INSTALLED_USER.*@INSTALLED_USER=\"$USER\"@" "$state"
+sudo chown -R "$USER:$USER" "$installDirectory"
 PRODUCE_HASH_LIST
 
 #
