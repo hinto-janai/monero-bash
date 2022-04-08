@@ -30,7 +30,7 @@ process_Start()
 	{
 		missing_systemd_"$NAME_FUNC"
 		prompt_Sudo ; error_Sudo
-		sudo systemctl start monero-bash-$SERVICE
+		sudo systemctl start "$SERVICE"
 	}
 	process_Start_Template
 }
@@ -41,7 +41,7 @@ process_Stop()
 	{
 		$ired; echo "Stopping $PROCESS gracefully..." ;$off
 		prompt_Sudo ; error_Sudo
-		sudo systemctl stop monero-bash-$SERVICE &
+		sudo systemctl "$SERVICE" &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo
