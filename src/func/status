@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-#
-#						status function, prints multiple helpful stats
-#
+# status function, prints multiple helpful stats
+
 status_All()
 {
 	print_MoneroBashTitle
@@ -12,42 +11,39 @@ status_All()
 	fi
 	print_Version
 	echo
-	status_Daemon
-	status_XMRig
+	status_Monero
 	status_P2Pool
+	status_XMRig
 }
 
 status_Template()
 {
-	$white; echo -n "$NAME: "
+	$bwhite; echo -n "$NAME_PRETTY: " ;$off
 	if pgrep $PROCESS &>/dev/null ;then
-		$bgreen; echo "online"
+		$bgreen; echo "online" ;$off
 		EXTRA_STATS
 	else
-		$bred; echo "offline"
+		$bred; echo "offline" ;$off
 	fi
 }
 
-status_Daemon()
+status_Monero()
 {
-	local NAME="Monero daemon"
-	local PROCESS="monerod"
+	define_Monero
 	EXTRA_STATS(){ $binMonero/monerod status ;}
-	status_Template
-}
-
-status_XMRig()
-{
-	local NAME="XMRig"
-	local PROCESS="xmrig"
-	EXTRA_STATS(){ journalctl -u monero-bash-xmrig --output cat | tail -n5 ;}
 	status_Template
 }
 
 status_P2Pool()
 {
-	local NAME="P2Pool"
-	local PROCESS="p2pool"
-	EXTRA_STATS(){ journalctl -u monero-bash-p2pool --output cat | tail -n5 ;}
+	define_P2Pool
+	EXTRA_STATS(){ journalctl -u monero-bash-p2pool --output cat | tail -n4 ;}
+	status_Template
+}
+
+status_XMRig()
+{
+	define_XMRig
+	EXTRA_STATS(){ journalctl -u monero-bash-xmrig --output cat | tail -n4 ;}
 	status_Template
 }
