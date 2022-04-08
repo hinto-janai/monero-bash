@@ -5,7 +5,11 @@ systemd_Template()
 $white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
-sudo sh -c "cat <<EOM > $sysd/$SERVICE
+mktemp -d /tmp/monero-bash-service.XXXXXXX
+tmpService="$(find /tmp/monero-bash-service.*)"
+sudo chmod -R 600 "$tmpService"
+
+sudo sh -c "cat <<EOM > $tmpService/$SERVICE
 [Unit]
 Description=$SERVICE
 After=network.target
@@ -19,6 +23,9 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 EOM"
+
+sudo chmod -R 600 "$tmpService"
+mv -f "$tmpService/$SERVICE" "$sysd"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
 }
