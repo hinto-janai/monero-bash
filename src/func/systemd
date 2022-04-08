@@ -16,7 +16,7 @@ After=network.target
 
 [Service]
 User=$USER
-GROUP=$USER
+Group=$USER
 Type=simple
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
