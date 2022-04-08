@@ -102,6 +102,7 @@ integrity                     check hash integrity of monero-bash
 
 help                          show this help message
 ```
+
 </details>
 
 ## FAQ
@@ -109,6 +110,7 @@ help                          show this help message
 <summary>Where does monero-bash download packages from?</summary>
 
 ---
+
 [Click here for a quick explanation of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
 
 If you'd like to see detailed output when installing/upgrading, type:
