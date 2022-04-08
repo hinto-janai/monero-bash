@@ -32,7 +32,7 @@ process_Start()
 		prompt_Sudo ; error_Sudo
 		sudo systemctl start monero-bash-$SERVICE
 	}
-	process_start_Template
+	process_Start_Template
 }
 
 process_Stop()
@@ -57,7 +57,7 @@ process_Stop()
 			sleep 1
 		done
 	}
-	process_stop_Template
+	process_Stop_Template
 }
 
 process_Kill()
@@ -72,7 +72,7 @@ process_Kill()
 			print_Error "$PROCESS was not killed"
 		fi
 	}
-	process_stop_Template
+	process_Stop_Template
 }
 
 process_Full()
@@ -82,5 +82,5 @@ process_Full()
 		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel 2;} ;;
 		xmrig) COMMANDS(){ sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
 	esac
-	process_start_Template
+	process_Start_Template
 }
