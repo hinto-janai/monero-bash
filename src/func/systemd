@@ -48,7 +48,6 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local USER="root"
 	local COMMAND="$binP2Pool/p2pool --host $DAEMON_IP --wallet $WALLET --loglevel 2 --mini"
 	systemd_Template
 }

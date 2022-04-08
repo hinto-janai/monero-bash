@@ -112,6 +112,7 @@ trap "trap_No" 1 2 3 6 15
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
 sudo sed -i "s@.*INSTALLED_USER.*@INSTALLED_USER=\"$USER\"@" "$state"
 sudo chown -R "$USER:$USER" "$installDirectory"
+sudo chmod 700 "$installDirectory"
 PRODUCE_HASH_LIST
 
 #

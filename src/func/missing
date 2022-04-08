@@ -49,7 +49,7 @@ missing_DotMoneroBash()
 	if [[ ! -d "$dotMoneroBash" ]]; then
 		print_ErrorExit "$dotMoneroBash missing!"
 		echo "Create one with default settings? (Y/n) "
-		Yes(){ build_DefaultDotMoneroBash ;}
+		Yes(){ build_DotMoneroBash ;}
 		No(){ echo "Skipping..." ;}
 		prompt_YESno
 	fi
