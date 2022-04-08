@@ -59,6 +59,7 @@ cd monero-bash &&
 
 ## Usage
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
+
 <details>
 <summary>Click for command usage</summary>
 ```
