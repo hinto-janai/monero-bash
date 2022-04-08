@@ -63,6 +63,7 @@ done
 # Hash Integrity Check
 	print_GreenHash "Checking monero-bash hash integrity"
 	CHECK_HASH_LIST
+	alreadyCheckedHashList="true"
 
 # TRAP
 trap "trap_No" 1 2 3 6 15
