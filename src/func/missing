@@ -9,7 +9,7 @@ missing_Template()
 	fi
 }
 
-missing_Monerod()
+missing_Monero()
 {
 	local DIR="$binMonero/monerod"
 	local THING="monerod"
@@ -82,7 +82,7 @@ missing_config_Template()
 	fi
 }
 
-missing_config_Monerod()
+missing_config_Monero()
 {
 	local conf="monerod.conf"
 	missing_config_Template
@@ -117,7 +117,7 @@ missing_config_P2Pool()
 missing_config_All()
 {
 	missing_config_MoneroBash
-	[[ $MONERO_VER != "" ]]&& missing_config_Monerod && missing_config_Wallet
+	[[ $MONERO_VER != "" ]]&& missing_config_Monero && missing_config_Wallet
 	[[ $XMRIG_VER != "" ]]&& missing_config_XMRig
 	[[ $P2POOl_VER != "" ]]&& missing_config_P2Pool
 }

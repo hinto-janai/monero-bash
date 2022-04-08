@@ -115,43 +115,43 @@ if [[ $options = "true" ]]; then
 			;;
 		start)
 			case $2 in
-				daemon) daemon_Start ;;
-				xmrig) xmrig_Start ;;
-				p2pool) p2pool_Start ;;
+				daemon) define_Monero;process_Start ;;
+				xmrig) define_XMRig;process_Start ;;
+				p2pool) define_P2Pool;process_Start ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
 		stop)
 			case $2 in
-				daemon) daemon_Stop ;;
-				xmrig) xmrig_Stop ;;
-				p2pool) p2pool_Stop ;;
+				daemon) define_Monero;process_Stop ;;
+				xmrig) define_XMRig;process_Stop ;;
+				p2pool) define_P2Pool;process_Stop ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
 		kill)
 			case $2 in
-				daemon) daemon_Kill ;;
-				xmrig) xmrig_Kill ;;
-				p2pool) p2pool_Kill ;;
+				daemon) define_Monero;process_Kill ;;
+				xmrig) define_XMRig;process_Kill ;;
+				p2pool) define_P2Pool;process_Kill ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
 		full)
 			case $2 in
-				daemon) daemon_Full ;;
-				xmrig) xmrig_Full ;;
-				p2pool) p2pool_Full ;;
+				daemon) define_Monero;process_Full ;;
+				xmrig) define_XMRig;process_Full ;;
+				p2pool) define_P2Pool;process_Full ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
 		watch)
 			case $2 in
-				daemon) watch_Monerod ;;
+				daemon) watch_Monero ;;
 				xmrig) watch_XMRig ;;
 				p2pool) watch_P2Pool ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;

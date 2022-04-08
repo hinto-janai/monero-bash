@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# for interacting with monerod/p2pool/xmrig
+process_Start_Template()
+{
+	missing_"$NAME_FUNC"
+	[[ "$MINE_UNCONFIGURED" = "true" && $PROCESS = "p2pool" ]]&& mine_Config
+	if pgrep $PROCESS &>/dev/null ; then
+        $bred; echo "$PROCESS already detected..." ;$off
+    else
+		missing_config_Monerod
+		$bgreen; echo "Starting $PROCESS..." ;$off
+		COMMANDS
+		error_Exit "Could not start $PROCESS"
+	fi
+}
+
+process_Stop_Template()
+{
+	if pgrep $PROCESS &>/dev/null ; then
+		COMMANDS
+	else
+		$white; echo -n "$PROCESS: "
+		$bred; echo "not online" ;$off
+	fi
+}
+
+process_Start()
+{
+	COMMANDS()
+	{
+		missing_systemd_"$NAME_FUNC"
+		prompt_Sudo ; error_Sudo
+		sudo systemctl start monero-bash-$SERVICE
+	}
+	process_start_Template
+}
+
+process_Stop()
+{
+	COMMANDS()
+	{
+		$ired; echo "Stopping $PROCESS gracefully..." ;$off
+		prompt_Sudo ; error_Sudo
+		sudo systemctl stop monero-bash-$SERVICE &
+		for i in {1..30} ;do
+			if [[ "$i" = "30" ]]; then
+				echo
+				print_Error "$PROCESS not responding, killing..."
+				process_Kill
+			fi
+			if pgrep $PROCESS &>/dev/null ;then
+				echo -n "."
+			else
+				echo "."
+				break
+			fi
+			sleep 1
+		done
+	}
+	process_stop_Template
+}
+
+process_Kill()
+{
+	COMMANDS()
+	{
+		$ired; echo "Killing $PROCESS..."
+		killall $PROCESS
+		if [[ $? = 0 ]]; then
+			$white; echo "$PROCESS killed"
+		else
+			print_Error "$PROCESS was not killed"
+		fi
+	}
+	process_stop_Template
+}
+
+process_Full()
+{
+	case $PROCESS in
+		monerod) COMMANDS(){ "$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;} ;;
+		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel 2;} ;;
+		xmrig) COMMANDS(){ sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
+	esac
+	process_start_Template
+}
