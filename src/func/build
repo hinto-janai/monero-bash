@@ -23,7 +23,7 @@ build_Config()
 {
 	prompt_Sudo ; error_Sudo
 	safety_HashList
-	sudo cp -r "$installDirectory/config" "$config"
+	sudo -u "$USER" cp -r "$installDirectory/config" "$config"
 }
 
 build_Bin()
