@@ -37,7 +37,6 @@ safety_Root
 safety_Deps
 safety_LinuxFolders
 safety_Home
-safety_User
 
 # Installation
 if [[ $FIRST_TIME = "true" ]]; then
@@ -48,6 +47,7 @@ fi
 # even more safety checks
 if [[ $FIRST_TIME != "true" ]]; then
 	safety_UsrLocalShare
+	safety_User
 	safety_DotMoneroBash
 	missing_Wallets
 	missing_config_Folder
