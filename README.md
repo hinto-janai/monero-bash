@@ -62,6 +62,7 @@ cd monero-bash &&
 
 <details>
 <summary>Click for command usage</summary>
+
 ```
 monero-bash usage:            monero-bash <option> <more options>
 
@@ -103,7 +104,6 @@ integrity                     check hash integrity of monero-bash
 
 help                          show this help message
 ```
-
 </details>
 
 ## FAQ
