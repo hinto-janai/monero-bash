@@ -98,6 +98,7 @@ upgrade_Post()
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
+	sudo chown -R $USER "$installDirectory"
 	tmp_Del
 	error_Exit "Could not cleanup tmp folder"
 	if [[ "$INSTALL" = "true" ]]; then

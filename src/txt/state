@@ -19,3 +19,6 @@ P2POOL_OLD="true"
 
 # gpg
 VERIFY_GPG="false"
+
+# user
+INSTALLED_USER=""

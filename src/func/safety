@@ -11,7 +11,7 @@ safety_DotMoneroBash()
 		Yes()
 		{
 			QUIET_HASH_LIST
-			build_DefaultDotMoneroBash
+			build_DotMoneroBash
 		}
 		No(){ echo "Exiting..." ;exit;}
 		prompt_YESno
@@ -82,4 +82,13 @@ safety_Deps()
 	elif [[ ! -e "/usr/bin/sed" || ! -e "/usr/bin/awk" || ! -e "/usr/bin/grep" || ! -e "/usr/bin/tail" || ! -e "/usr/bin/head" ]]; then
 		print_Error_Exit "Basic GNU tools not found!"
 	fi
+}
+
+# monero-bash only supports 1 user
+safety_User()
+{
+	if [[ "$INSTALLED_USER" != "$USER" ]]; then
+		printf "\033[1;31mmonero-bash error: "
+		printf "\033[0mOnly this user is allowed: "
+		printf "\033[1;37m$INSTALLED_USER\n"
 }
