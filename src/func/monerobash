@@ -124,9 +124,13 @@ $bred; echo "#                monero-bash installation complete                #
 $bred; echo "###################################################################"
 $bwhite; echo -n "monero-bash path: " ;$white; echo "$dotMoneroBash"
 $white; echo -n "Data: "
-[[ "$alreadyFoundDataPath" = "true" ]]&& echo "$HOME/.bitmonero"
-[[ "$inputData" = "" ]]&& echo "$bitMonero"
-[[ "$inputData" != "" ]]&& echo "$inputData"
+if [[ "$alreadyFoundDataPath" = "true" ]]; then
+	echo "$HOME/.bitmonero"
+elif [[ "$inputData" != "" ]]; then
+	echo "$inputData"
+else
+	echo "$bitMonero"
+fi
 echo "Configs: $config"
 echo "Wallets: $wallets"
 echo
