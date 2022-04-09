@@ -13,18 +13,16 @@
 ## About
 monero-bash is a wrapper/manager for:
 
-* `monerod`
-* `monero-wallet-cli`
-* `xmrig`
-* `p2pool`
+* [`monerod`](https://github.com/monero-project/monero)
+* [`monero-wallet-cli`](https://github.com/monero-project/monero)
+* [`xmrig`](https://github.com/xmrig/xmrig)
+* [`p2pool`](https://github.com/SChernykh/p2pool)
 
 monero-bash automates these programs into interactive prompts and `linux-like` commands
 
----
+***Installing `monero-bash` and mining on P2Pool in 35 seconds:***
 
-Installing `monero-bash` and mining on P2Pool with XMRig in ***45 seconds:***
-
-https://user-images.githubusercontent.com/101352116/162113926-f78571df-add8-46fe-9398-99d07697a297.mp4
+https://user-images.githubusercontent.com/101352116/162543357-eec04f6b-b650-440d-92fd-7932aeac5385.mp4
 
 [This project was a community funded CCS Proposal, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
 

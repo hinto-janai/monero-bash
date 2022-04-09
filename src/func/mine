@@ -35,6 +35,8 @@ mine_Config()
     $bred; echo "###########################################################"
     $bred; echo "#            monero-bash mining configuration             #"
     $bred; echo "###########################################################"
+
+	# wallet + daemon ip + pool ip + mini config
 	$bwhite; printf "WALLET ADDRESS: " ;$off
 	read WALLET_INTERACTIVE
 	$bwhite; printf "DAEMON IP [default - 127.0.0.1]: " ;$off
@@ -45,6 +47,10 @@ mine_Config()
 	Yes(){ MINI="true" ;}
 	No(){ MINI="false" ;}
 	prompt_YESno
+	$bwhite; printf "P2Pool Log Level (0-6) [default - 2]: " ;$off
+	read LOG
+
+	# confirm user input
 	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET_INTERACTIVE"
 	$bblue; printf "DAEMON IP: " ;$off
 	if [[ "$IP" = "" ]]; then
@@ -62,7 +68,16 @@ mine_Config()
 	fi
 	$bblue; printf "P2POOL MINI: " ;$off
 		echo "$MINI"
+	$bblue; printf "P2POOL LOG LEVEL: " ;$off
+	if [[ "$LOG" = "" ]]; then
+		echo "2"
+		LOG="2"
+	else
+		echo "$LOG"
+	fi
 	$bwhite; printf "Use these settings? (Y/n) "
+
+	# set user input if yes, exit if no
 	Yes()
 	{
 		prompt_Sudo ; error_Sudo
@@ -71,20 +86,22 @@ mine_Config()
 
 	    define_P2Pool
 		if [[ "$MINI" = "true" ]]; then
-			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel 2 --mini"
+			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel $LOG --mini"
 		else
-			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel 2"
+			export COMMAND="$binP2Pool/p2pool --host $IP --wallet $WALLET_INTERACTIVE --loglevel $LOG"
 		fi
 	    systemd_Template
 
 		echo "Editing monero-bash.conf..."
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET\"@" "$config/monero-bash.conf"
+		sudo sed -i "s@.*LOG_LEVEL.*@LOG_LEVEL=\"$LOG\"@" "$config/monero-bash.conf"
 		echo "Editing xmrig.json..."
 		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET\",@" "$xmrigConf"
 		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
 		sudo sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
 		PRODUCE_HASH_LIST
+		echo
 		$bgreen; echo "Mining configuration complete"
 		$white; echo -n "To get started: "
 		$bwhite; echo "monero-bash mine start"

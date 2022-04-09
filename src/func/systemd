@@ -18,6 +18,7 @@ After=network.target
 User=$USER
 Group=$USER
 Type=simple
+EnvironmentFile=$config/monero-bash.conf
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
 Restart=always
@@ -50,7 +51,7 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool --host $DAEMON_IP --wallet $WALLET --loglevel 2 --mini"
+	local COMMAND="$binP2Pool/p2pool"
 	systemd_Template
 }
 
