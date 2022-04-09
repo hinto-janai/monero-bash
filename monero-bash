@@ -4,24 +4,24 @@
 scriptPath="$(realpath $0)"
 installDirectory="$(dirname "$scriptPath")"
 
-# check for monero-bash source files
-if [[ $installDirectory == *"/monero-bash" ]]; then
-	cd "$installDirectory"
-	source "$installDirectory/src/source"
-	if [[ $? != "0" ]]; then
-		[[ $varMissing = "true" ]]&& printf "\033[1;37mVariables not sourced\n"
-		[[ $funcMissing = "true" ]]&& printf "\033[1;37mFunctions not sourced\n"
-        [[ $stateMissing = "true" ]]&& printf "\033[1;37mmonero-bash state file missing\n"
-		[[ $debugMissing = "true" ]]&& printf "\033[1;37mmonero-bash debug file missing\n"
-		[[ $hashlistMissing = "true" ]]&& printf "\033[1;37mmonero-bash hashlist file missing\n"
-		printf "\033[0;31mExiting for safety...\n"
-		exit
-	fi
-else
+# check if script is in monero-bash folder
+if [[ $installDirectory != *"/monero-bash" ]]; then
 	printf "\033[1;31mExecuting monero-bash while it isn't in the /monero-bash/ folder is DANGEROUS\n"
 	printf "\033[0;31mExiting for safety...\n"
 	exit
 fi
+
+# source files, exit on failure
+cd "$installDirectory"
+source "$installDirectory/src/source"
+[[ $? != "0" ]]&& printf "\033[1;31mMONERO BASH: SOURCING ERROR\n" && exit
+case true in
+	$varMissing) printf "\033[1;31mONERO BASH: Variables not sourced\n" ;exit;;
+	$funcMissing) printf "\033[1;31mONERO BASH: Functions not sourced\n" ;exit;;
+	$stateMissing) printf "\033[1;31mONERO BASH: state file missing\n" ;exit;;
+	$debugMissing) printf "\033[1;31mONERO BASH: debug file missing\n" ;exit;;
+	$hashlistMissing) printf "\033[1;31mONERO BASH: hashlist file missing\n" ;exit;;
+esac
 
 # DEBUG COMMAND - read /src/debug for more info
 if [[ $1 = "DEBUG_04e3be9" ]]; then
