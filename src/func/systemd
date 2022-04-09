@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # functions FOR CREATING systemd .service files
+
 systemd_Template()
 {
 $white; echo "Creating $SERVICE..."
@@ -51,7 +52,11 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool"
+	if [[ "$MINI" = "true" ]];then
+		local COMMAND="$binP2Pool/p2pool --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL" --mini"
+	else
+		local COMMAND="$binP2Pool/p2pool --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL""
+	fi
 	systemd_Template
 }
 

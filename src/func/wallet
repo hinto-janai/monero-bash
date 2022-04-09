@@ -26,7 +26,7 @@ wallet_Start()
 
 wallet_Create()
 {
-	# wallet name
+	# WALLET NAME
 	while true ;do
 		$white; echo -n "New wallet name: " ;$iwhite
 		read walletName
@@ -36,7 +36,8 @@ wallet_Create()
 			break
 		fi
 	done
-	# wallet pass
+
+	# WALLET PASS
 	while true; do
 		$white; echo -n "Wallet password: "
 		read -s walletPassword
@@ -50,7 +51,8 @@ wallet_Create()
 			$ired; echo "Password was not the same!"
 		fi
 	done
-	# wallet seed language
+
+	# WALLET SEED LANGUAGE
 	while true ;do
 		$ired; echo "Monero seed languages:" ;$iwhite
 		print_SeedLanguageList

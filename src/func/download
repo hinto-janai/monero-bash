@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 #
-# Download Function
-# the "$DUMP" variable is reused in
-# "version_" functions so there only needs
-# to be 1 http request for all the data needed
+# download function
+
 download_Template()
 {
+	# if API fetch fails, use HTML dump instead
 	API="true"
 	HTML="false"
 	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
@@ -16,10 +15,14 @@ download_Template()
 		API="false"
 		HTML="true"
 	fi
+
+	# if downloading Monero, just use the getmonero.org link
 	if [[ $downloadMonero = "true" ]]; then
 		LINK="https://downloads.getmonero.org/cli/linux64"
 		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		code_Wget
+
+	# else, search for the download link on github
 	else
 		if [[ "$HTML" = "true" ]]; then
 			LINK="$(echo "$DUMP" \

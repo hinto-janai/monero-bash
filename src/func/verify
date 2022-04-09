@@ -23,7 +23,7 @@ verify_Template()
 		hashLink="https://www.getmonero.org/downloads/hashes.txt"
 	fi
 
-	# setting of variables (and gpg)
+	# setting of the tmp file variables (and gpg)
 	tarFile="$(ls "$tmp")"
 	if [[ $VERIFY_GPG = "true" ]]; then
 		wget -q -P "$tmpHash" "$hashLink"
