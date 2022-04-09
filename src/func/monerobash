@@ -88,6 +88,7 @@ trap "trap_No" 1 2 3 6 15
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
 	permission_InstallDirectory
+	sudo chown -R "$USER:$USER" "$installDirectory"
 	sudo mv "$installDirectory" "/usr/local/share/"
 	installDirectory="/usr/local/share/monero-bash"
 	hashlist="$installDirectory/src/txt/hashlist"
