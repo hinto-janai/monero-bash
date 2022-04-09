@@ -79,7 +79,7 @@ process_Kill()
 process_Full()
 {
 	case $PROCESS in
-		monerod) COMMANDS(){ "$binMonero/monerod" --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" ;} ;;
+		monerod) COMMANDS(){ "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
 		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel 2;} ;;
 		xmrig) COMMANDS(){ sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
 	esac

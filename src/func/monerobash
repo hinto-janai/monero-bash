@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
-#						monero-bash Functions
-#
+# monero-bash install/uninstall functions
 
 ###################################################   START OF INSTALL FUNCTION   ###################################################
 monerobash_Install()
@@ -101,13 +100,12 @@ trap "trap_No" 1 2 3 6 15
 # Setting Data Path
 	print_GreenHash "Setting data path"
 	if [[ $alreadyFoundDataPath = "true" ]]; then
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$HOME/.bitmonero"\"@" "$config/monero-bash.conf"
+		sed -i "s@.*data-dir.*@data-dir="$HOME/.bitmonero"@" "$config/monerod.conf"
 	elif [[ $inputData != "" ]]; then
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$inputData"\"@" "$config/monero-bash.conf"
+		sed -i "s@.*data-dir.*@data-dir="$inputData"@" "$config/monerod.conf"
 	else
-		sed -i "s@.*DATA_PATH.*@DATA_PATH=\""$bitMonero"\"@" "$config/monero-bash.conf"
+		sed -i "s@.*data-dir.*@data-dir="$bitMonero"@" "$config/monerod.conf"
 	fi
-	source "$config/monero-bash.conf"
 
 # First Time = false , Set Installed User , chown
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
@@ -125,7 +123,9 @@ $bred; echo "###################################################################
 $bred; echo "#                monero-bash installation complete                #"
 $bred; echo "###################################################################"
 $bwhite; echo -n "monero-bash path: " ;$white; echo "$dotMoneroBash"
-$white; echo "Data: $DATA_PATH"
+$white; echo -n "Data: "
+[[ "$alreadyFoundDataPath" = "true" ]]&& echo "$bitMonero"
+[[ "$inputData" = "" ]]&& echo "$inputData"
 echo "Configs: $config"
 echo "Wallets: $wallets"
 echo

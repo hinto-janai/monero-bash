@@ -35,7 +35,7 @@ sudo systemctl daemon-reload
 systemd_Monero()
 {
 	define_Monero
-	local COMMAND="$binMonero/monerod --data-dir "$DATA_PATH" --config-file "$config/monerod.conf" --non-interactive"
+	local COMMAND="$binMonero/monerod --config-file "$config/monerod.conf" --non-interactive"
 	systemd_Template
 }
 
