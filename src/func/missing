@@ -4,9 +4,7 @@
 
 missing_Template()
 {
-	if [[ ! -e "$DIR" ]]; then
-		print_Error_Exit "$THING missing!"
-	fi
+	[[ ! -e "$DIR" ]]&& print_Error_Exit "$THING missing!"
 }
 
 missing_Monero()
