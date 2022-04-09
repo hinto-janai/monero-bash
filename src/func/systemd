@@ -7,9 +7,9 @@ $white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
 [[ -e /tmp/monero-bash-service.* ]]&& sudo rm -rf /tmp/monero-bash-service.*
-mktemp -d /tmp/monero-bash-service.XXXXXXX &>/dev/null
+mktemp -d /tmp/monero-bash-service.XXXXXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
-sudo chmod -R 600 "$tmpService"
+sudo chmod -R 700 "$tmpService"
 
 cat > $tmpService/$SERVICE <<EOM
 [Unit]
@@ -29,7 +29,7 @@ Restart=always
 WantedBy=multi-user.target
 EOM
 
-sudo chmod -R 600 "$tmpService"
+sudo chmod -R 700 "$tmpService"
 sudo mv -f "$tmpService/$SERVICE" "$sysd"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
