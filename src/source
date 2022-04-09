@@ -21,3 +21,6 @@ source "$installDirectory/src/txt/state" 2>/dev/null || stateMissing="true"
 if [[ ! -f  "$installDirectory/src/txt/hashlist" ]]; then
 	hashlistMissing="true"
 fi
+
+# monero-bash config
+source "$config/monero-bash.conf" 2>/dev/null || configMissing="true"

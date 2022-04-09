@@ -57,6 +57,7 @@ missing_config_Folder()
 		print_Error "$config missing!"
 		echo "Creating default config folder..."
 		build_Config
+		source "$config/monero-bash.conf" 2>/dev/null
 	fi
 }
 
@@ -86,6 +87,7 @@ missing_config_MoneroBash()
 {
 	local conf="monero-bash.conf"
 	missing_config_Template
+	source "$config/monero-bash.conf" 2>/dev/null
 }
 
 
