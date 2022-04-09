@@ -65,7 +65,7 @@ missing_config_Template()
 	if [[ ! -f "$config/$conf" ]]; then
 		print_Error "$conf missing!"
 		echo "Creating default $conf..."
-		sudo cp "$installDirectory/config/$conf" "$config/$conf"
+		sudo -u "$USER" cp "$installDirectory/config/$conf" "$config/$conf"
 	fi
 }
 

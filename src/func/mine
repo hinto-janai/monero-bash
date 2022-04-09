@@ -106,6 +106,7 @@ mine_Config()
 		systemd_P2Pool
 
 		echo "Editing xmrig.json..."
+		missing_config_XMRig
 		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET_INTERACTIVE\",@" "$xmrigConf"
 		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
 		sudo sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
