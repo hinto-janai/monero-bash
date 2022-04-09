@@ -112,7 +112,7 @@ if [[ $options = "true" ]]; then
 				xmrig) define_XMRig;process_Start ;;
 				p2pool) define_P2Pool;process_Start ;;
 				all) mine_Start ;;
-				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
@@ -122,7 +122,7 @@ if [[ $options = "true" ]]; then
 				xmrig) define_XMRig;process_Stop ;;
 				p2pool) define_P2Pool;process_Stop ;;
 				all) mine_Stop ;;
-				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
@@ -132,7 +132,7 @@ if [[ $options = "true" ]]; then
 				xmrig) define_XMRig;process_Restart ;;
 				p2pool) define_P2Pool;process_Restart ;;
 				all) mine_Restart ;;
-				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 				*) error_Unknown ;;
 			esac
 			;;
@@ -142,7 +142,7 @@ if [[ $options = "true" ]]; then
 				xmrig) define_XMRig;process_Kill ;;
 				p2pool) define_P2Pool;process_Kill ;;
 				all) mine_Kill ;;
-				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
+				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 				*) error_Unknown ;;
 			esac
 			;;

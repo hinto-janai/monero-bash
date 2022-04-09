@@ -128,7 +128,6 @@ missing_systemd_Template()
 		print_Error "${SERVICE} missing!"
 		echo "Creating default..."
 		systemd_"$NAME_FUNC"
-		process_Start
 	fi
 }
 
