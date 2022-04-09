@@ -85,11 +85,6 @@ mine_Config()
 		trap "trap_No" 1 2 3 6 15
 
 	    define_P2Pool
-		if [[ "$MINI" = "true" ]]; then
-			export COMMAND="$binP2Pool/p2pool --mini"
-		else
-			export COMMAND="$binP2Pool/p2pool"
-		fi
 	    systemd_Template
 
 		echo "Editing monero-bash.conf..."
