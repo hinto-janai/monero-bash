@@ -6,7 +6,10 @@ systemd_Template()
 $white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
-[[ -e /tmp/monero-bash-service.* ]]&& sudo rm -rf /tmp/monero-bash-service.*
+
+if find /tmp/monero-bash-service.* &>/dev/null ; then
+    rm -rf /tmp/monero-bash-service.*
+fi
 mktemp -d /tmp/monero-bash-service.XXXXXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
 sudo chmod -R 700 "$tmpService"
@@ -31,6 +34,7 @@ EOM
 
 sudo chmod -R 700 "$tmpService"
 sudo mv -f "$tmpService/$SERVICE" "$sysd"
+sudo rm -r "$tmpService"
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
 }
