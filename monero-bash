@@ -16,11 +16,11 @@ cd "$installDirectory"
 source "$installDirectory/src/source"
 [[ $? != "0" ]]&& printf "\033[1;31mMONERO BASH: SOURCING ERROR\n" && exit
 case true in
-	$varMissing) printf "\033[1;31mONERO BASH: Variables not sourced\n" ;exit;;
-	$funcMissing) printf "\033[1;31mONERO BASH: Functions not sourced\n" ;exit;;
-	$stateMissing) printf "\033[1;31mONERO BASH: state file missing\n" ;exit;;
-	$debugMissing) printf "\033[1;31mONERO BASH: debug file missing\n" ;exit;;
-	$hashlistMissing) printf "\033[1;31mONERO BASH: hashlist file missing\n" ;exit;;
+	$varMissing) printf "\033[1;31mMONERO BASH: Variables not sourced\n" ;exit;;
+	$funcMissing) printf "\033[1;31mMONERO BASH: Functions not sourced\n" ;exit;;
+	$stateMissing) printf "\033[1;31mMONERO BASH: state file missing\n" ;exit;;
+	$debugMissing) printf "\033[1;31mMONERO BASH: debug file missing\n" ;exit;;
+	$hashlistMissing) printf "\033[1;31mMONERO BASH: hashlist file missing\n" ;exit;;
 esac
 
 # DEBUG COMMAND - read /src/debug for more info
