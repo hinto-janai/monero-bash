@@ -105,20 +105,13 @@ if [[ $options = "true" ]]; then
 		status) status_All ;;
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
-		mine)
-			case $2 in
-				config) mine_Config ;;
-				start) mine_Start ;;
-				stop) mine_Stop ;;
-				restart) mine_Restart ;;
-				*) error_Unknown ;;
-			esac
-			;;
+		config) mine_Config ;;
 		start)
 			case $2 in
 				daemon) define_Monero;process_Start ;;
 				xmrig) define_XMRig;process_Start ;;
 				p2pool) define_P2Pool;process_Start ;;
+				all) mine_Start ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
@@ -128,6 +121,7 @@ if [[ $options = "true" ]]; then
 				daemon) define_Monero;process_Stop ;;
 				xmrig) define_XMRig;process_Stop ;;
 				p2pool) define_P2Pool;process_Stop ;;
+				all) mine_Stop ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
@@ -137,6 +131,7 @@ if [[ $options = "true" ]]; then
 				daemon) define_Monero;process_Restart ;;
 				xmrig) define_XMRig;process_Restart ;;
 				p2pool) define_P2Pool;process_Restart ;;
+				all) mine_Restart ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
@@ -146,6 +141,7 @@ if [[ $options = "true" ]]; then
 				daemon) define_Monero;process_Kill ;;
 				xmrig) define_XMRig;process_Kill ;;
 				p2pool) define_P2Pool;process_Kill ;;
+				all) mine_Kill ;;
 				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 				*) error_Unknown ;;
 			esac
