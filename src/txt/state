@@ -22,6 +22,3 @@ VERIFY_GPG="false"
 
 # user
 INSTALLED_USER=""
-
-# p2pool
-if [[ $MINI"
