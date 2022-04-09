@@ -36,6 +36,14 @@ mine_Restart()
 	mine_Start
 }
 
+mine_Kill()
+{
+	prompt_Sudo ; error_Sudo
+	define_Monero;process_Kill
+	define_P2Pool;process_Kill
+	define_XMRig;process_Kill
+}
+
 mine_Config()
 {
     $bred; echo "###########################################################"
