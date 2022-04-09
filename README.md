@@ -1,4 +1,4 @@
-# monero-bash (WORK IN PROGRESS)
+# monero-bash
 >a wrapper for monero written in bash, for Linux
 
 ![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
@@ -58,45 +58,39 @@ cd monero-bash &&
 <summary>Click for command usage</summary>
 
 ```
-monero-bash usage:            monero-bash <option> <more options>
+monero-bash                       the default command will open wallet selection
+uninstall                         uninstall monero-bash and remove /.monero-bash/
 
-monero-bash                   the default command will open wallet selection
-uninstall                     uninstall monero-bash and remove /.monero-bash/
+install <all/pkg>                 install <all> or a specific package
+install <all/pkg> verbose         print detailed download information
+remove <all/pkg>                  remove <all> or a specific package
+remove <all/pkg> force            forcefully remove a package
 
-install <pkg>                 install <all> or a specific package
-install <pkg> verbose         print detailed download information
-remove <pkg>                  remove <all> or a specific package
-remove <pkg> force            forcefully remove a package
+update                            only CHECK for updates
+upgrade <all/pkg>                 upgrade <all> or a specific package
+upgrade <all/pkg> force           forcefully upgrade packages
+upgrade <all/pkg> verbose         print detailed download information
+version                           print installed package versions
 
-update                        only CHECK for updates
-upgrade <pkg>                 upgrade <all> or a specific package
-upgrade <pkg> force           forcefully upgrade packages
-upgrade <pkg> verbose         print detailed download information
-version                       print installed package versions
+config                            configure MINING settings
+start <all/daemon/xmrig/p2pool>   start process detached (background)
+stop <all/daemon/xmrig/p2pool>    gracefully stop the process
+kill <all/daemon/xmrig/p2pool>    forcefully kill the process
+full <daemon/xmrig/p2pool>        start the process attached (foreground)
+watch <daemon/xmrig/p2pool>       watch live output of process
 
-mine config                   configure mining settings
-mine start                    start monerod, xmrig, p2pool in the background
-mine stop                     stop monerod, xmrig, p2pool
+gpg                               toggle GPG verification of binaries
+gpg import                        import GPG keys of package authors
+backup                            encrypt and backup your /wallets/
+decrypt                           decrypt backup.tar.gpg
 
-start <daemon/xmrig/p2pool>   start process detached (background)
-stop <daemon/xmrig/p2pool>    gracefully stop the process
-kill <daemon/xmrig/p2pool>    forcefully kill the process
-full <daemon/xmrig/p2pool>    start the process attached (foreground)
+status                            print status of all running processes
+list                              list wallets
+size                              show size of monero-bash folders
+price                             fetch price data from cryptocompare.com API
+integrity                         check hash integrity of monero-bash
 
-watch <daemon/xmrig/p2pool>   watch live output of process
-
-gpg                           toggle GPG verification of binaries
-gpg import                    import GPG keys of package authors
-backup                        encrypt and backup your /wallets/
-decrypt                       decrypt backup.tar.gpg
-
-status                        print status of all running processes
-list                          list wallets
-size                          show size of monero-bash folders
-price                         fetch price data from cryptocompare.com API
-integrity                     check hash integrity of monero-bash
-
-help                          show this help message
+help                              show this help message
 ```
 </details>
 

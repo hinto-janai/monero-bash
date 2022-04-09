@@ -113,7 +113,7 @@ mine_Config()
 		echo
 		$bgreen; echo "Mining configuration complete"
 		$white; echo -n "To get started: "
-		$bwhite; echo "monero-bash mine start"
+		$bwhite; echo "monero-bash start all"
 	}
 	No(){ echo "Exiting..." ;exit;}
 	prompt_YESno
