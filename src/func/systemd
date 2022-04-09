@@ -10,7 +10,7 @@ mktemp -d /tmp/monero-bash-service.XXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
 sudo chmod -R 600 "$tmpService"
 
-sudo sh -c "cat <<EOM > $tmpService/$SERVICE
+cat <<EOM > $tmpService/$SERVICE
 [Unit]
 Description=$SERVICE
 After=network.target
@@ -26,7 +26,7 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
-EOM"
+EOM
 
 sudo chmod -R 600 "$tmpService"
 sudo mv -f "$tmpService/$SERVICE" "$sysd"
