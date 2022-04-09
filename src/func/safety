@@ -8,7 +8,12 @@ safety_DotMoneroBash()
     if [[ ! -d "$dotMoneroBash" ]]; then
         print_Error "$HOME/.monero-bash/ folder not found!"
         $white; printf "Build a default folder? (Y/n) "
-		Yes(){ build_DotMoneroBash ;}
+		Yes()
+		{
+			build_DotMoneroBash
+			$bwhite; echo -n "$dotMoneroBash "
+			$off; echo "built"
+		}
 		No(){ echo "Exiting..." ;exit;}
 		prompt_YESno
     fi
