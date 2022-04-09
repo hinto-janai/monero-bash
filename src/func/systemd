@@ -53,9 +53,9 @@ systemd_P2Pool()
 {
 	define_P2Pool
 	if [[ "$MINI" = "true" ]];then
-		local COMMAND="$binP2Pool/p2pool --host \"\$DAEMON_IP\" --wallet \"\$WALLET\" --loglevel \"\$LOG_LEVEL\" --mini"
+		local COMMAND="$binP2Pool/p2pool --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL --mini"
 	else
-		local COMMAND="$binP2Pool/p2pool --host \"\$DAEMON_IP\" --wallet \"\$WALLET\" --loglevel \"\$LOG_LEVEL\""
+		local COMMAND="$binP2Pool/p2pool --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
 	fi
 	systemd_Template
 }
