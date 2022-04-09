@@ -25,7 +25,7 @@ build_Config()
 {
 	prompt_Sudo ; error_Sudo
 	safety_HashList
-	sudo -u "$USER" cp -r "$installDirectory/config" "$config"
+	cp -r "$installDirectory/config" "$config"
 	permission_DotMoneroBash
 }
 
