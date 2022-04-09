@@ -84,11 +84,12 @@ mine_Config()
 		safety_HashList
 		trap "trap_No" 1 2 3 6 15
 
-		systemd_P2Pool
 		echo "Editing monero-bash.conf..."
 		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET_INTERACTIVE\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*LOG_LEVEL.*@LOG_LEVEL=\"$LOG\"@" "$config/monero-bash.conf"
+		systemd_P2Pool
+
 		echo "Editing xmrig.json..."
 		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET_INTERACTIVE\",@" "$xmrigConf"
 		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
