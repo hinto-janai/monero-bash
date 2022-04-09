@@ -67,9 +67,9 @@ upgrade_Template()
 		sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/config" "$installDirectory"
 		sudo cp -f "$old/src/txt/state" "$state"
+	else
 
 	# INSTALL FOR EVERYTHING ELSE
-	else
 		trap "trap_No" 1 2 3 6 15
 		if [[ -d "$DIRECTORY" ]]; then
 			sudo mv -f "$DIRECTORY" "$old"
