@@ -179,7 +179,11 @@ monerobash_Uninstall()
 		print_GreenHash "Checking monero-bash hash integrity"
 		QUIET_HASH_LIST
 		trap "trap_No" 1 2 3 6 15
+
+		# stop all running processes
 		mine_Stop
+
+		# removal
 		print_WhiteHash "Removing $dotMoneroBash"
 			sudo rm -rf "$dotMoneroBash"
 			error_Exit "$dotMoneroBash not removed"

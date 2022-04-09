@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 #
-# the upgrade function is made out many seperate functions as having
-# all the commands back to back was getting unreadable (even for me)
-#
-# rough order of operations:
+# order of operations:
 # 1. upgrade_Pre
 # 2. Download, Verify, Extract, Move
 # 3. Edit the local state file
@@ -37,11 +34,13 @@ upgrade_Pre()
 
 upgrade_Template()
 {
+	# DOWNLOAD
 	print_GreenHash "Downloading [$NAME_PRETTY]"
 	download_Template
 	print_WhiteHash "Verifying"
 	verify_Template
 
+	# EXTRACT
 	print_WhiteHash "Extracting"
 	tar -xf "$tmp/$tarFile" -C "$tmp"
 	code_Tar
@@ -49,12 +48,15 @@ upgrade_Template()
 	error_Exit "rm - error"
 	$white; echo -n "$NAME_PRETTY: " ;$igreen; echo "EXTRACTED" ;$off
 
+	# TEMP FOLDER FOR OLD PACKAGE
 	folderName="$(ls $tmp)"
 	if [[ -d "$old" ]]; then
 		sudo rm -rf "$old"
 		error_Exit "Could not remove old folder"
 	fi
 	mkdir -p "$old"
+
+	# INSTALL FOR MONERO_BASH
 	if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
 		trap "trap_Old" 1 2 3 6 15
 		sudo cp "$installDirectory/monero-bash" "$old"
@@ -65,6 +67,8 @@ upgrade_Template()
 		sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/config" "$installDirectory"
 		sudo cp -f "$old/src/txt/state" "$state"
+
+	# INSTALL FOR EVERYTHING ELSE
 	else
 		trap "trap_No" 1 2 3 6 15
 		if [[ -d "$DIRECTORY" ]]; then
@@ -91,6 +95,7 @@ upgrade_Post()
 {
 	trap "trap_Post" 1 2 3 6 15
 	sudo rm -rf "$old"
+
 	print_WhiteHash "Updating local state"
 	version_Template
 	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
@@ -99,6 +104,7 @@ upgrade_Post()
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	sudo chown -R "$USER:$USER" "$installDirectory"
+
 	tmp_Del
 	error_Exit "Could not cleanup tmp folder"
 	if [[ "$INSTALL" = "true" ]]; then
