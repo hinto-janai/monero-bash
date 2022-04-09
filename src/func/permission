@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# unix permissions for folders
+
+permission_DotMoneroBash()
+{
+	sudo chmod 700 "$dotMoneroBash"
+	sudo chown -R "$USER" "$dotMoneroBash"
+}
+
+permission_InstallDirectory()
+{
+	sudo chmod 700 "$installDirectory"
+	sudo chown -R "$USER" "$installDirectory"
+}
+
+permission_Systemd()
+{
+	[[ -f /etc/systemd/system/monero-bash-monerod.service ]]&& sudo chmod 600 /etc/systemd/system/monero-bash-monerod.service
+	[[ -f /etc/systemd/system/monero-bash-p2pool.service ]]&& sudo chmod 600 /etc/systemd/system/monero-bash-p2pool.service
+	[[ -f /etc/systemd/system/monero-bash-xmrig.service ]]&& sudo chmod 600 /etc/systemd/system/monero-bash-xmrig.service
+}
+
+permission_All()
+{
+	permission_InstallDirectory
+	permission_Systemd
+	permission_DotMoneroBash
+}

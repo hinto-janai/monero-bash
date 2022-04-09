@@ -59,6 +59,13 @@ done
 	prompt_Sudo
 	error_Exit "Sudo is required to install monero-bash"
 
+# Already installed check
+if [[ -e /usr/local/share/monero-bash ]]; then
+	$bred; echo "ERROR: "
+	$bwhite; echo "/usr/local/share/monero-bash already detected!"
+	exit
+fi
+
 # Hash Integrity Check
 	print_GreenHash "Checking monero-bash hash integrity"
 	CHECK_HASH_LIST
@@ -80,6 +87,8 @@ trap "trap_No" 1 2 3 6 15
 
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
+	permission_InstallDirectory
+	sudo chown -R "$USER:$USER" "$installDirectory"
 	sudo mv "$installDirectory" "/usr/local/share/"
 	installDirectory="/usr/local/share/monero-bash"
 	hashlist="$installDirectory/src/txt/hashlist"
@@ -111,8 +120,7 @@ trap "trap_No" 1 2 3 6 15
 sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
 sudo sed -i "s@.*INSTALLED_USER.*@INSTALLED_USER=\"$USER\"@" "$state"
 sudo chown -R "$USER:$USER" "$installDirectory"
-sudo chmod 700 "$installDirectory"
-sudo chmod 700 "$dotMoneroBash"
+permission_All
 PRODUCE_HASH_LIST
 
 #
@@ -152,6 +160,7 @@ monerobash_Uninstall()
 	$bwhite; echo -n "(y/N) "
 	Yes()
 	{
+		# if wallets are found, warn user
 		walletCount="$(ls "$wallets" | wc -l)"
 		if [[ "$walletCount" > "0" ]]; then
 			echo
@@ -166,20 +175,23 @@ monerobash_Uninstall()
 		fi
 		prompt_Sudo
 		error_Exit "Sudo is needed to uninstall"
+
+		# 10 second countdown
 		for i in {10..0} ;do
-		tput sc
-		if [[ "$i" = "0" ]]; then
-			$bred; echo -n "Uninstalling..."
-		else
-			$bred; echo -n "Uninstalling in $i..."
-		fi
-		sleep 1
-		if [[ $i != "0" ]]; then
-		tput rc;tput el
-		else
-		echo;echo
-		fi
+			tput sc
+			if [[ "$i" = "0" ]]; then
+				$bred; echo -n "Uninstalling..."
+			else
+				$bred; echo -n "Uninstalling in $i..."
+			fi
+			sleep 1
+			if [[ $i != "0" ]]; then
+				tput rc;tput el
+			else
+				echo;echo
+			fi
 		done
+
 		# Hash Integrity Check
 		print_GreenHash "Checking monero-bash hash integrity"
 		QUIET_HASH_LIST
