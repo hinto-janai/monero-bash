@@ -25,6 +25,12 @@ process_Stop_Template()
 	fi
 }
 
+process_Restart()
+{
+	process_Stop
+	process_Start
+}
+
 process_Start()
 {
 	COMMANDS()

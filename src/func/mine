@@ -30,6 +30,12 @@ mine_Stop()
 	define_XMRig;process_Stop
 }
 
+mine_Restart()
+{
+	mine_Stop
+	mine_Start
+}
+
 mine_Config()
 {
     $bred; echo "###########################################################"
