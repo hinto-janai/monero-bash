@@ -129,6 +129,7 @@ upgrade_Monero()
 {
 	local downloadMonero="true"
 	define_Monero
+	prompt_Sudo;error_Sudo
 	upgrade_Pre
 	local downloadMonero="false"
 }
@@ -136,6 +137,7 @@ upgrade_Monero()
 upgrade_MoneroBash()
 {
 	define_MoneroBash
+	prompt_Sudo;error_Sudo
 	upgrade_Pre
 }
 
@@ -143,6 +145,7 @@ upgrade_XMRig()
 {
 	local downloadXMRig="true"
 	define_XMRig
+	prompt_Sudo;error_Sudo
 	upgrade_Pre
 	local downloadXMRig="false"
 }
@@ -151,6 +154,7 @@ upgrade_P2Pool()
 {
 	local downloadP2Pool="true"
 	define_P2Pool
+	prompt_Sudo;error_Sudo
 	upgrade_Pre
 	local downloadP2Pool="false"
 }

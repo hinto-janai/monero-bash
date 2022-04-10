@@ -24,7 +24,6 @@ process_Start_Template()
 
 process_Stop_Template()
 {
-	prompt_Sudo;error_Sudo
 	if pgrep $PROCESS &>/dev/null ; then
 		COMMANDS
 	else
@@ -75,6 +74,7 @@ process_Stop()
 
 process_Kill()
 {
+	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
 		$ired; echo "Killing $PROCESS..."
