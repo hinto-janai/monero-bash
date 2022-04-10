@@ -3,6 +3,7 @@
 
 status_All()
 {
+	prompt_Sudo;error_Sudo
 	print_MoneroBashTitle
 	wallet_Count
 	wallet_List
@@ -41,7 +42,7 @@ status_P2Pool()
 	{
 		$bwhite; echo -n "WALLET: "
 		$white; echo "$WALLET"
-		journalctl -u monero-bash-p2pool --output cat | tail -n4
+		journalctl -u "$SERVICE" --output cat | tail -n4
 	}
 	status_Template
 }
@@ -49,6 +50,6 @@ status_P2Pool()
 status_XMRig()
 {
 	define_XMRig
-	EXTRA_STATS(){ journalctl -u monero-bash-xmrig --output cat | tail -n4 ;}
+	EXTRA_STATS(){ sudo journalctl -u "$SERVICE" --output cat | tail -n4 ;}
 	status_Template
 }
