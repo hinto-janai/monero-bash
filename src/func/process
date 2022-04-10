@@ -3,8 +3,13 @@
 
 process_Start_Template()
 {
+	# CHECK IF MISSING BINARY
 	missing_"$NAME_FUNC"
+
+	# CONFIGURE P2POOL (only once)
 	[[ "$MINE_UNCONFIGURED" = "true" && $PROCESS = "p2pool" ]]&& mine_Config
+
+	# START PROCESS IF NOT ALREADY ALIVE
 	if pgrep $PROCESS &>/dev/null ; then
         $bred; echo "$PROCESS already detected..." ;$off
     else
@@ -73,7 +78,6 @@ process_Kill()
 	{
 		$ired; echo "Killing $PROCESS..."
 		sudo systemctl kill "$PROCESS"
-		killall "$PROCESS"
 		if [[ $? = 0 ]]; then
 			$white; echo "$PROCESS killed"
 		else
@@ -87,7 +91,8 @@ process_Full()
 {
 	case $PROCESS in
 		monerod) COMMANDS(){ "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
-		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel "$LOG_LEVEL";} ;;
+		p2pool) COMMANDS(){ "$binP2Pool/p2pool" \
+			--config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel "$LOG_LEVEL" "$EXTRA_FLAGS";} ;;
 		xmrig) COMMANDS(){ sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
 	esac
 	process_Start_Template

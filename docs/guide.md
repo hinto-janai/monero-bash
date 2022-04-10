@@ -68,9 +68,9 @@ If you have a custom xmrig or p2pool `config.json`, rename them to:
 
 and put them in the `.monero-bash/config` folder
 
-P2Pool does not use the xmrig.json wallet!
-
 [Check here for xmrig configuration](https://xmrig.com/docs/miner/config)
+
+P2Pool does not use the xmrig.json wallet!
 
 Please setup P2Pool with `monero-bash config` or edit `.monero-bash/config/monero-bash.conf`
 ```
@@ -84,8 +84,8 @@ AUTO_UPDATE="false"              check for all updates on wallet open
 PRICE_API_IP_WARNING="true"      warn when checking price API
 
 # p2pool
-DAEMON_IP="127.0.0.1"            monerod IP to connect to (default: 127.0.0.1/localhost) 
-WALLET=""                        wallet address to mine to
+DAEMON_IP="127.0.0.1"            monerod IP to connect to (default: 127.0.0.1/localhost)
+WALLET=""                        wallet address to send payouts to
 LOG_LEVEL="2"                    log/console output level (default: 2, options are 0-6)
 EXTRA_FLAGS="--mini"             any extra flags to start p2pool with (default: --mini)
 ```

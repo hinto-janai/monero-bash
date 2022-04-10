@@ -8,7 +8,6 @@
 # pre-installed on Arch, Debian, Fedora, etc.
 #
 # and so, this is a (poor man's) version using tools most Linux distros have
-# (bash + coreutils + procps + journalctl/systemd)
 
 watch_Template()
 {

@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 #
 # all-in-one mining functions
-# combines multiple functions
-# that invoke monerod,xmrig,p2pool
-#
+# invoked by "monero-bash <cmd> all"
 
 mine_Start()
 {
@@ -24,7 +22,7 @@ mine_Start()
 
 mine_Stop()
 {
-	prompt_Sudo ; error_Sudo
+	prompt_Sudo;error_Sudo
 	define_Monero;process_Stop
 	define_P2Pool;process_Stop
 	define_XMRig;process_Stop
@@ -38,7 +36,7 @@ mine_Restart()
 
 mine_Kill()
 {
-	prompt_Sudo ; error_Sudo
+	prompt_Sudo;error_Sudo
 	define_Monero;process_Kill
 	define_P2Pool;process_Kill
 	define_XMRig;process_Kill
@@ -64,7 +62,7 @@ mine_Config()
 	$bwhite; printf "P2Pool Log Level (0-6) [default - 2]: " ;$off
 	read LOG
 
-	# confirm user input
+	# repeat & confirm user input
 	$bblue; printf "WALLET ADDRESS: " ;$off; echo "$WALLET_INTERACTIVE"
 	$bblue; printf "DAEMON IP: " ;$off
 	if [[ "$IP" = "" ]]; then
@@ -98,19 +96,23 @@ mine_Config()
 		safety_HashList
 		trap "trap_No" 1 2 3 6 15
 
+		# monero-bash.conf
 		echo "Editing monero-bash.conf..."
-		sudo sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
-		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET_INTERACTIVE\"@" "$config/monero-bash.conf"
-		sudo sed -i "s@.*LOG_LEVEL.*@LOG_LEVEL=\"$LOG\"@" "$config/monero-bash.conf"
-		[[ "$MINI" = "true" ]]&& sudo sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"--mini\"@" "$config/monero-bash.conf"
-		[[ "$MINI" != "true" ]]&& sudo sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"\"@" "$config/monero-bash.conf"
+		sudo -u "$USER" sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
+		sudo -u "$USER" sed -i "s@.*WALLET.*@WALLET=\"$WALLET_INTERACTIVE\"@" "$config/monero-bash.conf"
+		sudo -u "$USER" sed -i "s@.*LOG_LEVEL.*@LOG_LEVEL=\"$LOG\"@" "$config/monero-bash.conf"
+		[[ "$MINI" = "true" ]]&& sudo -u "$USER" sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"--mini\"@" "$config/monero-bash.conf"
+		[[ "$MINI" != "true" ]]&& sudo -u "$USER" sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"\"@" "$config/monero-bash.conf"
 		systemd_P2Pool
 
+		# xmrig.json
 		echo "Editing xmrig.json..."
 		missing_config_XMRig
-		sudo sed -i "s@.*user.*@            \"user\": \"$WALLET_INTERACTIVE\",@" "$xmrigConf"
-		sudo sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
-		sudo sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
+		sudo -u "$USER" sed -i "s@.*user.*@            \"user\": \"$WALLET_INTERACTIVE\",@" "$xmrigConf"
+		sudo -u "$USER" sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
+
+		# state file
+		sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"false\"@" "$state"
 		PRODUCE_HASH_LIST
 		echo
 		$bgreen; echo "Mining configuration complete"

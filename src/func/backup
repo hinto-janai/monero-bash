@@ -3,11 +3,14 @@
 
 backup_Wallets()
 {
+	# CHECK IF FILE ALREADY EXISTS
 	if [[ -f "$dotMoneroBash/backup.tar" ]]; then
 		print_Error_Exit "$dotMoneroBash/backup.tar already exists!"
 	elif [[ -f "$dotMoneroBash/backup.tar.gpg" ]]; then
 		print_Error_Exit "$dotMoneroBash/backup.tar.gpg already exists!"
 	fi
+
+	# PASSWORD-BASED AES256 ENCRYPTION (output file: backup.tar.gpg)
 	$bblue; echo "Backing up wallets..." ;$off
 	cd "$dotMoneroBash"
 	tar -cf "backup.tar" "wallets" --transform 's/wallets/backup/'

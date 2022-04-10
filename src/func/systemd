@@ -7,13 +7,17 @@ $white; echo "Creating $SERVICE..."
 prompt_Sudo
 error_Sudo
 
+# DELETE PREVIOUS SERVICES IF FOUND
 if find /tmp/monero-bash-service.* &>/dev/null ; then
     rm -rf /tmp/monero-bash-service.*
 fi
+
+# MAKE 700 PERMISSION TMP FOLDER
 mktemp -d /tmp/monero-bash-service.XXXXXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
 sudo chmod -R 700 "$tmpService"
 
+# CREATE SERVICE FILE
 cat > $tmpService/$SERVICE <<EOM
 [Unit]
 Description=$SERVICE
@@ -32,6 +36,7 @@ Restart=always
 WantedBy=multi-user.target
 EOM
 
+# INSTALL SERVICE IN /etc/systemd/system/, RELOAD SYSTEMD
 sudo chmod -R 700 "$tmpService"
 sudo mv -f "$tmpService/$SERVICE" "$sysd"
 sudo rm -r "$tmpService"
@@ -57,7 +62,7 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$EXTRA_FLAGS"
+	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$EXTRA_FLAGS"
 	systemd_Template
 }
 

@@ -26,7 +26,7 @@ prompt_NOyes()
 
 prompt_Sudo()
 {
-	sudo echo -n
+	sudo -u "$USER" echo -n
 }
 
 prompt_PriceAPI_IP()

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-#						messages for when hash/gpg is incorrect
-#
+# messages for when hash/gpg is incorrect
+
 compromised_Hash()
 {
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -12,7 +12,7 @@ compromised_Hash()
     $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
-	echo "EXITING FOR SAFTEY..."
+	$bred; echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
 }
@@ -28,7 +28,7 @@ compromised_GPG()
 	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
 	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
 	$bwhite; echo "gpgSTDOUT: " ;$off; echo "$gpgSTDOUT"
-	echo "EXITING FOR SAFTEY..."
+	$bred; echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit
 }

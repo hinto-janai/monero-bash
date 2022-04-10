@@ -10,7 +10,6 @@ monerobash_Install()
 	$bred; echo "###################################################################"
 
 while true ;do
-	# Data Path
 	# $HOME/.bitmonero check
 	if [[ -d "$HOME/.bitmonero" ]]; then
 		$ired; echo "Monero data folder detected"
@@ -59,7 +58,7 @@ done
 	prompt_Sudo
 	error_Exit "Sudo is required to install monero-bash"
 
-# Already installed check
+# Check if already installed
 if [[ -e /usr/local/share/monero-bash ]]; then
 	$bred; echo "ERROR: "
 	$bwhite; echo "/usr/local/share/monero-bash already detected!"
@@ -90,6 +89,8 @@ trap "trap_No" 1 2 3 6 15
 	permission_InstallDirectory
 	sudo chown -R "$USER:$USER" "$installDirectory"
 	sudo mv "$installDirectory" "/usr/local/share/"
+
+# Resetting variables
 	installDirectory="/usr/local/share/monero-bash"
 	hashlist="$installDirectory/src/txt/hashlist"
 	state="$installDirectory/src/txt/state"

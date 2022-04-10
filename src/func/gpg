@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
 # gpg functions for:
-#	-toggling $VERIFY_GPG
-# 	-importing gpgs keys and
+#	-toggling $VERIFY_GPG="false/true"
+# 	-importing gpgs keys
 #	-checking LOCAL/ONLINE diff
 #	-overwriting LOCAL keys with ONLINE
 
@@ -17,8 +17,8 @@ gpg_Toggle()
 		prompt_Sudo ; error_Sudo
 		safety_HashList
 		trap "trap_GPG" 1 2 3 6 15
-		[[ $VERIFY_GPG = "true" ]]&& sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state" && PRODUCE_HASH_LIST
-		[[ $VERIFY_GPG != "true" ]]&& sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"true\"@" "$state" && PRODUCE_HASH_LIST
+		[[ $VERIFY_GPG = "true" ]]&& sudo -u "$USER" sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state" && PRODUCE_HASH_LIST
+		[[ $VERIFY_GPG != "true" ]]&& sudo -u "$USER" sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"true\"@" "$state" && PRODUCE_HASH_LIST
 		source "$state"
 		echo -n "GPG Verify is now "
 		[[ $VERIFY_GPG = "true" ]]&&$bgreen&& echo "ON"
