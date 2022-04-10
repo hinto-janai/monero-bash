@@ -3,6 +3,8 @@
 
 process_Start_Template()
 {
+	prompt_Sudo;error_Sudo
+
 	# CHECK IF MISSING BINARY
 	missing_"$NAME_FUNC"
 
@@ -41,7 +43,6 @@ process_Start()
 	COMMANDS()
 	{
 		missing_systemd_"$NAME_FUNC"
-		prompt_Sudo ; error_Sudo
 		sudo systemctl start "$SERVICE"
 	}
 	process_Start_Template
@@ -52,7 +53,6 @@ process_Stop()
 	COMMANDS()
 	{
 		$ired; echo "Stopping $PROCESS gracefully..." ;$off
-		prompt_Sudo ; error_Sudo
 		sudo systemctl stop "$SERVICE" &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
@@ -74,6 +74,7 @@ process_Stop()
 
 process_Kill()
 {
+	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
 		$ired; echo "Killing $PROCESS..."
