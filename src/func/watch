@@ -11,7 +11,11 @@
 
 watch_Template()
 {
-	watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
+	if [[ "$SERVICE" = "monero-bash-xmrig.service" ]]; then
+		sudo watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
+	else
+		watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
+	fi
 }
 
 watch_Monero()
