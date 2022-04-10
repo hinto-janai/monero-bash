@@ -7,16 +7,19 @@ remove_Template()
 		$white; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
 	else
+		# sudo, trap
 		prompt_Sudo;error_Sudo
 		echo;safety_HashList
 		trap "trap_No" 1 2 3 6 15
 
+		# removal
 		print_RedHash "Removing [$NAME_PRETTY]"
 		print_WhiteHash "${DIRECTORY}..."
 		sudo rm -rf "$DIRECTORY"
 		print_WhiteHash "${SERVICE}..."
 		sudo rm "$sysd/$SERVICE"
 
+		# updating state file
 		print_WhiteHash "Updating local state"
 		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\"\"@" "$state"
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"

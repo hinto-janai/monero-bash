@@ -17,6 +17,7 @@
 
 upgrade_Pre()
 {
+	# CHECK IF ALREADY INSTALLED/UP TO DATE
 	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
@@ -24,6 +25,8 @@ upgrade_Pre()
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date" ;$off
 	else
+
+		# ELSE, START UPGRADE
 		prompt_Sudo ; error_Sudo
 		echo ; safety_HashList
 		trap "trap_Tmp" 1 2 3 6
@@ -54,6 +57,9 @@ upgrade_Template()
 		sudo rm -rf "$old"
 		error_Exit "Could not remove old folder"
 	fi
+
+	# SAFETY CHECKS
+	[[ "$folderName" = "" || "$tmp" = "" ]]&& echo "EMPTY TMP VARIABLE, EXITING FOR SAFETY" &&exit
 	mkdir -p "$old"
 
 	# INSTALL FOR MONERO_BASH
@@ -98,6 +104,7 @@ upgrade_Post()
 	trap "trap_Post" 1 2 3 6 15
 	sudo rm -rf "$old"
 
+	# STATE UPDATE
 	print_WhiteHash "Updating local state"
 	version_Template
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
@@ -107,6 +114,7 @@ upgrade_Post()
 	PRODUCE_HASH_LIST
 	sudo chown -R "$USER:$USER" "$installDirectory"
 
+	# CLEANUP, FINAL MESSAGE
 	tmp_Del
 	error_Exit "Could not cleanup tmp folder"
 	if [[ "$INSTALL" = "true" ]]; then

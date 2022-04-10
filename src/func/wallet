@@ -4,8 +4,13 @@
 #
 wallet_Start()
 {
+	# CHECK IF MISSING BINARY
 	missing_MoneroCLI
+
+	# AUTO MONEROD START
 	[[ $AUTO_START_DAEMON = "true" ]]&& define_Monero&&process_Start
+
+	# IF CREATING WALLET, CREATE
 	if [[ $createWallet = "true" ]]; then
 		"$binMonero/monero-wallet-cli" \
 			--generate-new-wallet "$wallets/$walletName" \
@@ -14,12 +19,16 @@ wallet_Start()
 			--config-file "$config/monero-wallet-cli.conf"
 			error_Exit "Could not start monero-wallet-cli"
 	else
+
+	# ELSE, START NORMALLY
 		"$binMonero/monero-wallet-cli" \
 			--wallet-file "$wallets/$walletSelection" \
 			--password "$walletPassword" \
 			--config-file "$config/monero-wallet-cli.conf"
 			error_Exit "Could not start monero-wallet-cli"
 	fi
+
+	# AUTO MONEROD STOP
 	[[ $AUTO_STOP_DAEMON = "true" ]]&& define_Monero&&process_Stop
 }
 
@@ -73,6 +82,8 @@ wallet_Create()
 				*) $ired; echo "error: invalid input" ;;
 			esac
 		done
+
+	# START monero-wallet-cli WITH CREATION VARIABLES SET
 	$bred; echo "Starting Monero..." ;$off
 	createWallet="true"
 	wallet_Start

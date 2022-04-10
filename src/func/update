@@ -14,6 +14,7 @@ update_Template()
 		PRODUCE_HASH_LIST &>/dev/null
 	else
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+		PRODUCE_HASH_LIST &>/dev/null
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date"
 	fi
@@ -57,7 +58,7 @@ update_All()
         $ired; echo -n "monero-bash upgrade all "
         $white; echo "to upgrade all"
         $white; echo -n "or: "
-        $ired; echo -n "monero-bash upgrade <name> "
+        $ired; echo -n "monero-bash upgrade <package> "
         $white; echo "to upgrade something specific"
         $off
     fi

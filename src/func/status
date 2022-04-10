@@ -41,7 +41,8 @@ status_P2Pool()
 	{
 		$bwhite; echo -n "WALLET: "
 		$white; echo "$WALLET"
-	journalctl -u monero-bash-p2pool --output cat | tail -n4 ;}
+		journalctl -u monero-bash-p2pool --output cat | tail -n4
+	}
 	status_Template
 }
 

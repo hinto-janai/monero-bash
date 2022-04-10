@@ -16,14 +16,14 @@ download_Template()
 		HTML="true"
 	fi
 
-	# if downloading Monero, just use the getmonero.org link
+	# if downloading Monero, just use the static getmonero.org link
 	if [[ $downloadMonero = "true" ]]; then
 		LINK="https://downloads.getmonero.org/cli/linux64"
 		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		code_Wget
+	else
 
 	# else, search for the download link on github
-	else
 		if [[ "$HTML" = "true" ]]; then
 			LINK="$(echo "$DUMP" \
 				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \

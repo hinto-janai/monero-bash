@@ -21,8 +21,8 @@ trap_Post()
 	trap_Template
 	error_Trap "WRITING TO STATE BEFORE EXITING"
 	version_Template
-	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
-	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
+	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	sudo chown -R $USER "$installDirectory"
@@ -45,11 +45,11 @@ trap_MoneroBash()
 {
 	trap_Template
 	error_Trap "RESTORING OLD MONERO-BASH"
-	sudo mv -f "$old/monero-bash" "$installDirectory"
-	sudo mv -fr "$old/src" "$installDirectory"
-	sudo mv -fr "$old/config" "$installDirectory"
-	sudo mv -fr "$old/gpg" "$installDirectory"
-	sudo mv -f "$old/src/txt/state" "$state"
+	sudo -u "$USER" mv -f "$old/monero-bash" "$installDirectory"
+	sudo -u "$USER" mv -fr "$old/src" "$installDirectory"
+	sudo -u "$USER" mv -fr "$old/config" "$installDirectory"
+	sudo -u "$USER" mv -fr "$old/gpg" "$installDirectory"
+	sudo -u "$USER" mv -f "$old/src/txt/state" "$state"
 	tmp_Del
 	exit
 }
@@ -69,7 +69,7 @@ trap_GPG()
 {
 	trap_Template
 	error_Trap "REVERTING GPG TOGGLE"
-	sudo sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state"
+	sudo -u "$USER" sed -i "s@.*VERIFY_GPG=.*@VERIFY_GPG=\"false\"@" "$state"
 	PRODUCE_HASH_LIST
 	exit
 }

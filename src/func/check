@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
-#
-#						Check "x" (used by update command)
-#						for fetching internet stats
+# check (fetch) internet data
+
 check_Price()
 {
 	prompt_PriceAPI_IP
 	$ired; echo "XMR price: " ;$off
 	wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR" \
-	| tr -d "{\"}" | tr "," "\n" | sed 's/:/: /g'
+		| tr -d "{\"}" | tr "," "\n" | sed 's/:/: /g'
 	echo
 	$bred; echo "XMR: 1"
 }

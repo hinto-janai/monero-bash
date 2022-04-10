@@ -24,7 +24,7 @@ monero-bash automates these programs into interactive prompts and `linux-like` c
 
 https://user-images.githubusercontent.com/101352116/162543357-eec04f6b-b650-440d-92fd-7932aeac5385.mp4
 
-[This project was a community funded CCS Proposal, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
+[This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
 * 📦 `PACKAGE MANAGER` downloading, verifying and upgrading of packages
