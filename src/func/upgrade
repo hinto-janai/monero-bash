@@ -60,13 +60,15 @@ upgrade_Template()
 	if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
 		trap "trap_Old" 1 2 3 6 15
 		sudo cp "$installDirectory/monero-bash" "$old"
-		sudo cp -r "$installDirectory/src" "$old"
-		sudo cp -r "$installDirectory/config" "$old"
+		sudo cp -fr "$installDirectory/src" "$old"
+		sudo cp -fr "$installDirectory/config" "$old"
+		sudo cp -fr "$installDirecotry/gpg" "$old"
 		trap "trap_MoneroBash" 1 2 3 6 15
-		sudo cp -f "$tmp/$folderName/monero-bash" "$installDirectory"
+		sudo cp -fr "$tmp/$folderName/monero-bash" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/config" "$installDirectory"
-		sudo cp -f "$old/src/txt/state" "$state"
+		sudo cp -fr "$tmp/$folderName/gpg" "$installDirectory"
+		sudo cp -fr "$old/src/txt/state" "$state"
 	else
 
 	# INSTALL FOR EVERYTHING ELSE

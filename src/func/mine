@@ -103,6 +103,7 @@ mine_Config()
 		sudo sed -i "s@.*WALLET.*@WALLET=\"$WALLET_INTERACTIVE\"@" "$config/monero-bash.conf"
 		sudo sed -i "s@.*LOG_LEVEL.*@LOG_LEVEL=\"$LOG\"@" "$config/monero-bash.conf"
 		[[ "$MINI" = "true" ]]&& sudo sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"--mini\"@" "$config/monero-bash.conf"
+		[[ "$MINI" != "true" ]]&& sudo sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"\"@" "$config/monero-bash.conf"
 		systemd_P2Pool
 
 		echo "Editing xmrig.json..."
