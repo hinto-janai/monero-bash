@@ -77,7 +77,7 @@ process_Kill()
 	COMMANDS()
 	{
 		$ired; echo "Killing $PROCESS..."
-		sudo systemctl kill "$PROCESS"
+		sudo systemctl kill "$SERVICE"
 		if [[ $? = 0 ]]; then
 			$white; echo "$PROCESS killed"
 		else
