@@ -3,8 +3,6 @@
 
 process_Start_Template()
 {
-	prompt_Sudo;error_Sudo
-
 	# CHECK IF MISSING BINARY
 	missing_"$NAME_FUNC"
 
@@ -40,6 +38,7 @@ process_Restart()
 
 process_Start()
 {
+	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
 		missing_systemd_"$NAME_FUNC"
@@ -50,6 +49,7 @@ process_Start()
 
 process_Stop()
 {
+	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
 		$ired; echo "Stopping $PROCESS gracefully..." ;$off
