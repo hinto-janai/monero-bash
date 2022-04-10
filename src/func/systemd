@@ -41,7 +41,7 @@ sudo -u "$USER" chmod -R 700 "$tmpService"
 sudo -u "$USER" mv -f "$tmpService/$SERVICE" "$sysd"
 sudo -u "$USER" rm -r "$tmpService"
 $white; echo "Reloading systemd..."
-sudo -u "$USER" systemctl daemon-reload
+sudo systemctl daemon-reload
 }
 
 systemd_Monero()
