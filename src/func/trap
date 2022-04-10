@@ -48,6 +48,7 @@ trap_MoneroBash()
 	sudo mv -f "$old/monero-bash" "$installDirectory"
 	sudo mv -fr "$old/src" "$installDirectory"
 	sudo mv -fr "$old/config" "$installDirectory"
+	sudo mv -fr "$old/gpg" "$installDirectory"
 	sudo mv -f "$old/src/txt/state" "$state"
 	tmp_Del
 	exit
