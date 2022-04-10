@@ -54,7 +54,7 @@ upgrade_Template()
 	# TEMP FOLDER FOR OLD PACKAGE
 	folderName="$(ls $tmp)"
 	if [[ -d "$old" ]]; then
-		sudo rm -rf "$old"
+		sudo -u "$USER" rm -rf "$old"
 		error_Exit "Could not remove old folder"
 	fi
 
@@ -102,7 +102,7 @@ upgrade_Template()
 upgrade_Post()
 {
 	trap "trap_Post" 1 2 3 6 15
-	sudo rm -rf "$old"
+	sudo -u "$USER" rm -rf "$old"
 
 	# STATE UPDATE
 	print_WhiteHash "Updating local state"
@@ -112,7 +112,7 @@ upgrade_Post()
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
-	sudo chown -R "$USER:$USER" "$installDirectory"
+	sudo -u "$USER" chown -R "$USER:$USER" "$installDirectory"
 
 	# CLEANUP, FINAL MESSAGE
 	tmp_Del
