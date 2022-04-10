@@ -58,7 +58,7 @@ mine_Config()
 	# wallet + daemon ip + pool ip + mini config
 	$bwhite; printf "WALLET ADDRESS: " ;$off
 	read WALLET_INTERACTIVE
-	$bwhite; printf "DIFFICULTY [default - 200,000]: " ;$off
+	$bwhite; printf "DIFFICULTY [default - 200000]: " ;$off
 	read DIFFICULTY
 	$bwhite; printf "DAEMON IP [default - 127.0.0.1]: " ;$off
 	read IP
