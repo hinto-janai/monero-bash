@@ -59,34 +59,34 @@ upgrade_Template()
 	# INSTALL FOR MONERO_BASH
 	if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
 		trap "trap_Old" 1 2 3 6 15
-		sudo cp "$installDirectory/monero-bash" "$old"
-		sudo cp -fr "$installDirectory/src" "$old"
-		sudo cp -fr "$installDirectory/config" "$old"
-		sudo cp -fr "$installDirectory/gpg" "$old"
+		sudo -u "$USER" cp "$installDirectory/monero-bash" "$old"
+		sudo -u "$USER" cp -fr "$installDirectory/src" "$old"
+		sudo -u "$USER" cp -fr "$installDirectory/config" "$old"
+		sudo -u "$USER" cp -fr "$installDirectory/gpg" "$old"
 		trap "trap_MoneroBash" 1 2 3 6 15
-		sudo cp -fr "$tmp/$folderName/monero-bash" "$installDirectory"
-		sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
-		sudo cp -fr "$tmp/$folderName/config" "$installDirectory"
-		sudo cp -fr "$tmp/$folderName/gpg" "$installDirectory"
-		sudo cp -fr "$old/src/txt/state" "$state"
+		sudo -u "$USER" cp -fr "$tmp/$folderName/monero-bash" "$installDirectory"
+		sudo -u "$USER" cp -fr "$tmp/$folderName/src" "$installDirectory"
+		sudo -u "$USER" cp -fr "$tmp/$folderName/config" "$installDirectory"
+		sudo -u "$USER" cp -fr "$tmp/$folderName/gpg" "$installDirectory"
+		sudo -u "$USER" cp -fr "$old/src/txt/state" "$state"
 	else
 
 	# INSTALL FOR EVERYTHING ELSE
 		trap "trap_No" 1 2 3 6 15
 		if [[ -d "$DIRECTORY" ]]; then
-			sudo mv -f "$DIRECTORY" "$old"
+			sudo -u "$USER" mv -f "$DIRECTORY" "$old"
 		fi
 		if [[ -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
 			error_Trap "RESTORING OLD [$NAME_PRETTY]"
-			sudo mv -f "$old/$FOLDER" "$DIRECTORY"
+			sudo -u "$USER" mv -f "$old/$FOLDER" "$DIRECTORY"
 			exit
 		fi
-		sudo mkdir -p "$DIRECTORY"
-		sudo mv "$tmp/$folderName"/* "$DIRECTORY"
+		sudo -u "$USER" mkdir -p "$DIRECTORY"
+		sudo -u "$USER" mv "$tmp/$folderName"/* "$DIRECTORY"
 		if [[  -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
 			error_Trap "RESTORING OLD [$NAME_PRETTY]"
-			sudo rm -fr "$DIRECTORY"
-			sudo mv -f "$old/$FOLDER" "$DIRECTORY"
+			sudo -u "$USER" rm -fr "$DIRECTORY"
+			sudo -u "$USER" mv -f "$old/$FOLDER" "$DIRECTORY"
 			exit
 		fi
 	fi
@@ -100,8 +100,8 @@ upgrade_Post()
 
 	print_WhiteHash "Updating local state"
 	version_Template
-	sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
-	sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
+	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
