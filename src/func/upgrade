@@ -62,7 +62,7 @@ upgrade_Template()
 		sudo cp "$installDirectory/monero-bash" "$old"
 		sudo cp -fr "$installDirectory/src" "$old"
 		sudo cp -fr "$installDirectory/config" "$old"
-		sudo cp -fr "$installDirecotry/gpg" "$old"
+		sudo cp -fr "$installDirectory/gpg" "$old"
 		trap "trap_MoneroBash" 1 2 3 6 15
 		sudo cp -fr "$tmp/$folderName/monero-bash" "$installDirectory"
 		sudo cp -fr "$tmp/$folderName/src" "$installDirectory"
