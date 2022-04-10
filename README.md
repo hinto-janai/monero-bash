@@ -236,11 +236,6 @@ is where packages live, with respective folder names
 ---
 </details>
 
-</details>
-
-<details>
-<summary>Other notes</summary>
-
 <details>
 <summary>How to uninstall?</summary>
 
