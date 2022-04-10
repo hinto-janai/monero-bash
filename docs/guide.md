@@ -131,7 +131,7 @@ Here are all the folders/files created by `monero-bash` after installation:
 ├─ monero-bash-gpg.XXXXXXXXX
 ├─ monero-bash-service.XXXXXXXXX
 ```
-*note:* monero-bash `/tmp/` folders are deleted after upgrade, and wiped if computer is rebooted. All files created by `monero-bash` have `700/600` permissions or are within folders that have those permissions. This is to prevent any other user from reading the data.
+*note:* monero-bash `/tmp/` folders are deleted after upgrade, and wiped if computer is rebooted. All files created by `monero-bash` have `700/600` permissions or are within folders that have those permissions. This is to prevent any other user from reading the data. After uninstalling monero-bash, all these files are deleted with the exception of `$HOME/.bitmonero` if you picked that as your data directory.
 
 ## systemd
 monero-bash creates and uses systemd service files to control:
@@ -143,3 +143,5 @@ If you'd like to directly invoke a program:
 * `monero-bash full <daemon/p2pool/xmrig>`
 
 This will launch them in the current terminal
+
+`monerod` and `p2pool` are ran as the $USER, and `xmrig` is ran as `root`. If you'd like to change that, edit `/etc/systemd/system/monero-bash-xmrig.service`. Note that without root, your hashrate may be low.
