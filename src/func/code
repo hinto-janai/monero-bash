@@ -4,15 +4,15 @@ code_Wget()
 {
 	case $? in
 		0) : ;;
-		1) error_Exit "wget - Generic error" ;;
-		2) error_Exit "wget - Parse error" ;;
-		3) error_Exit "wget - File I/O error" ;;
-		4) error_Exit "wget - Network failure" ;;
-		5) error_Exit "wget - SSL verification failure" ;;
-		6) error_Exit "wget - Username/password authentication failure" ;;
-		7) error_Exit "wget - Protocol errors" ;;
-		8) error_Exit "wget - Rate limit" ;;
-		*) error_Exit "wget - Unknown error"
+		1) print_Error_Exit "wget - Generic error" ;;
+		2) print_Error_Exit "wget - Parse error" ;;
+		3) print_Error_Exit "wget - File I/O error" ;;
+		4) print_Error_Exit "wget - Network failure" ;;
+		5) print_Error_Exit "wget - SSL verification failure" ;;
+		6) print_Error_Exit "wget - Username/password authentication failure" ;;
+		7) print_Error_Exit "wget - Protocol errors" ;;
+		8) print_Error_Exit "wget - Rate limit" ;;
+		*) print_Error_Exit "wget - Unknown error"
 	esac
 }
 
@@ -20,8 +20,8 @@ code_Tar()
 {
 	case $? in
 		0) : ;;
-		1) error_Exit "tar - Some files differ" ;;
-		2) error_Exit "tar - Fatal error" ;;
-		*) error_Exit "tar - Unknown error"
+		1) print_Error_Exit "tar - Some files differ" ;;
+		2) print_Error_Exit "tar - Fatal error" ;;
+		*) print_Error_Exit "tar - Unknown error"
 	esac
 }

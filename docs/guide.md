@@ -23,6 +23,8 @@ Remember, you are using your own node to mine. The blockchain has to be fully sy
 <summary>Click to reveal full command usage</summary>
 
 ```
+monero-bash usage: monero-bash <option> <more options>
+
 monero-bash                       the default command will open wallet selection
 uninstall                         uninstall monero-bash and remove /.monero-bash/
 
