@@ -1,3 +1,7 @@
+# v1.1.0
+## Updates
+* `monero-bash restart <process>` command
+
 # v1.0.0
 ## Official Release
 * See the [main repo](https://github.com/hinto-janaiyo/monero-bash) for all information on monero-bash
