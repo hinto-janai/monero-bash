@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# Version Functions
-# fetchs latest version, defines it as a variable
+# order of operations:
+# 1. filter $DUMP variable (from "download_Template" function)
+# 2. find the proper version number
+# 3. save it as $NewVer variable
 
 # invoked by "download_Template" function, reuses the "$DUMP" variable
 version_Template()

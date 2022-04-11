@@ -2,7 +2,7 @@
 #
 # order of operations:
 # 1. upgrade_Pre
-# 2. Download, Verify, Extract, Move
+# 2. Download, Verify, Extract, Replace
 # 3. Edit the local state file
 # 4. Recreate the local hashlist
 # 5. upgrade_Post
