@@ -58,6 +58,8 @@ cd monero-bash &&
 <summary>Click for command usage</summary>
 
 ```
+monero-bash usage: monero-bash <option> <more options>
+
 monero-bash                       the default command will open wallet selection
 uninstall                         uninstall monero-bash and remove /.monero-bash/
 
