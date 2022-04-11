@@ -107,7 +107,7 @@ print_Error_Exit()
 	exit
 }
 
-# used for color coding sha256sum/gpg output (FOR UPGRADE FUNCTION)
+# used for color coding sha256sum/gpg output (FOR VERIFY FUNCTION)
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then

@@ -3,8 +3,13 @@
 # hash & GPG verification of binaries
 #
 # everyone has a slightly differently named sha256sum
-# file, with slightly different internal formatting.
-# makes this function a bit long.
+# file, with slightly different internal formatting
+# which makes this function a bit long.
+#
+# the order of operations is the same as the "download_Template" function
+# but instead it's downloading the SHA256SUM file and
+# filtering it to find the proper hash to compare against
+
 verify_Template()
 {
 	# api or html? (or are we downloading monero?)

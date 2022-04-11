@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 #
-# download function
+# order of operations:
+# 1. Send request to GitHub API
+# 2. Save output as $DUMP variable (to reuse later)
+# 3. GitHub will often rate-limit VPNs/Tor: if so, download HTML dump of regular link
+# 4. Filter output for latest release download
+# 5. wget the found download link
 
 download_Template()
 {
