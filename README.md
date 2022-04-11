@@ -76,6 +76,7 @@ config                            configure MINING settings
 start <all/daemon/xmrig/p2pool>   start process detached (background)
 stop <all/daemon/xmrig/p2pool>    gracefully stop the process
 kill <all/daemon/xmrig/p2pool>    forcefully kill the process
+restart <all/daemon/xmrig/p2pool> restart the process
 full <daemon/xmrig/p2pool>        start the process attached (foreground)
 watch <daemon/xmrig/p2pool>       watch live output of process
 
