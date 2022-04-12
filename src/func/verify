@@ -84,8 +84,8 @@ verify_Template()
 		fi
 		gpgSTDOUT="$(cat /tmp/monero-bash-gpg.*)"
 		if [[ "$gpgOK" != "true" ]]; then
-		LOCAL_HASH="$(sha256sum "$tmp/$tarFile" | awk '{print $1}' | tr -d " -")"
-		compromised_GPG
+			LOCAL_HASH="$(sha256sum "$tmp/$tarFile" | awk '{print $1}' | tr -d " -")"
+			compromised_GPG
 		fi
 	fi
 }
