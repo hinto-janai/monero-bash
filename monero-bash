@@ -66,27 +66,30 @@ if [[ $interactive = "true" ]]; then
 		update_All
 		echo
 	fi
+
+	# SHOW WALLETS, SELECT
 	$white; wallet_Count ; wallet_List ; echo
 	while true ;do
 		$white; echo -n "Pick wallet or "
-		$ired; echo -n "[new]"
+		$ired; echo -n "[new] "
+		$white; echo -n "or "
+		$ired; echo -n "[view-only]"
 		$white; echo -n ": "
 		read walletSelection
-		if [[ $walletSelection = "" ]]; then
-			$ired; echo "monero-bash error: empty input" ;$off
-			exit
-		fi
 		if [[ $walletList = *"$walletSelection"* ]]; then
 			$white; echo -n "Password: "
 			read -s walletPassword && echo
 			wallet_Start
 			break
-		elif [[ $walletSelection = "new" || $walletSelection = "New" || $walletSelection = "NEW" || $walletSelection = "[new]" || $walletSelection = "[New]" ]]; then
-			wallet_Create
-			break
-		else
-			$ired; echo "monero-bash error: wallet does not exist"
+		elif [[ $walletSelection = "" ]]; then
+			print_Error "empty input"
 		fi
+
+		# WALLET CREATION
+		case $walletSelection in
+			new|New|NEW|"[new]"|"[New]") wallet_Create ; break ;;
+			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
+			*) $ired; print_Error "wallet does not exist" ;;
 	done
 	exit
 fi

@@ -1,6 +1,8 @@
 # v1.1.0
 ## Updates
 * `monero-bash restart <process>` command
+* `monero-bash` now allows `view-only` wallet creation
+
 
 # v1.0.0
 ## Official Release
