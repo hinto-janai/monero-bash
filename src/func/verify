@@ -37,7 +37,13 @@ verify_Template()
 		sigFile="$hashFile"
 		hashSTDOUT="$(cat "$tmpHash/$hashFile")"
 
-	# xmrig author pls include the sig in the hash file
+	    # check if gpg key is imported
+	    if ! gpg --list-keys "$KEY_ID" &>/dev/null ;then
+	        $white; echo "Importing GPG key..."
+	        gpg_import_Template
+	    fi
+
+		# xmrig author pls include the sig in the hash file
 		if [[ $downloadXMRig = "true" ]]; then
 			if [[ $HTML = "true" ]]; then
 				sigLink="$(echo "$DUMP" \

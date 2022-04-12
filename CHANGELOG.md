@@ -5,8 +5,13 @@
 	- `monero-bash edit <process>` to edit systemd service files
 
 * **Wallet**
-	- `monero-bash` command now allows `view-only` wallet creation
+	- `monero-bash` command can create `view-only` wallets
 		- This requires the ***Main Address*** and ***Private Viewkey*** which can be get with the: `address` and `viewkey` commands while inside monero-wallet-cli
+
+* **GPG**
+	- if `monero-bash gpg` is on, keys will automatically be imported on installation/upgrade of package
+	- `monero-bash gpg <author/all>` to select which keys to import
+
 
 # v1.0.0
 ## Official Release
