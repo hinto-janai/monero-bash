@@ -6,8 +6,7 @@
 
 * **Wallet**
 	- `monero-bash` command now allows `view-only` wallet creation
-		- This requires the ***Main Address*** and ***Private Viewkey*** which can be get with the:
-		`address` and `viewkey` commands while inside monero-wallet-cli
+		- This requires the ***Main Address*** and ***Private Viewkey*** which can be get with the: `address` and `viewkey` commands while inside monero-wallet-cli
 
 # v1.0.0
 ## Official Release
