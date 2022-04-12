@@ -44,6 +44,21 @@ $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
 }
 
+systemd_Edit()
+{
+	if [[ $NAME_VER = "" ]]; then
+		print_Error "$NAME_PRETTY is not installed"
+	fi
+	prompt_Sudo;error_Sudo
+	if [[ $EDITOR = "" ]]; then
+		print_Error "EDITOR not found"
+		$white; echo "Pick one [nano, vim, emacs, etc]: "
+		read EDITOR
+	fi
+	sudo "$EDITOR" "$SERVICE"
+	[[ $? = 0 ]]&& sudo systemctl daemon-reload
+}
+
 systemd_Monero()
 {
 	define_Monero
