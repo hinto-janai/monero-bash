@@ -9,8 +9,8 @@
 		- This requires the ***Main Address*** and ***Private Viewkey*** which can be get with the: `address` and `viewkey` commands while inside monero-wallet-cli
 
 * **GPG**
-	- if `monero-bash gpg` is on, keys will automatically be imported on installation/upgrade of package
-	- `monero-bash gpg <author/all>` to select which keys to import
+	- If `monero-bash gpg` is toggled on, keys will automatically be imported on installation/upgrade of package
+	- `monero-bash gpg <author/package/all>` to select which keys to import manually
 
 
 # v1.0.0
