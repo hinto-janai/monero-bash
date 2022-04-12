@@ -81,9 +81,10 @@ kill <all/daemon/xmrig/p2pool>    forcefully kill the process
 restart <all/daemon/xmrig/p2pool> restart the process
 full <daemon/xmrig/p2pool>        start the process attached (foreground)
 watch <daemon/xmrig/p2pool>       watch live output of process
+edit <daemon/xmrig/p2pool>        edit systemd service file
 
 gpg                               toggle GPG verification of binaries
-gpg import                        import GPG keys of package authors
+gpg import <all/pkg>              import all GPG keys or specific package
 backup                            encrypt and backup your /wallets/
 decrypt                           decrypt backup.tar.gpg
 

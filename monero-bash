@@ -179,7 +179,16 @@ if [[ $options = "true" ]]; then
 		gpg)
 			case $2 in
 				"") gpg_Toggle ;;
-				import) gpg_import_All ;;
+				import)
+					case $3 in
+						all|All|ALL) gpg_import_All ;;
+						binaryfate|Binaryfate|monero|Monero|MONERO) gpg_import_Monero ;;
+						hinto|hinto-janaiyo|Hinto|monero-bash|Monero-Bash) gpg_import_MoneroBash ;;
+						xmrig|XMRig|XMRIG|Xmrig) gpg_import_XMRig ;;
+						SChernykh|schernykh|SCHERNYKH|p2pool|p2p|P2P|P2Pool|P2POOL) gpg_import_P2Pool ;;
+						*) error_Unknown ;;
+					esac
+					;;
 				*) error_Unknown ;;
 			esac
 			;;

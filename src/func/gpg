@@ -30,6 +30,8 @@ gpg_Toggle()
 
 gpg_import_Template()
 {
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
+	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	if [[ "$LOCAL" = "$ONLINE" ]]; then
 		$bwhite; echo -n "$GPG_OWNER: "
 		$bgreen; echo "OK" ;$off
@@ -40,27 +42,35 @@ gpg_import_Template()
 	fi
 }
 
-gpg_import_All()
+gpg_import_Monero()
 {
 	define_Monero
-	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
-	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
+}
 
+gpg_import_MoneroBash()
+{
 	define_MoneroBash
-	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
-	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
+}
 
+gpg_import_XMRig()
+{
 	define_XMRig
-	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
-	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
+}
 
+gpg_import_P2Pool()
+{
 	define_P2Pool
-	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
-	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
 	gpg_import_Template
+}
+gpg_import_All()
+{
+	gpg_import_Monero
+	gpg_import_MoneroBash
+	gpg_import_XMRig
+	gpg_import_P2Pool
 }
 
 gpg_Diff()

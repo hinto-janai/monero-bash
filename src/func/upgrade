@@ -40,6 +40,8 @@ upgrade_Template()
 	# DOWNLOAD
 	print_GreenHash "Downloading [$NAME_PRETTY]"
 	download_Template
+
+	# VERIFY
 	print_WhiteHash "Verifying"
 	verify_Template
 

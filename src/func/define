@@ -19,6 +19,7 @@ define_Monero()
 	SIG="$SHA"
 	GPG_OWNER="binaryfate"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc"
+	KEY_ID="81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92"
 }
 
 define_MoneroBash()
@@ -39,6 +40,7 @@ define_MoneroBash()
 	SIG="$SHA"
 	GPG_OWNER="hinto-janaiyo"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
+	KEY_ID="21958EE945980282FCB849C8D7483F6CA27D1B1D"
 }
 
 define_XMRig()
@@ -60,6 +62,7 @@ define_XMRig()
 	SIG="${SHA}.sig"
 	GPG_OWNER="xmrig"
 	GPG_PUB_KEY="https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc"
+	KEY_ID="9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409"
 }
 
 define_P2Pool()
@@ -81,4 +84,5 @@ define_P2Pool()
 	SIG="$SHA"
 	GPG_OWNER="SChernykh"
 	GPG_PUB_KEY="https://p2pool.io/SChernykh.asc"
+	KEY_ID="1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF"
 }
