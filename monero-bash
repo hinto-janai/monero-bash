@@ -110,6 +110,14 @@ if [[ $options = "true" ]]; then
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		config) mine_Config ;;
+		edit)
+			case $2 in
+				daemon) define_Monero;systemd_Edit ;;
+				xmrig) define_XMRig;systemd_Edit ;;
+				p2pool) define_P2Pool;systemd_Edit ;;
+				*) error_Unknown ;;
+			esac
+			;;
 		start)
 			case $2 in
 				daemon) define_Monero;process_Start ;;

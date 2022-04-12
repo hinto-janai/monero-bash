@@ -27,25 +27,25 @@ print_MoneroBashTitle()
 
 print_Version()
 {
-	$white; echo -n "monero-bash: "
+	$bwhite; echo -n "monero-bash: "
 	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
 		$bred; echo "$MONERO_BASH_VER"
 	else
 		$bgreen; echo "$MONERO_BASH_VER"
 	fi
-	$white; echo -n "Monero: "
+	$bwhite; echo -n "Monero: "
 	if [[ "$MONERO_OLD" = "true" ]]; then
 		$bred; echo "$MONERO_VER"
 	else
 		$bgreen; echo "$MONERO_VER"
 	fi
-	$white; echo -n "XMRig: "
+	$bwhite; echo -n "XMRig: "
 	if [[ "$XMRIG_OLD" = "true" ]]; then
 		$bred; echo "$XMRIG_VER"
 	else
 		$bgreen; echo "$XMRIG_VER"
 	fi
-	$white; echo -n "P2Pool: "
+	$bwhite; echo -n "P2Pool: "
 	if [[ "$P2POOL_OLD" = "true" ]]; then
 		$bred; echo "$P2POOL_VER"
 	else
