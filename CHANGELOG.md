@@ -2,7 +2,7 @@
 ## Updates
 * `monero-bash restart <process>` command
 * `monero-bash` command now allows `view-only` wallet creation
-
+* `monero-bash edit <process>` to edit systemd service files
 
 # v1.0.0
 ## Official Release

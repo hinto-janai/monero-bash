@@ -46,6 +46,7 @@ kill <all/daemon/xmrig/p2pool>    forcefully kill the process
 restart <all/daemon/xmrig/p2pool> restart the process
 full <daemon/xmrig/p2pool>        start the process attached (foreground)
 watch <daemon/xmrig/p2pool>       watch live output of process
+edit <daemon/xmrig/p2pool>        edit systemd service file
 
 gpg                               toggle GPG verification of binaries
 gpg import                        import GPG keys of package authors
@@ -147,4 +148,4 @@ If you'd like to directly invoke a program:
 
 This will launch them in the current terminal
 
-`monerod` and `p2pool` are ran as the $USER, and `xmrig` is ran as `root`. If you'd like to change that, edit `/etc/systemd/system/monero-bash-xmrig.service`. Note that without root, your hashrate may be low.
+`monerod` and `p2pool` are ran as the $USER, and `xmrig` is ran as `root`. If you'd like to change that, `monero-bash edit <service>` or manually edit `/etc/systemd/system/monero-bash-xmrig.service`. Note that without root, your hashrate may be low.
