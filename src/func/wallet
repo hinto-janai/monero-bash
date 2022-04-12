@@ -104,6 +104,7 @@ wallet_Create()
 # creation of view-only wallet
 wallet_View()
 {
+	$bred; echo "Creating [view-only] wallet..."
 	wallet_Template
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
