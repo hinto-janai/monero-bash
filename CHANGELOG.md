@@ -1,8 +1,13 @@
 # v1.1.0
 ## Updates
-* `monero-bash restart <process>` command
-* `monero-bash` command now allows `view-only` wallet creation
-* `monero-bash edit <process>` to edit systemd service files
+* **Processes**
+	- `monero-bash restart <process>` command
+	- `monero-bash edit <process>` to edit systemd service files
+
+* **Wallet**
+	- `monero-bash` command now allows `view-only` wallet creation
+		- This requires the ***Main Address*** and ***Private Viewkey*** which can be get with the:
+		`address` and `viewkey` commands while inside monero-wallet-cli
 
 # v1.0.0
 ## Official Release
