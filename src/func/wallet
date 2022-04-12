@@ -10,7 +10,7 @@ wallet_Start()
 	# AUTO MONEROD START
 	[[ $AUTO_START_DAEMON = "true" ]]&& define_Monero&&process_Start
 
-	# IF CREATING WALLET, CREATE
+	# NORMAL WALLET CREATION
 	if [[ $createWallet = "true" ]]; then
 		"$binMonero/monero-wallet-cli" \
 			--generate-new-wallet "$wallets/$walletName" \
@@ -18,9 +18,17 @@ wallet_Start()
 			--mnemonic-language "$seedLanguage" \
 			--config-file "$config/monero-wallet-cli.conf"
 			error_Exit "Could not start monero-wallet-cli"
+
+	# VIEW WALLET CREATION
+	elif [[ $createView = "true" ]]; then
+		"$binMonero/monero-wallet-cli" \
+			--generate-from-view-key "$wallets/$walletName" \
+			--password "$walletPassword" \
+			--config-file "$config/monero-wallet-cli.conf"
+			error_Exit "Could not start monero-wallet-cli"
 	else
 
-	# ELSE, START NORMALLY
+	# IF NOT CREATING, START NORMALLY
 		"$binMonero/monero-wallet-cli" \
 			--wallet-file "$wallets/$walletSelection" \
 			--password "$walletPassword" \
@@ -32,7 +40,7 @@ wallet_Start()
 	[[ $AUTO_STOP_DAEMON = "true" ]]&& define_Monero&&process_Stop
 }
 
-wallet_Create()
+wallet_Template()
 {
 	# WALLET NAME
 	while true ;do
@@ -59,6 +67,10 @@ wallet_Create()
 			print_Error "Password was not the same!"
 		fi
 	done
+}
+wallet_Create()
+{
+	wallet_Template
 
 	# WALLET SEED LANGUAGE
 	while true ;do
@@ -86,6 +98,18 @@ wallet_Create()
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
 	$bred; echo "Starting Monero..." ;$off
 	createWallet="true"
+	wallet_Start
+}
+
+# creation of view-only wallet
+wallet_View()
+{
+	$bred; echo "Creating [view-only] wallet..."
+	wallet_Template
+
+	# START monero-wallet-cli WITH CREATION VARIABLES SET
+	$bred; echo "Starting Monero..." ;$off
+	createView="true"
 	wallet_Start
 }
 
