@@ -117,6 +117,7 @@ if [[ $options = "true" ]]; then
 				p2pool) define_P2Pool;systemd_Edit ;;
 				*) error_Unknown ;;
 			esac
+			;;
 		start)
 			case $2 in
 				daemon) define_Monero;process_Start ;;
