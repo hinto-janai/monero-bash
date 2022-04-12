@@ -60,7 +60,7 @@ systemd_Edit()
 		$white; echo "Reloading systemd..."
 		sudo systemctl daemon-reload
 	else
-		print_Error "No changes/changes failed"
+		print_Error "systemd changes failed"
 	fi
 }
 
