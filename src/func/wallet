@@ -39,7 +39,7 @@ wallet_Create()
 		$white; echo -n "New wallet name: " ;$iwhite
 		read walletName
 		if [[ "$walletName" = *" "* || "$walletName" = "" ]]; then
-			$ired; echo "Error: wallet name cannot be empty or have spaces"
+			print_Error "wallet name cannot be empty or have spaces"
 		else
 			break
 		fi
@@ -56,7 +56,7 @@ wallet_Create()
 		if [[ "$walletPassword" = "$walletPasswordAgain" ]]; then
 			break
 		else
-			$ired; echo "Password was not the same!"
+			print_Error "Password was not the same!"
 		fi
 	done
 
@@ -79,7 +79,7 @@ wallet_Create()
 				"9"|"简体中文(中国)"|"简体中文"|"简体中文 (中国)"|chinese|Chinese) seedLanguage="简体中文 (中国)" ;break ;;
 				"10"|esperanto|Esperanto) seedLanguage="Esperanto" ;break ;;
 				"11"|lojban|Lojban) seedLanguage="Lojban" ;break ;;
-				*) $ired; echo "error: invalid input" ;;
+				*) print_Error "invalid input" ;;
 			esac
 		done
 
