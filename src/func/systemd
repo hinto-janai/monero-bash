@@ -55,7 +55,7 @@ systemd_Edit()
 		$white; echo "Pick one [nano, vim, emacs, etc]: "
 		read EDITOR
 	fi
-	sudo "$EDITOR" "$SERVICE"
+	sudo "$EDITOR" "$sysd/$SERVICE"
 	[[ $? = 0 ]]&& sudo systemctl daemon-reload
 }
 
