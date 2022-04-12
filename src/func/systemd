@@ -47,7 +47,7 @@ sudo systemctl daemon-reload
 systemd_Edit()
 {
 	if [[ $NAME_VER = "" ]]; then
-		print_Error "$NAME_PRETTY is not installed"
+		print_Error_Exit "$NAME_PRETTY is not installed"
 	fi
 	prompt_Sudo;error_Sudo
 	if [[ $EDITOR = "" ]]; then
