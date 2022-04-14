@@ -12,9 +12,9 @@ status_All()
 	fi
 	print_Version
 	echo
-	status_Monero
-	status_P2Pool
-	status_XMRig
+	[[ $MONERO_VER != "" ]]&& status_Monero
+	[[ $P2POOL_VER != "" ]]&& status_P2Pool
+	[[ $XMRIG_VER != "" ]]&& status_XMRig
 }
 
 status_Template()
