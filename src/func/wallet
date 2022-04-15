@@ -180,6 +180,7 @@ wallet_Count()
 		echo "wallets found: "
 	elif [[ $walletCount = "0" ]]; then
 		echo "wallets found"
+		echo
 	fi
 }
 
