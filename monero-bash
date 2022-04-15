@@ -79,11 +79,11 @@ if [[ $interactive = "true" ]]; then
 		# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
 		if [[ $walletList = *"new "* && $walletSelection = "new" \
 			|| $walletList = *"view "* && $walletSelection = "view" \
-			|| $walletList = *"recover"* && $walletSelection = "recover" ]]; then
+			|| $walletList = *"recover "* && $walletSelection = "recover" ]]; then
 			wallet_Collision
 
 		# ELSE, START WALLET NORMALLY
-		elif [[ $walletList = *"$walletSelection"* ]]; then
+		elif [[ $walletList = *"$walletSelection "* ]]; then
 			$white; echo -n "Password: "
 			read -s walletPassword && echo
 			wallet_Start
