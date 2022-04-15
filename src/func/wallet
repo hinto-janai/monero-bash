@@ -172,8 +172,8 @@ wallet_Collision()
 				;;
 			*) print_Error "Invalid option" ;;
 		esac
-		exit
 	done
+	exit
 }
 
 wallet_Count()
