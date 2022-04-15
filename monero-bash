@@ -76,13 +76,22 @@ if [[ $interactive = "true" ]]; then
 		$white; echo -n ": "
 		read walletSelection
 
+		# the space after the strings prevents the wildcard from
+		# selecting non-existing wallets because an existing wallet
+		# *contains* the user input string.
+		#
+		# e.g. user input is "123", and a wallet called "1234" exists.
+		# without a space, "123" will be selected even though it doesn't exist.
+		# with a space, "123" will properly error out. yes i realize using
+		# arrays would fix this and using ls output is stupid.
+
 		# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
 		if [[ $walletList = *"new "* && $walletSelection = "new" \
 			|| $walletList = *"view "* && $walletSelection = "view" \
 			|| $walletList = *"recover "* && $walletSelection = "recover" ]]; then
 			wallet_Collision
 
-		# ELSE, START WALLET NORMALLY
+		# ELSE, START WALLET NORMALLY IF IT EXISTS
 		elif [[ $walletList = *"$walletSelection "* ]]; then
 			$white; echo -n "Password: "
 			read -s walletPassword && echo
