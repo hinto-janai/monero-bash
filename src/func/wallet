@@ -150,15 +150,13 @@ wallet_Collision()
 {
 	$white; echo "Wallet name is similar to option..."
 	$iblue; printf "SELECT "
-	$white; printf "wallet or "
-	$ired; printf "CREATE? "
-	$white; printf "[select / create] " ;$off
+	$white; printf "or "
+	$ired; printf "CREATE? " ;$off
 	read selectCreate
 	while true ;do
 		case $selectCreate in
 			select|Select|SELECT)
-				$iblue; printf "Selecting "
-				$bwhite; printf "$walletSelection..."
+				$off; echo "Selecting $walletSelection..."
 				echo -n "Password: "
 				read -s walletPassword && echo
 				wallet_Start
