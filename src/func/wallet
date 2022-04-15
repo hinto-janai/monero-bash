@@ -132,7 +132,7 @@ wallet_Recover()
 	# SEED INPUT
 	while true ;do
 		$white; echo -n "Seed: "
-		read -s walletSeed
+		read -s walletSeed ; echo
 		case $walletSeed in
 			"") print_Error "Empty input" ;;
 			*) break ;;
