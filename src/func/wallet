@@ -180,16 +180,11 @@ wallet_Count()
 		echo "wallets found: "
 	elif [[ $walletCount = "0" ]]; then
 		echo "wallets found"
-		echo
 	fi
 }
 
 wallet_List()
 {
 	walletList="$(ls "$wallets" | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-	if [[ $walletList = "" ]]; then
-		:
-	else
-		$bwhite; echo "$walletList"
-	fi
+	$bwhite; echo "$walletList"
 }
