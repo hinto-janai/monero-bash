@@ -77,9 +77,9 @@ if [[ $interactive = "true" ]]; then
 		read walletSelection
 
 		# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
-		if [[ $walletList = *"$walletSelection"* && $walletSelection = "new" \
-			|| $walletList = *"$walletSelection"* && $walletSelection = "view" \
-			|| $walletList = *"$walletSelection"* && $walletSelection = "recover" ]]; then
+		if [[ $walletList = *"new "* && $walletSelection = "new" \
+			|| $walletList = *"view "* && $walletSelection = "view" \
+			|| $walletList = *"recover"* && $walletSelection = "recover" ]]; then
 			wallet_Collision
 
 		# ELSE, START WALLET NORMALLY
