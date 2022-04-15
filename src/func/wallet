@@ -192,5 +192,6 @@ wallet_List()
 		echo
 	else
 		$bwhite; echo "$walletList"
+		echo
 	fi
 }
