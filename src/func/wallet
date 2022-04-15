@@ -157,18 +157,14 @@ wallet_Collision()
 	while true ;do
 		case $selectCreate in
 			select|Select|SELECT)
-				printf "Selecting "
-				$iblue; printf "$walletSelection"
-				$white; echo "..."
+				$iblue; printf "Selecting "
+				$bwhite; printf "$walletSelection..."
 				echo -n "Password: "
 				read -s walletPassword && echo
 				wallet_Start
 				exit
 				;;
 			create|Create|CREATE)
-				$white; printf "Creating "
-				$ired; printf "new "
-				$white; echo "wallet..."
 				break
 				;;
 			*) print_Error "Invalid option" ;;
@@ -193,5 +189,5 @@ wallet_Count()
 wallet_List()
 {
 	walletList="$(ls "$wallets" | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-	$iblue; echo "$walletList"
+	$bwhite; echo "$walletList"
 }
