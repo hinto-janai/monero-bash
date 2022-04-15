@@ -56,7 +56,7 @@ status_XMRig()
 		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		$bwhite; echo -n "Pool: "
 		grep "\"url\":" xmrig.json | awk '{print $2}' | tr -d '","'
-		sudo journalctl -u "$SERVICE" --output cat | tail -n4 ;}
+		sudo journalctl -u "$SERVICE" --output cat | tail -n4
 	}
 	status_Template
 }
