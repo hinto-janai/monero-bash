@@ -167,8 +167,8 @@ wallet_Collision()
 				;;
 			create|Create|CREATE)
 				$white; printf "Creating "
-				$ired; printf "$walletSelection"
-				$white; echo "..."
+				$ired; printf "new "
+				$white; echo "wallet..."
 				break
 				;;
 			*) print_Error "Invalid option" ;;
