@@ -186,5 +186,11 @@ wallet_Count()
 wallet_List()
 {
 	walletList="$(ls "$wallets" | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-	$bwhite; echo "$walletList"
+
+	# print nice spacing regardless if wallets exist or not
+	if [[ $walletList = "" ]]; then
+		echo
+	else
+		$bwhite; echo "$walletList"
+	fi
 }
