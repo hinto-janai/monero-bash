@@ -9,8 +9,8 @@ status_All()
 	wallet_List
 	print_Version
 	echo
-	[[ $MONERO_VER != "" ]]&& status_Monero && echo
-	[[ $P2POOL_VER != "" ]]&& status_P2Pool && echo
+	[[ $MONERO_VER != "" ]]&& status_Monero
+	[[ $P2POOL_VER != "" ]]&& status_P2Pool
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
 }
 
@@ -28,7 +28,7 @@ status_Template()
 status_Monero()
 {
 	define_Monero
-	EXTRA_STATS(){ $binMonero/monerod status ;}
+	EXTRA_STATS(){ $binMonero/monerod status ;echo;}
 	status_Template
 }
 
@@ -40,6 +40,7 @@ status_P2Pool()
 		$bwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
 		journalctl -u "$SERVICE" --output cat | tail -n4
+		echo
 	}
 	status_Template
 }
