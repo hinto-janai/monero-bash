@@ -7,9 +7,6 @@ status_All()
 	print_MoneroBashTitle
 	wallet_Count
 	wallet_List
-	if [[ $ZERO_WALLETS != "true" ]]; then
-		echo
-	fi
 	print_Version
 	echo
 	[[ $MONERO_VER != "" ]]&& status_Monero && echo
