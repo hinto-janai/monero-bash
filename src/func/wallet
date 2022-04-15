@@ -150,29 +150,23 @@ wallet_Collision()
 {
 	$white; echo "Wallet name is similar to option..."
 	$iblue; printf "SELECT "
-	$bwhite; printf "wallet or "
-	$ired; printf "CREATE? "
-	$bwhite; printf "[select / create] " ;$off
+	$white; printf "or "
+	$ired; printf "CREATE? " ;$off
 	read selectCreate
 	while true ;do
 		case $selectCreate in
 			select|Select|SELECT)
-				printf "Selecting "
-				$iblue; printf "$walletSelection"
-				$white; echo "..."
+				$off; echo "Selecting $walletSelection..."
 				echo -n "Password: "
 				read -s walletPassword && echo
 				wallet_Start
-				break
+				exit
 				;;
 			create|Create|CREATE)
-				$white; printf "Creating "
-				$ired; echo "$walletSelection..."
 				break
 				;;
 			*) print_Error "Invalid option" ;;
 		esac
-		exit
 	done
 }
 
@@ -193,5 +187,5 @@ wallet_Count()
 wallet_List()
 {
 	walletList="$(ls "$wallets" | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-	$iblue; echo "$walletList"
+	$bwhite; echo "$walletList"
 }

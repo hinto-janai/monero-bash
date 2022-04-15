@@ -70,16 +70,16 @@ if [[ $interactive = "true" ]]; then
 	# SHOW WALLETS, SELECT
 	$white; wallet_Count ; wallet_List ; echo
 	while true ;do
-		$iblue; echo -n "Pick wallet "
+		$iblue; echo -n "Select wallet "
 		$white; echo -n "or "
 		$ired; echo -n "[new / view / recover]"
 		$white; echo -n ": "
 		read walletSelection
 
 		# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
-		if [[ $walletList = *"$walletSelection"* && $walletSelection = "new" \
-			|| $walletList = *"$walletSelection"* && $walletSelection = "view" \
-			|| $walletList = *"$walletSelection"* && $walletSelection = "recover" ]]; then
+		if [[ $walletList = *"new "* && $walletSelection = "new" \
+			|| $walletList = *"view "* && $walletSelection = "view" \
+			|| $walletList = *"recover"* && $walletSelection = "recover" ]]; then
 			wallet_Collision
 
 		# ELSE, START WALLET NORMALLY
