@@ -163,7 +163,7 @@ wallet_Collision()
 				echo -n "Password: "
 				read -s walletPassword && echo
 				wallet_Start
-				break
+				exit
 				;;
 			create|Create|CREATE)
 				$white; printf "Creating "
@@ -174,7 +174,6 @@ wallet_Collision()
 			*) print_Error "Invalid option" ;;
 		esac
 	done
-	exit
 }
 
 wallet_Count()
