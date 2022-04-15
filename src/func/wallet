@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-#						Monero Wallet Functions
-#
+# Monero Wallet Functions
+
 wallet_Start()
 {
 	# CHECK IF MISSING BINARY
@@ -24,6 +24,16 @@ wallet_Start()
 		"$binMonero/monero-wallet-cli" \
 			--generate-from-view-key "$wallets/$walletName" \
 			--password "$walletPassword" \
+			--config-file "$config/monero-wallet-cli.conf"
+			error_Exit "Could not start monero-wallet-cli"
+
+	# WALLET RECOVERY WITH STANDARD SEED
+	elif [[ $recoverWallet = "true" ]]; then
+		"$binMonero/monero-wallet-cli" \
+			--generate-new-wallet "$wallets/$walletName" \
+			--password "$walletPassword" \
+			--restore-from-seed \
+			--electrum-seed "$walletSeed" \
 			--config-file "$config/monero-wallet-cli.conf"
 			error_Exit "Could not start monero-wallet-cli"
 	else
@@ -104,13 +114,60 @@ wallet_Create()
 # creation of view-only wallet
 wallet_View()
 {
-	$bred; echo "Creating [view-only] wallet..."
+	$bred; echo "Creating [view-only] wallet..." ;$off
 	wallet_Template
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
 	$bred; echo "Starting Monero..." ;$off
 	createView="true"
 	wallet_Start
+}
+
+# recovery of wallet
+wallet_Recover()
+{
+	$bred; echo "Recovering wallet..." ;$off
+	wallet_Template
+
+	# SEED INPUT
+	while true ;do
+		$white; echo -n "Seed: "
+		read -s walletSeed
+		case $walletSeed in
+			"") print_Error "Empty input" ;;
+			*) break ;;
+		esac
+	done
+
+	# START monero-wallet-cli WITH RECOVERY VARIABLES SET
+	$bred; echo "Starting Monero..." ;$off
+	recoverWallet="true"
+	wallet_Start
+}
+
+# if wallet name happens to be "new/view/recover"
+wallet_Collision()
+{
+	$white; echo "Wallet name is similar to option..."
+	$bred; echo "SELECT "
+	$off; echo "wallet or "
+	$bred; echo "CREATE? "
+	$white; echo "[select / create] "
+	read selectCreate
+	while true ;do
+		case $selectCreate in
+			select)
+				echo "Selecting $walletSelection..." ;
+				$white; echo -n "Password: "
+				read -s walletPassword && echo
+				wallet_Start
+				break
+				;;
+			create) echo "Creating $walletSelection..." ; break ;;
+			*) print_Error "Invalid option" ;;
+		esac
+		exit
+	done
 }
 
 wallet_Count()
@@ -124,12 +181,6 @@ wallet_Count()
 	elif [[ $walletCount = "0" ]]; then
 		ZERO_WALLETS="true"
 		echo "wallets found"
-		if [[ $interactive = "true" ]]; then
-			echo -n "Create one? (Y/n) " ;$iwhite
-			Yes(){ wallet_Create ;exit ;}
-			No(){ $white; echo "Exiting..." ;exit ;}
-			prompt_YESno
-		fi
 	fi
 }
 

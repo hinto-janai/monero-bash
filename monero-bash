@@ -71,12 +71,16 @@ if [[ $interactive = "true" ]]; then
 	$white; wallet_Count ; wallet_List ; echo
 	while true ;do
 		$white; echo -n "Pick wallet or "
-		$ired; echo -n "[new] "
-		$white; echo -n "or "
-		$ired; echo -n "[view-only]"
+		$ired; echo -n "[new / view / recover] "
 		$white; echo -n ": "
 		read walletSelection
-		if [[ $walletList = *"$walletSelection"* ]]; then
+
+		# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
+		if [[ $walletList = *"$walletSelection"* && $walletSelection = "new" || $walletSelection = "view" || $walletSelection = "recover" ]]; then
+			wallet_Collision
+
+		# ELSE, START WALLET NORMALLY
+		elif [[ $walletList = *"$walletSelection"* ]]; then
 			$white; echo -n "Password: "
 			read -s walletPassword && echo
 			wallet_Start
@@ -89,6 +93,7 @@ if [[ $interactive = "true" ]]; then
 		case $walletSelection in
 			new|New|NEW|"[new]"|"[New]") wallet_Create ; break ;;
 			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
+			recover|Recover|RECOVER|"[recover]"|"[Recover]") wallet_Recover ; break ;;
 			*) $ired; print_Error "wallet does not exist" ;;
 		esac
 	done
