@@ -152,7 +152,7 @@ wallet_Collision()
 	$bred; printf "SELECT "
 	$off; printf "wallet or "
 	$bred; printf "CREATE? "
-	$white; echo "[select / create] "
+	$white; printf "[select / create] "
 	read selectCreate
 	while true ;do
 		case $selectCreate in
