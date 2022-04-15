@@ -7,6 +7,7 @@
 
 * **Status**
 	- `monero-bash status` only prints status of installed packages
+	- More stats for `XMRig`
 
 
 # v1.1.0
