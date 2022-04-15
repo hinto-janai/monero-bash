@@ -193,5 +193,5 @@ wallet_Count()
 wallet_List()
 {
 	walletList="$(ls "$wallets" | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-	$ired; echo "$walletList"
+	$iblue; echo "$walletList"
 }

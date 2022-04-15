@@ -72,7 +72,7 @@ if [[ $interactive = "true" ]]; then
 	while true ;do
 		$white; echo -n "Pick "
 		$iblue; echo -n "wallet "
-		$white; echo "or "
+		$white; echo -n "or "
 		$ired; echo -n "[new / view / recover]"
 		$white; echo -n ": "
 		read walletSelection
