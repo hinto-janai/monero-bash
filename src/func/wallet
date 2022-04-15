@@ -149,9 +149,9 @@ wallet_Recover()
 wallet_Collision()
 {
 	$white; echo "Wallet name is similar to option..."
-	$bred; echo "SELECT "
-	$off; echo "wallet or "
-	$bred; echo "CREATE? "
+	$bred; printf "SELECT "
+	$off; printf "wallet or "
+	$bred; printf "CREATE? "
 	$white; echo "[select / create] "
 	read selectCreate
 	while true ;do
