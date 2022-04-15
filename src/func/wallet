@@ -114,7 +114,7 @@ wallet_Create()
 # creation of view-only wallet
 wallet_View()
 {
-	$bred; echo "Creating [view-only] wallet..." ;$off
+	$bred; echo "Creating [view] wallet..." ;$off
 	wallet_Template
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
@@ -149,21 +149,27 @@ wallet_Recover()
 wallet_Collision()
 {
 	$white; echo "Wallet name is similar to option..."
-	$bred; printf "SELECT "
-	$off; printf "wallet or "
-	$bred; printf "CREATE? "
-	$white; printf "[select / create] "
+	$iblue; printf "SELECT "
+	$bwhite; printf "wallet or "
+	$ired; printf "CREATE? "
+	$bwhite; printf "[select / create] " ;$off
 	read selectCreate
 	while true ;do
 		case $selectCreate in
-			select)
-				echo "Selecting $walletSelection..." ;
-				$white; echo -n "Password: "
+			select|Select|SELECT)
+				printf "Selecting "
+				$iblue; printf "$walletSelection"
+				$white; echo "..."
+				echo -n "Password: "
 				read -s walletPassword && echo
 				wallet_Start
 				break
 				;;
-			create) echo "Creating $walletSelection..." ; break ;;
+			create|Create|CREATE)
+				$white; printf "Creating "
+				$ired; echo "$walletSelection..."
+				break
+				;;
 			*) print_Error "Invalid option" ;;
 		esac
 		exit
@@ -187,5 +193,5 @@ wallet_Count()
 wallet_List()
 {
 	walletList="$(ls "$wallets" | grep -v ".keys" | tr "\n" " " | sed "s/ /  /g")"
-	$ired; echo "$walletList"
+	$iblue; echo "$walletList"
 }
