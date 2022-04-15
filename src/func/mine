@@ -14,9 +14,7 @@ mine_Start()
 		prompt_Sudo;error_Sudo
 		$bwhite; echo "Setting hugepages..." ;$off
 		sudo sysctl vm.nr_hugepages=3072
-		if [[ $? = 0 ]]; then
-			grep "HugePages_Total:" "/proc/meminfo"
-		else
+		if [[ $? != 0 ]]; then
 			print_Error "Could not set hugepages..."
 		fi
 		define_Monero;process_Start
