@@ -1,3 +1,14 @@
+# v1.1.1
+## Updates
+* **Wallet**
+	- `monero-bash` command can now `recover` wallets through standard seeds
+	- If wallet name collides with option, extra prompt will appear
+	- More clear color distinction in wallet menu
+
+* **Status**
+	- `monero-bash status` only prints status of installed packages
+
+
 # v1.1.0
 ## Updates
 * **Processes**

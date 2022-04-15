@@ -12,8 +12,8 @@ status_All()
 	fi
 	print_Version
 	echo
-	[[ $MONERO_VER != "" ]]&& status_Monero
-	[[ $P2POOL_VER != "" ]]&& status_P2Pool
+	[[ $MONERO_VER != "" ]]&& status_Monero && echo
+	[[ $P2POOL_VER != "" ]]&& status_P2Pool && echo
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
 }
 
@@ -40,7 +40,7 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$bwhite; echo -n "WALLET: "
+		$bwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
 		journalctl -u "$SERVICE" --output cat | tail -n4
 	}
@@ -50,6 +50,13 @@ status_P2Pool()
 status_XMRig()
 {
 	define_XMRig
-	EXTRA_STATS(){ sudo journalctl -u "$SERVICE" --output cat | tail -n4 ;}
+	EXTRA_STATS()
+	{
+		$bwhite; echo -n "Wallet: "
+		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		$bwhite; echo -n "Pool: "
+		grep "\"url\":" xmrig.json | awk '{print $2}' | tr -d '","'
+		sudo journalctl -u "$SERVICE" --output cat | tail -n4 ;}
+	}
 	status_Template
 }
