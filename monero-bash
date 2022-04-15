@@ -70,7 +70,7 @@ if [[ $interactive = "true" ]]; then
 	# SHOW WALLETS, SELECT
 	$white; wallet_Count ; wallet_List ; echo
 	while true ;do
-		$iblue; echo -n "Pick wallet "
+		$iblue; echo -n "Select wallet "
 		$white; echo -n "or "
 		$ired; echo -n "[new / view / recover]"
 		$white; echo -n ": "

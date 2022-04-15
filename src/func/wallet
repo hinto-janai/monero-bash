@@ -150,9 +150,9 @@ wallet_Collision()
 {
 	$white; echo "Wallet name is similar to option..."
 	$iblue; printf "SELECT "
-	$bwhite; printf "wallet or "
+	$white; printf "wallet or "
 	$ired; printf "CREATE? "
-	$bwhite; printf "[select / create] " ;$off
+	$white; printf "[select / create] " ;$off
 	read selectCreate
 	while true ;do
 		case $selectCreate in
