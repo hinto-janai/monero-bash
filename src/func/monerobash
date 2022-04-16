@@ -92,8 +92,8 @@ trap "trap_No" 1 2 3 6 15
 
 # Resetting variables
 	installDirectory="/usr/local/share/monero-bash"
-	hashlist="$installDirectory/src/txt/hashlist"
-	state="$installDirectory/src/txt/state"
+	source "/usr/local/share/monero-bash/src/source"
+	cd "/usr/local/share/monero-bash"
 
 # Adding to PATH
 	print_GreenHash "Adding monero-bash to PATH"
@@ -213,14 +213,11 @@ monerobash_Uninstall()
 			error_Exit "monero-bash not removed"
 		print_WhiteHash "Removing systemd services"
 			define_Monero
-				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
-				error_Continue "$SERVICE not removed"
+				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE" && error_Continue "$SERVICE not removed"
 			define_XMRig
-				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
-				error_Continue "$SERVICE not removed"
+				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE" && error_Continue "$SERVICE not removed"
 			define_P2Pool
-				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE"
-				error_Continue "$SERVICE not removed"
+				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE" && error_Continue "$SERVICE not removed"
 		print_GreenHash "monero-bash has been uninstalled"
 	}
 	No(){ $white; echo "Exiting..." ;exit;}
