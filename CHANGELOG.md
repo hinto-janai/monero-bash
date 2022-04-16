@@ -1,4 +1,10 @@
-# v1.1.1
+# v1.1.2
+## Fixes
+* **INSTALL FIX**
+	- Hashlist is properly produced during install
+
+
+# v1.1.1 - BROKEN INSTALL DO NOT USE
 ## Updates
 * **Wallet**
 	- `monero-bash` command can now `recover` wallets through standard seeds
