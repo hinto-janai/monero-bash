@@ -283,7 +283,10 @@ if [[ $options = "true" ]]; then
 					;;
 				all|All|ALL)
 					print_Install
-					install_All
+					$bwhite; echo -n "Install? (Y/n) " ;$off
+					Yes(){ install_All ;}
+					No(){ echo "Exiting..." ;exit;}
+					prompt_YESno
 					;;
 				*)
 					print_Error "Pick a package or <all>"
