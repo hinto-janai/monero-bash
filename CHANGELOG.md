@@ -1,3 +1,13 @@
+# v1.1.3
+## Updates
+* **Upgrade**
+	-`monero-bash upgrade` now list packages that will be upgraded
+	-`monero-bash update && monero-bash upgrade` is now essentially `sudo apt update && sudo apt upgrade`
+
+* **Process**
+	-`monero-bash <command> daemon` can also be invoked with `monero-bash <command> <monero/monerod>`
+
+
 # v1.1.2
 ## Fixes
 * **INSTALL FIX**
