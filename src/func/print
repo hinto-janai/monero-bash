@@ -172,3 +172,12 @@ print_Upgrade()
 		exit
 	fi
 }
+
+print_Remove()
+{
+		$bwhite; printf "Packages to remove: " ;$off
+		[[ $MONERO_VER != "" ]]&& printf " [Monero] "
+		[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
+		[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
+		echo
+}

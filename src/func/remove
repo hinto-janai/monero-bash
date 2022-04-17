@@ -3,7 +3,7 @@
 
 remove_Template()
 {
-	if [[ "$NAME_VER" = "" && "$FORCE_REMOVE" != "true" ]]; then
+	if [[ "$NAME_VER" = "" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
 	else
