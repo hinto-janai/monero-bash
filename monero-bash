@@ -322,7 +322,7 @@ if [[ $options = "true" ]]; then
 					;;
 				all|All|ALL)
 					print_Remove
-					$bwhite; echo -n "Remove [all]? (Y/n) " ;$off
+					$bwhite; echo -n "Remove? (Y/n) " ;$off
 					Yes(){ remove_All ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
