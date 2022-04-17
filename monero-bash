@@ -282,7 +282,7 @@ if [[ $options = "true" ]]; then
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				""|all|All|ALL)
+				all|All|ALL)
 					install_All
 					;;
 				*)
