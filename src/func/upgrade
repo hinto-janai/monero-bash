@@ -178,11 +178,13 @@ upgrade_Force()
 	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
 	echo
 	$bwhite; echo -n "Upgrade? (Y/n) " ;$off
-	Yes(){ upgrade_All ;}
+	Yes()
+	{
+		[[ $MONERO_BASH_VER != "" ]]&& upgrade_MoneroBash
+		[[ $MONERO_VER != "" ]]&& upgrade_Monero
+		[[ $XMRIG_VER != "" ]]&& upgrade_XMRig
+		[[ $P2POOL_VER != "" ]]&& upgrade_P2Pool
+	}
 	No(){ echo "Exiting..." ;exit;}
 	prompt_YESno
-	[[ $MONERO_BASH_VER != "" ]]&& upgrade_MoneroBash
-	[[ $MONERO_VER != "" ]]&& upgrade_Monero
-	[[ $XMRIG_VER != "" ]]&& upgrade_XMRig
-	[[ $P2POOL_VER != "" ]]&& upgrade_P2Pool
 }
