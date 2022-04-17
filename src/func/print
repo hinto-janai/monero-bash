@@ -181,6 +181,3 @@ print_Remove()
 		[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
 		echo
 }
-
-# print all packages
-print_All()

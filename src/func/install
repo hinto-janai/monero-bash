@@ -29,22 +29,22 @@ install_P2Pool()
 	install_Template
 }
 
-install_All()
-{
-	$bwhite; printf "Packages to install: " ;$off
-	[[ $MONERO_BASH_VER != "" ]]&& printf " [monero-bash] "
-	[[ $MONERO_VER != "" ]]&& printf " [Monero] "
-	[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
-	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
-	echo
-	$bwhite; echo -n "Install? (Y/n) " ;$off
-	Yes()
-	{
-		[[ $MONERO_BASH_VER != "" ]]&& install_MoneroBash
-		[[ $MONERO_VER != "" ]]&& install_Monero
-		[[ $XMRIG_VER != "" ]]&& install_XMRig
-		[[ $P2POOL_VER != "" ]]&& install_P2Pool
-	}
-	No(){ echo "Exiting..." ;exit;}
-	prompt_YESno
-}
+#install_All()
+#{
+#	$bwhite; printf "Packages to install: " ;$off
+#	[[ $MONERO_BASH_VER != "" ]]&& printf " [monero-bash] "
+#	[[ $MONERO_VER != "" ]]&& printf " [Monero] "
+#	[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
+#	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
+#	echo
+#	$bwhite; echo -n "Install? (Y/n) " ;$off
+#	Yes()
+#	{
+#		[[ $MONERO_BASH_VER != "" ]]&& install_MoneroBash
+#		[[ $MONERO_VER != "" ]]&& install_Monero
+#		[[ $XMRIG_VER != "" ]]&& install_XMRig
+#		[[ $P2POOL_VER != "" ]]&& install_P2Pool
+#	}
+#	No(){ echo "Exiting..." ;exit;}
+#	prompt_YESno
+#}
