@@ -172,7 +172,7 @@ upgrade_All()
 upgrade_Force()
 {
 	$bwhite; printf "Packages to upgrade: " ;$off
-	[[ $MONERO_BASH_VER != ]]&& printf " [monero-bash] "
+	[[ $MONERO_BASH_VER != "" ]]&& printf " [monero-bash] "
 	[[ $MONERO_VER != "" ]]&& printf " [Monero] "
 	[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
 	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
