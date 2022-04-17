@@ -16,7 +16,7 @@ update_Template()
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 		PRODUCE_HASH_LIST &>/dev/null
 		$bwhite; echo -n "$NAME_PRETTY: "
-		$bgreen; echo "$NAME_VER - up to date"
+		$bgreen; echo "$NAME_VER"
 	fi
 }
 
@@ -55,7 +55,7 @@ update_All()
 	[[ $P2POOL_VER != "" ]]&& update_P2Pool
     if [[ $updateFound = "true" ]]; then
         echo
-        $ired; echo -n "monero-bash upgrade all "
+        $ired; echo -n "monero-bash upgrade"
         $white; echo "to upgrade all"
         $white; echo -n "or: "
         $ired; echo -n "monero-bash upgrade <package> "
