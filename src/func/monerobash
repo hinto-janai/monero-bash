@@ -156,6 +156,7 @@ monerobash_Uninstall()
 	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE /.monero-bash/ AND EVERYTHING INSIDE IT"
 	$bwhite; echo "   @"
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	print_Size
 	$bwhite; echo -n "Uninstall "
 	$ired; echo -n "monero-bash? "
 	$bwhite; echo -n "(y/N) "
