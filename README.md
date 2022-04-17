@@ -1,5 +1,5 @@
 # monero-bash
->a wrapper for monero written in bash, for Linux
+>a wrapper for Monero written in Bash, for Linux
 
 ![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
 
@@ -104,13 +104,14 @@ help                              show this help message
 
 ---
 
-[Click here for a quick explanation of how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
+[Click here for a quick explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
 
-If you'd like to see detailed output when installing/upgrading, type:
+To see detailed output when installing/upgrading, type:
 ```
 monero-bash install/upgrade <package> verbose
 ```
 
+**DOWNLOAD LINKS**
 * Monero - `https://downloads.getmonero.org/cli/linux64`
 * monero-bash - `https://github.com/hinto-janaiyo/monero-bash`
 * XMRig - `https://github.com/xmrig/xmrig`
@@ -118,9 +119,7 @@ monero-bash install/upgrade <package> verbose
 
 The latest packages are downloaded through the GitHub API. If the API fails, monero-bash will attempt to find a download link by HTML filtering the package's `/releases/latest/` GitHub page.
 
-Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.txt`
-
-Every other package hash is found on its respective GitHub page.
+Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.txt`. Every other package hash is found on its GitHub page.
 
 Unfortunately, there is no "official" central repo for all these programs, so `monero-bash` individually seeks out the links/hashes (makes my life very hard)
 

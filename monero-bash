@@ -282,6 +282,7 @@ if [[ $options = "true" ]]; then
 					prompt_YESno
 					;;
 				all|All|ALL)
+					print_Upgrade
 					install_All
 					;;
 				*)
