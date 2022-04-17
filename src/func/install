@@ -31,7 +31,7 @@ install_P2Pool()
 
 install_All()
 {
-	install_Monero
-	install_XMRig
-	install_P2Pool
+	[[ $MONERO_VER = "" ]]&& install_Monero
+	[[ $XMRIG_VER = "" ]]&& install_XMRig
+	[[ $P2POOL_VER = "" ]]&& install_P2Pool
 }

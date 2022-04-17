@@ -242,7 +242,6 @@ if [[ $options = "true" ]]; then
 						upgrade_Force
 					else
 						print_Upgrade
-						echo
 						$bwhite; echo -n "Upgrade? (Y/n) " ;$off
 						Yes(){ upgrade_All ;}
 						No(){ echo "Exiting..." ;exit;}
@@ -282,8 +281,9 @@ if [[ $options = "true" ]]; then
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				""|all|All|ALL)
-					$bwhite; echo -n "Install [all]? (Y/n) " ;$off
+				all|All|ALL)
+					print_Install
+					$bwhite; echo -n "Install? (Y/n) " ;$off
 					Yes(){ install_All ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
@@ -322,7 +322,7 @@ if [[ $options = "true" ]]; then
 					;;
 				all|All|ALL)
 					print_Remove
-					$bwhite; echo -n "Remove [all]? (Y/n) " ;$off
+					$bwhite; echo -n "Remove? (Y/n) " ;$off
 					Yes(){ remove_All ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno

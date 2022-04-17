@@ -165,10 +165,26 @@ print_Upgrade()
 		[[ $MONERO_VER != "" && $MONERO_OLD = "true" ]]&& printf " [Monero] "
 		[[ $XMRIG_VER != "" && $XMRIG_OLD = "true" ]]&& printf " [XMRig] "
 		[[ $P2POOL_VER != "" && $P2POOL_OLD = "true" ]]&& printf " [P2Pool] "
-		echo
+		echo;echo
 	else
 		$bwhite; printf "All packages: "
 		$bgreen; echo "up to date"
+		exit
+	fi
+}
+
+print_Install()
+{
+	if [[ $MONERO_VER = "" || $XMRIG_VER = "" || $P2POOL_VER = "" ]]; then
+		$bwhite; printf "Packages to install: " ;$off
+
+		[[ $MONERO_VER = "" ]]&& printf " [Monero] "
+		[[ $XMRIG_VER = "" ]]&& printf " [XMRig] "
+		[[ $P2POOL_VER = "" ]]&& printf " [P2Pool] "
+		echo;echo
+	else
+		$bwhite; printf "All packages: "
+		$bgreen; echo "already installed"
 		exit
 	fi
 }
@@ -179,5 +195,5 @@ print_Remove()
 		[[ $MONERO_VER != "" ]]&& printf " [Monero] "
 		[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
 		[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
-		echo
+		echo;echo
 }

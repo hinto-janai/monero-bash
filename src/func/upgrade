@@ -176,7 +176,7 @@ upgrade_Force()
 	[[ $MONERO_VER != "" ]]&& printf " [Monero] "
 	[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
 	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
-	echo
+	echo;echo
 	$bwhite; echo -n "Upgrade? (Y/n) " ;$off
 	Yes()
 	{
