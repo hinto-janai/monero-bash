@@ -163,6 +163,14 @@ upgrade_P2Pool()
 
 upgrade_All()
 {
+	[[ $MONERO_BASH_VER != "" && $MONERO_BASH_OLD = "true" ]]&& upgrade_MoneroBash
+	[[ $MONERO_VER != "" && $MONERO_OLD = "true" ]]&& upgrade_Monero
+	[[ $XMRIG_VER != "" && $XMRIG_OLD = "true" ]]&& upgrade_XMRig
+	[[ $P2POOL_VER != "" && $P2POOL_OLD = "true" ]]&& upgrade_P2Pool
+}
+
+upgrade_Force()
+{
 	[[ $MONERO_BASH_VER != "" ]]&& upgrade_MoneroBash
 	[[ $MONERO_VER != "" ]]&& upgrade_Monero
 	[[ $XMRIG_VER != "" ]]&& upgrade_XMRig

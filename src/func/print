@@ -151,3 +151,24 @@ cat <<EOM
 11 : Lojban
 EOM
 }
+
+print_Upgrade()
+{
+	# if any pkgs are installed and old, print them
+	if [[ $MONERO_BASH_OLD = "true" \
+		|| $MONERO_VER != "" && $MONERO_OLD = "true" \
+		|| $XMRIG_VER != "" && $XMRIG_OLD = "true" \
+		|| $P2POOL_VER != "" && $P2POOL_OLD = "true" ]]; then
+		$bwhite; echo "Packages to upgrade: " ;$off
+
+		[[ $MONERO_BASH_VER != "" && $MONERO_BASH_OLD = "true" ]]&& printf " [monero-bash] "
+		[[ $MONERO_VER != "" && $MONERO_OLD = "true" ]]&& printf " [Monero] "
+		[[ $XMRIG_VER != "" && $XMRIG_OLD = "true" ]]&& printf " [XMRig] "
+		[[ $P2POOL_VER != "" && $P2POOL_OLD = "true" ]]&& printf " [P2Pool] "
+		echo
+	else
+		$bwhite; printf "All packages: "
+		$bgreen; echo "up to date"
+		exit
+	fi
+}
