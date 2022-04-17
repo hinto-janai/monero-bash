@@ -33,8 +33,9 @@ install <all/pkg> verbose         print detailed download information
 remove <all/pkg>                  remove <all> or a specific package
 remove <all/pkg> force            forcefully remove a package
 
-update                            only CHECK for updates
-upgrade <all/pkg>                 upgrade <all> or a specific package
+update                            CHECK for updates
+upgrade                           upgrade all packages     
+upgrade <pkg>                     upgrade a specific package
 upgrade <all/pkg> force           forcefully upgrade packages
 upgrade <all/pkg> verbose         print detailed download information
 version                           print installed package versions
