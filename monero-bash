@@ -295,7 +295,6 @@ if [[ $options = "true" ]]; then
 			esac
 			;;
 		remove)
-			[[ $* = "force" ]]&& FORCE_REMOVE="true" &&$ired&& echo "Forcefully removing...!" ;$off
 			case $2 in
 				*"bash"*|*"Bash"*|*"BASH"*)
 					$bwhite; echo -n "Remove [monero-bash]? (Y/n) " ;$off
@@ -322,6 +321,7 @@ if [[ $options = "true" ]]; then
 					prompt_YESno
 					;;
 				all|All|ALL)
+					print_Remove
 					$bwhite; echo -n "Remove [all]? (Y/n) " ;$off
 					Yes(){ remove_All ;}
 					No(){ echo "Exiting..." ;exit;}

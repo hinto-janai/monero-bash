@@ -66,7 +66,6 @@ uninstall                         uninstall monero-bash and remove /.monero-bash
 install <all/pkg>                 install <all> or a specific package
 install <all/pkg> verbose         print detailed download information
 remove <all/pkg>                  remove <all> or a specific package
-remove <all/pkg> force            forcefully remove a package
 
 update                            CHECK for updates
 upgrade                           upgrade all packages     
