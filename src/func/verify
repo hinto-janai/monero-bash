@@ -38,7 +38,7 @@ verify_Template()
 		hashSTDOUT="$(cat "$tmpHash/$hashFile")"
 
 	    # check if gpg key is imported
-	    if ! gpg --list-keys "$KEY_ID" &>/dev/null ;then
+	    if ! gpg --list-keys "$FINGERPRINT" &>/dev/null ;then
 	        $white; echo "Importing GPG key..."
 	        gpg_import_Template
 	    fi

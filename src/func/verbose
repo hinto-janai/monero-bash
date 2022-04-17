@@ -20,6 +20,7 @@ verbose_Upgrade()
 	$bwhite; echo -n "DOT_PKG: " ;$off; echo "$DOT_PKG"
 	$bwhite; echo -n "SHA: " ;$off; echo "$SHA"
 	$bwhite; echo -n "SIG: " ;$off; echo "$SIG"
+    $bwhite; echo -n "FINGERPRINT: " ;$off; echo "$FINGERPRINT"
 	$bwhite; echo -n "VERIFY_GPG: " ;$off; echo "$VERIFY_GPG"
 	$bwhite; echo -n "NewVer: " ;$off; echo "$NewVer"
 	$bwhite; echo -n "LINK: " ;$off; echo "$LINK"
