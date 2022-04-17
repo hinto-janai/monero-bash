@@ -242,7 +242,6 @@ if [[ $options = "true" ]]; then
 						upgrade_Force
 					else
 						print_Upgrade
-						echo
 						$bwhite; echo -n "Upgrade? (Y/n) " ;$off
 						Yes(){ upgrade_All ;}
 						No(){ echo "Exiting..." ;exit;}

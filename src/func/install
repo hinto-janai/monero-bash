@@ -36,11 +36,10 @@ install_All()
 	[[ $MONERO_VER != "" ]]&& printf " [Monero] "
 	[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
 	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
-	echo
+	echo;echo
 	$bwhite; echo -n "Install? (Y/n) " ;$off
 	Yes()
 	{
-		[[ $MONERO_BASH_VER != "" ]]&& install_MoneroBash
 		[[ $MONERO_VER != "" ]]&& install_Monero
 		[[ $XMRIG_VER != "" ]]&& install_XMRig
 		[[ $P2POOL_VER != "" ]]&& install_P2Pool
