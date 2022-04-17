@@ -1,11 +1,11 @@
 # v1.2
 ## Updates
-* **Install - Upgrade - Remove**
-	-`monero-bash install/upgrade/remove` now lists packages that will change
-	-`monero-bash update && monero-bash upgrade` is now essentially `sudo apt update && sudo apt upgrade`
+* **Package manager**
+	- `monero-bash install/upgrade/remove` now lists packages that will change
+	- `monero-bash update && monero-bash upgrade` is now essentially `sudo apt update && sudo apt upgrade`
 
 * **Process**
-	-`monero-bash <command> daemon` can also be invoked with `monero-bash <command> <monero/monerod>`
+	- `monero-bash <command> daemon` can also be invoked with `monero-bash <command> <monero/monerod>`
 
 
 # v1.1.2
