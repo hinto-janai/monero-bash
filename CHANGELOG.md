@@ -1,7 +1,7 @@
 # v1.2
 ## Updates
-* **Upgrade & Remove**
-	-`monero-bash upgrade` & `monero-bash remove` now list packages that will be upgraded/removed
+* **Install - Upgrade - Remove**
+	-`monero-bash upgrade` & `monero-bash install` & `monero-bash remove all` now lists the packages that will change
 	-`monero-bash update && monero-bash upgrade` is now essentially `sudo apt update && sudo apt upgrade`
 
 * **Process**
