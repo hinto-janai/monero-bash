@@ -238,19 +238,16 @@ if [[ $options = "true" ]]; then
 					prompt_YESno
 					;;
 				""|all|All|ALL)
+					if [[ $FORCE_UPGRADE = "true" ]]; then
+						upgrade_Force
+					else
 						print_Upgrade
 						echo
 						$bwhite; echo -n "Upgrade? (Y/n) " ;$off
-						Yes()
-						{
-							if [[ $FORCE_UPGRADE = "true" ]]; then
-								upgrade_Force
-							else
-								upgrade_All
-							fi
-						}
+						Yes(){ upgrade_All ;}
 						No(){ echo "Exiting..." ;exit;}
 						prompt_YESno
+					fi
 					;;
 				*)
 					print_Error "Pick a package or <all>"
