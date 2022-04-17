@@ -286,8 +286,6 @@ if [[ $options = "true" ]]; then
 					prompt_YESno
 					;;
 				""|all|All|ALL)
-					print_Upgrade
-					echo
 					$bwhite; echo -n "Install [all]? (Y/n) " ;$off
 					Yes(){ install_All ;}
 					No(){ echo "Exiting..." ;exit;}
