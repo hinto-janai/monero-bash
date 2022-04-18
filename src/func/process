@@ -59,6 +59,7 @@ process_Stop()
 				echo
 				print_Error "$PROCESS not responding, killing..."
 				process_Kill
+				exit
 			fi
 			if pgrep $PROCESS &>/dev/null ;then
 				echo -n "."

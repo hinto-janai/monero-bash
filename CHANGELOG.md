@@ -1,3 +1,9 @@
+# v1.2.1
+## Fixes
+* **Wallet**
+	- Fixed infinite wallet error printing during wallet_Collision function
+
+
 # v1.2
 ## Updates
 * **Package manager**
