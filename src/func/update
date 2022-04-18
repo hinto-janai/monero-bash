@@ -61,8 +61,5 @@ update_All()
         $ired; echo -n "monero-bash upgrade <package> "
         $white; echo "to upgrade something specific"
         $off
-	else
-		$bwhite; printf "All packages: "
-		$bgreen; echo "up to date"
     fi
 }

@@ -11,6 +11,13 @@ install_Template()
 	fi
 }
 
+install_MoneroBash()
+{
+	define_MoneroBash
+	echo "Uhh... It's already installed..."
+	echo -n "$NAME_PRETTY ($NAME_VER) "
+}
+
 install_Monero()
 {
 	define_Monero
