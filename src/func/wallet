@@ -149,11 +149,11 @@ wallet_Recover()
 wallet_Collision()
 {
 	$white; echo "Wallet name is similar to option..."
+	while true ;do
 	$iblue; printf "SELECT "
 	$white; printf "or "
 	$ired; printf "CREATE? " ;$off
 	read selectCreate
-	while true ;do
 		case $selectCreate in
 			select|Select|SELECT)
 				$off; echo "Selecting $walletSelection..."
