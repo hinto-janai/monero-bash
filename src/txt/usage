@@ -27,6 +27,7 @@ backup                            encrypt and backup your /wallets/
 decrypt                           decrypt backup.tar.gpg
 
 status                            print status of all running processes
+seed                              generate random 25-word Monero seed
 list                              list wallets
 size                              show size of monero-bash folders
 price                             fetch price data from cryptocompare.com API

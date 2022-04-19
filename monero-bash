@@ -127,6 +127,10 @@ if [[ $options = "true" ]]; then
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		config) mine_Config ;;
+		seed)
+			[[ $2 != "" ]]&& seedOptions="true" && seedLanguage="$2"
+			seed_Create
+			;;
 		edit)
 			case $2 in
 				daemon|monerod|monero) define_Monero;systemd_Edit ;;
