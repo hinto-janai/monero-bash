@@ -1,4 +1,8 @@
 # v1.2.1
+## Updates
+* **Seed**
+	- `monero-bash seed` or `monero-bash seed <LANGUAGE>` to quickly generate 25-word Monero seed
+
 ## Fixes
 * **Wallet**
 	- Fixed infinite error printing during wallet_Collision function
