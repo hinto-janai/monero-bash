@@ -1,8 +1,11 @@
-# v1.2.3
+# v1.3
+## Updates
+* **Process**
+	- Hugepages are individually prepared per process. Only `monero-bash start all` set hugepages before, now anytime any process is started, whether attached or not, it will set its own hugepages
+
 ## Fixes
 * **Process**
 	- `monero-bash full p2pool` properly works now
-	- `monero-bash full <process>` prepares hugepages for the process
 
 
 # v1.2.2

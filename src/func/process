@@ -14,6 +14,7 @@ process_Start_Template()
         $bred; echo "$PROCESS already detected..." ;$off
     else
 		missing_config_"$NAME_FUNC"
+		process_Hugepages
 		$bblue; echo "Starting $PROCESS..." ;$off
 		COMMANDS
 		error_Exit "Could not start $PROCESS"
@@ -78,13 +79,8 @@ process_Kill()
 	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
-		$ired; echo "Killing $PROCESS..."
+		$ired; echo "Sending kill signal to $PROCESS..."
 		sudo systemctl kill "$SERVICE"
-		if [[ $? = 0 ]]; then
-			$white; echo "$PROCESS killed"
-		else
-			print_Error "$PROCESS was not killed"
-		fi
 	}
 	process_Stop_Template
 }
@@ -92,7 +88,7 @@ process_Kill()
 process_Hugepages()
 {
 	$bwhite; echo "Setting hugepages..." ;$off
-	sudo sysctl vm.nr_hugepages=1024
+	sudo sysctl vm.nr_hugepages=1024 > /dev/null
 	if [[ $? != 0 ]]; then
 		print_Error "Could not set hugepages..."
 	fi
@@ -101,9 +97,9 @@ process_Hugepages()
 process_Full()
 {
 	case $PROCESS in
-		monerod) COMMANDS(){ process_Hugepages; "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
-		p2pool) COMMANDS(){ process_Hugepages; "$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel "$LOG_LEVEL" "$EXTRA_FLAGS";} ;;
-		xmrig) COMMANDS(){ process_Hugepages; sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
+		monerod) COMMANDS(){ "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
+		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel "$LOG_LEVEL" "$EXTRA_FLAGS";} ;;
+		xmrig) COMMANDS(){ sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
 	esac
 	process_Start_Template
 }
