@@ -1,3 +1,10 @@
+# v1.2.3
+## Fixes
+* **Process**
+	- `monero-bash full p2pool` properly works now
+	- `monero-bash full <process>` prepares hugepages for the process
+
+
 # v1.2.2
 ## Fixes
 * **Seed**
