@@ -1,3 +1,9 @@
+# v1.2.2
+## Fixes
+* **Seed**
+	- Added warning when using builtin seed generator
+
+
 # v1.2.1
 ## Updates
 * **Seed**
