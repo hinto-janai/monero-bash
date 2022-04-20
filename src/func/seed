@@ -19606,7 +19606,7 @@ esac
 
 ###########################################################################################   SEED GENERATION
 
-rng()
+seed_Rng()
 {
 	# 64 bytes/512 bits of /dev/random fed into sha512sum, only integers printed
 	sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
@@ -19628,20 +19628,20 @@ rng()
     fi
 }
 
-seed()
+seed_Generate()
 {
 	# first 23 words
 	for i in {1..23} ;do
-		rng
+		seed_Rng
 		printf "${array[$number]} "
 	done
 
 	# 24th word - no space
-	rng
+	seed_Rng
 	printf "${array[$number]}"
 }
 
-crc_string()
+seed_Crc_String()
 {
 	# concatenate first 3 letters of every word for last 25th word checksum
 	for i in $list ;do
@@ -19650,16 +19650,16 @@ crc_string()
 }
 
 # seed = seperated by spaces, list = seperated by newlines
-seed="$(seed)"
-list="$(echo "$seed" | sed "s@ @\n@g")"
+local seed="$(seed)"
+local list="$(echo "$seed" | sed "s@ @\n@g")"
 
 # crc operations on seed to find 25th word
-crc_hex="$(crc_string | gzip -c | tail -c8 | hexdump -n4 -e '"%u"')"
-crc_mod="$(($crc_hex % 24))"
-crc="$(($crc_mod + 1))"
+local crc_hex="$(crc_string | gzip -c | tail -c8 | hexdump -n4 -e '"%u"')"
+local crc_mod="$(($crc_hex % 24))"
+local crc="$(($crc_mod + 1))"
 
 # print all variables
-debug()
+seed_Debug()
 {
 	crc_string
 	echo "$seed"
@@ -19670,7 +19670,7 @@ debug()
 }
 
 # print 24-word seed + 25th crc word
-echo
+[[ $seedOptions != "true" ]]&& echo
 printf "$seed "
 echo "$list" | head -"$crc" | tail +"$crc"
 }
