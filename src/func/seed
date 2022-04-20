@@ -13,7 +13,7 @@ $bwhite; echo "Using monero-wallet-cli to generate a seed is highly recommended"
 $white; printf "Continue? (y/N) "
 Yes(){ :;}
 No(){ echo "Exiting..." ;exit;}
-prompt_yesNO
+prompt_NOyes
 
 # INTERACTIVE
 if [[ $seedOptions != "true" ]]; then
