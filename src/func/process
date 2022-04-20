@@ -89,13 +89,21 @@ process_Kill()
 	process_Stop_Template
 }
 
+process_Hugepages()
+{
+	$bwhite; echo "Setting hugepages..." ;$off
+	sudo sysctl vm.nr_hugepages=1024
+	if [[ $? != 0 ]]; then
+		print_Error "Could not set hugepages..."
+	fi
+}
+
 process_Full()
 {
 	case $PROCESS in
-		monerod) COMMANDS(){ "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
-		p2pool) COMMANDS(){ "$binP2Pool/p2pool" \
-			--config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel "$LOG_LEVEL" "$EXTRA_FLAGS";} ;;
-		xmrig) COMMANDS(){ sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
+		monerod) COMMANDS(){ process_Hugepages; "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
+		p2pool) COMMANDS(){ process_Hugepages; "$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --config "$p2poolConf" --loglevel "$LOG_LEVEL" "$EXTRA_FLAGS";} ;;
+		xmrig) COMMANDS(){ process_Hugepages; sudo $binXMRig/xmrig --config $xmrigConf ;} ;;
 	esac
 	process_Start_Template
 }
