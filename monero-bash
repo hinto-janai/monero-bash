@@ -97,15 +97,14 @@ if [[ $interactive = "true" ]]; then
 			read -s walletPassword && echo
 			wallet_Start
 			break
-		elif [[ $walletSelection = "" ]]; then
-			print_Error "empty input"
 		fi
 
-		# WALLET CREATION
+		# WALLET CREATION + ERROR INPUT
 		case $walletSelection in
 			new|New|NEW|"[new]"|"[New]") wallet_Create ; break ;;
 			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
 			recover|Recover|RECOVER|"[recover]"|"[Recover]") wallet_Recover ; break ;;
+			"") print_Error "empty input" ;;
 			*) $ired; print_Error "wallet does not exist" ;;
 		esac
 	done

@@ -11,12 +11,6 @@ mine_Start()
 	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
 		mine_Config
 	else
-		prompt_Sudo;error_Sudo
-		$bwhite; echo "Setting hugepages..." ;$off
-		sudo sysctl vm.nr_hugepages=3072
-		if [[ $? != 0 ]]; then
-			print_Error "Could not set hugepages..."
-		fi
 		define_Monero;process_Start
 		define_P2Pool;process_Start
 		define_XMRig;process_Start
