@@ -77,7 +77,7 @@ status_XMRig()
 
 		# SHARES + HASHRATE
 		$igreen; echo -n "Accepted shares: " ;$off
-		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" ;then
+		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
 			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
 		else
 			echo

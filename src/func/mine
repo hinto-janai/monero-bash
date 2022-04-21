@@ -15,7 +15,7 @@ mine_Start()
 		define_P2Pool;process_Start
 		define_XMRig;process_Start
 		printf "Watch with: "
-		$bwhite; echo "monero-bash watch <daemon/p2pool/xmrig>"
+		$bwhite; echo "monero-bash watch <daemon/p2pool/xmrig>" ;$off
 	fi
 }
 
