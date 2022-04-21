@@ -71,9 +71,9 @@ status_XMRig()
 	EXTRA_STATS()
 	{
 		$iwhite; echo -n "Wallet: " ;$off
-		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		$iblue; echo -n "Pool: " ;$off
-		grep "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES + HASHRATE
 		$igreen; echo -n "Accepted shares: " ;$off
