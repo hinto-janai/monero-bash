@@ -48,17 +48,17 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$bblue; echo -n "Wallet: "
+		$iwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
 
 		# SHARES
-		$bblue; printf "Shares found: "
+		$igreen; printf "Shares found: "
 		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log | wc -l)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
 		local processHours="$(($processUnixTime / 60 / 60))"
 		[[ $processHours = 0 ]]&& processHours="1"
 		local sharesPerHour="$((sharesFound / $processHours))"
-		$white; printf "$sharesFound "
+		$bwhite; printf "$sharesFound "
 		echo "($sharesPerHour shares / hour)"
 		echo
 	}
@@ -70,15 +70,15 @@ status_XMRig()
 	define_XMRig
 	EXTRA_STATS()
 	{
-		$bblue; echo -n "Wallet: " ;$off
+		$iwhite; echo -n "Wallet: " ;$off
 		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
-		$bblue; echo -n "Pool: " ;$off
+		$iblue; echo -n "Pool: " ;$off
 		grep "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES + HASHRATE
-		$bblue; echo -n "Accepted shares: " ;$off
+		$igreen; echo -n "Accepted shares: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "accepted"
-		$bblue; echo -n "Hashrate: " ;$off
+		$ired; echo -n "Hashrate: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed"
 		echo
 	}
