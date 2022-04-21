@@ -49,6 +49,8 @@ status_P2Pool()
 	{
 		$bwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
+
+		# SHARES
 		$bwhite; printf "Shares found: "
 		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log | wc -l)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
@@ -71,7 +73,12 @@ status_XMRig()
 		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		$bwhite; echo -n "Pool: " ;$off
 		grep "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
-		sudo journalctl -u "$SERVICE" --output cat | tail -n4
+
+		# SHARES + HASHRATE
+		$bwhite; echo -n "Accepted shares: " ;$off
+		tac "$binXMRig/xmrig-log" | grep -m1 "accepted"
+		$bwhite; echo -n "Hashrate: " ;$off
+		tac "$binXMRig/xmrig-log" | grep -m1 "speed"
 	}
 	status_Template
 }
