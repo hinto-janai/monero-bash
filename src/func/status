@@ -5,8 +5,6 @@ status_All()
 {
 	prompt_Sudo;error_Sudo
 	print_MoneroBashTitle
-	wallet_Count
-	wallet_List
 	print_Version
 	echo
 	[[ $MONERO_VER != "" ]]&& status_Monero
@@ -14,11 +12,23 @@ status_All()
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
 }
 
+status_System()
+{
+	$bwhite; printf "System: "
+	$bgreen; echo "$(uptime -p)"
+	echo
+}
+
 status_Template()
 {
 	$bwhite; echo -n "$NAME_PRETTY: " ;$off
-	if pgrep $PROCESS &>/dev/null ;then
+	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
 		$bgreen; echo "online" ;$off
+
+		# ps stats
+		ps -o "%p | %C | " -o start -o " | %t | %c" -p $(pgrep $DIRECTORY/$PROCESS -f)
+
+		# process specific stats
 		EXTRA_STATS
 	else
 		$bred; echo "offline" ;$off
@@ -39,7 +49,14 @@ status_P2Pool()
 	{
 		$bwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
-		journalctl -u "$SERVICE" --output cat | tail -n4
+		$bwhite; printf "Shares found: "
+		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log | wc -l)"
+		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
+		local processHours="$(($processUnixTime / 60 / 60))"
+		[[ $processHours = 0 ]]&& processHours="1"
+		local sharesPerHour="$((sharesFound / $processHours))"
+		$white; printf "$sharesFound "
+		echo "($sharesPerHour shares / hour)"
 		echo
 	}
 	status_Template
