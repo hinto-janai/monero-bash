@@ -60,7 +60,7 @@ status_P2Pool()
 		$bwhite; printf "$sharesFound "
 
 		# SHARES/hour WITH FLOATING POINT
-		local sharesPerHour="$(printf %.2f\\n "$((1000000000 *   10/7  ))e-9")"
+		local sharesPerHour="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processHours ))e-9")"
 		echo "($sharesPerHour shares per hour)"
 		echo
 	}
