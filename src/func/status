@@ -7,6 +7,7 @@ status_All()
 	print_MoneroBashTitle
 	print_Version
 	echo
+	status_System
 	[[ $MONERO_VER != "" ]]&& status_Monero
 	[[ $P2POOL_VER != "" ]]&& status_P2Pool
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
@@ -47,11 +48,11 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$bwhite; echo -n "Wallet: "
+		$bblue; echo -n "Wallet: "
 		$white; echo "$WALLET"
 
 		# SHARES
-		$bwhite; printf "Shares found: "
+		$bblue; printf "Shares found: "
 		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log | wc -l)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
 		local processHours="$(($processUnixTime / 60 / 60))"
@@ -69,16 +70,15 @@ status_XMRig()
 	define_XMRig
 	EXTRA_STATS()
 	{
-		$bwhite; echo -n "Wallet: " ;$off
+		$bblue; echo -n "Wallet: " ;$off
 		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
-		$bwhite; echo -n "Pool: " ;$off
+		$bblue; echo -n "Pool: " ;$off
 		grep "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES + HASHRATE
-		$bwhite; echo -n "Accepted shares: " ;$off
+		$bblue; echo -n "Accepted shares: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "accepted"
-		echo
-		$bwhite; echo -n "Hashrate: " ;$off
+		$bblue; echo -n "Hashrate: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed"
 		echo
 	}
