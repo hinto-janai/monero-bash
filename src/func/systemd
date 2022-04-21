@@ -75,7 +75,7 @@ systemd_XMRig()
 {
 	define_XMRig
 	local USER="root"
-	local COMMAND="$binXMRig/xmrig --config $xmrigConf"
+	local COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file="$binXMRig/xmrig.log""
 	systemd_Template
 }
 

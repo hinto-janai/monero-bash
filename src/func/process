@@ -14,6 +14,13 @@ process_Start_Template()
         $bred; echo "$PROCESS already detected..." ;$off
     else
 		missing_config_"$NAME_FUNC"
+
+		# REFRESH LOGS
+		if [[ $NAME_PRETTY = "P2Pool" ]]; then
+			[[ -e "$binP2Pool/p2pool.log" ]]&& sudo rm "$binP2Pool/p2pool.log"
+		elif [[ $NAME_PRETTY = "XMRig" ]]; then
+			[[ -e "$binXMRig/xmrig.log" ]]&& sudo rm "$binXMRig/xmrig.log"
+		fi
 		process_Hugepages
 		$bblue; echo "Starting $PROCESS..." ;$off
 		COMMANDS
@@ -99,7 +106,7 @@ process_Full()
 	case $PROCESS in
 		monerod) COMMANDS(){ "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
 		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --config "$p2poolConf" --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL" "$EXTRA_FLAGS";} ;;
-		xmrig) COMMANDS(){ sudo "$binXMRig/xmrig" --config "$xmrigConf" ;} ;;
+		xmrig) COMMANDS(){ sudo "$binXMRig/xmrig" --config "$xmrigConf" --log-file="$binXMRig/xmrig.log" ;} ;;
 	esac
 	process_Start_Template
 }
