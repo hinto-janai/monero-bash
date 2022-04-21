@@ -77,7 +77,11 @@ status_XMRig()
 
 		# SHARES + HASHRATE
 		$igreen; echo -n "Accepted shares: " ;$off
-		tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
+		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" ;then
+			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
+		else
+			echo
+		fi
 		$ired; echo -n "Hashrate: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
 		echo
