@@ -59,10 +59,10 @@ status_P2Pool()
 		$bwhite; printf "Shares found: "
 		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f))"
-		local processHours="$(echo $(($processUnixTime / 60 / 60)))"
-		local sharesPerHour="$(echo $(($sharesFound / $processHours)))"
+		local processHours="$(($processUnixTime / 60 / 60))"
+		local sharesPerHour="$((sharesFound / $processHours))"
 		$white; printf "$sharesFound "
-		echo "$sharesPerHour shares / hour"
+		echo "($sharesPerHour shares / hour)"
 		echo
 	}
 	status_Template
