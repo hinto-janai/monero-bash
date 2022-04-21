@@ -53,13 +53,13 @@ status_P2Pool()
 
 		# SHARES
 		$igreen; printf "Shares found: "
-		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log | wc -l)"
+		local sharesFound="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log | wc -l)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
 		local processHours="$(($processUnixTime / 60 / 60))"
 		[[ $processHours = 0 ]]&& processHours="1"
 		local sharesPerHour="$((sharesFound / $processHours))"
 		$bwhite; printf "$sharesFound "
-		echo "($sharesPerHour shares / hour)"
+		echo "($sharesPerHour shares per hour)"
 		echo
 	}
 	status_Template
@@ -71,18 +71,18 @@ status_XMRig()
 	EXTRA_STATS()
 	{
 		$iwhite; echo -n "Wallet: " ;$off
-		grep "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		$iblue; echo -n "Pool: " ;$off
-		grep "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES + HASHRATE
-		$igreen; echo -n "Accepted shares: " ;$off
-		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" ;then
+		$igreen; echo -n "Accepted shares: " ;$bwhite
+		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
 			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
 		else
 			echo
 		fi
-		$ired; echo -n "Hashrate: " ;$off
+		$ired; echo -n "Hashrate: " ;$bwhite
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
 		echo
 	}
