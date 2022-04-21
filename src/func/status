@@ -14,11 +14,28 @@ status_All()
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
 }
 
+status_System()
+{
+	$bwhite; printf "System: "
+	$bgreen; echo "$(uptime -p)"
+	echo
+}
+
 status_Template()
 {
 	$bwhite; echo -n "$NAME_PRETTY: " ;$off
-	if pgrep $PROCESS &>/dev/null ;then
-		$bgreen; echo "online" ;$off
+	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
+
+		# check if systemd or full
+		systemctl status $SERVICE &>/dev/null
+		if [[ $? = 0 ]]; then
+			$bgreen; echo "online - systemd mode" ;$off
+		else
+			$bgreen; echo "online - full mode" ;$off
+		fi
+
+		# ps stats
+		ps -o "%p | %C | " -o start -o " | %t | %c" -p $(pgrep $DIRECTORY/$PROCESS -f)
 		EXTRA_STATS
 	else
 		$bred; echo "offline" ;$off
@@ -39,7 +56,13 @@ status_P2Pool()
 	{
 		$bwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
-		journalctl -u "$SERVICE" --output cat | tail -n4
+		$bwhite; printf "Shares found: "
+		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log)"
+		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f))"
+		local processHours="$(echo $(($processUnixTime / 60 / 60)))"
+		local sharesPerHour="$(echo $(($sharesFound / $processHours)))"
+		$white; printf "$sharesFound "
+		echo "$sharesPerHour shares / hour"
 		echo
 	}
 	status_Template
