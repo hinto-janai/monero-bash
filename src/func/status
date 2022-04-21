@@ -60,6 +60,7 @@ status_P2Pool()
 		local sharesFound="$(grep "SHARE" $DIRECTORY/p2pool.log)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
 		local processHours="$(($processUnixTime / 60 / 60))"
+		[[ $processHours = 0 ]]&& processHours="1"
 		local sharesPerHour="$((sharesFound / $processHours))"
 		$white; printf "$sharesFound "
 		echo "($sharesPerHour shares / hour)"
