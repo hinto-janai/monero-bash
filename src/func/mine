@@ -50,7 +50,7 @@ mine_Config()
 	# wallet + daemon ip + pool ip + mini config
 	$bwhite; printf "WALLET ADDRESS: " ;$off
 	read WALLET_INTERACTIVE
-	$bwhite; printf "DIFFICULTY [default - 200000]: " ;$off
+	$bwhite; printf "DIFFICULTY [default - 200000 / or "none"]: " ;$off
 	read DIFFICULTY
 	$bwhite; printf "DAEMON IP [default - 127.0.0.1]: " ;$off
 	read IP
@@ -69,6 +69,8 @@ mine_Config()
 	if [[ "$DIFFICULTY" = "" ]]; then
 		echo "200,000"
 		DIFFICULTY="200000"
+	elif [[ "$DIFFICULTY" = "none" || "$DIFFICULTY" = "None" ]]; then
+		DIFFICULTY="none"
 	else
 		echo "$DIFFICULTY"
 	fi
@@ -116,7 +118,11 @@ mine_Config()
 		# xmrig.json
 		echo "Editing xmrig.json..."
 		missing_config_XMRig
-		sudo -u "$USER" sed -i "s@.*user.*@            \"user\": \"${WALLET_INTERACTIVE}+${DIFFICULTY}\",@" "$xmrigConf"
+		if [[ "$DIFFICULTY" = "none" ]]; then
+			sudo -u "$USER" sed -i "s@.*user.*@            \"user\": \"${WALLET_INTERACTIVE}\",@" "$xmrigConf"
+		else
+			sudo -u "$USER" sed -i "s@.*user.*@            \"user\": \"${WALLET_INTERACTIVE}+${DIFFICULTY}\",@" "$xmrigConf"
+		fi
 		sudo -u "$USER" sed -i "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
 
 		# state file
