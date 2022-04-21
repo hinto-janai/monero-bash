@@ -77,8 +77,10 @@ status_XMRig()
 		# SHARES + HASHRATE
 		$bwhite; echo -n "Accepted shares: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "accepted"
+		echo
 		$bwhite; echo -n "Hashrate: " ;$off
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed"
+		echo
 	}
 	status_Template
 }
