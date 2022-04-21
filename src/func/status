@@ -76,13 +76,13 @@ status_XMRig()
 		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES + HASHRATE
-		$igreen; echo -n "Accepted shares: " ;$off
+		$igreen; echo -n "Accepted shares: " ;$bwhite
 		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
 			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
 		else
 			echo
 		fi
-		$ired; echo -n "Hashrate: " ;$off
+		$ired; echo -n "Hashrate: " ;$bwhite
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
 		echo
 	}
