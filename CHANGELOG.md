@@ -1,3 +1,11 @@
+# v1.4
+## Updates
+* **Status**
+	- `status` produces general info for all processes: PID, CPU usage, start time, uptime
+	- `p2pool` shows submitted shares & shares/per hour
+	- `xmrig` shows accepted shares & hashrate
+
+
 # v1.3
 ## Updates
 * **Process**
