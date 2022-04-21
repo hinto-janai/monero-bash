@@ -228,7 +228,7 @@ if [[ $options = "true" ]]; then
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				xmrig|XMRig|XMRIG|Xmrig)
+				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
 					$bwhite; echo -n "Upgrade [XMRig]? (Y/n) " ;$off
 					Yes(){ upgrade_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
@@ -272,7 +272,7 @@ if [[ $options = "true" ]]; then
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				xmrig|XMRig|XMRIG|Xmrig)
+				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
 					$bwhite; echo -n "Install [XMRig]? (Y/n) " ;$off
 					Yes(){ install_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
@@ -311,7 +311,7 @@ if [[ $options = "true" ]]; then
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				xmrig|XMRig|XMRIG|Xmrig)
+				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
 					$bwhite; echo -n "Remove [XMRig]? (Y/n) " ;$off
 					Yes(){ remove_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
