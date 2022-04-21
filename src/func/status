@@ -5,8 +5,6 @@ status_All()
 {
 	prompt_Sudo;error_Sudo
 	print_MoneroBashTitle
-	wallet_Count
-	wallet_List
 	print_Version
 	echo
 	[[ $MONERO_VER != "" ]]&& status_Monero
@@ -25,17 +23,12 @@ status_Template()
 {
 	$bwhite; echo -n "$NAME_PRETTY: " ;$off
 	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
-
-		# check if systemd or full
-		systemctl status $SERVICE &>/dev/null
-		if [[ $? = 0 ]]; then
-			$bgreen; echo "online - systemd mode" ;$off
-		else
-			$bgreen; echo "online - full mode" ;$off
-		fi
+		$bgreen; echo "online" ;$off
 
 		# ps stats
 		ps -o "%p | %C | " -o start -o " | %t | %c" -p $(pgrep $DIRECTORY/$PROCESS -f)
+
+		# process specific stats
 		EXTRA_STATS
 	else
 		$bred; echo "offline" ;$off
