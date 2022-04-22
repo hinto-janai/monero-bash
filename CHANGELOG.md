@@ -1,13 +1,14 @@
 # v1.4
 ## Updates
 * **Status**
-	- `status` produces general info for all processes: PID, CPU usage, start time, uptime
+	- `status` produces general info for all processes: PID, CPU usage, uptime
 	- `p2pool` shows submitted shares & shares/per hour
 	- `xmrig` shows accepted shares & hashrate
-	- no longer need sudo privileges
+	- no longer needs sudo privileges
 
 * **Process**
 	- `reset` command to reset your configs & systemd services to the default
+
 
 ## Fixes
 * **Traps**
