@@ -67,7 +67,6 @@ process_Stop()
 				echo
 				print_Error "$PROCESS not responding, killing..."
 				process_Kill
-				exit
 			fi
 			if pgrep $PROCESS &>/dev/null ;then
 				echo -n "."
@@ -104,9 +103,9 @@ process_Hugepages()
 process_Full()
 {
 	case $PROCESS in
-		monerod) COMMANDS(){ "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
-		p2pool) COMMANDS(){ "$binP2Pool/p2pool" --config "$p2poolConf" --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL" $EXTRA_FLAGS;} ;;
-		xmrig) COMMANDS(){ sudo "$binXMRig/xmrig" --config "$xmrigConf" --log-file="$binXMRig/xmrig-log" ;} ;;
+		monerod) COMMANDS(){ cd "$binMonero" ; ./monero" --config-file "$config/monerod.conf" ;} ;;
+		p2pool) COMMANDS(){ cd "$binP2Pool" ; ./p2pool --config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL" $EXTRA_FLAGS;} ;;
+		xmrig) COMMANDS(){ cd "$binXMRig" sudo ./xmrig --config "$xmrigConf" --log-file="$binXMRig/xmrig-log" ;} ;;
 	esac
 	process_Start_Template
 }
