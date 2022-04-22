@@ -27,20 +27,20 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 [This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
-* 📦 `PACKAGE MANAGER` downloading, verifying and upgrading of packages
+* 📦 `PACKAGE MANAGER` downloading, verifying and upgrading packages (including itself)
 * 💵 `WALLET` wallet menu to display names/amounts of wallets
-* 👺 `DAEMON` control `monerod` more automatically
+* 👺 `DAEMON` control `monerod/p2pool/xmrig` more automatically
 * ⛏️  `MINING` easy mining setup, **default is P2Pool**
-* 👁️  `WATCH` switch between normal terminal and live output of `monerod`, `xmrig`, `p2pool`
+* 👁️  `WATCH` switch between normal terminal and live output of `monerod/p2pool/xmrig`
 * 🔒 `GPG` verify packages with GPG, and `backup/decrypt` your wallets
-* 📈 `STATS` various stats to display (processes, price, disk usage, etc)
+* 📈 `STATS` various stats to display (processes, price, CPU/disk usage, etc)
 
 ## Install
 [To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
 ./monero-bash
 ```
-will install monero-bash onto your system, to uninstall cleanly: `monero-bash uninstall`
+This will install monero-bash onto your system, to uninstall cleanly: `monero-bash uninstall`
 
 OR
 
