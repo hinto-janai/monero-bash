@@ -14,6 +14,9 @@
 * **Traps**
 	- traps are more strict (less chance for data corruption if interrupted during operation)
 
+* **Error**
+	- error messages are more helpful
+
 
 # v1.3
 ## Updates
