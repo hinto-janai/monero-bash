@@ -119,7 +119,7 @@ if [[ $options = "true" ]]; then
 		uninstall) monerobash_Uninstall ;;
 		update) update_All ;;
 		version) print_Version ;;
-		list) wallet_Count && wallet_List ;;
+		list) print_MoneroBashTitle && wallet_Count && wallet_List ;;
 		size) print_Size ;;
 		price) check_Price ;;
 		status) status_All ;;
