@@ -104,7 +104,7 @@ mine_Config()
 	{
 		prompt_Sudo ; error_Sudo
 		safety_HashList
-		trap "trap_No" 1 2 3 6 15
+		trap "" 1 2 3 6 15
 
 		# monero-bash.conf
 		echo "Editing monero-bash.conf..."
