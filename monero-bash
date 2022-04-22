@@ -135,7 +135,7 @@ if [[ $options = "true" ]]; then
 				daemon|monerod|monero) define_Monero;systemd_Edit ;;
 				xmrig|xmr) define_XMRig;systemd_Edit ;;
 				p2pool|p2p) define_P2Pool;systemd_Edit ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		reset)
@@ -144,7 +144,7 @@ if [[ $options = "true" ]]; then
 				*"bash"*|*"Bash"*|*"BASH"*)define_MoneroBash;reset_Template ;;
 				xmrig|xmr) define_XMRig;reset_Template ;;
 				p2pool|p2p) define_P2Pool;reset_Template ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <bash/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		start)
@@ -153,8 +153,7 @@ if [[ $options = "true" ]]; then
 				xmrig|xmr) define_XMRig;process_Start ;;
 				p2pool|p2p) define_P2Pool;process_Start ;;
 				all) mine_Start ;;
-				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		stop)
@@ -163,8 +162,7 @@ if [[ $options = "true" ]]; then
 				xmrig|xmr) define_XMRig;process_Stop ;;
 				p2pool|p2p) define_P2Pool;process_Stop ;;
 				all) mine_Stop ;;
-				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		restart)
@@ -173,8 +171,7 @@ if [[ $options = "true" ]]; then
 				xmrig|xmr) define_XMRig;process_Restart ;;
 				p2pool|p2p) define_P2Pool;process_Restart ;;
 				all) mine_Restart ;;
-				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		kill)
@@ -183,8 +180,7 @@ if [[ $options = "true" ]]; then
 				xmrig|xmr) define_XMRig;process_Kill ;;
 				p2pool|p2p) define_P2Pool;process_Kill ;;
 				all) mine_Kill ;;
-				"") print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		full)
@@ -192,8 +188,7 @@ if [[ $options = "true" ]]; then
 				daemon|monerod|monero) define_Monero;process_Full ;;
 				xmrig|xmr) define_XMRig;process_Full ;;
 				p2pool|p2p) define_P2Pool;process_Full ;;
-				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 			esac
 			;;
 		watch)
@@ -201,8 +196,7 @@ if [[ $options = "true" ]]; then
 				daemon|monerod|monero) watch_Monero ;;
 				xmrig|xmr) watch_XMRig ;;
 				p2pool|p2p) watch_P2Pool ;;
-				"") print_Error "Pick: <daemon/xmrig/p2pool>" ;;
-				*) error_Unknown ;;
+				*) print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 			esac
 			;;
 		gpg)
@@ -212,13 +206,13 @@ if [[ $options = "true" ]]; then
 					case $3 in
 						all|All|ALL) gpg_import_All ;;
 						binaryfate|Binaryfate|monero|Monero|MONERO) gpg_import_Monero ;;
-						hinto|hinto-janaiyo|Hinto|monero-bash|Monero-Bash) gpg_import_MoneroBash ;;
+						hinto|hinto-janaiyo|Hinto|*"bash"*|*"Bash"*|*"BASH"*) gpg_import_MoneroBash ;;
 						xmrig|XMRig|XMRIG|Xmrig) gpg_import_XMRig ;;
 						SChernykh|schernykh|SCHERNYKH|p2pool|p2p|P2P|P2Pool|P2POOL) gpg_import_P2Pool ;;
-						*) error_Unknown ;;
+						*) print_Error "Pick: <monero/bash/xmrig/p2pool>" ;;
 					esac
 					;;
-				*) error_Unknown ;;
+				*) print_Error "Did you mean <gpg import> ?" ;;
 			esac
 			;;
 		upgrade)
@@ -271,7 +265,7 @@ if [[ $options = "true" ]]; then
 			case $2 in
 				*"bash"*|*"Bash"*|*"BASH"*)
 					$bwhite; echo -n "Install [monero-bash]? (Y/n) " ;$off
-					Yes(){ echo "uhh... It's already installed..." ;}
+					Yes(){ echo "Umm... It's already installed..." ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
