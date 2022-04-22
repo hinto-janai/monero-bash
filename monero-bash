@@ -138,6 +138,15 @@ if [[ $options = "true" ]]; then
 				*) error_Unknown ;;
 			esac
 			;;
+		reset)
+			case $2 in
+				daemon|monerod|monero) define_Monero;reset_Template ;;
+				*"bash"*|*"Bash"*|*"BASH"*)define_MoneroBash;reset_Template ;;
+				xmrig|xmr) define_XMRig;reset_Template ;;
+				p2pool|p2p) define_P2Pool;reset_Template ;;
+				*) error_Unknown ;;
+			esac
+			;;
 		start)
 			case $2 in
 				daemon|monerod|monero) define_Monero;process_Start ;;
