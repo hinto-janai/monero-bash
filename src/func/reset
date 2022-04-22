@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+#
+# for overwriting current (old) configs with new ones from "$installDirectory/config"
+# and old systemd services with new ones
+
+reset_Template()
+{
+	# PROMPT
+	$bred; echo "This will overwrite your current $NAME_PRETTY configs & systemd services with a new default version"
+	$bwhite; echo "Continue? (y/N) " ;$off
+	Yes(){ echo "Resetting..." ;}
+	No(){ echo "Exiting..." ;exit;}
+	prompt_NOyes
+
+	# SAFETY
+	prompt_Sudo;error_Sudo
+	safety_HashList
+	trap "trap_No" 1 2 3 6 15
+	[[ "$NAME_VER" = "" ]]&& echo "$NAME_PRETTY isn't installed" && exit
+
+	# OVERWRITE
+	case $NAME_PRETTY in
+		Monero)
+			sudo -u "$USER" cp -f "$installDirectory/config/monerod.conf" "$config/monerod.conf"
+			sudo -u "$USER" cp -f "$installDirectory/config/monero-wallet-cli.conf" "$config/monero-wallet-cli.conf"
+			systemd_"$NAME_FUNC"
+			;;
+		monero-bash)
+			sudo -u "$USER" cp -f "$installDirectory/config/monero-bash.conf" "$config/monero-bash.conf"
+			;;
+		XMRig)
+			sudo -u "$USER" cp -f "$installDirectory/config/xmrig.json" "$xmrigConf"
+			systemd_"$NAME_FUNC"
+			;;
+		P2Pool)
+			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.json" "$p2poolConf"
+			systemd_"$NAME_FUNC"
+			;;
+	esac
+	if [[ $? = 0 ]]; then
+		$white; echo "Reset complete"
+	else
+		print_Error "Reset failed"
+	fi
+}
