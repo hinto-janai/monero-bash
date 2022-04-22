@@ -10,7 +10,7 @@
 
 ## Fixes
 * **Traps**
-	- traps are more strict (less chance for data corruption)
+	- traps are more strict (less chance for data corruption if interrupted during operation)
 
 
 # v1.3

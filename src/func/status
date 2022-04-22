@@ -3,7 +3,6 @@
 
 status_All()
 {
-	prompt_Sudo;error_Sudo
 	print_MoneroBashTitle
 	print_Version
 	echo
