@@ -23,6 +23,7 @@ edit <daemon/xmrig/p2pool>           edit systemd service file
 reset <bash/daemon/xmrig/p2pool>     reset your configs/systemd to default
 
 gpg                                  toggle GPG verification of binaries
+gpg import <all/pkg>                 import all GPG keys or specific package
 backup                               encrypt and backup your /wallets/
 decrypt                              decrypt backup.tar.gpg
 

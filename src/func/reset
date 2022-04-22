@@ -31,15 +31,15 @@ reset_Template()
 		XMRig)
 			sudo -u "$USER" cp -f "$installDirectory/config/xmrig.json" "$xmrigConf"
 			systemd_"$NAME_FUNC"
+			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"
+			PRODUCE_HASH_LIST
 			;;
 		P2Pool)
 			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.json" "$p2poolConf"
 			systemd_"$NAME_FUNC"
+			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"
+			PRODUCE_HASH_LIST
 			;;
 	esac
-	if [[ $? = 0 ]]; then
-		$white; echo "Reset complete"
-	else
-		print_Error "Reset failed"
-	fi
+	$white; echo "Reset complete"
 }

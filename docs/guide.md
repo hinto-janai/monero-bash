@@ -25,42 +25,43 @@ Remember, you are using your own node to mine. The blockchain has to be fully sy
 ```
 monero-bash usage: monero-bash <option> <more options>
 
-monero-bash                       the default command will open wallet selection
-uninstall                         uninstall monero-bash and remove /.monero-bash/
+monero-bash                          the default command will open wallet selection
+uninstall                            uninstall monero-bash and remove /.monero-bash/
 
-install <all/pkg>                 install <all> or a specific package
-install <all/pkg> verbose         print detailed download information
-remove <all/pkg>                  remove <all> or a specific package
+install <all/pkg>                    install <all> or a specific package
+install <all/pkg> verbose            print detailed download information
+remove <all/pkg>                     remove <all> or a specific package
 
-update                            CHECK for updates
-upgrade                           upgrade all packages     
-upgrade <pkg>                     upgrade a specific package
-upgrade <all/pkg> force           forcefully upgrade packages
-upgrade <all/pkg> verbose         print detailed download information
-version                           print installed package versions
+update                               CHECK for updates
+upgrade                              upgrade all packages
+upgrade <pkg>                        upgrade a specific package
+upgrade <all/pkg> force              forcefully upgrade packages
+upgrade <all/pkg> verbose            print detailed download information
+version                              print installed package versions
 
-config                            configure MINING settings
-start <all/daemon/xmrig/p2pool>   start process detached (background)
-stop <all/daemon/xmrig/p2pool>    gracefully stop the process
-kill <all/daemon/xmrig/p2pool>    forcefully kill the process
-restart <all/daemon/xmrig/p2pool> restart the process
-full <daemon/xmrig/p2pool>        start the process attached (foreground)
-watch <daemon/xmrig/p2pool>       watch live output of process
-edit <daemon/xmrig/p2pool>        edit systemd service file
+config                               configure MINING settings
+start <all/daemon/xmrig/p2pool>      start process detached (background)
+stop <all/daemon/xmrig/p2pool>       gracefully stop the process
+kill <all/daemon/xmrig/p2pool>       forcefully kill the process
+restart <all/daemon/xmrig/p2pool>    restart the process
+full <daemon/xmrig/p2pool>           start the process attached (foreground)
+watch <daemon/xmrig/p2pool>          watch live output of process
+edit <daemon/xmrig/p2pool>           edit systemd service file
+reset <bash/daemon/xmrig/p2pool>     reset your configs/systemd to default
 
-gpg                               toggle GPG verification of binaries
-gpg import <all/pkg>              import all GPG keys or specific package
-backup                            encrypt and backup your /wallets/
-decrypt                           decrypt backup.tar.gpg
+gpg                                  toggle GPG verification of binaries
+gpg import <all/pkg>                 import all GPG keys or specific package
+backup                               encrypt and backup your /wallets/
+decrypt                              decrypt backup.tar.gpg
 
-status                            print status of all running processes
-seed                              generate random 25-word Monero seed
-list                              list wallets
-size                              show size of monero-bash folders
-price                             fetch price data from cryptocompare.com API
-integrity                         check hash integrity of monero-bash
+status                               print status of all running processes
+seed                                 generate random 25-word Monero seed
+list                                 list wallets
+size                                 show size of monero-bash folders
+price                                fetch price data from cryptocompare.com API
+integrity                            check hash integrity of monero-bash
 
-help                              show this help message
+help                                 show this help message
 ```
 </details>
 
