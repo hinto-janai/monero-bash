@@ -26,7 +26,7 @@ status_Template()
 		$bgreen; echo "online" ;$off
 
 		# ps stats
-		ps -o "%p | %C | " -o start -o " | %t | %c" -p $(pgrep $DIRECTORY/$PROCESS -f)
+		ps -o "| %p | %C | %t |" -p $(pgrep $DIRECTORY/$PROCESS -f)
 
 		# process specific stats
 		EXTRA_STATS
