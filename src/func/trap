@@ -6,7 +6,7 @@ trap_Template()
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 }
 
-# continue current operation until finished (then revert)
+# continue current operation until finished and revert (ONLY FOR UPGRADE)
 trap_No()
 {
 	trap_Template

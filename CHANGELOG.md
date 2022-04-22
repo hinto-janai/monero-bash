@@ -8,6 +8,10 @@
 * **Process**
 	- `reset` command to reset your configs & systemd services to the default
 
+## Fixes
+* **Traps**
+	- traps are more strict (less chance for data corruption)
+
 
 # v1.3
 ## Updates

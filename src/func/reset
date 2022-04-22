@@ -19,7 +19,7 @@ reset_Template()
 	# SAFETY
 	prompt_Sudo;error_Sudo
 	safety_HashList
-	trap "trap_No" 1 2 3 6 15
+	trap "" 1 2 3 6 15
 	[[ "$NAME_VER" = "" ]]&& echo "$NAME_PRETTY isn't installed" && exit
 
 	# OVERWRITE
