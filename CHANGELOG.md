@@ -4,6 +4,7 @@
 	- `status` produces general info for all processes: PID, CPU usage, start time, uptime
 	- `p2pool` shows submitted shares & shares/per hour
 	- `xmrig` shows accepted shares & hashrate
+	- no longer need sudo privileges
 
 * **Process**
 	- `reset` command to reset your configs & systemd services to the default
