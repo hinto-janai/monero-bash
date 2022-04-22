@@ -5,6 +5,9 @@
 	- `p2pool` shows submitted shares & shares/per hour
 	- `xmrig` shows accepted shares & hashrate
 
+* **Process**
+	- `reset` command to reset your configs & systemd services to the default
+
 
 # v1.3
 ## Updates
