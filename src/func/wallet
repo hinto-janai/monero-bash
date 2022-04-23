@@ -10,6 +10,9 @@ wallet_Start()
 	# AUTO MONEROD START
 	[[ $AUTO_START_DAEMON = "true" ]]&& define_Monero&&process_Start
 
+	# CD INTO .monero-bash SO FILES/LOGS GET CREATED THERE
+	cd "$dotMoneroBash"
+
 	# NORMAL WALLET CREATION
 	if [[ $createWallet = "true" ]]; then
 		"$binMonero/monero-wallet-cli" \
