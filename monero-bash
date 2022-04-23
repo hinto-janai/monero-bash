@@ -92,7 +92,7 @@ if [[ $interactive = "true" ]]; then
 			wallet_Collision
 
 		# ELSE, START WALLET NORMALLY IF IT EXISTS
-		elif [[ $walletList = *"$walletSelection "* ]]; then
+		elif [[ $walletList = *"$walletSelection "* && "$walletSelection" != "" ]]; then
 			$white; echo -n "Password: "
 			read -s walletPassword && echo
 			wallet_Start
