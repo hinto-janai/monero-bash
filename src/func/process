@@ -21,7 +21,7 @@ process_Start_Template()
 		if [[ $NAME_PRETTY = "P2Pool" ]]; then
 			[[ -e "$binP2Pool/p2pool.log" ]]&& sudo rm "$binP2Pool/p2pool.log"
 		elif [[ $NAME_PRETTY = "XMRig" ]]; then
-			[[ -e "$binXMRig/xmrig-log" ]]&& sudo rm "$binXMRig/xmrig-log"
+			[[ -e "$binXMRig/xmrig-log" ]]&& sudo rm "$binXMRig/xmrig-log" && sudo -u "$USER" touch "$binXMRig/xmrig-log"
 		fi
 		process_Hugepages
 		$bblue; echo "Starting $PROCESS..." ;$off
