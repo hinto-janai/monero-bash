@@ -95,7 +95,7 @@ process_Kill()
 process_Hugepages()
 {
 	$bwhite; echo "Setting hugepages..." ;$off
-	sudo sysctl vm.nr_hugepages=1024 > /dev/null
+	sudo sysctl vm.nr_hugepages=1280 > /dev/null
 	if [[ $? != 0 ]]; then
 		print_Error "Could not set hugepages..."
 	fi
