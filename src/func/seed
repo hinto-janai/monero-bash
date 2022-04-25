@@ -19623,9 +19623,13 @@ seed_Rng()
 	number="$(printf ${sha:0:4})"
 
 	# repeat if greater than seed array
-	while [[ $number -gt 1625 ]] ;do
-		sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
-		number="$(printf ${sha:0:4})"
+	while true ;do
+		if [[ $number > 1625 ]]; then
+			sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
+			number="$(printf ${sha:0:4})"
+		else
+			break
+		fi
 	done
 
 	# delete leading 0's
