@@ -1,3 +1,12 @@
+# v1.5
+## Updates
+* **RPC**
+
+* **GPG**
+	- gpg verification is **always on** when installing/upgrading packages
+	- `gpg toggle` & `gpg import` deprecated
+
+
 # v1.4
 ## Updates
 * **Status**

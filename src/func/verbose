@@ -39,7 +39,5 @@ verbose_Upgrade()
 	$bwhite; echo "hashSTDOUT: " ;$off
 	export GREP_COLOR="1;34"
 	echo "$hashSTDOUT" | grep --color -z "$HASH\|$tarFile"
-	if [[ $VERIFY_GPG = "true" ]]; then
-		$bwhite; echo "gpgSTDOUT: " ;$off; echo "$gpgSTDOUT"
-	fi
+	$bwhite; echo "gpgSTDOUT: " ;$off; echo "$gpgSTDOUT"
 }
