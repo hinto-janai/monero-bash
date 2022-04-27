@@ -1,5 +1,4 @@
-# the backend file monero-bash uses to read/write state data
-# (DO NOT MANUALLY CHANGE)
+# the file monero-bash uses to read/write state data
 
 # first time check
 FIRST_TIME="true"
