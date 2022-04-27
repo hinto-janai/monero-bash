@@ -28,7 +28,7 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 
 ## Features
 * 📦 `PACKAGE MANAGER` download/verify/upgrade packages (including itself)
-* 💵 `WALLET` wallet menu
+* 💵 `WALLET` wallet menu to select/create wallets
 * 👺 `DAEMON` control `monerod/p2pool/xmrig` more automatically
 * ⛏️  `MINING` easy mining setup, **default is P2Pool**
 * 👁️  `WATCH` switch between normal terminal and live output of `monerod/p2pool/xmrig`
@@ -104,14 +104,18 @@ help                                     show this help message
 
 ---
 
-* Monero - `https://downloads.getmonero.org/cli/linux64`
-* monero-bash - `https://github.com/hinto-janaiyo/monero-bash`
-* XMRig - `https://github.com/xmrig/xmrig`
-* P2Pool - `https://github.com/SChernykh/p2pool`
+* Monero [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
+* monero-bash [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
+* XMRig [`https://github.com/xmrig/xmrig`](https://github.com/xmrig/xmrig)
+* P2Pool [`https://github.com/SChernykh/p2pool`](https://github.com/SChernykh/p2pool)
 
-The latest packages are downloaded through the GitHub API. If the API fails, monero-bash will attempt to find a download link by HTML filtering the package's `/releases/latest/` GitHub page.
+[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)
 
-Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.txt`. Every other package hash is found on its GitHub page.
+VPN/Tor connections are often rate-limited by the API, if so, monero-bash will find the download link by filtering the HTML of the package's `/releases/latest/` GitHub page.
+
+Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.txt`](https://www.getmonero.org/downloads/hashes.txt)
+
+[Every other package hash is found on its GitHub page.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify)
 
 ---
 
@@ -138,9 +142,7 @@ monero-bash install/upgrade <package> verbose
 
 ---
 
-***monero-bash does not have any hard dependencies***
-
-If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work:
+**If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work:**
 * bash
 * wget
 * procfs
@@ -172,11 +174,13 @@ monero-bash install <package>
 </details>
 
 <details>
-<summary>What happens if I cancel/shutdown mid-upgrade?</summary>
+<summary>Can I cancel mid-upgrade?</summary>
 
 ---
 
-monero-bash uses a temporary folder until it's ready to swap binaries:
+**Yes**
+
+monero-bash uses temporary folders until it's ready to swap binaries:
 ```
 /tmp/monero-bash.XXXXXXXXX
 ```
@@ -219,7 +223,6 @@ The user folder is in
 ```
 /usr/local/share/monero-bash/bin/
 ```
-is where packages live, with respective folder names
 
 ---
 </details>
@@ -231,16 +234,14 @@ is where packages live, with respective folder names
 ```
 monero-bash uninstall
 ```
-This will delete all `monero-bash` files AND `.monero-bash`
+This will delete ALL `monero-bash` files AND `.monero-bash`
 
-If your monero-bash is bugged and not uninstalling, you can manually remove everything like this:
+To manually remove everything:
 ```
 sudo rm -r /usr/local/share/monero-bash
 sudo rm /usr/local/bin/monero-bash
 sudo rm -r "$HOME/.monero-bash"
-```
-To delete `systemd` files:
-```
+
 sudo rm /etc/systemd/system/monero-bash-monerod.service
 sudo rm /etc/systemd/system/monero-bash-xmrig.service
 sudo rm /etc/systemd/system/monero-bash-p2pool.service

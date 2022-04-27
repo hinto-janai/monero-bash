@@ -9,7 +9,7 @@
 ## Intro
 The monero-bash upgrade process is:
 * Download
-* Verify (hash & GPG if enabled)
+* Verify
 * Upgrade
 
 Here's a very simplified step-by-step explanation of what happens when you `monero-bash upgrade`
@@ -77,9 +77,10 @@ gpg_import_Template()
 {
     local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
     local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
-    if [[ "$LOCAL" = "$ONLINE" ]]; then
-        $bwhite; echo -n "$GPG_OWNER: "
-        $bgreen; echo "OK" ;$off
+    
+	if [[ "$LOCAL" = "$ONLINE" ]]; then
+        echo -n "$GPG_OWNER: "
+        echo "OK" ;$off
         gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
         echo
     else

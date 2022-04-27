@@ -64,19 +64,9 @@ help                                     show this help message
 </details>
 
 ## Configuration
-If you already have a custom `monerod.conf` or `monero-wallet-cli.conf`, put them in `.monero-bash/config/` folder and monero-bash will use them. [Refer to this documentation for monero.conf files](https://monerodocs.org/interacting/monero-config-file)
+Config files are in `~/.monero-bash/config`, you can edit them or replace them with your own
 
-If you have a custom xmrig or p2pool `config.json`, rename them to:
-* `xmrig.json`
-* `p2pool.json`
-
-and put them in the `.monero-bash/config` folder
-
-[Check here for xmrig configuration](https://xmrig.com/docs/miner/config)
-
-P2Pool does not use the xmrig.json wallet!
-
-Please setup P2Pool with `monero-bash config` or edit `.monero-bash/config/monero-bash.conf`
+To setup P2Pool, either use `monero-bash config` or edit `.monero-bash/config/monero-bash.conf`
 ```
 ######################
 # monero-bash config #
@@ -95,7 +85,7 @@ EXTRA_FLAGS="--mini"             any extra flags to start p2pool with (default: 
 ```
 
 ## File Structure
-Here are all the folders/files created by `monero-bash` after installation:
+These are all the folders/files created by `monero-bash` after installation:
 
 **INSTALLATION PATH**
 ```
@@ -147,5 +137,3 @@ If you'd like to directly invoke a program:
 * `monero-bash full <daemon/p2pool/xmrig>`
 
 This will launch them in the current terminal
-
-`monerod` and `p2pool` are ran as the $USER, and `xmrig` is ran as `root`. If you'd like to change that, `monero-bash edit <service>` or manually edit `/etc/systemd/system/monero-bash-xmrig.service`. Note that without root, your hashrate may be low.
