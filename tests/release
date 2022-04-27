@@ -35,3 +35,6 @@ gpg --clearsign SHA256SUM
 rm SHA256SUM
 mv SHA256SUM.asc SHA256SUM
 
+# check hash + sign
+gpg --verify SHA256SUM
+sha256sum -c SHA256SUM
