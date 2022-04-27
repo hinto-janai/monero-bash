@@ -1,2 +1,48 @@
 #!/usr/bin/env bash
 # because plowsof bullied me into implementing rpc :(
+
+rpc_Start()
+{
+	# CHECK IF MISSING BINARY
+	missing_MoneroRPC
+
+	# CD INTO .monero-bash SO FILES/LOGS GET CREATED THERE
+	cd "$dotMoneroBash"
+
+	# NORMAL WALLET CREATION
+	if [[ $createWallet = "true" ]]; then
+		"$binMonero/monero-wallet-rpc" \
+			--generate-new-wallet "$wallets/$walletName" \
+			--password "$walletPassword" \
+			--mnemonic-language "$seedLanguage" \
+			--config-file "$config/monero-wallet-rpc.conf"
+			error_Exit "Could not start monero-wallet-rpc"
+
+	# VIEW WALLET CREATION
+	elif [[ $createView = "true" ]]; then
+		"$binMonero/monero-wallet-rpc" \
+			--generate-from-view-key "$wallets/$walletName" \
+			--password "$walletPassword" \
+			--config-file "$config/monero-wallet-rpc.conf"
+			error_Exit "Could not start monero-wallet-rpc"
+
+	# WALLET RECOVERY WITH STANDARD SEED
+	elif [[ $recoverWallet = "true" ]]; then
+		"$binMonero/monero-wallet-rpc" \
+			--generate-new-wallet "$wallets/$walletName" \
+			--password "$walletPassword" \
+			--restore-from-seed \
+			--electrum-seed "$walletSeed" \
+			--config-file "$config/monero-wallet-rpc.conf"
+			error_Exit "Could not start monero-wallet-rpc"
+	else
+
+	# IF NOT CREATING, START NORMALLY
+		"$binMonero/monero-wallet-rpc" \
+			--wallet-file "$wallets/$walletSelection" \
+			--password "$walletPassword" \
+			--config-file "$config/monero-wallet-rpc.conf"
+			error_Exit "Could not start monero-wallet-rpc"
+	fi
+}
+
