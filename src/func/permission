@@ -4,13 +4,13 @@
 permission_DotMoneroBash()
 {
 	sudo chmod 700 "$dotMoneroBash"
-	sudo chown -R "$USER" "$dotMoneroBash"
+	sudo chown -R "$USER:$USER" "$dotMoneroBash"
 }
 
 permission_InstallDirectory()
 {
 	sudo chmod 700 "$installDirectory"
-	sudo chown -R "$USER" "$installDirectory"
+	sudo chown -R "$USER:$USER" "$installDirectory"
 }
 
 permission_Systemd()
