@@ -21,13 +21,6 @@ missing_MoneroCLI()
 	missing_Template
 }
 
-missing_MoneroRPC()
-{
-	local DIR="$binMonero/monero-wallet-rpc"
-	local THING="monero-wallet-rpc"
-	missing_Template
-}
-
 missing_BinMonero()
 {
 	local DIR="$binMonero"

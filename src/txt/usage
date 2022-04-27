@@ -1,5 +1,5 @@
-monero-bash                              the default command will open wallet selection
-uninstall                                uninstall monero-bash and remove /.monero-bash/
+monero-bash                              open wallet menu
+uninstall                                uninstall ALL OF monero-bash
 
 install <all/pkg>                        install <all> or a specific package
 install <all/pkg> verbose                print detailed download information
@@ -13,14 +13,14 @@ upgrade <all/pkg> verbose                print detailed download information
 version                                  print installed package versions
 
 config                                   configure MINING settings
-start   <all/daemon/xmrig/p2pool/rpc>    start process detached (background)
-stop    <all/daemon/xmrig/p2pool/rpc>    gracefully stop the process
-kill    <all/daemon/xmrig/p2pool/rpc>    forcefully kill the process
-restart <all/daemon/xmrig/p2pool/rpc>    restart the process
-full    <daemon/xmrig/p2pool/rpc>        start the process attached (foreground)
-watch   <daemon/xmrig/p2pool/rpc>        watch live output of process
-edit    <daemon/xmrig/p2pool/rpc>        edit systemd service file
-reset   <bash/daemon/xmrig/p2pool/rpc>   reset your configs/systemd to default
+start   <all/daemon/xmrig/p2pool>        start process detached (background)
+stop    <all/daemon/xmrig/p2pool>        gracefully stop the process
+kill    <all/daemon/xmrig/p2pool>        forcefully kill the process
+restart <all/daemon/xmrig/p2pool>        restart the process
+full    <daemon/xmrig/p2pool>            start the process attached (foreground)
+watch   <daemon/xmrig/p2pool>            watch live output of process
+edit    <daemon/xmrig/p2pool>            edit systemd service file
+reset   <bash/daemon/xmrig/p2pool>       reset your configs/systemd to default
 
 backup                                   encrypt and backup your /wallets/
 decrypt                                  decrypt backup.tar.gpg
