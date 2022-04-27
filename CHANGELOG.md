@@ -1,10 +1,18 @@
-# v1.5
+# v1.4.1
 ## Updates
-* **RPC**
-
 * **GPG**
-	- gpg verification is **always on** when installing/upgrading packages
+	- gpg verification is now **always on** when installing/upgrading packages
 	- `gpg toggle` & `gpg import` deprecated
+
+## Fixes
+* **Update**
+	- `update` bug fix
+
+* **Wallet**
+	- wallet files (key images, signed transactions) are now created in `~/.monero-bash`
+
+* **Process**
+	- `xmrig` hugepage = 1280, the rest are 1024
 
 
 # v1.4

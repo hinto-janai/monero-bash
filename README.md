@@ -18,7 +18,7 @@ monero-bash is a wrapper/manager for:
 * [`xmrig`](https://github.com/xmrig/xmrig)
 * [`p2pool`](https://github.com/SChernykh/p2pool)
 
-monero-bash automates these programs into interactive prompts and `linux-like` commands
+monero-bash automates these programs into interactive prompts and simple commands
 
 ***Installing `monero-bash` and mining on P2Pool in 40 seconds:***
 
@@ -27,12 +27,12 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 [This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
-* 📦 `PACKAGE MANAGER` downloading, verifying and upgrading packages (including itself)
-* 💵 `WALLET` wallet menu to display names/amounts of wallets
+* 📦 `PACKAGE MANAGER` download/verify/upgrade packages (including itself)
+* 💵 `WALLET` wallet menu
 * 👺 `DAEMON` control `monerod/p2pool/xmrig` more automatically
 * ⛏️  `MINING` easy mining setup, **default is P2Pool**
 * 👁️  `WATCH` switch between normal terminal and live output of `monerod/p2pool/xmrig`
-* 🔒 `GPG` verify packages with GPG, and `backup/decrypt` your wallets
+* 🔒 `GPG` backup/decrypt your wallets
 * 📈 `STATS` various stats to display (processes, price, CPU/disk usage, etc)
 
 ## Install
@@ -60,43 +60,41 @@ cd monero-bash &&
 ```
 monero-bash usage: monero-bash <option> <more options>
 
-monero-bash                          the default command will open wallet selection
-uninstall                            uninstall monero-bash and remove /.monero-bash/
+monero-bash                              open wallet menu
+uninstall                                uninstall ALL OF monero-bash
 
-install <all/pkg>                    install <all> or a specific package
-install <all/pkg> verbose            print detailed download information
-remove <all/pkg>                     remove <all> or a specific package
+install <all/pkg>                        install <all> or a specific package
+install <all/pkg> verbose                print detailed download information
+remove  <all/pkg>                        remove <all> or a specific package
 
-update                               CHECK for updates
-upgrade                              upgrade all packages
-upgrade <pkg>                        upgrade a specific package
-upgrade <all/pkg> force              forcefully upgrade packages
-upgrade <all/pkg> verbose            print detailed download information
-version                              print installed package versions
+update                                   CHECK for updates
+upgrade                                  upgrade all packages
+upgrade <pkg>                            upgrade a specific package
+upgrade <all/pkg> force                  forcefully upgrade packages
+upgrade <all/pkg> verbose                print detailed download information
+version                                  print installed package versions
 
-config                               configure MINING settings
-start <all/daemon/xmrig/p2pool>      start process detached (background)
-stop <all/daemon/xmrig/p2pool>       gracefully stop the process
-kill <all/daemon/xmrig/p2pool>       forcefully kill the process
-restart <all/daemon/xmrig/p2pool>    restart the process
-full <daemon/xmrig/p2pool>           start the process attached (foreground)
-watch <daemon/xmrig/p2pool>          watch live output of process
-edit <daemon/xmrig/p2pool>           edit systemd service file
-reset <bash/daemon/xmrig/p2pool>     reset your configs/systemd to default
+config                                   configure MINING settings
+start   <all/daemon/xmrig/p2pool>        start process detached (background)
+stop    <all/daemon/xmrig/p2pool>        gracefully stop the process
+kill    <all/daemon/xmrig/p2pool>        forcefully kill the process
+restart <all/daemon/xmrig/p2pool>        restart the process
+full    <daemon/xmrig/p2pool>            start the process attached (foreground)
+watch   <daemon/xmrig/p2pool>            watch live output of process
+edit    <daemon/xmrig/p2pool>            edit systemd service file
+reset   <bash/daemon/xmrig/p2pool>       reset your configs/systemd to default
 
-gpg                                  toggle GPG verification of binaries
-gpg import <all/pkg>                 import all GPG keys or specific package
-backup                               encrypt and backup your /wallets/
-decrypt                              decrypt backup.tar.gpg
+backup                                   encrypt and backup your /wallets/
+decrypt                                  decrypt backup.tar.gpg
 
-status                               print status of all running processes
-seed                                 generate random 25-word Monero seed
-list                                 list wallets
-size                                 show size of monero-bash folders
-price                                fetch price data from cryptocompare.com API
-integrity                            check hash integrity of monero-bash
+status                                   print status of all running processes
+seed                                     generate random 25-word Monero seed
+list                                     list wallets
+size                                     show size of monero-bash folders
+price                                    fetch price data from cryptocompare.com API
+integrity                                check hash integrity of monero-bash
 
-help                                 show this help message
+help                                     show this help message
 ```
 </details>
 
@@ -106,14 +104,6 @@ help                                 show this help message
 
 ---
 
-[Click here for a quick explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
-
-To see detailed output when installing/upgrading, type:
-```
-monero-bash install/upgrade <package> verbose
-```
-
-**DOWNLOAD LINKS**
 * Monero - `https://downloads.getmonero.org/cli/linux64`
 * monero-bash - `https://github.com/hinto-janaiyo/monero-bash`
 * XMRig - `https://github.com/xmrig/xmrig`
@@ -123,7 +113,21 @@ The latest packages are downloaded through the GitHub API. If the API fails, mon
 
 Hashes for Monero are found here: `https://www.getmonero.org/downloads/hashes.txt`. Every other package hash is found on its GitHub page.
 
-Unfortunately, there is no "official" central repo for all these programs, so `monero-bash` individually seeks out the links/hashes (makes my life very hard)
+---
+
+</details>
+
+<details>
+<summary>How does monero-bash upgrade packages?</summary>
+
+---
+
+[Click here for an explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
+
+To see detailed output when installing/upgrading, type:
+```
+monero-bash install/upgrade <package> verbose
+```
 
 ---
 
@@ -148,7 +152,7 @@ If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.)
 </details>
 
 <details>
-<summary>monero-bash won't let me upgrade!</summary>
+<summary>monero-bash won't let me upgrade?</summary>
 
 ---
 
@@ -180,27 +184,6 @@ monero-bash uses a temporary folder until it's ready to swap binaries:
 If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old binaries, and clean up temporary files.
 
 If you cancel ***after*** software is installed, but before the local state is updated, monero-bash will force update it and clean up.
-
-**There's nothing monero-bash can do to help if you shutdown your computer mid-upgrade**
-
----
-
-</details>
-
-<details>
-<summary>What is the hash check before every upgrade?</summary>
-
----
-
-monero-bash checks its own hash integrity before any manipulation of data. If any hash check fails, any command involving data manipulation will also fail.
-
-If you've edited some files and now it won't work, remove monero-bash manually and install a fresh copy:
-```
-sudo rm -r /usr/local/share/monero-bash
-sudo rm /usr/local/bin/monero-bash
-sudo rm -r "$HOME/.monero-bash"
-```
-If you're manually editing the code and forcing it to work, please be careful. Shell scripts are one empty variable away from wiping your drive. Definitely not speaking from experience.
 
 ---
 
