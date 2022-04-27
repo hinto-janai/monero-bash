@@ -70,6 +70,7 @@ mine_Config()
 		echo "200,000"
 		DIFFICULTY="200000"
 	elif [[ "$DIFFICULTY" = "none" || "$DIFFICULTY" = "None" ]]; then
+		echo "none"
 		DIFFICULTY="none"
 	else
 		echo "$DIFFICULTY"
