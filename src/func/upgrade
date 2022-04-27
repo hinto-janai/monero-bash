@@ -114,7 +114,7 @@ upgrade_Post()
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
-	sudo -u "$USER" chown -R "$USER:$USER" "$installDirectory"
+	sudo chown -R "$USER:$USER" "$installDirectory"
 
 	# CLEANUP, FINAL MESSAGE
 	tmp_Del

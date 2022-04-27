@@ -59,10 +59,6 @@ print_Usage()
     $ired; echo "monero-bash <option> <more options>" ;$off
     echo
     cat "$installDirectory/src/txt/usage"
-    echo
-    $ired; echo -n "monero-bash, "
-    $white; echo -n "made by: "
-    $bgreen; echo "hinto.janaiyo"
 }
 
 print_Size()
