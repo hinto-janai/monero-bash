@@ -199,22 +199,6 @@ if [[ $options = "true" ]]; then
 				*) print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 			esac
 			;;
-		gpg)
-			case $2 in
-				"") gpg_Toggle ;;
-				import)
-					case $3 in
-						all|All|ALL) gpg_import_All ;;
-						binaryfate|Binaryfate|monero|Monero|MONERO) gpg_import_Monero ;;
-						hinto|hinto-janaiyo|Hinto|*"bash"*|*"Bash"*|*"BASH"*) gpg_import_MoneroBash ;;
-						xmrig|XMRig|XMRIG|Xmrig) gpg_import_XMRig ;;
-						SChernykh|schernykh|SCHERNYKH|p2pool|p2p|P2P|P2Pool|P2POOL) gpg_import_P2Pool ;;
-						*) print_Error "Pick: <monero/bash/xmrig/p2pool>" ;;
-					esac
-					;;
-				*) print_Error "Did you mean <gpg import> ?" ;;
-			esac
-			;;
 		upgrade)
 			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&$iblue&& echo "Verbosely upgrading...!" ;$off
 			[[ $* = *"force"* ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
