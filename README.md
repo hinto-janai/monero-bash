@@ -142,7 +142,10 @@ monero-bash install/upgrade <package> verbose
 
 ---
 
-**If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora, etc.), you already have everything needed for monero-bash to work:**
+**No**
+
+If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you already have everything needed:
+
 * bash
 * wget
 * procfs
@@ -198,16 +201,15 @@ If you cancel ***after*** software is installed, but before the local state is u
 
 ---
 
-The source folder gets installed in
+Installation path:
 ```
 /usr/local/share/monero-bash
 ```
-
-The PATH is set with a symlink in
+PATH symlink:
 ```
 /usr/local/bin/monero-bash
 ```
-The user folder is in
+User folder:
 ```
 /home/user/.monero-bash
 ```

@@ -75,17 +75,17 @@ As for PGP keys, here is the full import function:
 ```
 gpg_import_Template()
 {
-    local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
-    local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
-    
+	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
+	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
+
 	if [[ "$LOCAL" = "$ONLINE" ]]; then
-        echo -n "$GPG_OWNER: "
-        echo "OK" ;$off
-        gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
-        echo
-    else
-        gpg_Diff
-    fi
+		echo -n "$GPG_OWNER: "
+		echo "OK" ;$off
+		gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
+		echo
+	else
+		gpg_Diff
+	fi
 }
 ```
 Before any key is imported, it's checked against the official version found ONLINE. If the key monero-bash comes with DOES NOT match the key found online, you will be prompted for a decision on what to do.
