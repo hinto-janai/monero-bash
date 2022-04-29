@@ -80,7 +80,7 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$EXTRA_FLAGS"
+	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
 	systemd_Template
 }
 
