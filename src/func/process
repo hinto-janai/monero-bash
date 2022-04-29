@@ -113,7 +113,7 @@ process_Full()
 {
 	case $PROCESS in
 		monerod) COMMANDS(){ cd "$binMonero" ; "$binMonero/monerod" --config-file "$config/monerod.conf" ;} ;;
-		p2pool) COMMANDS(){ cd "$binP2Pool" ; "$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL" $EXTRA_FLAGS;} ;;
+		p2pool) COMMANDS(){ cd "$binP2Pool" ; "$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --wallet "$WALLET" --loglevel "$LOG_LEVEL" $EXTRA_FLAGS ;} ;;
 		xmrig) COMMANDS(){ cd "$binXMRig" ; sudo "$binXMRig/xmrig" --config "$xmrigConf" --log-file="$binXMRig/xmrig-log" ;} ;;
 	esac
 	process_Start_Template
