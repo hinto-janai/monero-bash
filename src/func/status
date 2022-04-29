@@ -80,7 +80,7 @@ status_P2Pool()
 
 		# LATEST SHARE (stupid amount of sed and pipes, thankfully the output is in memory so it's pretty fast)
 		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/NOTICE .\|Stratum.*: //g' | sed 's/, diff .*, c/ c/' | sed 's/user.*, //')"
-		$iblue; echo "Latest share: "
+		$iblue; printf "Latest share: "
 		$white; echo "$latestShare"
 		echo
 	}
