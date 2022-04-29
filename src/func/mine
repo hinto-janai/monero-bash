@@ -112,8 +112,11 @@ mine_Config()
 		sudo -u "$USER" sed -i "s@.*DAEMON_IP.*@DAEMON_IP=\"$IP\"@" "$config/monero-bash.conf"
 		sudo -u "$USER" sed -i "s@.*WALLET.*@WALLET=\"$WALLET_INTERACTIVE\"@" "$config/monero-bash.conf"
 		sudo -u "$USER" sed -i "s@.*LOG_LEVEL.*@LOG_LEVEL=\"$LOG\"@" "$config/monero-bash.conf"
-		[[ "$MINI" = "true" ]]&& sudo -u "$USER" sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"--mini\"@" "$config/monero-bash.conf"
-		[[ "$MINI" != "true" ]]&& sudo -u "$USER" sed -i "s@.*EXTRA_FLAGS.*@EXTRA_FLAGS=\"\"@" "$config/monero-bash.conf"
+
+		# p2pool.json
+		echo "Editing p2pool.json..."
+		[[ "$MINI" = "true" ]]&& sudo -u "$USER" sed -i "s@\"name\":.*@\"name\": \"mini\",@" "$p2poolConf"
+		[[ "$MINI" != "true" ]]&& sudo -u "$USER" sed -i "s@\"name\":.*@\"name\": \"default\",@" "$p2poolConf"
 		systemd_P2Pool
 
 		# xmrig.json
