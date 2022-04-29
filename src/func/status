@@ -50,17 +50,34 @@ status_P2Pool()
 		$iwhite; echo -n "Wallet: "
 		$white; echo "$WALLET"
 
-		# SHARES
-		$igreen; printf "Shares found: "
-		local sharesFound="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log | wc -l)"
+		# SHARE OUTPUT VARIABLE
+		local shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
+
+		# SHARES PER HOUR
+		local sharesFound="$(echo "$shareOutput" | wc -l)"
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
 		local processHours="$(($processUnixTime / 60 / 60))"
-		[[ $processHours = 0 ]]&& processHours="1"
-		$bwhite; printf "$sharesFound "
+		[[ $processHours = 0 ]] && processHours="1"
 
-		# SHARES/hour WITH FLOATING POINT
+		# SHARES PER DAY (not floating, 47 hours = 1 day)
+		if [[ $processHours -lt 24 ]]; then
+			local processDays="1"
+		else
+			local processDays="$(($processHours / 24))"
+		fi
+
+		# SHARES/hour & SHARES/day WITH FLOATING POINT
 		local sharesPerHour="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processHours ))e-9")"
-		echo "($sharesPerHour shares per hour)"
+		local sharesPerDay="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processDays ))e-9")"
+
+		$igreen; printf "Shares found: "
+		$bwhite; printf "$sharesFound "
+		echo "($sharesPerHour per hour / $sharesPerDay per day)"
+
+		# LATEST SHARE
+		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/, client/\nclient/')"
+		$iblue; echo "Latest share: "
+		$white; echo "$latestShare"
 		echo
 	}
 	status_Template
@@ -77,13 +94,13 @@ status_XMRig()
 		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES + HASHRATE
-		$igreen; echo -n "Accepted shares: " ;$bwhite
+		$igreen; echo -n "Accepted shares: " ;$white
 		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
 			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
 		else
 			echo
 		fi
-		$ired; echo -n "Hashrate: " ;$bwhite
+		$ired; echo -n "Hashrate: " ;$white
 		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
 		echo
 	}
