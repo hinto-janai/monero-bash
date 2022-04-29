@@ -94,20 +94,23 @@ status_XMRig()
 	define_XMRig
 	EXTRA_STATS()
 	{
+		# WALLET IN xmrig.json
 		$iwhite; echo -n "Wallet: " ;$off
 		grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
-		$iblue; echo -n "Pool: " ;$off
-		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
-		# SHARES + HASHRATE
+		# SHARES + HASHRATE + POOL
+		$ired; echo -n "Hashrate: " ;$white
+		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
+
 		$igreen; echo -n "Accepted shares: " ;$white
 		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
 			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
 		else
 			echo
 		fi
-		$ired; echo -n "Hashrate: " ;$white
-		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
+
+		$iblue; echo -n "Pool: " ;$off
+		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		echo
 	}
 	status_Template
