@@ -74,14 +74,16 @@ status_P2Pool()
 		local sharesPerHour="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processHours ))e-9")"
 		local sharesPerDay="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processDays ))e-9")"
 
+		# LATEST SHARE (stupid amount of sed and pipes, thankfully the output is in memory so it's pretty fast)
+		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/NOTICE .\|Stratum.*: //g' | sed 's/, diff .*, c/ c/' | sed 's/user.*, //')"
+		$iblue; printf "Latest share: "
+		$white; echo "$latestShare"
+
+		# SHARES FOUND
 		$igreen; printf "Shares found: "
 		$bwhite; printf "$sharesFound "
 		echo "($sharesPerHour per hour / $sharesPerDay per day)"
 
-		# LATEST SHARE
-		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/, client/\nclient/')"
-		$iblue; echo "Latest share: "
-		$white; echo "$latestShare"
 		echo
 	}
 	status_Template
