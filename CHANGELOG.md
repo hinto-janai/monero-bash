@@ -1,3 +1,13 @@
+# v1.4.2
+## Updates
+* **Status**
+	- `p2pool` shows latest share found & shares per day
+
+## Fixes
+* **P2Pool**
+	- mini pool fix - use `monero-bash config` or edit `p2pool.json` to properly use p2pool mini
+
+
 # v1.4.1
 ## Updates
 * **GPG**
