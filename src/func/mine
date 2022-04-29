@@ -121,7 +121,6 @@ mine_Config()
 
 		# xmrig.json
 		echo "Editing xmrig.json..."
-		missing_config_XMRig
 		if [[ "$DIFFICULTY" = "none" ]]; then
 			sudo -u "$USER" sed -i "s@.*user.*@            \"user\": \"${WALLET_INTERACTIVE}\",@" "$xmrigConf"
 		else
