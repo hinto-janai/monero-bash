@@ -29,12 +29,12 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 ## Features
 * 📦 `PACKAGE MANAGER` download/verify/upgrade packages (including itself)
 * 💵 `WALLET` wallet menu to select/create wallets
-* 📋 `RPC` monerod JSON-RPC interface
 * 👺 `DAEMON` control `monerod/p2pool/xmrig` more automatically
 * ⛏️  `MINING` easy mining setup, **default is P2Pool**
 * 👁️  `WATCH` switch between normal terminal and live output of `monerod/p2pool/xmrig`
-* 🔒 `GPG` backup/decrypt your wallets
 * 📈 `STATS` various stats to display (processes, price, CPU/disk usage, etc)
+* 📋 `RPC` monerod JSON-RPC interface
+* 🔒 `GPG` backup/decrypt your wallets
 
 ## Install
 [To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
