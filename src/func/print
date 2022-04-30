@@ -232,38 +232,6 @@ echo -e "$(cat <<EOF
     sync_info
     get_txpool_backlog
     get_output_distribution
-\033[1;37mOther RPC Methods:\033[0m
-    /get_height
-    /get_blocks.bin
-    /get_blocks_by_height.bin
-    /get_hashes.bin
-    /get_o_indexes.bin
-    /get_outs.bin
-    /get_transactions
-    /get_alt_blocks_hashes
-    /is_key_image_spent
-    /send_raw_transaction
-    /start_mining
-    /stop_mining
-    /mining_status
-    /save_bc
-    /get_peer_list
-    /set_log_hash_rate
-    /set_log_level
-    /set_log_categories
-    /get_transaction_pool
-    /get_transaction_pool_hashes.bin
-    /get_transaction_pool_stats
-    /stop_daemon
-    /get_info (not JSON)
-    /get_limit
-    /set_limit
-    /out_peers
-    /in_peers
-    /start_save_graph
-    /stop_save_graph
-    /get_outs
-    /update
 EOF
 )"
 }

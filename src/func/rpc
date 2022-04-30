@@ -60,19 +60,13 @@ parse_nv() {
 }
 
 if [[ "$1" == *:* ]]; then
-    DAEMON_RPC_IP="$1"
+    DAEMON_RPC_IP="$1/json_rpc"
 	shift
 elif [[ "$1" != *:* && -z "$DAEMON_RPC_IP" ]]; then
-    DAEMON_RPC_IP="http://localhost:18081"
+    DAEMON_RPC_IP="http://localhost:18081/json_rpc"
 fi
 
 method="$1" ; shift
-if [[ "$method" = /* ]]; then
-	DAEMON_RPC_IP="${DAEMON_RPC_IP}$method"
-else
-	DAEMON_RPC_IP="${DAEMON_RPC_IP}/json_rpc"
-fi
-
 payload="{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"$method\""
 if [ -n "$1" ]; then
     if [[ "${1::1}" == "[" ]]; then
