@@ -64,6 +64,8 @@ if [[ "$1" == *:* ]]; then
 	shift
 elif [[ "$1" != *:* && -z "$DAEMON_RPC_IP" ]]; then
     DAEMON_RPC_IP="http://localhost:18081/json_rpc"
+elif [[ "$1" != *:* && ! -z "$DAEMON_RPC_IP" ]]; then
+	DAEMON_RPC_IP="${DAEMON_RPC_IP}/json_rpc"
 fi
 
 method="$1" ; shift
