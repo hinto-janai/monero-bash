@@ -21,9 +21,8 @@ process_Start_Template()
 		if [[ $NAME_PRETTY = "P2Pool" ]]; then
 			[[ -e "$binP2Pool/p2pool.log" ]]&& sudo rm "$binP2Pool/p2pool.log"
 		elif [[ $NAME_PRETTY = "XMRig" ]]; then
-			if [[ -e "$binXMRig/xmrig-log" ]]; then
-				sudo touch "$binXMRig/xmrig-log"
-			fi
+			sudo rm "$binXMRig/xmrig-log"
+			sudo touch "$binXMRig/xmrig-log"
 			sudo chown "$USER:$USER" "$binXMRig/xmrig-log"
 		fi
 
