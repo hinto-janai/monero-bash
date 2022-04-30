@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 # for installing dev branch of monero-bash
 
+[[ -z $1 ]] && echo "specify branch" && exit
+BRANCH="$1"
+
 installDirectory="/usr/local/share/monero-bash"
 source $installDirectory/src/source
 
@@ -11,7 +14,7 @@ upgrade_Template()
 	cd "$tmp"
 	git clone https://github.com/hinto-janaiyo/monero-bash
 	cd monero-bash
-	git checkout daemon-rpc
+	git checkout $BRANCH
 	NewVer="monero-bash-dev-$(git rev-parse --short HEAD)"
 
 	# TEMP FOLDER FOR OLD PACKAGE
