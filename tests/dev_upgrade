@@ -11,7 +11,11 @@ upgrade_Template()
 	cd "$tmp"
 	git clone https://github.com/hinto-janaiyo/monero-bash
 	cd monero-bash
-	git checkout dev
+	if [[ $1 != "" ]]; then
+		git checkout "$1"
+	else
+		git checkout dev
+	fi
 	NewVer="monero-bash-dev-$(git rev-parse --short HEAD)"
 
 	# TEMP FOLDER FOR OLD PACKAGE
