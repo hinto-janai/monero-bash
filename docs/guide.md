@@ -27,6 +27,7 @@ monero-bash usage: monero-bash <option> <more options>
 
 monero-bash                              open wallet menu
 uninstall                                uninstall ALL OF monero-bash
+rpc                                      send a JSON RPC call to monerod
 
 install <all/pkg>                        install <all> or a specific package
 install <all/pkg> verbose                print detailed download information
@@ -81,7 +82,10 @@ PRICE_API_IP_WARNING="true"      warn when checking price API
 DAEMON_IP="127.0.0.1"            monerod IP to connect to (default: 127.0.0.1/localhost)
 WALLET=""                        wallet address to send payouts to
 LOG_LEVEL="2"                    log/console output level (default: 2, options are 0-6)
-EXTRA_FLAGS="--mini"             any extra flags to start p2pool with (default: --mini)
+
+# daemon rpc
+DAEMON_RPC_IP="127.0.0.1:18081"  monerod IP used by RPC calls (default is localhost:18081)
+DAEMON_RPC_VERBOSE="false"       print extra messages on RPC calls
 ```
 
 ## File Structure

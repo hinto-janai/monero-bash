@@ -62,6 +62,7 @@ monero-bash usage: monero-bash <option> <more options>
 
 monero-bash                              open wallet menu
 uninstall                                uninstall ALL OF monero-bash
+rpc                                      send a JSON RPC call to monerod
 
 install <all/pkg>                        install <all> or a specific package
 install <all/pkg> verbose                print detailed download information

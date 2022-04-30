@@ -207,7 +207,7 @@ echo -e "$(cat <<EOF
 \033[1;37mSETTINGS\033[0m
     DEFAULT IP/PORT = 127.0.0.1:18081
     CURRENT IP/PORT = $DAEMON_RPC_IP
-\033[1;37mJSON RPC Methods:\033[0m
+\033[1;37mJSON RPC Methods\033[0m
     get_block_count
     on_get_block_hash
     get_block_template
