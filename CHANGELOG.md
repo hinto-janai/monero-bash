@@ -1,13 +1,27 @@
 # v1.5
 ## Updates
-* **Daemon RPC**
+* **Monerod JSON RPC interface**
+	- Usage  
+		- `monero-bash rpc [host:port] method [name:value ...]`  
+	- Examples  
+		- `monero-bash rpc get_block`  
+		- `monero-bash rpc node.community.rino.io:18081 get_block`  
+		- `monero-bash rpc 127.0.0.1:18081 get_block height:123456`  
+	- Configuration  
+		- Default IP+Port: `localhost:18081`  
+		- You can specify a different IP+Port or configure a permanent default in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)  
+		- To list all methods: `monero-bash rpc` or see [`https://www.getmonero.org/resources/developer-guides/daemon-rpc.html`](https://www.getmonero.org/resources/developer-guides/daemon-rpc.html)  
+	- Credit  
+		- Original code was taken and modified from [jtgrassie's xmrpc](https://github.com/jtgrassie/xmrpc)  
+		- 90% of the work done by [plowsof](https://github.com/plowsof)  
 
 * **Status**
-	- `p2pool` shows latest share found & shares per day
+	- `p2pool` displays latest share found & shares per day
 
 ## Fixes
 * **P2Pool**
-	- mini pool fix - use `monero-bash config` or edit `p2pool.json` to properly use p2pool mini
+	- mini pool fix - reconfigure with `monero-bash config` or edit `p2pool.json`
+	- `p2pool.cache/p2pool_peers.txt` are kept between upgrades for faster sync
 
 
 # v1.4.1
