@@ -5,9 +5,9 @@ update_Template()
 {
 	version_Update
 	if [[ "$NAME_VER" != "$NewVer" ]]; then
-		$white; echo -n "$NAME_PRETTY: "
-		$ired; echo -n "$NAME_VER "
-		$white; echo -n "> "
+		$bwhite; echo -n "$NAME_PRETTY: "
+		$bred; echo -n "$NAME_VER "
+		$bwhite; echo -n "> "
 		$bgreen; echo "$NewVer"
 		updateFound="true"
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
