@@ -73,7 +73,6 @@ else
 	DAEMON_RPC_IP="${DAEMON_RPC_IP}/json_rpc"
 fi
 
-
 payload="{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"$method\""
 if [ -n "$1" ]; then
     if [[ "${1::1}" == "[" ]]; then
@@ -90,10 +89,10 @@ if [ -n "$1" ]; then
 fi
 payload="$payload}"
 
-#if [[ $DAEMON_RPC_VERBOSE = "true" ]]; then
-	echo "DAEMON_RPC_IP: $DAEMON_RPC_IP"
-	echo "PAYLOAD: $payload"
-#fi
+if [[ $DAEMON_RPC_VERBOSE = "true" ]]; then
+	$bwhite; echo "DAEMON_RPC_IP: " ;$white; echo "$DAEMON_RPC_IP"
+	$bwhite; echo "PAYLOAD: " ;$white; echo "$payload"
+fi
 wget \
 	-qO- \
 	"$DAEMON_RPC_IP" \
