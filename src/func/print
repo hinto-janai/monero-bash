@@ -193,3 +193,44 @@ print_Remove()
 		[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
 		echo;echo
 }
+
+print_rpc_Usage()
+{
+echo -e "$(cat <<EOF
+\033[1;37mUSAGE\033[0m
+    monero-bash rpc \033[0;94m[host:port] \033[0;92mmethod \033[0;91m[name:value ...]
+\033[1;37mEXAMPLES\033[0m
+    monero-bash rpc \033[0;92mget_block\033[0m
+    monero-bash rpc \033[0;94mnode.community.rino.io:18081\033[0m \033[0;92mget_block\033[0m
+    monero-bash rpc \033[0;94m127.0.0.1:18081\033[0m \033[0;92mget_block\033[0m \033[0;91mheight:123456\033[0m
+    monero-bash rpc \033[0;94mlocalhost:18081\033[0m \033[0;92mget_block\033[0m \033[0;91mhash:418015bb9ae982a1975da7d79277c2705727a56894ba0fb246adaabb1f4632e3\033[0m
+\033[1;37mSETTINGS\033[0m
+    DEFAULT IP/PORT = 127.0.0.1:18081
+    CURRENT IP/PORT = $DAEMON_RPC_IP
+\033[1;37mJSON RPC Methods\033[0m
+    get_block_count
+    on_get_block_hash
+    get_block_template
+    submit_block
+    get_last_block_header
+    get_block_header_by_hash
+    get_block_header_by_height
+    get_block_headers_range
+    get_block
+    get_connections
+    get_info
+    hard_fork_info
+    set_bans
+    get_bans
+    get_output_histogram
+    get_version
+    get_coinbase_tx_sum
+    get_fee_estimate
+    get_alternate_chains
+    relay_tx
+    sync_info
+    get_txpool_backlog
+    get_output_distribution
+EOF
+)"
+}

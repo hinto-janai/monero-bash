@@ -11,7 +11,7 @@ upgrade_Template()
 	cd "$tmp"
 	git clone https://github.com/hinto-janaiyo/monero-bash
 	cd monero-bash
-	git checkout dev
+	git checkout daemon-rpc
 	NewVer="monero-bash-dev-$(git rev-parse --short HEAD)"
 
 	# TEMP FOLDER FOR OLD PACKAGE
