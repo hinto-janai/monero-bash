@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # for installing dev branch of monero-bash
 
-[[ -z $1 ]] && echo "specify branch"
+[[ -z $1 ]] && echo "specify branch" && exit
 BRANCH="$1"
 
 installDirectory="/usr/local/share/monero-bash"
