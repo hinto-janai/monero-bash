@@ -1,5 +1,7 @@
-# v1.4.2
+# v1.5
 ## Updates
+* **Daemon RPC**
+
 * **Status**
 	- `p2pool` shows latest share found & shares per day
 
