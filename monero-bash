@@ -140,70 +140,71 @@ if [[ $options = "true" ]]; then
 			;;
 		edit)
 			case $2 in
-				daemon|monerod|monero) define_Monero;systemd_Edit ;;
-				xmrig|xmr) define_XMRig;systemd_Edit ;;
-				p2pool|p2p) define_P2Pool;systemd_Edit ;;
+				*"daemon"*|*"monero"*) define_Monero;systemd_Edit ;;
+				*"xmr"*) define_XMRig;systemd_Edit ;;
+				*"p2p"*) define_P2Pool;systemd_Edit ;;
 				*) print_Error "Pick: <daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		reset)
 			case $2 in
-				daemon|monerod|monero) define_Monero;reset_Template ;;
-				*"bash"*|*"Bash"*|*"BASH"*)define_MoneroBash;reset_Template ;;
-				xmrig|xmr) define_XMRig;reset_Template ;;
-				p2pool|p2p) define_P2Pool;reset_Template ;;
+				*"daemon"*|*"monero"*) define_Monero;reset_Template ;;
+				*"bash"*)define_MoneroBash;reset_Template ;;
+				*"xmr"*) define_XMRig;reset_Template ;;
+				*"p2p"*) define_P2Pool;reset_Template ;;
 				*) print_Error "Pick: <bash/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		start)
-			case $2 in
-				daemon|monerod|monero) define_Monero;process_Start ;;
-				xmrig|xmr) define_XMRig;process_Start ;;
-				p2pool|p2p) define_P2Pool;process_Start ;;
+			shift
+			case "$*" in
+				*"daemon"*|*"monero"*) define_Monero;process_Start ;;
+				*"xmr"*) define_XMRig;process_Start ;;
+				*"p2p"*) define_P2Pool;process_Start ;;
 				all) mine_Start ;;
 				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		stop)
 			case $2 in
-				daemon|monerod|monero) define_Monero;process_Stop ;;
-				xmrig|xmr) define_XMRig;process_Stop ;;
-				p2pool|p2p) define_P2Pool;process_Stop ;;
+				*"daemon"*|*"monero"*) define_Monero;process_Stop ;;
+				*"xmr"*) define_XMRig;process_Stop ;;
+				*"p2p"*) define_P2Pool;process_Stop ;;
 				all) mine_Stop ;;
 				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		restart)
 			case $2 in
-				daemon|monerod|monero) define_Monero;process_Restart ;;
-				xmrig|xmr) define_XMRig;process_Restart ;;
-				p2pool|p2p) define_P2Pool;process_Restart ;;
+				*"daemon"*|*"monero"*) define_Monero;process_Restart ;;
+				*"xmr"*) define_XMRig;process_Restart ;;
+				*"p2p"*) define_P2Pool;process_Restart ;;
 				all) mine_Restart ;;
 				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		kill)
 			case $2 in
-				daemon|monerod|monero) define_Monero;process_Kill ;;
-				xmrig|xmr) define_XMRig;process_Kill ;;
-				p2pool|p2p) define_P2Pool;process_Kill ;;
+				*"daemon"*|*"monero"*) define_Monero;process_Kill ;;
+				*"xmr"*) define_XMRig;process_Kill ;;
+				*"p2p"*) define_P2Pool;process_Kill ;;
 				all) mine_Kill ;;
 				*) print_Error "Pick: <all/daemon/p2pool/xmrig>" ;;
 			esac
 			;;
 		full)
 			case $2 in
-				daemon|monerod|monero) define_Monero;process_Full ;;
-				xmrig|xmr) define_XMRig;process_Full ;;
-				p2pool|p2p) define_P2Pool;process_Full ;;
+				*"daemon"*|*"monero"*) define_Monero;process_Full ;;
+				*"xmr"*) define_XMRig;process_Full ;;
+				*"p2p"*) define_P2Pool;process_Full ;;
 				*) print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 			esac
 			;;
 		watch)
 			case $2 in
-				daemon|monerod|monero) watch_Monero ;;
-				xmrig|xmr) watch_XMRig ;;
-				p2pool|p2p) watch_P2Pool ;;
+				*"daemon"*|*"monero"*) watch_Monero ;;
+				*"xmr"*) watch_XMRig ;;
+				*"p2p"*) watch_P2Pool ;;
 				*) print_Error "Pick: <daemon/xmrig/p2pool>" ;;
 			esac
 			;;
@@ -211,19 +212,19 @@ if [[ $options = "true" ]]; then
 			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&$iblue&& echo "Verbosely upgrading...!" ;$off
 			[[ $* = *"force"* ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
 			case $2 in
-				*"bash"*|*"Bash"*|*"BASH"*)
+				*"bash"*)
 					$bwhite; echo -n "Upgrade [monero-bash]? (Y/n) " ;$off
 					Yes(){ upgrade_MoneroBash ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				monero|Monero|MONERO)
+				*"daemon"*|*"monero"*|*"Monero"*)
 					$bwhite; echo -n "Upgrade [Monero]? (Y/n) " ;$off
 					Yes(){ upgrade_Monero ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
-				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
+				*"xmr"*|*"Xmr"*|*"XMR"*)
 					$bwhite; echo -n "Upgrade [XMRig]? (Y/n) " ;$off
 					Yes(){ upgrade_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
