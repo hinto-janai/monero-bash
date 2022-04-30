@@ -94,5 +94,6 @@ wget \
 	"$DAEMON_RPC_IP" \
 	--header='Content-Type:application/json' \
 	--post-data=$payload
+code_Wget
 echo
 }
