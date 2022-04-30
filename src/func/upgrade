@@ -91,7 +91,13 @@ upgrade_Template()
 		fi
 		sudo -u "$USER" mkdir -p "$DIRECTORY"
 		sudo -u "$USER" mv "$tmp/$folderName"/* "$DIRECTORY"
-		if [[  -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
+
+		# KEEP OLD P2POOL CACHE + PEERS
+		if [[ $NAME_PRETTY = "P2Pool" ]]; then
+			[[ -f "$old/$FOLDER/p2pool.cache" ]] && mv -f "$old/$FOLDER/p2pool.cache" "$DIRECTORY"
+			[[ -f "$old/$FOLDER/p2pool_peers.txt" ]] && mv -f "$old/$FOLDER/p2pool_peers.txt" "$DIRECTORY"
+		fi
+		if [[ -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
 			error_Trap "RESTORING OLD [$NAME_PRETTY]"
 			sudo -u "$USER" rm -fr "$DIRECTORY"
 			sudo -u "$USER" mv -f "$old/$FOLDER" "$DIRECTORY"
