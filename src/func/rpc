@@ -34,71 +34,68 @@
 
 rpc_Daemon()
 {
-quote()
-{
-	[[ "$1" =~ ^[0-9]+$ ]] && echo -n "$1" && return
-	[[ "$1" =~ ^true|false$ ]] && echo -n "$1" && return
-	[[ "${1::1}" == "[" ]] && echo -n "$(parse_arr $1)" && return
-	echo -n "\"$1\""
+quote() {
+    [[ "$1" =~ ^[0-9]+$ ]] && echo -n "$1" && return
+    [[ "$1" =~ ^true|false$ ]] && echo -n "$1" && return
+    [[ "${1::1}" == "[" ]] && echo -n "$(parse_arr $1)" && return
+    echo -n "\"$1\""
 }
 
-parse_arr()
-{
-	let e=${#1}-2
-	local sz=${1:1:$e}
-	local a=(${sz//,/ })
-	for i in "${!a[@]}"; do
-		local a[$i]=$(quote ${a[i]})
-	done
-	local aj=$(printf ",%s" "${a[@]}")
-	local aj=${aj:1}
-	echo -n "[${aj}]"
+parse_arr() {
+    let e=${#1}-2
+    sz=${1:1:$e}
+    a=(${sz//,/ })
+    for i in "${!a[@]}"; do
+        a[$i]=$(quote ${a[i]})
+    done
+    aj=$(printf ",%s" "${a[@]}")
+    aj=${aj:1}
+    echo -n "[${aj}]"
 }
 
-parse_nv()
-{
-	local nv=(${1//:/ })
-	local nc=${#nv[@]}
-	[[ $c == 2 ]] && echo -n "$(quote ${nv[0]}):$(quote ${nv[1]})"
+parse_nv() {
+    nv=(${1//:/ })
+    c=${#nv[@]}
+    [[ $c == 2 ]] && echo -n "$(quote ${nv[0]}):$(quote ${nv[1]})"
 }
 
-[[ "$1" == *:* ]] && local DAEMON_RPC_IP="$1" && shift
-[[ $DAEMON_RPC_IP = "" ]] && local DAEMON_RPC_IP="http://localhost:18081"
-
-
-local method="$1"
-if [[ $method = /* ]]; then
-	local DAEMON_RPC_IP="${DAEMON_RPC_IP}$method"
-else
-	local DAEMON_RPC_IP="$DAEMON_RPC_IP/json_rpc"
+if [[ "$1" == *:* ]]; then
+    DAEMON_RPC_IP="$1"
+	shift
+elif [[ "$1" != *:* && -z "$DAEMON_RPC_IP" ]]; then
+    DAEMON_RPC_IP="http://localhost:18081"
 fi
-shift
 
-local payload="{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"$method\""
+method="$1" ; shift
+if [[ "$method" = /* ]]; then
+	DAEMON_RPC_IP="${DAEMON_RPC_IP}$method"
+else
+	DAEMON_RPC_IP="${DAEMON_RPC_IP}/json_rpc"
+fi
+
+payload="{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"$method\""
 if [ -n "$1" ]; then
     if [[ "${1::1}" == "[" ]]; then
-       local payload="$payload,\"params\":$(parse_arr $1)"
+        payload="$payload,\"params\":$(parse_arr $1)"
     else
-        local payload="$payload,\"params\":{"
+        payload="$payload,\"params\":{"
         while [ -n "$1" ]; do
-            local payload="${payload}$(parse_nv $1)"
-            [ -n "$2" ] && local payload="$payload,"
+            payload="${payload}$(parse_nv $1)"
+            [ -n "$2" ] && payload="$payload,"
             shift
         done
-        local payload="$payload}"
+        payload="$payload}"
     fi
 fi
-local payload="$payload}"
+payload="$payload}"
 
 if [[ $DAEMON_RPC_VERBOSE = "true" ]]; then
-	echo "DAEMON_RPC_IP: $DAEMON_RPC_IP"
-	echo "PAYLOAD: $payload"
-	echo "METHOD: $method"
-	echo "PARAMETERS: $(parse_arr $1)"
+	$bwhite; echo "DAEMON_RPC_IP: " ;$white; echo "$DAEMON_RPC_IP"
+	$bwhite; echo "PAYLOAD: " ;$white; echo "$payload"
 fi
 wget \
 	-qO- \
-	$DAEMON_RPC_IP \
+	"$DAEMON_RPC_IP" \
 	--header='Content-Type:application/json' \
 	--post-data=$payload
 echo

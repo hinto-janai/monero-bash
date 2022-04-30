@@ -126,6 +126,14 @@ if [[ $options = "true" ]]; then
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		config) mine_Config ;;
+		rpc)
+			if [[ $2 != "" ]]; then
+				shift
+				rpc_Daemon "$@"
+			else
+				print_rpc_Usage
+			fi
+			;;
 		seed)
 			[[ $2 != "" ]]&& seedOptions="true" && seedLanguage="$2"
 			seed_Create
