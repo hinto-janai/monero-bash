@@ -18,7 +18,6 @@
 * **Status**
 	- `p2pool` displays latest share found & shares per day
 
-
 ## Fixes
 * **P2Pool**
 	- mini pool fix - reconfigure with `monero-bash config` or edit `p2pool.json`

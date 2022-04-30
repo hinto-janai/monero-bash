@@ -4,6 +4,7 @@
 //
 // Fixed difficulty for miners that connect to your node must be set in their p2pool.json
 //
+// Change "name": "default",
 {
 	"name": "default",
 	"password": "",
