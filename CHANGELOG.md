@@ -1,3 +1,9 @@
+#v1.5.1
+## Updates
+* **monero-bash.conf**
+	- `AUTO_HUGEPAGES` setting to toggle auto hugepage allocation for processes
+
+
 # v1.5
 ## Updates
 * **Monerod JSON RPC interface**
