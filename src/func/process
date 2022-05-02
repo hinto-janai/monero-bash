@@ -26,11 +26,8 @@ process_Start_Template()
 			sudo chown "$USER:$USER" "$binXMRig/xmrig-log"
 		fi
 
-		# HUGEPAGES
-		[[ $AUTO_HUGEPAGES != "false" ]] && process_Hugepages
-		$bblue; echo "Starting $PROCESS..." ;$off
-
 		# START PROCESS
+		$bblue; echo "Starting $PROCESS..." ;$off
 		COMMANDS
 		error_Exit "Could not start $PROCESS"
 	fi
@@ -98,27 +95,13 @@ process_Kill()
 	process_Stop_Template
 }
 
-process_Hugepages()
+mine_Hugepages()
 {
 	# set default if not specified in monero-bash.conf
-	[[ -z $XMRIG_HUGEPAGES ]] && XMRIG_HUGEPAGES="1280"
-	[[ -z $MONEROD_HUGEPAGES ]] && MONEROD_HUGEPAGES="1024"
-	[[ -z $P2POOL_HUGEPAGES ]] && P2POOL_HUGEPAGES="1024"
-	$bwhite; echo "Setting hugepages..." ;$off
-	case $NAME_PRETTY in
-		XMRig)
-			sudo sysctl vm.nr_hugepages="$XMRIG_HUGEPAGES" > /dev/null
-			error_Continue "Could not set hugepages for $NAME_PRETTY"
-			;;
-		Monero)
-			sudo sysctl vm.nr_hugepages="$MONEROD_HUGEPAGES" > /dev/null
-			error_Continue "Could not set hugepages for $NAME_PRETTY"
-			;;
-		P2Pool)
-			sudo sysctl vm.nr_hugepages="$P2POOL_HUGEPAGES" > /dev/null
-			error_Continue "Could not set hugepages for $NAME_PRETTY"
-			;;
-	esac
+	[[ -z $HUGEPAGES ]] && HUGEPAGES="3072"
+	$bwhite; echo "Setting hugepage: $HUGEPAGES" ;$off
+	sudo sysctl vm.nr_hugepages="$HUGEPAGES" > /dev/null
+	error_Continue "Could not set hugepages..."
 }
 
 process_Full()
