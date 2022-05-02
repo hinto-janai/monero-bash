@@ -78,6 +78,10 @@ AUTO_STOP_DAEMON="true"          auto-stop daemon on wallet close
 AUTO_UPDATE="false"              check for all updates on wallet open
 PRICE_API_IP_WARNING="true"      warn when checking price API
 
+# hugepages
+AUTO_HUGEPAGES="true"            auto-set hugepages when starting all processes
+HUGEPAGES="3072"                 hugepage size
+
 # p2pool
 DAEMON_IP="127.0.0.1"            monerod IP to connect to (default: 127.0.0.1/localhost)
 WALLET=""                        wallet address to send payouts to

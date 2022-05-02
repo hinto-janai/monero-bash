@@ -1,7 +1,11 @@
 #v1.5.1
 ## Updates
-* **monero-bash.conf**
-	- `AUTO_HUGEPAGES` setting to toggle auto hugepage allocation for processes
+* **Process**
+	- Edit `AUTO_HUGEPAGES` to toggle auto hugepage allocation and `HUGEPAGES` to set custom hugepage size in [monero-bash.conf.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf) Hugepage is only set on `monero-bash start all` command.
+
+## Fixes
+* **RPC**
+	- fixed contacting other monerod's for RPC calls
 
 
 # v1.5
