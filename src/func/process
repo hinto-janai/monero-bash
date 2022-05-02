@@ -27,7 +27,7 @@ process_Start_Template()
 		fi
 
 		# START PROCESS
-		process_Hugepages
+		[[ $AUTO_HUGEPAGES != "false" ]] && process_Hugepages
 		$bblue; echo "Starting $PROCESS..." ;$off
 		COMMANDS
 		error_Exit "Could not start $PROCESS"
