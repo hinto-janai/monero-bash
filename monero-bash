@@ -129,7 +129,7 @@ if [[ $options = "true" ]]; then
 		rpc)
 			if [[ $2 != "" ]]; then
 				shift
-				rpc_Daemon "$*"
+				rpc_Daemon "$@"
 			else
 				print_rpc_Usage
 			fi
