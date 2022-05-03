@@ -148,8 +148,8 @@ if [[ $options = "true" ]]; then
 			;;
 		reset)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;reset_Template ;;
 				*"bash"*)define_MoneroBash;reset_Template ;;
+				*"daemon"*|*"monero"*) define_Monero;reset_Template ;;
 				*"xmr"*) define_XMRig;reset_Template ;;
 				*"p2p"*) define_P2Pool;reset_Template ;;
 				*) print_Error "Pick: <bash/daemon/p2pool/xmrig>" ;;
