@@ -3,7 +3,10 @@
 
 process_Start_Template()
 {
-	prompt_Sudo;error_Sudo
+	# SUDO NOT NEEDED FOR MONEROD
+	if [[ $NAME_PRETTY != "Monero" ]]; then
+		prompt_Sudo;error_Sudo
+	fi
 
 	# CHECK IF MISSING BINARY
 	missing_"$NAME_FUNC"
@@ -93,15 +96,6 @@ process_Kill()
 		sudo systemctl kill "$SERVICE"
 	}
 	process_Stop_Template
-}
-
-mine_Hugepages()
-{
-	# set default if not specified in monero-bash.conf
-	[[ -z $HUGEPAGES ]] && HUGEPAGES="3072"
-	$bwhite; echo "Setting hugepage: $HUGEPAGES" ;$off
-	sudo sysctl vm.nr_hugepages="$HUGEPAGES" > /dev/null
-	error_Continue "Could not set hugepages..."
 }
 
 process_Full()
