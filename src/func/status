@@ -21,7 +21,7 @@ status_System()
 
 status_Template()
 {
-	$bwhite; echo -n "$NAME_PRETTY: " ;$off
+	$bwhite; printf "$NAME_PRETTY: " ;$off
 	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
 		$bgreen; echo "online" ;$off
 
@@ -47,7 +47,7 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$iwhite; echo -n "Wallet: "
+		$iwhite; printf "Wallet: "
 		$white; echo "$WALLET"
 
 		# SHARE OUTPUT VARIABLE
@@ -95,21 +95,20 @@ status_XMRig()
 	EXTRA_STATS()
 	{
 		# WALLET IN xmrig.json
-		$iwhite; echo -n "Wallet: " ;$off
+		$iwhite; printf "Wallet: " ;$off
 		grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
-		# SHARES + HASHRATE + POOL
-		$ired; echo -n "Hashrate: " ;$white
-		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
+		# HASHRATE
+		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
+		$ired; printf "Hashrate: " ;$white
+		[[ -z $hashrate ]] && echo || echo "$hashrate"
 
-		$igreen; echo -n "Accepted shares: " ;$white
-		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
-			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
-		else
-			echo
-		fi
+		# SHARES
+		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
+		$igreen; printf "Accepted shares: " ;$white
+		[[ -z $shares ]] && echo || echo "$shares"
 
-		$iblue; echo -n "Pool: " ;$off
+		$iblue; printf "Pool: " ;$off
 		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		echo
 	}
