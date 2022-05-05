@@ -54,7 +54,7 @@ status_P2Pool()
 		local shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
 
 		# SHARES PER HOUR
-		if [[ $shareOutput = "" ]]; then
+		if [[ -z $shareOutput ]]; then
 			local sharesFound="0"
 		else
 			local sharesFound="$(echo "$shareOutput" | wc -l)"
@@ -79,6 +79,10 @@ status_P2Pool()
 		$iblue; printf "Latest share: "
 		$white; echo "$latestShare"
 
+		# LATEST PAYOUT
+		local latestPayout="$(tac $binP2Pool/p2pool.log | grep -m1 "payout" | sed 's/NOTICE  //' | sed 's/P2Pool //')"
+		$ired; echo "$latestPayout"
+
 		# SHARES FOUND
 		$igreen; printf "Shares found: "
 		$bwhite; printf "$sharesFound "
@@ -96,17 +100,18 @@ status_XMRig()
 	{
 		# WALLET IN xmrig.json
 		$iwhite; printf "Wallet: " ;$off
-		grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')"
+		[[ -z $wallet ]] && echo || echo "$wallet"
 
 		# HASHRATE
 		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
-		$ired; printf "Hashrate: " ;$white
-		[[ -z $hashrate ]] && echo || echo "$hashrate"
+		$ired; printf "Hashrate: "
+		$white; echo "$hashrate"
 
 		# SHARES
 		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
-		$igreen; printf "Accepted shares: " ;$white
-		[[ -z $shares ]] && echo || echo "$shares"
+		$igreen; printf "Accepted shares: "
+		$white; echo "$shares"
 
 		$iblue; printf "Pool: " ;$off
 		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
