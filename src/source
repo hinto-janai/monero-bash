@@ -7,7 +7,7 @@
 source "$installDirectory/src/var" 2>/dev/null || varMissing="true"
 
 # global functions
-for functions in $installDirectory/src/func/* ;do
+for functions in "$installDirectory/src/func/"* ;do
 	source "$functions" 2>/dev/null || funcMissing="true"
 done
 

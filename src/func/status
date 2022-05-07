@@ -15,14 +15,14 @@ status_All()
 status_System()
 {
 	$bwhite; printf "System: "
-	$bgreen; echo "$(uptime -p)"
+	$bgreen; uptime -p
 	echo
 }
 
 status_Template()
 {
 	$bwhite; echo -n "$NAME_PRETTY: " ;$off
-	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
+	if pgrep "$DIRECTORY/$PROCESS -f" &>/dev/null ;then
 		$bgreen; echo "online" ;$off
 
 		# ps stats
@@ -51,7 +51,8 @@ status_P2Pool()
 		$white; echo "$WALLET"
 
 		# SHARE OUTPUT VARIABLE
-		local shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
+		local shareOutput
+		shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
 
 		# SHARES PER HOUR
 		if [[ $shareOutput = "" ]]; then

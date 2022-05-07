@@ -19617,16 +19617,16 @@ esac
 seed_Rng()
 {
 	# 64 bytes/512 bits of /dev/random fed into sha512sum, only integers printed
-	sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
+	sha="$(head -c 64 /dev/random | sha512sum | sed 's/[^0-9]*//g')"
 
 	# only print first 4 integers
-	number="$(printf ${sha:0:4})"
+	number=$(printf "%s " "${sha:0:4}")
 
 	# repeat if greater than seed array
-	while true ;do
-		if [[ $number > 1625 ]]; then
-			sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
-			number="$(printf ${sha:0:4})"
+	while true ; do
+		if [[ $number -gt 1625 ]]; then
+			sha="$(head -c 64 /dev/random | sha512sum | sed 's/[^0-9]*//g')"
+			number=$(printf "%s" "${sha:0:4}")
 		else
 			break
 		fi
@@ -19636,7 +19636,7 @@ seed_Rng()
     if [[ $number = 0000 ]]; then
         number="0"
     elif [[ $number = 0* && $number != 0000 ]];then
-        number="$(printf "$number" | sed "0,/0*/{s///}")"
+        number="$(printf "%s" $number | sed "0,/0*/{s///}")"
     fi
 }
 
@@ -19645,30 +19645,35 @@ seed_Generate()
 	# first 23 words
 	for i in {1..23} ;do
 		seed_Rng
-		printf "${array[$number]} "
+		printf "%s " "${array[$number]}"
 	done
 
 	# 24th word - no space
 	seed_Rng
-	printf "${array[$number]}"
+	printf "%s" "${array[$number]}"
 }
 
 seed_Crc_String()
 {
 	# concatenate first 3 letters of every word for last 25th word checksum
 	for i in $list ;do
-		printf "${i:0:3}"
+		printf "%s" "${i:0:3}"
 	done
 }
 
 # seed = seperated by spaces, list = seperated by newlines
-local seed="$(seed_Generate)"
-local list="$(echo "$seed" | sed "s@ @\n@g")"
+local seed
+seed=$(seed_Generate)
+local list
+list=$(echo "$seed" | sed "s@ @\n@g")
 
 # crc operations on seed to find 25th word
-local crc_hex="$(seed_Crc_String | gzip -c | tail -c8 | hexdump -n4 -e '"%u"')"
-local crc_mod="$(($crc_hex % 24))"
-local crc="$(($crc_mod + 1))"
+local crc_hex
+crc_hex="$(seed_Crc_String | gzip -c | tail -c8 | hexdump -n4 -e '"%u"')"
+local crc_mod
+crc_mod=$(($crc_hex % 24))
+local crc
+crc=$(($crc_mod + 1))
 
 # print all variables
 seed_Debug()
@@ -19683,6 +19688,6 @@ seed_Debug()
 
 # print 24-word seed + 25th crc word
 [[ $seedOptions != "true" ]]&& echo
-printf "$seed "
+printf "%s " "$seed"
 echo "$list" | head -"$crc" | tail +"$crc"
 }
