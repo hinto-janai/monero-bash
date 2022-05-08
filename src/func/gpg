@@ -76,7 +76,7 @@ gpg_Diff()
 					case $KEYPICK in
 						local) gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc" && break ;;
 						online) gpg_Overwrite && break ;;
-						*) error_Continue "Invalid option"
+						*) print_Error "Invalid option"
 					esac
 				done
 				break

@@ -21,8 +21,8 @@ status_System()
 
 status_Template()
 {
-	$bwhite; echo -n "$NAME_PRETTY: " ;$off
-	if pgrep "$DIRECTORY/$PROCESS -f" &>/dev/null ;then
+	$bwhite; printf "$NAME_PRETTY: " ;$off
+	if pgrep "$DIRECTORY/$PROCESS" -f &>/dev/null ;then
 		$bgreen; echo "online" ;$off
 
 		# ps stats
@@ -47,7 +47,7 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$iwhite; echo -n "Wallet: "
+		$iwhite; printf "Wallet: "
 		$white; echo "$WALLET"
 
 		# SHARE OUTPUT VARIABLE
@@ -55,7 +55,7 @@ status_P2Pool()
 		shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
 
 		# SHARES PER HOUR
-		if [[ $shareOutput = "" ]]; then
+		if [[ -z $shareOutput ]]; then
 			local sharesFound="0"
 		else
 			local sharesFound="$(echo "$shareOutput" | wc -l)"
@@ -80,6 +80,10 @@ status_P2Pool()
 		$iblue; printf "Latest share: "
 		$white; echo "$latestShare"
 
+		# LATEST PAYOUT
+		local latestPayout="$(tac $binP2Pool/p2pool.log | grep -m1 "payout" | sed 's/NOTICE  //' | sed 's/P2Pool //')"
+		$ired; echo "$latestPayout"
+
 		# SHARES FOUND
 		$igreen; printf "Shares found: "
 		$bwhite; printf "$sharesFound "
@@ -96,21 +100,21 @@ status_XMRig()
 	EXTRA_STATS()
 	{
 		# WALLET IN xmrig.json
-		$iwhite; echo -n "Wallet: " ;$off
-		grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		$iwhite; printf "Wallet: " ;$off
+		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')"
+		[[ -z $wallet ]] && echo || echo "$wallet"
 
-		# SHARES + HASHRATE + POOL
-		$ired; echo -n "Hashrate: " ;$white
-		tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/"
+		# HASHRATE
+		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
+		$ired; printf "Hashrate: "
+		$white; echo "$hashrate"
 
-		$igreen; echo -n "Accepted shares: " ;$white
-		if tac "$binXMRig/xmrig-log" | grep -m1 "accepted" &>/dev/null ;then
-			tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed "s/].*cpu.*a/] a/"
-		else
-			echo
-		fi
+		# SHARES
+		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
+		$igreen; printf "Accepted shares: "
+		$white; echo "$shares"
 
-		$iblue; echo -n "Pool: " ;$off
+		$iblue; printf "Pool: " ;$off
 		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 		echo
 	}
