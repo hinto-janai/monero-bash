@@ -70,34 +70,26 @@ if [[ $interactive = "true" ]]; then
 	# SHOW WALLETS, SELECT
 	$white; wallet_Count ; wallet_List
 	while true ;do
-		$iblue; echo -n "Select wallet "
-		$white; echo -n "or "
-		$ired; echo -n "[new / view / recover]"
-		$white; echo -n ": "
+		$iblue; printf "Select wallet "
+		$white; printf "or "
+		$ired; printf "[new / view / recover]"
+		$white; printf ": "
 		read walletSelection
 
-		# the space after the strings prevents the wildcard from
-		# selecting non-existing wallets because an existing wallet
-		# *contains* the user input string.
-		#
-		# e.g. user input is "123", and a wallet called "1234" exists.
-		# without a space, "123" will be selected even though it doesn't exist.
-		# with a space, "123" will properly error out. yes i realize using
-		# arrays would fix this and using ls output is stupid.
-
-		# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
-		if [[ $walletList = *"new "* && $walletSelection = "new" \
-			|| $walletList = *"view "* && $walletSelection = "view" \
-			|| $walletList = *"recover "* && $walletSelection = "recover" ]]; then
-			wallet_Collision
-
-		# ELSE, START WALLET NORMALLY IF IT EXISTS
-		elif [[ $walletList = *"$walletSelection "* && "$walletSelection" != "" ]]; then
-			$white; echo -n "Password: "
-			read -s walletPassword && echo
-			wallet_Start
-			break
-		fi
+		for i in $walletList; do
+			# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
+			if [[ $walletSelection = $i && $walletSelection = "new" \
+				|| $walletSelection = $i && $walletSelection = "view" \
+				|| $walletSelection = $i && $walletSelection = "recover" ]]; then
+					wallet_Collision
+			# ELSE, START WALLET NORMALLY IF IT EXISTS
+			elif [[ $walletSelection = $i ]]; then
+				$white; printf "Password: "
+				read -s walletPassword && echo
+				wallet_Start
+				break
+			fi
+		done
 
 		# WALLET CREATION + ERROR INPUT
 		case $walletSelection in
