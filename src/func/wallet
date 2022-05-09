@@ -188,10 +188,10 @@ wallet_Count()
 
 wallet_List()
 {
-	walletList="($(ls "$wallets" | grep -v ".keys"))"
+	walletList=($(ls "$wallets" | grep -v ".keys"))
 	wallet_list_pretty()
 	{
-		for i in $walletList; do
+		for i in ${walletList[*]}; do
 			printf "[${i}]  "
 		done
 	}

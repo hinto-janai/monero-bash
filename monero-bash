@@ -76,7 +76,7 @@ if [[ $interactive = "true" ]]; then
 		$white; printf ": "
 		read walletSelection
 
-		for i in $walletList; do
+		for i in ${walletList[*]}; do
 			# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
 			if [[ $walletSelection = $i && $walletSelection = "new" \
 				|| $walletSelection = $i && $walletSelection = "view" \
@@ -87,7 +87,7 @@ if [[ $interactive = "true" ]]; then
 				$white; printf "Password: "
 				read -s walletPassword && echo
 				wallet_Start
-				break
+				exit 0
 			fi
 		done
 
