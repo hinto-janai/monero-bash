@@ -87,7 +87,6 @@ if [[ $interactive = "true" ]]; then
 				$white; printf "Password: "
 				read -s walletPassword && echo
 				wallet_Start
-				exit 0
 			fi
 		done
 
