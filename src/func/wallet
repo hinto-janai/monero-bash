@@ -51,6 +51,7 @@ wallet_Start()
 
 	# AUTO MONEROD STOP
 	[[ $AUTO_STOP_DAEMON = "true" ]]&& define_Monero&&process_Stop
+	exit 0
 }
 
 wallet_Template()
