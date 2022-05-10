@@ -81,7 +81,8 @@ status_P2Pool()
 
 		# LATEST PAYOUT
 		local latestPayout="$(tac $binP2Pool/p2pool.log | grep -m1 "payout" | sed 's/NOTICE  //' | sed 's/P2Pool //')"
-		$ired; echo "$latestPayout"
+		$ired; printf "Latest payout: "
+		$white; echo "$latestPayout"
 
 		# SHARES FOUND
 		$igreen; printf "Shares found: "
