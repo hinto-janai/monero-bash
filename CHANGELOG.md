@@ -7,6 +7,9 @@
 * **Process**
 	- `monerod` no longer asks for sudo
 
+* **Wallet**
+	- slightly more robust wallet name parsing
+
 
 #v1.5.1
 ## Updates
