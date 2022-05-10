@@ -1,3 +1,13 @@
+#v1.5.2
+## Updates
+* **Status**
+	- `p2pool` prints latest payout
+
+## Fixes
+* **Process**
+	- `monerod` no longer asks for sudo
+
+
 #v1.5.1
 ## Updates
 * **Process**
