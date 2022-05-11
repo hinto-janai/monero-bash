@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+#
+# a classic 'die': exit with an error message and return code
+
+die () {
+		msg=${1:-'unknown'}
+    local ret="${2:-3}" # $ret will contain $2, or the '3' default value
+    printf "ERROR: %s\n at ${BASH_SOURCE[1]}:${FUNCNAME[1]} line ${BASH_LINENO[0]}.\\nABORTING\n" "$msg" 2>&1
+    exit "$ret"
+}

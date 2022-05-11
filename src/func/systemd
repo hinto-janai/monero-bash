@@ -18,7 +18,7 @@ tmpService="$(find /tmp/monero-bash-service.*)"
 sudo chmod -R 700 "$tmpService"
 
 # CREATE SERVICE FILE
-cat > $tmpService/$SERVICE <<EOM
+cat > "${tmpService}/$SERVICE" <<EOM
 [Unit]
 Description=$SERVICE
 After=network.target
@@ -53,8 +53,7 @@ systemd_Edit()
 	$white; printf "Pick editor [nano, vim, emacs] (default=nano): "
 	read EDITOR
 	[[ $EDITOR = "" || $EDITOR = "default" ]] && EDITOR="nano"
-	sudo "$EDITOR" "$sysd/$SERVICE"
-	if [[ $? = 0 ]]; then
+	if sudo "$EDITOR" "$sysd/$SERVICE"; then
 		$white; echo "Reloading systemd..."
 		sudo systemctl daemon-reload
 	else
