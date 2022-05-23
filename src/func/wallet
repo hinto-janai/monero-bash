@@ -178,11 +178,11 @@ wallet_Count()
 {
 	walletCount="$(ls "$wallets" | grep -v ".keys" | wc -l)"
 	$bwhite; echo -n "$walletCount " ;$off
-	if [[ $walletCount = "1" ]]; then
+	if [[ $walletCount = 1 ]]; then
 		echo "wallet found:"
-	elif [[ $walletCount > "1" ]]; then
+	elif [[ $walletCount -gt 1 ]]; then
 		echo "wallets found: "
-	elif [[ $walletCount = "0" ]]; then
+	elif [[ $walletCount = 0 ]]; then
 		echo "wallets found"
 	fi
 }

@@ -19624,7 +19624,7 @@ seed_Rng()
 
 	# repeat if greater than seed array
 	while true ;do
-		if [[ $number > 1625 ]]; then
+		if [[ $number -gt 1625 ]]; then
 			sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
 			number="$(printf ${sha:0:4})"
 		else

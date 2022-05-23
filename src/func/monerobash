@@ -164,7 +164,7 @@ monerobash_Uninstall()
 	{
 		# if wallets are found, warn user
 		walletCount="$(ls "$wallets" | wc -l)"
-		if [[ "$walletCount" > "0" ]]; then
+		if [[ "$walletCount" -gt 0 ]]; then
 			echo
 			$bwhite; echo -n "@@@@@@@@@@@@"
 			$bred; echo -n "      WALLETS FOUND      "
