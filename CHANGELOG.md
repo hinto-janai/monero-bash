@@ -1,3 +1,8 @@
+# v1.5.4
+## Fixes
+* **systemd**
+	- Small service file permission fix (700 > 600)
+
 # v1.5.3
 ## Updates
 * **Config**
