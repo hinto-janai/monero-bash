@@ -5,6 +5,16 @@
 ###################################################   START OF INSTALL FUNCTION   ###################################################
 monerobash_Install()
 {
+	local SYSTEM_NAME="$(uname)"
+	case $SYSTEM_NAME in
+		*)
+			$bred; echo "monero-bash is only supported on GNU/Linux"
+			$bred; echo "Exiting..."; $off
+			exit 1
+			;;
+		*"Linux"*|*"linux"*) :;;
+	esac
+
 	$bred; echo "###################################################################"
 	$bred; echo "#            monero-bash configuration & installation             #"
 	$bred; echo "###################################################################"
