@@ -1,3 +1,8 @@
+#v1.5.3
+## Updates
+* **Mine**
+	- `monero-bash config` no longer asks for difficulty (p2pool auto-selects diff now)
+
 #v1.5.2
 ## Updates
 * **Status**
