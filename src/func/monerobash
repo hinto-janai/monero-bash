@@ -7,12 +7,12 @@ monerobash_Install()
 {
 	local SYSTEM_NAME="$(uname)"
 	case $SYSTEM_NAME in
+		*"Linux"*|*"linux"*) :;;
 		*)
 			$bred; echo "monero-bash is only supported on GNU/Linux"
 			$bred; echo "Exiting..."; $off
 			exit 1
 			;;
-		*"Linux"*|*"linux"*) :;;
 	esac
 
 	$bred; echo "###################################################################"
@@ -70,7 +70,7 @@ done
 
 # Check if already installed
 if [[ -e /usr/local/share/monero-bash ]]; then
-	$bred; echo "ERROR: "
+	$bred; printf "ERROR: "
 	$bwhite; echo "/usr/local/share/monero-bash already detected!"
 	exit
 fi

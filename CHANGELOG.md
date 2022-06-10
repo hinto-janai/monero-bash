@@ -1,13 +1,17 @@
-#v1.5.3
+# v1.5.3
+## Updates
+* **Config**
+	- Small updates to `monerod.conf` & `monero-wallet-cli.conf`
+
 ## Fixes
 * **Mine**
-	- `monero-bash config` no longer asks for difficulty (p2pool auto-selects diff now)
+	- `monero-bash config` no longer prompts for difficulty (p2pool 2.1 auto-selects diff)
 
 * **Install**
 	- `monero-bash` properly errors out if not installed on GNU/Linux
 
 
-#v1.5.2
+# v1.5.2
 ## Updates
 * **Status**
 	- `p2pool` prints latest payout
@@ -20,7 +24,7 @@
 	- slightly more robust wallet name parsing
 
 
-#v1.5.1
+# v1.5.1
 ## Updates
 * **Process**
 	- Edit `AUTO_HUGEPAGES` to toggle auto hugepage allocation and `HUGEPAGES` to set custom hugepage size in [monero-bash.conf.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf) Hugepage is only set on `monero-bash start all` command.
