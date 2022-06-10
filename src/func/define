@@ -83,6 +83,6 @@ define_P2Pool()
 	SHA="sha256sums.txt.asc"
 	SIG="$SHA"
 	GPG_OWNER="SChernykh"
-	GPG_PUB_KEY="https://p2pool.io/SChernykh.asc"
+	GPG_PUB_KEY="https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc"
 	FINGERPRINT="1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF"
 }
