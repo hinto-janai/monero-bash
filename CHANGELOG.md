@@ -1,7 +1,11 @@
 #v1.5.3
-## Updates
+## Fixes
 * **Mine**
 	- `monero-bash config` no longer asks for difficulty (p2pool auto-selects diff now)
+
+* **Install**
+	- `monero-bash` properly errors out if not installed on GNU/Linux
+
 
 #v1.5.2
 ## Updates
