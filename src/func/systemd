@@ -12,7 +12,7 @@ if find /tmp/monero-bash-service.* &>/dev/null ; then
     rm -rf /tmp/monero-bash-service.*
 fi
 
-# MAKE 700 PERMISSION TMP FOLDER
+# MAKE 600 PERMISSION TMP FOLDER
 mktemp -d /tmp/monero-bash-service.XXXXXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
 sudo chmod -R 700 "$tmpService"
@@ -36,10 +36,13 @@ Restart=always
 WantedBy=multi-user.target
 EOM
 
-# INSTALL SERVICE IN /etc/systemd/system/, RELOAD SYSTEMD
+# INSTALL SERVICE IN /etc/systemd/system/
 sudo chmod -R 700 "$tmpService"
 sudo mv -f "$tmpService/$SERVICE" "$sysd"
 sudo rm -r "$tmpService"
+permission_Systemd
+
+# RELOAD SYSTEMD
 $white; echo "Reloading systemd..."
 sudo systemctl daemon-reload
 }
