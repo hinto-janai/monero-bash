@@ -14,8 +14,8 @@ status_All()
 
 status_System()
 {
-	$bwhite; printf "System: "
-	$bgreen; echo "$(uptime -p)"
+	$bblue; printf "[System     ] "
+	$iwhite; echo "$(uptime -p)"
 	echo
 }
 
