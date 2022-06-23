@@ -18,10 +18,10 @@
 upgrade_Pre()
 {
 	# CHECK IF ALREADY INSTALLED/UP TO DATE
-	if [[ "$NAME_VER" = "" && "$INSTALL" != "true" ]]; then
+	if [[ -z $NAME_VER && $INSTALL != true ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
-	elif [[ "$NAME_OLD" != "true" && "$FORCE_UPGRADE" != "true" ]]; then
+	elif [[ $NAME_OLD != true && $FORCE_UPGRADE != true ]]; then
 		$white; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date" ;$off
 	else
@@ -51,21 +51,22 @@ upgrade_Template()
 	code_Tar
 	rm -f "$tmp/$tarFile"
 	error_Exit "rm - error"
-	$white; echo -n "$NAME_PRETTY: " ;$igreen; echo "EXTRACTED" ;$off
+	$white; echo -n "$NAME_PRETTY: "
+	$igreen; echo "EXTRACTED" ;$off
 
 	# TEMP FOLDER FOR OLD PACKAGE
 	folderName="$(ls $tmp)"
-	if [[ -d "$old" ]]; then
+	if [[ -d $old ]]; then
 		sudo -u "$USER" rm -rf "$old"
 		error_Exit "Could not remove old folder"
 	fi
 
 	# SAFETY CHECKS
-	[[ "$folderName" = "" || "$tmp" = "" ]]&& echo "EMPTY TMP VARIABLE, EXITING FOR SAFETY" &&exit
+	[[ -z $folderName || -z $tmp ]] && echo "EMPTY TMP VARIABLE, EXITING FOR SAFETY" && exit 1
 	mkdir -p "$old"
 
 	# INSTALL FOR MONERO_BASH
-	if [[ "$NAME_CAPS" = "MONERO_BASH" ]]; then
+	if [[ $NAME_CAPS = MONERO_BASH ]]; then
 		trap "trap_Old" 1 2 3 6 15
 		sudo -u "$USER" cp "$installDirectory/monero-bash" "$old"
 		sudo -u "$USER" cp -fr "$installDirectory/src" "$old"
@@ -81,10 +82,10 @@ upgrade_Template()
 
 	# INSTALL FOR EVERYTHING ELSE
 		trap "trap_No" 1 2 3 6 15
-		if [[ -d "$DIRECTORY" ]]; then
+		if [[ -d $DIRECTORY ]]; then
 			sudo -u "$USER" mv -f "$DIRECTORY" "$old"
 		fi
-		if [[ -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
+		if [[ -d $DIRECTORY && $trapSet = true ]]; then
 			error_Trap "RESTORING OLD [$NAME_PRETTY]"
 			sudo -u "$USER" mv -f "$old/$FOLDER" "$DIRECTORY"
 			exit
@@ -93,12 +94,12 @@ upgrade_Template()
 		sudo -u "$USER" mv "$tmp/$folderName"/* "$DIRECTORY"
 
 		# KEEP OLD P2POOL CACHE/PEERS/LOG
-		if [[ $NAME_PRETTY = "P2Pool" ]]; then
+		if [[ $NAME_PRETTY = P2Pool ]]; then
 			[[ -f "$old/$FOLDER/p2pool.cache" ]] && mv -f "$old/$FOLDER/p2pool.cache" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/p2pool_peers.txt" ]] && mv -f "$old/$FOLDER/p2pool_peers.txt" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/p2pool.log" ]] && mv -f "$old/$FOLDER/p2pool.log" "$DIRECTORY"
 		fi
-		if [[ -d "$DIRECTORY" && "$trapSet" = "true" ]]; then
+		if [[ -d $DIRECTORY && $trapSet = true ]]; then
 			error_Trap "RESTORING OLD [$NAME_PRETTY]"
 			sudo -u "$USER" rm -fr "$DIRECTORY"
 			sudo -u "$USER" mv -f "$old/$FOLDER" "$DIRECTORY"
@@ -119,19 +120,19 @@ upgrade_Post()
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	$white; echo -n "$NewVer: " ;$igreen; echo "VERSION" ;$off
-	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
+	[[ $INSTALL = true ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	sudo chown -R "$USER:$USER" "$installDirectory"
 
 	# CLEANUP, FINAL MESSAGE
 	tmp_Del
 	error_Exit "Could not cleanup tmp folder"
-	if [[ "$INSTALL" = "true" ]]; then
+	if [[ $INSTALL = true ]]; then
 		print_GreenHash "Installed [$NAME_PRETTY]"
 	else
 		print_GreenHash "Upgraded [$NAME_PRETTY]"
 	fi
-	[[ "$VERBOSE" = "true" ]]&& verbose_Upgrade
+	[[ $VERBOSE = true ]]&& verbose_Upgrade
 }
 
 upgrade_Monero()
