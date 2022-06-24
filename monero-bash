@@ -38,6 +38,11 @@ safety_Deps
 safety_LinuxFolders
 safety_Home
 
+# no stdin support
+if [[ -p /dev/stdin ]]; then
+	print_Error_Exit "no stdin/pipe support!"
+fi
+
 # Installation
 if [[ $FIRST_TIME = "true" ]]; then
 	monerobash_Install
