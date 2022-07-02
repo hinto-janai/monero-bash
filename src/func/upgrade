@@ -18,13 +18,7 @@
 upgrade_Pre()
 {
 	# v1 END OF LIFE FOR MONERO-BASH
-	if [[ $NAME_PRETTY = monero-bash ]]; then
-		version_Template
-		if [[ $NewVer != v1* ]]; then
-			___END___OF___LIFE___
-			exit 99
-		fi
-	fi
+	[[ $NAME_PRETTY = monero-bash ]] && ___END___OF___LIFE___
 
 	# CHECK IF ALREADY INSTALLED/UP TO DATE
 	if [[ -z $NAME_VER && $INSTALL != true ]]; then

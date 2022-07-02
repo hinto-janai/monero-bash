@@ -1,29 +1,41 @@
+#!/usr/bin/env bash
 # End-Of-Life
 # -----------
 # Warn user if their [monero-bash] version
 # is an old unsupported version.
 
 ___END___OF___LIFE___() {
-printf "\033[1;31m%s\n"\
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
-    "@ This version of [monero-bash] is no @"\
-    "@ longer supported ($MONERO_BASH_VER).          @"\
-    "@ Every major version change, e.g:    @"\
-    "@ v1.0.0 > v2.0.0 contains changes    @"\
-    "@ that break backwards compatability. @"\
-    "@                                     @"\
-    "@ You are free to continue to use     @"\
-    "@ this version, but be aware you will @"\
-    "@ not be able to upgrade monero-bash  @"\
-    "@ and may face bugs in the future.    @"\
-    "@                                     @"\
-    "@ Please move your .bitmonero, wallet @"\
-    "@ and config folders outside of the   @"\
-    "@ [.monero-bash] folder and then      @"\
-    "@ uninstall this monero-bash with:    @"\
-    "@ \"monero-bash uninstall\"             @"\
-    "@ then, you can reinstall the         @"\
-    "@ latest version from:                @@@@@@@@@@"\
-    "@ https://github.com/hinto-janaiyo/monero-bash @"\
-    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	API="false"
+	HTML="true"
+	if ! DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
+	    DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+	    API="false"
+	    HTML="true"
+	fi
+	version_Template
+	if [[ $NewVer != v1* ]]; then
+		printf "\033[1;31m%s\n"\
+		    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"\
+		    "@ This version of [monero-bash] is no @"\
+		    "@ longer supported ($MONERO_BASH_VER).          @"\
+		    "@ Every major version change, e.g:    @"\
+		    "@ v1.0.0 > v2.0.0 contains changes    @"\
+		    "@ that break backwards compatability. @"\
+		    "@                                     @"\
+		    "@ You are free to continue to use     @"\
+		    "@ this version, but be aware you will @"\
+		    "@ not be able to upgrade monero-bash  @"\
+		    "@ and may face bugs in the future.    @"\
+		    "@                                     @"\
+		    "@ Please move your .bitmonero, wallet @"\
+		    "@ and config folders outside of the   @"\
+		    "@ [.monero-bash] folder and then      @"\
+		    "@ uninstall this monero-bash with:    @"\
+		    "@ \"monero-bash uninstall\"             @"\
+		    "@ then, you can reinstall the         @"\
+		    "@ latest version from:                @@@@@@@@@@"\
+		    "@ https://github.com/hinto-janaiyo/monero-bash @"\
+		    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		exit
+	fi
 }

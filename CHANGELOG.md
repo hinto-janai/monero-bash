@@ -1,7 +1,17 @@
-# v1.5.4
+# v1.6.0 - RECOMMENDED UPDATE
+## Updates
+* **v1 END OF LIFE**
+	- `monero-bash v2.0.0` in progress, a rewrite to make the code safer, faster, and easier to debug
+	- Major version upgrades (v1.X.X > v2.X.X) will include changes that break backwards compatability
+	- `v1.X.X` versions will still function, but you will not be able to upgrade `monero-bash` past `v1.9.9`
+
 ## Fixes
 * **systemd**
-	- Small service file permission fix (700 > 600)
+	- Service file permission fix (700 > 600)
+* **P2Pool**
+	- Fetch PGP key from [GitHub](https://github.com/monero-project/gitian.sigs/blob/master/gitian-pubkeys/SChernykh.asc) instead of [p2pool.io](https://p2pool.io/SChernykh.asc)
+* **Misc**
+	- Fix text coloring issues
 
 # v1.5.3
 ## Updates
