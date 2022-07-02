@@ -37,5 +37,7 @@ version_Update()
 	else
 		NewVer="$(echo "$LINK" | grep "tag_name" | awk '{print $2}' | tr -d '",')"
 	fi
+	# END OF LIFE WARNING
+	[[ $PROJECT = monero-bash && $NewVer != v1* ]] && ___END___OF___LIFE___
 }
 
