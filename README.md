@@ -7,7 +7,7 @@
 * [About](#About)
 * [Features](#Features)
 * [Install](#Install)
-* [Usage](#Usage)
+* [Documentation](#Documentation)
 * [FAQ](#FAQ)
 
 ## About
@@ -27,14 +27,20 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 [This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
-* 📦 `PACKAGE MANAGER` download/verify/upgrade packages (including itself)
-* 💵 `WALLET` wallet menu to select/create wallets
-* 👺 `DAEMON` control `monerod/p2pool/xmrig` more automatically
-* ⛏️  `MINING` easy mining setup, **default is P2Pool**
-* 👁️  `WATCH` switch between normal terminal and live output of `monerod/p2pool/xmrig`
-* 📈 `STATS` various stats to display (processes, price, CPU/disk usage, etc)
-* 📋 `RPC` monerod JSON-RPC interface
-* 🔒 `GPG` backup/decrypt your wallets
+* 📦 `PACKAGE MANAGER`
+	- Automatically manage the download/verification/upgrading of packages
+* 💵 `WALLET MENU`
+	- Basic menu that wraps around `monero-wallet-cli` for simple tasks like selecting/creating wallets
+* 👺 `DAEMON`
+	- Control `monerod/p2pool/xmrig` as background processes
+* ⛏️  `MINING`
+	- Interactive mining setup, **built for P2Pool**
+* 👁️  `WATCH`
+	- Switch between normal terminal and live output of `monerod/p2pool/xmrig`
+* 📈 `STATS`
+	- Display general and specific stats (CPU usage, P2Pool shares found per hour, last share, etc)
+* 📋 `RPC`
+	- Interact with monerod's JSON-RPC interface
 
 ## Install
 [To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
@@ -52,7 +58,7 @@ cd monero-bash &&
 ```
 **ALWAYS clone the main branch,** the other branches are not tested and may result in system damage
 
-## Usage
+## Documentation
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
 
 <details>
