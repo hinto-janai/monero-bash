@@ -1,7 +1,7 @@
 # monero-bash
 >a wrapper for Monero written in Bash, for Linux
 
-![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
+![monero-bash](https://user-images.githubusercontent.com/101352116/179381901-f47ea0ba-5740-4bfa-9cd6-52798de48eb0.png)
 
 ## Contents
 * [About](#About)
