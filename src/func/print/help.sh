@@ -20,67 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# print functions
-
-print::title() {
-	log::debug "seeding title rng"
-	local TITLE_RANDOM
-	TITLE_RANDOM=$RANDOM
-	######################################### 60% probability
-	if [[ $TITLE_RANDOM -le 19660 ]]; then
-			printf "${BRED}%s${OFF}\n" \
-				"###################" \
-				"#   monero-bash   #" \
-				"###################"
-		log::debug "title luck: common 60%"
-	######################################### 30% probability
-	elif [[ $TITLE_RANDOM -le 29490 ]]; then
-			printf "${BBLUE}%s${OFF}\n" \
-				"xxxxxxxxxxxxxxxxxxx" \
-				"x   monero-bash   x" \
-				"xxxxxxxxxxxxxxxxxxx"
-		log::debug "title luck: rare 30%"
-	######################################### 9% probability
-	elif [[ $TITLE_RANDOM -le 32439 ]]; then
-			printf "${BPURPLE}%s${OFF}\n" \
-				":::::::::::::::::::" \
-				":   monero-bash   :" \
-				":::::::::::::::::::"
-		log::debug "title luck: ultra 9%"
-	######################################### 0.99% probability
-	elif [[ $TITLE_RANDOM -le 32766 ]]; then
-			printf "${BYELLOW}%s${OFF}\n" \
-				"///////////////////" \
-				"/   monero-bash   /" \
-				"///////////////////"
-		log::debug "title luck: legendary 0.99%"
-	######################################### go buy a lottery ticket - 0.0030519% probability, 1/32767
-	else
-		printf "${BGREEN}%s${OFF}\n" \
-			"###################" \
-			"#   monero-bash   #" \
-			"###################"
-		log::debug "title luck: lottery 0.0030519%"
-	fi
-}
-
-# print error, don't exit
-print::error() {
-	until [[ $# = 0 ]]; do
-		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
-		shift
-	done
-}
-
-# print error and exit
-print::exit() {
-	until [[ $# = 0 ]]; do
-		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
-		shift
-	done
-	exit 1
-}
-
 # print help screen (command list)
 print::help() {
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \

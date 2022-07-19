@@ -13,5 +13,6 @@
 #include <stdlib/src/type.sh>
 
 main() {
+print::title
 }
 main "$@"
