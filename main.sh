@@ -35,8 +35,11 @@
 #include <stdlib/src/type.sh>
 
 main() {
-#----------------------------------------- log::debug init
+#----------------------------------------- main() START
 log::debug "main() started, log::debug initialization"
+
+#----------------------------------------- DEBUG
+[[ $1 = DEBUG ]] && DEBUG "$@"
 
 #----------------------------------------- SAFETY
 log::debug "starting safety checks"
@@ -46,8 +49,6 @@ safety::gnu_linux
 safety::bash
 # check for root
 safety::root
-# check for path
-safety::path
 # check for pipe
 safety::pipe
 
@@ -58,6 +59,10 @@ if [[ $FIRST_TIME = true ]]; then
 else
 	log::debug "first time = false, skipping installation"
 fi
+
+#----------------------------------------- MORE SAFETY
+# check for path
+safety::path
 
 #----------------------------------------- PARSE USER INPUT
 ___BEGIN___ERROR___TRACE___

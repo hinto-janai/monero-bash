@@ -20,33 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# global readonly variables.
+# directly execute a monero-bash function
+# this skips safety checks and option parsing
+# use carefully!
+DEBUG() {
+	log::debug "starting debug function mode"
+	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BGREEN}%s${OFF}\n" \
+		"====    MONERO-BASH DEBUG MODE   ===="
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@ you are executing a monero-bash   @" \
+		"@ function directly, use carefully! @" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"function(): "
 
-# main dot folder
-readonly DOT="$HOME/.monero-bash"
-readonly CONFIG="$DOT/config"
-readonly WALLETS="$DOT/wallets"
-readonly PACKAGES="$DOT/packages"
+	local DEBUG_FUNCTION || return 1
+	read -r DEBUG_FUNCTION || return 2
+	if ! declare -fp "$DEBUG_FUNCTION" &>/dev/null; then
+		log::fail "$DEBUG_FUNCTION not found"
+		exit 1
+	fi
 
-# config files
-readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
-readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
-readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.json"
-readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
-
-# package folders
-readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
-readonly PKG_MONERO="$PACKAGES/monero"
-readonly PKG_P2POOL="$PACKAGES/p2pool"
-readonly PKG_XMRIG="$PACKAGES/xmrig"
-
-# monero-bash package source files
-readonly SRC="$PKG_MONERO_BASH/src"
-readonly TXT="$SRC/txt"
-readonly HASHLIST="$TXT/hashlist"
-readonly STATE="$TXT/state"
-readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-
-# system folders
-readonly SYSTEMD="/etc/systemd/system"
+	log::debug "executing debug function: $DEBUG_FUNCTION"
+	$DEBUG_FUNCTION
+	exit
+}

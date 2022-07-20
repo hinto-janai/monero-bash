@@ -20,33 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# global readonly variables.
-
-# main dot folder
-readonly DOT="$HOME/.monero-bash"
-readonly CONFIG="$DOT/config"
-readonly WALLETS="$DOT/wallets"
-readonly PACKAGES="$DOT/packages"
-
-# config files
-readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
-readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
-readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.json"
-readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
-
-# package folders
-readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
-readonly PKG_MONERO="$PACKAGES/monero"
-readonly PKG_P2POOL="$PACKAGES/p2pool"
-readonly PKG_XMRIG="$PACKAGES/xmrig"
-
-# monero-bash package source files
-readonly SRC="$PKG_MONERO_BASH/src"
-readonly TXT="$SRC/txt"
-readonly HASHLIST="$TXT/hashlist"
-readonly STATE="$TXT/state"
-readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-
-# system folders
-readonly SYSTEMD="/etc/systemd/system"
+# manually format table spacing for status
+status::table() {
+	log::debug "creating status table"
+	printf "${OFF}%s\n" \
+		"#-----------------------------------------------#" \
+		"# monero-bash |   Monero   |  P2Pool  |  XMRig  #" \
+		"#-----------------------------------------------#" \
+		"# $MONERO_BASH_VER | $MONERO_VER | $P2POOL_VER | $XMRIG_VER #" \
+		"#-----------------------------------------------#" \
+		"#"
+}
