@@ -1,0 +1,18 @@
+# monero-bash uses this file to
+# store longer-term state data
+
+# first time check
+FIRST_TIME=true
+MINE_UNCONFIGURED=true
+
+# versions
+MONERO_BASH_VER=v2.0.0
+MONERO_VER=
+P2POOL_VER=
+XMRIG_VER=
+
+# old state
+MONERO_BASH_OLD=false
+MONERO_OLD=false
+P2POOL_OLD=false
+XMRIG_OLD=false

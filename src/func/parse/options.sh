@@ -23,6 +23,8 @@
 # parse user input
 
 parse::options() {
+log::debug "parsing user input"
+log::debug "user input: $*"
 until [[ $# = 0 ]]; do
 case "$1" in
 	uninstall) monero_bash::uninstall; exit;;
@@ -214,6 +216,7 @@ case "$1" in
 	size)   print::size;   exit;;
 	help)   print::help;   exit;;
 	*)
+		log::debug "user input failed: $1"
 		print::error "invalid option!"
 		printf "${OFF}%s${BRED}%s${OFF}\n" \
 			"for help, type:" \
