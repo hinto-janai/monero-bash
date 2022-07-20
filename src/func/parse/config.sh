@@ -23,8 +23,8 @@
 # parse [monero-bash.conf] safely
 parse::config() {
 	log::debug "parsing monero-bash.conf"
-	local i IFS=$'\n' CONFIG || return 1
-	mapfile CONFIG < "$CONFIG_MONERO_BASH" || return 2
+	local i IFS=$'\n' CONFIG_ARRAY || return 1
+	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
 	for i in "${OPTIONS[@]}"; do
 		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
 		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"

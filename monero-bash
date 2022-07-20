@@ -1,0 +1,1231 @@
+#!/usr/bin/env bash
+#
+# monero-bash - a wrapper for Monero, written in Bash
+#
+# Copyright (c) 2022 hinto.janaiyo <https://github.com/hinto-janaiyo>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+#git <monero-bash/9579b8a>
+#nix <1658337507>
+#hbc <09e9280>
+#lib <stdlib/ask.sh/1eaba1f>
+#lib <stdlib/crypto.sh/1eaba1f>
+#lib <stdlib/date.sh/1eaba1f>
+#lib <stdlib/debug.sh/1eaba1f>
+#lib <stdlib/is.sh/1eaba1f>
+#lib <stdlib/lock.sh/1eaba1f>
+#lib <stdlib/log.sh/1eaba1f>
+#lib <stdlib/panic.sh/1eaba1f>
+#lib <stdlib/readonly.sh/1eaba1f>
+#lib <stdlib/safety.sh/1eaba1f>
+#lib <stdlib/trace.sh/1eaba1f>
+#lib <stdlib/type.sh/1eaba1f>
+#src <func/parse/config.sh>
+#src <func/parse/options.sh>
+#src <func/parse/state.sh>
+#src <func/print/changelog.sh>
+#src <func/print/error.sh>
+#src <func/print/help.sh>
+#src <func/print/title.sh>
+#src <func/print/version.sh>
+#src <func/safety/path.sh>
+#src <func/safety/pipe.sh>
+#src <func/safety/root.sh>
+#src <readonly.sh>
+
+#-------------------------------------------------------------------------------- BEGIN SAFETY
+POSIXLY_CORRECT= || exit 90
+	# bash builtins
+\unset -f . : [ alias bg bind break builtin caller cd command compgen complete compopt continue declare dirs disown echo enable eval exec exit export false fc fg getopts hash help history jobs kill let local logout mapfile popd printf pushd pwd read readarray readonly return set shift shopt source suspend test times trap true type typeset ulimit umask unalias unset wait || exit 91
+	# gnu core-utils
+\unset -f arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dir dircolors dirname du echo env expand expr factor false fmt fold groups head hostid hostname id install join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup nproc numfmt od paste pathchk pinky pr printenv printf ptx pwd readlink realpath rm rmdir runcon seq shred shuf sleep sort split stat stdbuf stty sum tac tail tee test timeout touch tr true truncate tsort tty uname unexpand uniq unlink uptime users vdir wc who whoami yes || exit 92
+\unalias -a || exit 93
+unset POSIXLY_CORRECT || exit 94
+set -eo pipefail || exit 95
+
+#-------------------------------------------------------------------------------- BEGIN LIB
+trap 'printf "%s\n" "@@@@@@ LIB PANIC @@@@@@" "[line] ${LINENO}" "[file] $0" "[code] $?";set +eo pipefail;trap - ERR;while :;do read;done;exit 112' ERR || exit 112
+ask::yes() {
+	local STD_ASK_REPONSE || return 44
+	read -r STD_ASK_REPONSE
+	case $STD_ASK_REPONSE in
+		""|y|Y|yes|Yes|YES) return 0 ;;
+		*) return 2 ;;
+	esac
+}
+ask::no() {
+	local STD_ASK_RESPONSE || return 44
+	read -r STD_ASK_RESPONSE
+	case $STD_ASK_RESPONSE in
+		y|Y|yes|Yes|YES) return 2 ;;
+		*) return 0 ;;
+	esac
+}
+ask::sudo() {
+	sudo -v
+}
+crypto::bytes() {
+	[[ $# = 0 ]] && return 1
+	head -c $1 /dev/random
+}
+crypto::num() {
+	case $# in
+		1) shuf -i 0-$1 -n 1; return;;
+		2) shuf -i $1-$2 -n 1; return;;
+		*) return 1;;
+	esac
+}
+crypto::uuid() {
+	local STD_CRYPTO_UUID || return 1
+	mapfile STD_CRYPTO_UUID < /proc/sys/kernel/random/uuid
+	printf "%s" ${STD_CRYPTO_UUID//$'\n'}
+}
+crypto::encrypt() {
+	[[ $# != 2 ]] && return 1
+	printf "%s\n" "$1" | gpg --batch --symmetric --armor --quiet --cipher-algo AES256 --passphrase "$2"
+}
+crypto::decrypt() {
+	printf "%s\n" "$1" | gpg --batch --decrypt --quiet --passphrase "$2"
+}
+date::unix_translate() {
+	if [[ -p /dev/stdin ]]; then
+		local i || return 11
+		for i in $(</dev/stdin); do
+			date -d @"$i" || return 22
+		done
+		return 0
+	fi
+	[[ $# = 0 ]] && return 33
+	while [[ $# != 0 ]]; do
+		date -d @"$1" || return 44
+		shift
+	done
+	return 0
+}
+date::unix() { printf "%s\n" "$EPOCHSECONDS" ;}
+date::time() { date +"%T" ;}
+date::calendar() { date +"%Y-%m-%d" ;}
+date::now() { date +"%Y-%m-%d %T" ;}
+date::year() { date +"%Y" ;}
+date::month() { date +"%m" ;}
+date::day() { date +"%d" ;}
+date::hour() { date +"%H" ;}
+date::minute() { date +"%M" ;}
+date::second() { date +"%S" ;}
+debug() {
+	[[ $STD_DEBUG != true ]] && return 0
+	trap 'STD_DEBUG_CMD="$BASH_COMMAND" STD_DEBUG_FUNC=(${BASH_LINENO[@]}) STD_DEBUG_CMD_NUM="$LINENO" STD_DEBUG_PIPE=(${PIPESTATUS[@]});debug::trap' DEBUG
+}
+debug::trap() {
+	if [[ -z $STD_DEBUG_INIT ]]; then
+		declare -g STD_DEBUG_INIT
+		STD_DEBUG_INIT=${EPOCHREALTIME//./}
+		printf "\r\e[2K\033[1;90m%s\033[1;93m%s\033[0m%s\033[1;93m%s" \
+			"[debug 0.000000] " "[ \$_ ] " "${STD_DEBUG_CMD_NUM}: $STD_DEBUG_CMD " "-> "
+		local f
+		local i=1
+		for f in ${STD_DEBUG_FUNC[@]-1}; do
+			[[ $f = 0 ]] && break
+			printf "\033[1;91m%s\033[1;92m%s" "${f}: " "${FUNCNAME[${i}]}() "
+			((i++))
+		done
+		printf "\033[0m\n"
+		return
+	fi
+	local STD_DEBUG_ADJUSTED STD_DEBUG_DOT
+	STD_DEBUG_ADJUSTED=$((${EPOCHREALTIME//./}-STD_DEBUG_INIT))
+	case ${#STD_DEBUG_ADJUSTED} in
+		1) STD_DEBUG_ADJUSTED=00000${STD_DEBUG_ADJUSTED//$'\n'};;
+		2) STD_DEBUG_ADJUSTED=0000${STD_DEBUG_ADJUSTED//$'\n'};;
+		3) STD_DEBUG_ADJUSTED=000${STD_DEBUG_ADJUSTED//$'\n'};;
+		4) STD_DEBUG_ADJUSTED=00${STD_DEBUG_ADJUSTED//$'\n'};;
+		5) STD_DEBUG_ADJUSTED=0${STD_DEBUG_ADJUSTED//$'\n'};;
+	esac
+	STD_DEBUG_DOT=$((${#STD_DEBUG_ADJUSTED}-6))
+	if [[ $STD_DEBUG_DOT -eq 0 ]]; then
+		printf "\r\e[2K\033[1;90m%s\033[1;93m%s\033[0m%s\033[1;93m%s" \
+			"[debug 0.${STD_DEBUG_ADJUSTED}] " "[ \$_ ] " "${STD_DEBUG_CMD_NUM}: $STD_DEBUG_CMD " "-> "
+	else
+		printf "\r\e[2K\033[1;90m%s\033[1;93m%s\033[0m%s\033[1;93m%s" \
+			"[debug ${STD_DEBUG_ADJUSTED:0:${STD_DEBUG_DOT}}.${STD_DEBUG_ADJUSTED:${STD_DEBUG_DOT}}] " \
+			"[ \$_ ] " "${STD_DEBUG_CMD_NUM}: $STD_DEBUG_CMD " "-> "
+	fi
+	local f
+	local i=1
+	for f in ${STD_DEBUG_FUNC[@]-1}; do
+		[[ $f = 0 ]] && break
+		printf "\033[1;91m%s\033[1;92m%s" "${f}: " "${FUNCNAME[${i}]}() "
+		((i++))
+	done
+	printf "\033[0m\n"
+}
+is::int() {
+	if [[ -p /dev/stdin ]]; then
+		local i || return 11
+		for i in $(</dev/stdin); do
+			[ $i -eq $i ] &>/dev/null || { STD_TRACE_RETURN="not integer: $i"; return 22; }
+		done
+		return 0
+	fi
+	[[ $# = 0 ]] && return 33
+	local i || return 44
+	for i in "$@"; do
+		[ $i -eq $i ] &>/dev/null || { STD_TRACE_RETURN="not integer: $i"; return 55; }
+	done
+}
+is::int_pos() {
+	if [[ -p /dev/stdin ]]; then
+		local i || return 11
+		for i in $(</dev/stdin); do
+			[ $i -gt -1 ] &>/dev/null || { STD_TRACE_RETURN="not pos int: $i"; return 22; }
+			[ $i -eq $i ] &>/dev/null || { STD_TRACE_RETURN="not pos int: $i"; return 33; }
+		done
+		return 0
+	fi
+	[[ $# = 0 ]] && return 44
+	local i || return 55
+	for i in "$@"; do
+		[ $i -gt -1 ] &>/dev/null || { STD_TRACE_RETURN="not pos int: $i"; return 66; }
+		[ $i -eq $i ] &>/dev/null || { STD_TRACE_RETURN="not pos int: $i"; return 77; }
+	done
+}
+is::int_neg() {
+	if [[ -p /dev/stdin ]]; then
+		local i || return 11
+		for i in $(</dev/stdin); do
+			[ $i -lt 0 ] &>/dev/null || { STD_TRACE_RETURN="not neg int: $i"; return 22; }
+			[ $i -eq $i ] &>/dev/null || { STD_TRACE_RETURN="not neg int: $i"; return 33; }
+		done
+		return 0
+	fi
+	[[ $# = 0 ]] && return 44
+	local i || return 55
+	for i in "$@"; do
+		[ $i -lt 0 ] &>/dev/null || { STD_TRACE_RETURN="not neg int: $i"; return 66; }
+		[ $i -eq $i ] &>/dev/null || { STD_TRACE_RETURN="not neg int: $i"; return 77; }
+	done
+}
+lock::alloc() {
+	POSIXLY_CORRECT= || return 7
+	\unset -f umask trap set return echo unset local return unalias mapfile command || return 8
+	\unalias -a || return 9
+	unset -v POSIXLY_CORRECT || return 10
+	[[ $# = 0 ]] && return 11
+	declare -g -A STD_LOCK_FILE || return 12
+	set +f || return 13
+	local i f || return 14
+	for i in "$@"; do
+		for f in /tmp/std_lock_"$i"_*; do
+			[[ -e "$f" ]] && { STD_TRACE_RETURN="lock file found: $f"; return 15; }
+		done
+	done
+	local STD_LOCK_UUID || return 22
+	until [[ $# = 0 ]]; do
+		mapfile STD_LOCK_UUID < /proc/sys/kernel/random/uuid || return 23
+		STD_LOCK_UUID[0]=${STD_LOCK_UUID[0]//$'\n'/}
+		STD_LOCK_UUID[0]=${STD_LOCK_UUID//-/}
+		STD_LOCK_FILE[$1]="/tmp/std_lock_${1}_${STD_LOCK_UUID[0]}" || return 33
+		local STD_DEFAULT_UMASK
+		STD_DEFAULT_UMASK=$(umask)
+		umask 177
+		echo > "${STD_LOCK_FILE[$1]}" || return 44
+		umask $STD_DEFAULT_UMASK
+		shift || return 45
+	done
+}
+lock::free() {
+	POSIXLY_CORRECT= || return 7
+	\unset -f : unset return rm command || return 8
+	\unalias -a || return 9
+	unset -v POSIXLY_CORRECT || return 10
+	[[ $# = 0 ]] && return 11
+	until [[ $# = 0 ]]; do
+		if [[ $1 = '@' ]]; then
+			command rm "${STD_LOCK_FILE[@]}" || :
+			unset -v STD_LOCK_FILE || :
+			return 0
+		else
+			command rm "${STD_LOCK_FILE[$1]}" || { STD_TRACE_RETURN="lock rm fail: ${STD_LOCK_FILE[$1]}"; return 22; }
+			unset -v "STD_LOCK_FILE[$1]" || return 23
+		fi
+		shift
+	done
+}
+log::ok() {
+	printf "\r\e[2K"
+	printf "\r\e[1;32m[  OK  ]\e[0m %s\n" "$@"
+}
+log::info() {
+	printf "\r\e[2K"
+	printf "\r\e[1;37m[ INFO ]\e[0m %s\n" "$@"
+}
+log::warn() {
+	printf "\r\e[2K"
+	printf "\r\e[1;33m[ WARN ]\e[0m %s\n" "$@"
+}
+log::fail() {
+	printf "\r\e[2K"
+	printf "\r\e[1;31m[ FAIL ]\e[0m %s\n" "$@"
+}
+log::danger() {
+	printf "\r\e[2K"
+	printf "\r\e[1;31m[DANGER]\e[0m %s\n" "$@"
+}
+log::tab() {
+	printf "\r\e[2K"
+	printf "\r\e[0m         %s\n" "$@"
+}
+log::prog() {
+	printf "\r\e[2K"
+	printf "\r\e[1;37m[ \e[0m....\e[1;37m ]\e[0m %s " "$@"
+}
+log::debug() {
+	[[ $STD_LOG_DEBUG != true ]] && return 0
+	if [[ -z $STD_LOG_DEBUG_INIT ]]; then
+		declare -g STD_LOG_DEBUG_INIT
+		STD_LOG_DEBUG_INIT=${EPOCHREALTIME//./}
+		printf "\r\e[2K\e[1;90m%s\e[0m%s" "[log::debug 0.000000] " "$* "
+		if [[ $STD_LOG_DEBUG_VERBOSE = true ]]; then
+			printf "\e[1;93m%s" "-> "
+			local f i
+			i=1
+			for f in ${BASH_LINENO[@]}; do
+				[[ $f = 0 ]] && break
+				printf "\e[1;91m%s\e[1;92m%s" "${f}: " "${FUNCNAME[${i}]}() "
+				((i++))
+			done
+		fi
+		printf "\e[0m\n"
+		return
+	fi
+	local STD_LOG_DEBUG_ADJUSTED STD_LOG_DEBUG_DOT
+	STD_LOG_DEBUG_ADJUSTED=$((${EPOCHREALTIME//./}-STD_LOG_DEBUG_INIT))
+	case ${#STD_LOG_DEBUG_ADJUSTED} in
+		1) STD_LOG_DEBUG_ADJUSTED=00000${STD_LOG_DEBUG_ADJUSTED};;
+		2) STD_LOG_DEBUG_ADJUSTED=0000${STD_LOG_DEBUG_ADJUSTED};;
+		3) STD_LOG_DEBUG_ADJUSTED=000${STD_LOG_DEBUG_ADJUSTED};;
+		4) STD_LOG_DEBUG_ADJUSTED=00${STD_LOG_DEBUG_ADJUSTED};;
+		5) STD_LOG_DEBUG_ADJUSTED=0${STD_LOG_DEBUG_ADJUSTED};;
+	esac
+	STD_LOG_DEBUG_DOT=$((${#STD_LOG_DEBUG_ADJUSTED}-6))
+	if [[ $STD_LOG_DEBUG_DOT -eq 0 ]]; then
+		printf "\r\e[2K\e[1;90m%s\e[0m%s" "[log::debug 0.${STD_LOG_DEBUG_ADJUSTED}] " "$* "
+	else
+		printf "\r\e[2K\e[1;90m%s\e[0m%s" \
+			"[log::debug ${STD_LOG_DEBUG_ADJUSTED:0:${STD_LOG_DEBUG_DOT}}.${STD_LOG_DEBUG_ADJUSTED:${STD_LOG_DEBUG_DOT}}] " "$* "
+	fi
+	if [[ $STD_LOG_DEBUG_VERBOSE = true ]]; then
+		printf "\e[1;93m%s" "-> "
+		local f i
+		i=1
+		for f in ${BASH_LINENO[@]}; do
+			[[ $f = 0 ]] && break
+			printf "\e[1;91m%s\e[1;92m%s" "${f}: " "${FUNCNAME[${i}]}() "
+			((i++))
+		done
+	fi
+	printf "\e[0m\n"
+}
+panic() {
+	local STD_PANIC_CODE="$?" STD_TRACE_FUNC=("${BASH_LINENO[@]}") STD_TRACE_CMD_NUM=${BASH_LINENO[0]}|| exit 98
+	POSIXLY_CORRECT= || exit 11
+	\unset -f trap set return exit printf echo local unalias unset builtin kill || exit 22
+	\unalias -a || exit 33
+	unset POSIXLY_CORRECT || exit 44
+	printf "\e[7m\e[0;m%s\e[0m\n" "@@@@@@@@  panic  @@@@@@@@"
+	local STD_PANIC_CMD
+	mapfile -s $((STD_TRACE_CMD_NUM-1)) -n 1 STD_PANIC_CMD < $0
+	printf "\e[1;95m%s\e[0m%s\n" "[bash] " "$BASH_VERSION"
+	printf "\e[1;96m%s\e[0m%s\n" "[unix] " "$EPOCHSECONDS"
+	printf "\e[1;97m%s\e[0m%s\n" "[file] " "${BASH_SOURCE[-1]}"
+	printf "\e[1;91m%s\e[0m%s\n" "[code] " "$STD_PANIC_CODE"
+	printf "\e[1;94m%s\e[0m%s\n" "[ wd ] " "$PWD"
+	printf "\e[1;93m%s\e[0m%s" "[ \$_ ] " "$STD_TRACE_CMD_NUM: ${STD_PANIC_CMD//$'\t'/}"
+	local f
+	local i=1
+	STD_TRACE_FUNC=("${STD_TRACE_FUNC[@]:1}")
+	for f in ${STD_TRACE_FUNC[@]}; do
+		[[ $f = 0 ]] && break
+		printf "\e[1;92m%s\e[0m%s\n" "[func] " "${f}: ${FUNCNAME[${i}]}()"
+		((i++))
+	done
+	local STD_TRACE_LINE_ARRAY
+	local STD_ORIGINAL_LINE="$STD_TRACE_CMD_NUM"
+	if [[ $STD_TRACE_CMD_NUM -lt 5 ]]; then
+		local STD_TRACE_CMD_NUM=1
+		mapfile -n 9 STD_TRACE_LINE_ARRAY < $0
+	else
+		local STD_TRACE_CMD_NUM=$((STD_TRACE_CMD_NUM-4))
+		mapfile -s $((STD_TRACE_CMD_NUM-1)) -n 9 STD_TRACE_LINE_ARRAY < $0
+	fi
+	for i in {0..8}; do
+		[[ ${STD_TRACE_LINE_ARRAY[$i]} ]] || break
+		if [[ $STD_TRACE_CMD_NUM = "$STD_ORIGINAL_LINE" ]]; then
+			case ${#STD_TRACE_CMD_NUM} in
+				1) printf "\e[1;97m%s" "     $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				2) printf "\e[1;97m%s" "    $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				3) printf "\e[1;97m%s" "   $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				4) printf "\e[1;97m%s" "  $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				5) printf "\e[1;97m%s" " $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				*) printf "\e[1;97m%s" "$STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+			esac
+		else
+			case ${#STD_TRACE_CMD_NUM} in
+				1) printf "\e[1;90m%s" "     $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				2) printf "\e[1;90m%s" "    $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				3) printf "\e[1;90m%s" "   $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				4) printf "\e[1;90m%s" "  $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				5) printf "\e[1;90m%s" " $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+				*) printf "\e[1;90m%s" "$STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]}" ;;
+			esac
+		fi
+		((STD_TRACE_CMD_NUM++))
+	done
+	printf "\e[0;m%s\n" "@@@@@@@@  panic  @@@@@@@@"
+	while :; do read -s -r; done
+	printf "\e[0;m%s\n" "@ loop fail, killing \$$ @"
+	builtin kill -s KILL 0
+	[[ $1 =~ ^[0-9]+$ ]] && exit $1 || exit 99
+}
+readonly BLACK="\e[0;30m"
+readonly RED="\e[0;31m"
+readonly GREEN="\e[0;32m"
+readonly YELLOW="\e[0;33m"
+readonly BLUE="\e[0;34m"
+readonly PURPLE="\e[0;35m"
+readonly CYAN="\e[0;36m"
+readonly WHITE="\e[0;37m"
+readonly BBLACK="\e[1;90m"
+readonly BRED="\e[1;91m"
+readonly BGREEN="\e[1;92m"
+readonly BYELLOW="\e[1;93m"
+readonly BBLUE="\e[1;94m"
+readonly BPURPLE="\e[1;95m"
+readonly BCYAN="\e[1;96m"
+readonly BWHITE="\e[1;97m"
+readonly UBLACK="\e[4;30m"
+readonly URED="\e[4;31m"
+readonly UGREEN="\e[4;32m"
+readonly UYELLOW="\e[4;33m"
+readonly UBLUE="\e[4;34m"
+readonly UPURPLE="\e[4;35m"
+readonly UCYAN="\e[4;36m"
+readonly UWHITE="\e[4;37m"
+readonly IBLACK="\e[0;90m"
+readonly IRED="\e[0;91m"
+readonly IGREEN="\e[0;92m"
+readonly IYELLOW="\e[0;93m"
+readonly IBLUE="\e[0;94m"
+readonly IPURPLE="\e[0;95m"
+readonly ICYAN="\e[0;96m"
+readonly IWHITE="\e[0;97m"
+readonly BOLD="\e[1m"
+readonly ITALIC="\e[3m"
+readonly OFF="\e[0m"
+safety::builtin() {
+	POSIXLY_CORRECT= || exit 11
+	\unset -f "$@" || exit 22
+	\unalias -a || exit 33
+	unset POSIXLY_CORRECT || exit 44
+}
+safety::bash() {
+	[[ ${BASH_VERSINFO[0]} -ge 5 ]] || { STD_TRACE_RETURN="bash not v5+: ${BASH_VERSINFO[0]}"; return 11; }
+}
+safety::gnu_linux() {
+	[[ $OSTYPE = linux-gnu* ]] || { STD_TRACE_RETURN="os not gnu/linux: $OSTYPE"; return 11; }
+}
+___BEGIN___ERROR___TRACE___() {
+	POSIXLY_CORRECT= || exit 8
+	\unset -f : true false trap set return exit printf unset local return read unalias mapfile kill builtin wait || exit 9
+	\unalias -a || exit 10
+	unset -v POSIXLY_CORRECT || exit 11
+	trap 'STD_TRACE_CMD="$BASH_COMMAND" STD_TRACE_FUNC=(${BASH_LINENO[@]}) STD_TRACE_CMD_NUM="$LINENO" STD_TRACE_PIPE=(${PIPESTATUS[@]}); ___ENDOF___ERROR___TRACE___ > /dev/tty || exit 100' ERR || exit 12
+	unset -v STD_TRACE_CMD STD_TRACE_FUNC_NUM STD_TRACE_CMD_NUM STD_TRACE_PIPE || exit 13
+	set -E -e -o pipefail || exit 14
+	return 0
+}
+___ENDOF___ERROR___TRACE___() {
+	POSIXLY_CORRECT= || exit 15
+	\unset -f : true false trap set return exit printf unset local return read unalias mapfile kill builtin wait || exit 16
+	\unalias -a || exit 17
+	unset -v POSIXLY_CORRECT || exit 18
+	if [[ -z $STD_TRACE_PIPE ]]; then
+		POSIXLY_CORRECT= || exit 19
+		\unset -f trap set return exit return || exit 20
+		\unalias -a || exit 21
+		unset POSIXLY_CORRECT || exit 22
+		unset -v STD_TRACE_CMD STD_TRACE_FUNC_NUM STD_TRACE_CMD_NUM STD_TRACE_PIPE || exit 23
+		set +E +eo pipefail || exit 24
+		trap - ERR || exit 25
+		return 0
+	fi
+	printf "\e[1;91m%s\n" "========  BEGIN ERROR TRACE  ========"
+	printf "\e[1;95m%s\e[0m%s\n" "[bash] " "$BASH_VERSION"
+	printf "\e[1;96m%s\e[0m%s\n" "[unix] " "$EPOCHSECONDS"
+	printf "\e[1;91m%s" "[code] "
+	for i in "${STD_TRACE_PIPE[@]}"; do
+		printf "\e[0m%s" "$i"
+	done
+	printf "\n\e[1;97m%s\e[0m%s\n" "[file] " "${BASH_SOURCE[-1]}"
+	printf "\e[1;94m%s\e[0m%s\n" "[ wd ] " "$PWD"
+	printf "\e[1;93m%s\e[0m%s\n" "[ \$_ ] " "${STD_TRACE_CMD_NUM}: $STD_TRACE_CMD"
+	local f
+	local i=1
+	for f in "${STD_TRACE_FUNC[@]}"; do
+		[[ $f = 0 ]] && break
+		printf "\e[1;92m%s\e[0m%s\n" "[func] " "${f}: ${FUNCNAME[${i}]}()"
+		((i++))
+	done
+	local STD_TRACE_LINE_ARRAY
+	local STD_ORIGINAL_LINE="$STD_TRACE_CMD_NUM"
+	if [[ $STD_TRACE_CMD_NUM -lt 5 ]]; then
+		local STD_TRACE_CMD_NUM=1
+		mapfile -n 9 STD_TRACE_LINE_ARRAY < "$0"
+	else
+		local STD_TRACE_CMD_NUM=$((STD_TRACE_CMD_NUM-4))
+		mapfile -s $((STD_TRACE_CMD_NUM-1)) -n 9 STD_TRACE_LINE_ARRAY < "$0"
+	fi
+	for i in {0..8}; do
+		[[ ${STD_TRACE_LINE_ARRAY[$i]} ]] || break
+	  local STD_TRACE_SPACING="    "
+		if [[ $STD_TRACE_CMD_NUM = "$STD_ORIGINAL_LINE" ]]; then
+			case ${#STD_TRACE_CMD_NUM} in
+				1) printf "\e[1;97m%s" "     $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				2) printf "\e[1;97m%s" "    $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				3) printf "\e[1;97m%s" "   $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				4) printf "\e[1;97m%s" "  $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				5) printf "\e[1;97m%s" " $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				*) printf "\e[1;97m%s" "$STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+			esac
+		else
+			case ${#STD_TRACE_CMD_NUM} in
+				1) printf "\e[1;90m%s" "     $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				2) printf "\e[1;90m%s" "    $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				3) printf "\e[1;90m%s" "   $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				4) printf "\e[1;90m%s" "  $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				5) printf "\e[1;90m%s" " $STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+				*) printf "\e[1;90m%s" "$STD_TRACE_CMD_NUM ${STD_TRACE_LINE_ARRAY[${i}]//$'\t'/${STD_TRACE_SPACING}}" ;;
+			esac
+		fi
+		((STD_TRACE_CMD_NUM++))
+	done
+	[[ $STD_TRACE_RETURN ]] && printf "\e[38;5;196m%s\e[0;1m%s\e[0m\n" "[STD_TRACE_RETURN]" " $STD_TRACE_RETURN"
+	printf "\e[1;91m%s\e[0m\n" "========  ENDOF ERROR TRACE  ========"
+	unset -v STD_TRACE_CMD STD_TRACE_FUNC_NUM STD_TRACE_CMD_NUM STD_TRACE_PIPE || exit 26
+	set +E +eo pipefail || exit 27
+	trap - ERR || exit 28
+	if [[ $BASH_SUBSHELL != 0 ]]; then
+		printf "\e[1;93m%s\e[0m\n" "======  SUB-SHELLS TERMINATED  ======"
+	fi
+	builtin kill -s TERM 0 "$(jobs -p)"
+	exit 99
+	printf "\e[1;97m%s\e[0m\n" "=KILL/EXIT FAIL, BEGIN INFINITE LOOP="
+	while :; do read -s -r; done
+	while true; do read -s -r; done
+	while true; do false; done
+	while :; do :; done
+}
+char() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		declare -p ${i%=*} &>/dev/null && { STD_TRACE_RETURN="char already found: $i"; return 33; }
+		declare -g "$i" || return 44
+	done
+	return 0
+}
+array() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		{ declare -p ${i%=*} &>/dev/null || [[ -v ${i%=*} ]]; } && { STD_TRACE_RETURN="array already found: $i"; return 33; }
+		declare -g -a "$i" || return 44
+	done
+	return 0
+}
+map() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		{ declare -p ${i%=*} &>/dev/null || [[ -v ${i%=*} ]]; } && { STD_TRACE_RETURN="map already found: $i"; return 33; }
+		declare -g -A "$i" || return 44
+	done
+	return 0
+}
+int() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		if [[ $i = *=* ]]; then
+			case ${i/*=} in
+				''|*[!0-9]*) { STD_TRACE_RETURN="not integer: $i"; return 33; } ;;
+			esac
+		fi
+		declare -p ${i%=*} &>/dev/null && { STD_TRACE_RETURN="integer already found: $i"; return 44; }
+		declare -g -i "$i" || return 55
+	done
+	return 0
+}
+bool() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		declare -p ${i%=*} &>/dev/null && { STD_TRACE_RETURN="bool already found: $i"; return 33; }
+		case $i in
+			*=true) declare -g ${i%=*}=true || return 44 ;;
+			*=false) declare -g ${i%=*}=false || return 55 ;;
+			*) return 66 ;;
+		esac
+	done
+}
+ref() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		declare -p ${i%=*} &>/dev/null && { STD_TRACE_RETURN="ref already found: $i"; return 33; }
+		declare -g -n "$i" || return 44
+	done
+	return 0
+}
+free() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		{ declare -p ${i%=*} &>/dev/null || [[ -v ${i%=*} ]]; } || { STD_TRACE_RETURN="no var found: $i"; return 33; }
+		unset -v "$i" || { STD_TRACE_RETURN="could not free: $i"; return 44; }
+	done
+	return 0
+}
+free::func() {
+	[[ $# = 0 ]] && return 11
+	local i || return 22
+	for i in "$@"; do
+		declare -F "$i" &>/dev/null || { STD_TRACE_RETURN="no func found: $i"; return 33; }
+		unset -f "$i" || { STD_TRACE_RETURN="could not free: $i"; return 44; }
+	done
+	return 0
+}
+declare -fr ask::yes
+declare -fr ask::no
+declare -fr ask::sudo
+declare -fr crypto::bytes
+declare -fr crypto::num
+declare -fr crypto::uuid
+declare -fr crypto::encrypt
+declare -fr crypto::decrypt
+declare -fr date::unix_translate
+declare -fr date::unix
+declare -fr date::time
+declare -fr date::calendar
+declare -fr date::now
+declare -fr date::year
+declare -fr date::month
+declare -fr date::day
+declare -fr date::hour
+declare -fr date::minute
+declare -fr date::second
+declare -fr debug
+declare -fr debug::trap
+declare -fr is::int
+declare -fr is::int_pos
+declare -fr is::int_neg
+declare -fr lock::alloc
+declare -fr lock::free
+declare -fr log::ok
+declare -fr log::info
+declare -fr log::warn
+declare -fr log::fail
+declare -fr log::danger
+declare -fr log::tab
+declare -fr log::prog
+declare -fr log::debug
+declare -fr panic
+declare -fr safety::builtin
+declare -fr safety::bash
+declare -fr safety::gnu_linux
+declare -fr ___BEGIN___ERROR___TRACE___
+declare -fr ___ENDOF___ERROR___TRACE___
+declare -fr char
+declare -fr array
+declare -fr map
+declare -fr int
+declare -fr bool
+declare -fr ref
+declare -fr free
+declare -fr free::func
+
+#-------------------------------------------------------------------------------- BEGIN SRC
+trap 'printf "%s\n" "@@@@@@ SRC PANIC @@@@@@" "[line] ${LINENO}" "[file] $0" "[code] $?";set +eo pipefail;trap - ERR;while :;do read;done;exit 115' ERR || exit 115
+parse::config() {
+	log::debug "parsing monero-bash.conf"
+	local i IFS=$'\n' CONFIG_ARRAY || return 1
+	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
+	for i in "${OPTIONS[@]}"; do
+		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
+		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
+		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
+		[[ $i =~ ^P2POOL_WALLET=$ ]]                      && declare -g P2POOL_WALLET="${i/*=/}"
+		[[ $i =~ ^P2POOL_MONEROD_IP=*$ ]]                 && declare -g P2POOL_MONEROD_IP="${i/*=/}"
+		[[ $i =~ ^P2POOL_LOG_LEVEL=*$ ]]                  && declare -g P2POOL_LOG_LEVEL="${i/*=/}"
+		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
+		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
+		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]  && declare -g STD_LOG_DEBUG="true"
+		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE="true"
+	done
+	log::debug "--- monero-bash.conf settings ---"
+	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
+	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
+	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
+	log::debug "P2POOL_WALLET             | $P2POOL_WALLET"
+	log::debug "P2POOL_MONEROD_IP         | $P2POOL_MONEROD_IP"
+	log::debug "P2POOL_LOG_LEVEL          | $P2POOL_LOG_LEVEL"
+	log::debug "RPC_IP                    | $RPC_IP"
+	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"
+	log::debug "MONERO_BASH_DEBUG         | $STD_LOG_DEBUG"
+	log::debug "MONERO_BASH_DEBUG_VERBOSE | $STD_LOG_DEBUG_VERBOSE"
+}
+parse::options() {
+log::debug "parsing user input"
+log::debug "user input: $*"
+until [[ $# = 0 ]]; do
+case "$1" in
+	uninstall) monero_bash::uninstall; exit;;
+	rpc)       rpc::daemon "$@"; exit;;
+	install)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_INSTALL_BASH=true;;
+			monero)       OPTION_INSTALL_MONERO=true;;
+			*p2p*)        OPTION_INSTALL_P2POOL=true;;
+			*xmr*)        OPTION_INSTALL_XMRIG=true;;
+			--force|-f)   OPTION_INSTALL_FORCE=true;;
+			--verbose|-v) OPTION_INSTALL_VERBOSE=true;;
+			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		install::pkg
+		exit
+		;;
+	remove)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_REMOVE_BASH=true;;
+			monero)       OPTION_REMOVE_MONERO=true;;
+			*p2p*)        OPTION_REMOVE_P2POOL=true;;
+			*xmr*)        OPTION_REMOVE_XMRIG=true;;
+			--verbose|-v) OPTION_REMOVE_VERBOSE=true;;
+			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		remove::pkg
+		exit
+		;;
+	update) update::pkg; exit;;
+	upgrade)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_UPGRADE_BASH=true;;
+			monero)       OPTION_UPGRADE_MONERO=true;;
+			*p2p*)        OPTION_UPGRADE_P2POOL=true;;
+			*xmr*)        OPTION_UPGRADE_XMRIG=true;;
+			--force|-f)   OPTION_UPGRADE_FORCE=true;;
+			--verbose|-v) OPTION_UPGRADE_VERBOSE=true;;
+			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		upgrade::pkg
+		exit
+		;;
+	version) print::version; exit;;
+	config)  config::mining; exit;;
+	start)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::start
+		exit
+		;;
+	stop)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::stop
+		exit
+		;;
+	kill)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::kill
+		exit
+		;;
+	restart)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::restart
+		exit
+		;;
+	full)
+		shift
+		[[ $# -gt 1 ]] && print::error "Pick one process: [monerod/p2pool/xmrig]"; exit 1
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one process: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		process::full
+		exit
+		;;
+	watch)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::watch
+		exit
+		;;
+	edit)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple to edit: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::edit
+		exit
+		;;
+	reset)
+		shift
+		until [[ $# = 0 ]]; do
+		case "$1" in
+			*bash*)       OPTION_PROCESS_BASH=true;;
+			monero)       OPTION_PROCESS_MONERO=true;;
+			*p2p*)        OPTION_PROCESS_P2POOL=true;;
+			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			"") print::error "Pick one/multiple to reset: [monerod/p2pool/xmrig]"; exit 1;;
+			*)            break;;
+		esac
+		shift
+		done
+		process::reset
+		exit
+		;;
+	status) status::print; exit;;
+	list)   wallet::list;  exit;;
+	size)   print::size;   exit;;
+	changes)
+		shift
+		[[ $# = 0 ]] && print::changelog && exit
+		until [[ $# = 0 ]]; do
+			if declare -fp print::changelog::"${1/v}" &>/dev/null; then
+				print::changelog::"${1/v}"
+			else
+				print::error "Version $1 does not exist/is not available"
+			fi
+			shift
+		done
+		exit
+		;;
+	help)   print::help;   exit;;
+	*)
+		log::debug "user input failed: $1"
+		print::error "invalid option!"
+		printf "${OFF}%s${BRED}%s${OFF}\n" \
+			"for help, type:" \
+			"monero-bash help"
+		exit 1
+		;;
+esac
+done
+}
+parse::state() {
+	log::debug "parsing state file"
+	local i IFS=$'\n' STATE_ARRAY || return 1
+	mapfile STATE_ARRAY < "$STATE" || return 2
+	for i in "${OPTIONS[@]}"; do
+		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"        || declare -g FIRST_TIME="false"
+		[[ $i =~ ^MINE_UNCONFIGURED=true[[:space:]]+$ ]] && declare -g MINE_UNCONFIGURED="true" || declare -g MINE_UNCONFIGURED="false"
+		[[ $i =~ ^MONERO_BASH_VER=*$ ]]                  && declare -g MONERO_BASH_VER="${i/*=/}"
+		[[ $i =~ ^MONERO_VER=*$ ]]                       && declare -g MONERO_VER="${i/*=/}"
+		[[ $i =~ ^P2POOL_VER=*$ ]]                       && declare -g P2POOL_VER="${i/*=/}"
+		[[ $i =~ ^XMRIG_VER=*$ ]]                        && declare -g XMRIG_VER="${i/*=/}"
+		[[ $i =~ ^MONERO_BASH_OLD=true[[:space:]]+$ ]]   && declare -g MONERO_BASH_OLD="true" || declare -g MONERO_BASH_OLD="false"
+		[[ $i =~ ^MONERO_OLD=true[[:space:]]+$ ]]        && declare -g MONERO_OLD="true"      || declare -g MONERO_OLD="false"
+		[[ $i =~ ^P2POOL_OLD=true[[:space:]]+$ ]]        && declare -g P2POOL_OLD="true"      || declare -g P2POOL_OLD="false"
+		[[ $i =~ ^XMRIG_OLD=true[[:space:]]+$ ]]         && declare -g XMRIG_OLD="true"       || declare -g XMRIG_OLD="false"
+	done
+	log::debug "--- state file ---"
+	log::debug "FIRST_TIME        | $FIRST_TIME"
+	log::debug "MINE_UNCONFIGURED | $MINE_UNCONFIGURED"
+	log::debug "MONERO_BASH_VER   | $MONERO_BASH_VER"
+	log::debug "MONERO_VER        | $MONERO_VER"
+	log::debug "P2POOL_VER        | $P2POOL_VER"
+	log::debug "XMRIG_VER         | $XMRIG_VER"
+	log::debug "MONERO_BASH_OLD   | $MONERO_BASH_OLD"
+	log::debug "MONERO_OLD        | $MONERO_OLD"
+	log::debug "P2POOL_OLD        | $P2POOL_OLD"
+	log::debug "XMRIG_OLD         | $XMRIG_OLD"
+}
+print::changelog::title() {
+	local CHANGELOG_TITLE || return 1
+	CHANGELOG_VERSION="$1"
+	printf "${BCYAN}%s\n" \
+		"#==============================#" \
+		"# monero-bash $CHANGELOG_VERSION changelog #" \
+		"#==============================#" \
+		""
+}
+print::changelog() {
+	print::changelog::2.0.0
+}
+print::changelog::2.0.0() {
+	print::changelog::title "v2.0.0"
+}
+print::changelog::1.6.0() {
+	print::changelog::title "v1.6.0"
+	printf "${BCYAN}%s\n" \
+		"# Updates"
+	printf "  ${BOLD}${BWHITE}%s\n" \
+		"v1 END OF LIFE"
+	printf "    ${OFF}%s\n" \
+		"- monero-bash v2.0.0 in progress, a rewrite to make the code safer, faster, and easier to debug" \
+		"- Major version upgrades (v1.X.X > v2.X.X) will include changes that break backwards compatability" \
+		"- v1.X.X versions will still function, but you will not be able to upgrade monero-bash past v1.9.9" \
+		""
+	printf "${BCYAN}%s\n" \
+		"# Fixes"
+	printf "  ${BOLD}${BWHITE}%s\n    ${OFF}%s\n" \
+		"systemd" "- Service file permission fix (700 > 600)" \
+		"P2Pool"  "- Fetch PGP key from GitHub" \
+		"Misc"    "- Fix text coloring issues"
+}
+print::error() {
+	until [[ $# = 0 ]]; do
+		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
+		shift
+	done
+}
+print::exit() {
+	until [[ $# = 0 ]]; do
+		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
+		shift
+	done
+	exit 1
+}
+print::help() {
+	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
+		"MONERO-BASH USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
+	printf "${BWHITE}%s${OFF}\n" "WALLET"
+	printf "    ${OFF}%s\n" \
+		"monero-bash                              Open wallet menu" \
+		"list                                     List wallets"
+	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"install " "<packages> " "[--verbose]           " "Install one/multiple packages" \
+		"remove  "  "<packages> " "[--verbose]           " "Remove one/multiple packages"
+	printf "    ${OFF}%s\n" \
+		"update                                   Check for package updates" \
+		"upgrade                                  Upgrade all out-of-date packages"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"upgrade " "<packages> " "[--verbose|--force]   " "Upgrade SPECIFIC packages"
+	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"full    " "<monerod/p2pool/xmrig>           " "Start process fully attached in foreground" \
+		"start   " "<monerod/p2pool/xmrig>           " "Start process as systemd background process" \
+		"stop    " "<monerod/p2pool/xmrig>           " "Gracefully stop systemd background process" \
+		"kill    " "<monerod/p2pool/xmrig>           " "Forcefully kill systemd background process" \
+		"restart " "<monerod/p2pool/xmrig>           " "Restart systemd background process" \
+		"watch   " "<monerod/p2pool/xmrig>           " "Watch live output of systemd background process" \
+		"edit    " "<monero/p2pool/xmrig>            " "Edit systemd service file" \
+		"reset   " "<bash/monero/p2pool/xmrig>       " "Reset your config/systemd service file to default"
+	printf "\n${BWHITE}%s${OFF}\n"    "STATS"
+	printf "    %s\n" \
+		"status                                   Print status of all running processes" \
+		"size                                     Print size of all packages and folders" \
+		"version                                  Print current package versions"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"changes " "<monero-bash version>            " "Print current/specified monero-bash changelog"
+	printf "\n${BWHITE}%s${OFF}\n"    "RPC"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"rpc     " "<JSON-RPC method>                " "Send a JSON-RPC call to monerod"
+	printf "\n${BWHITE}%s${OFF}\n"    "HELP"
+	printf "    %s\n" \
+		"help                                     Print this help message"
+}
+print::title() {
+	log::debug "seeding title rng"
+	local TITLE_RANDOM
+	TITLE_RANDOM=$RANDOM
+	if [[ $TITLE_RANDOM -le 19660 ]]; then
+			printf "${BRED}%s${OFF}\n" \
+				"###################" \
+				"#   monero-bash   #" \
+				"###################"
+		log::debug "title luck: common 60%"
+	elif [[ $TITLE_RANDOM -le 29490 ]]; then
+			printf "${BBLUE}%s${OFF}\n" \
+				"xxxxxxxxxxxxxxxxxxx" \
+				"x   monero-bash   x" \
+				"xxxxxxxxxxxxxxxxxxx"
+		log::debug "title luck: rare 30%"
+	elif [[ $TITLE_RANDOM -le 32439 ]]; then
+			printf "${BPURPLE}%s${OFF}\n" \
+				":::::::::::::::::::" \
+				":   monero-bash   :" \
+				":::::::::::::::::::"
+		log::debug "title luck: ultra 9%"
+	elif [[ $TITLE_RANDOM -le 32766 ]]; then
+			printf "${BYELLOW}%s${OFF}\n" \
+				"///////////////////" \
+				"/   monero-bash   /" \
+				"///////////////////"
+		log::debug "title luck: legendary 0.99%"
+	else
+		printf "${BGREEN}%s${OFF}\n" \
+			"###################" \
+			"#   monero-bash   #" \
+			"###################"
+		log::debug "title luck: lottery 0.0030519%"
+	fi
+}
+print::version() {
+	printf "${BWHITE}%s" \
+		"monero-bash | "
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		printf "${BRED}%s\n" "$MONERO_BASH_VER"
+	else
+		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
+	fi
+	printf "${BWHITE}%s" \
+		"Monero      | "
+	if [[ $MONERO_OLD = true ]]; then
+		printf "${BRED}%s\n" "$MONERO_VER"
+	else
+		printf "${BGREEN}%s\n" "$MONERO_VER"
+	fi
+	printf "${BWHITE}%s" \
+		"P2Pool      | "
+	if [[ $P2POOL_OLD = true ]]; then
+		printf "${BRED}%s\n" "$P2POOL_VER"
+	else
+		printf "${BGREEN}%s\n" "$P2POOL_VER"
+	fi
+	printf "${BWHITE}%s" \
+		"XMRig       | "
+	if [[ $XMRIG_OLD = true ]]; then
+		printf "${BRED}%s\n" "$XMRIG_VER"
+	else
+		printf "${BGREEN}%s\n" "$XMRIG_VER"
+	fi
+	printf "${OFF}%s"
+}
+safety::path() {
+	log::debug "starting path safety check"
+	local SAFETY_PATH
+	SAFETY_PATH="$(realpath $0)"
+	log::debug "realpath: $SAFETY_PATH"
+	if [[ $SAFETY_PATH = "$MAIN" ]]; then
+		log::debug "current path = $MAIN"
+	else
+		log::debug "incorrect path detected: $SAFETY_PATH"
+		print::error "[monero-bash] is outside of $DOT!"
+		print::exit  "Exiting for safety..."
+	fi
+}
+safety::pipe() {
+	log::debug "starting pipe safety check"
+	if [[ -p /dev/stdin ]]; then
+		print::error "Pipe detected. [monero-bash] does not support pipes!"
+		print::exit  "Exiting for safety..."
+	fi
+}
+safety::root() {
+	log::debug "starting root safety check"
+	log::debug "running as: $EUID"
+	if [[ $EUID = 0 ]]; then
+		print::error "Running as root is not recommended"
+		print::exit  "Exiting for safety..."
+	fi
+}
+readonly DOT="$HOME/.monero-bash"
+readonly CONFIG="$DOT/config"
+readonly WALLETS="$DOT/wallets"
+readonly PACKAGES="$DOT/packages"
+readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
+readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
+readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
+readonly CONFIG_P2POOL="$CONFIG/p2pool.json"
+readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
+readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
+readonly PKG_MONERO="$PACKAGES/monero"
+readonly PKG_P2POOL="$PACKAGES/p2pool"
+readonly PKG_XMRIG="$PACKAGES/xmrig"
+readonly SRC="$PKG_MONERO_BASH/src"
+readonly TXT="$SRC/txt"
+readonly HASHLIST="$TXT/hashlist"
+readonly STATE="$TXT/state"
+readonly MAIN="$PKG_MONERO_BASH/monero-bash"
+readonly DIR_SYSTEMD="/etc/systemd/system"
+declare -fr parse::config
+declare -fr parse::options
+declare -fr parse::state
+declare -fr print::changelog::title
+declare -fr print::changelog
+declare -fr print::changelog::2.0.0
+declare -fr print::changelog::1.6.0
+declare -fr print::error
+declare -fr print::exit
+declare -fr print::help
+declare -fr print::title
+declare -fr print::version
+declare -fr safety::path
+declare -fr safety::pipe
+declare -fr safety::root
+trap - ERR || exit 117
+set +eo pipefail || exit 118
+
+#-------------------------------------------------------------------------------- BEGIN MAIN
+# This file is part of monero-bash - a wrapper for Monero, written in Bash
+#
+# Copyright (c) 2022 hinto.janaiyo <https://github.com/hinto-janaiyo>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+main() {
+#----------------------------------------- log::debug init
+log::debug "main() started, log::debug initialization"
+
+#----------------------------------------- SAFETY
+log::debug "starting safety checks"
+# check for gnu/linux
+safety::gnu_linux
+# check for bash v5+
+safety::bash
+# check for root
+safety::root
+# check for path
+safety::path
+# check for pipe
+safety::pipe
+
+#----------------------------------------- FIRST TIME INSTALLATION
+if [[ $FIRST_TIME = true ]]; then
+	log::debug "first time detected, starting installation"
+	monero_bash::install
+else
+	log::debug "first time = false, skipping installation"
+fi
+
+#----------------------------------------- PARSE USER CONFIG/STATE
+___BEGIN___ERROR___TRACE___
+parse::state
+parse::config
+___ENDOF___ERROR___TRACE___
+
+#----------------------------------------- PARSE USER INPUT
+[[ $# != 0 ]] && parse::options "$@"
+
+#----------------------------------------- WALLET
+print::title
+
+
+}
+main "$@"
+#-------------------------------------------------------------------------------- ENDOF MAIN
