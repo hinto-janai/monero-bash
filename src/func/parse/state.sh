@@ -23,8 +23,8 @@
 # parse the state file safely
 parse::state() {
 	log::debug "parsing state file"
-	local i IFS=$'\n' CONFIG || return 1
-	mapfile CONFIG < "$STATE" || return 2
+	local i IFS=$'\n' STATE_ARRAY || return 1
+	mapfile STATE_ARRAY < "$STATE" || return 2
 	for i in "${OPTIONS[@]}"; do
 		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"        || declare -g FIRST_TIME="false"
 		[[ $i =~ ^MINE_UNCONFIGURED=true[[:space:]]+$ ]] && declare -g MINE_UNCONFIGURED="true" || declare -g MINE_UNCONFIGURED="false"

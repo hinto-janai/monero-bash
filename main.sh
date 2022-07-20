@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 #include <stdlib/src/ask.sh>
-#include <stdlib/src/color.sh>
 #include <stdlib/src/crypto.sh>
 #include <stdlib/src/date.sh>
 #include <stdlib/src/debug.sh>
@@ -64,13 +63,14 @@ fi
 # check for path
 safety::path
 
-#----------------------------------------- PARSE USER INPUT
+#----------------------------------------- PARSE USER CONFIG/STATE
 ___BEGIN___ERROR___TRACE___
-log::debug "starting parse"
 parse::state
 parse::config
-[[ $# != 0 ]] && parse::options
 ___ENDOF___ERROR___TRACE___
+
+#----------------------------------------- PARSE USER INPUT
+[[ $# != 0 ]] && parse::options "$@"
 
 #----------------------------------------- WALLET
 print::title

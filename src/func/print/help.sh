@@ -56,6 +56,8 @@ print::help() {
 		"status                                   Print status of all running processes" \
 		"size                                     Print size of all packages and folders" \
 		"version                                  Print current package versions"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"changes " "<monero-bash version>            " "Print current/specified monero-bash changelog"
 
 	printf "\n${BWHITE}%s${OFF}\n"    "RPC"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \

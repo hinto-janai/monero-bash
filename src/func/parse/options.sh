@@ -214,6 +214,19 @@ case "$1" in
 	status) status::print; exit;;
 	list)   wallet::list;  exit;;
 	size)   print::size;   exit;;
+	changes)
+		shift
+		[[ $# = 0 ]] && print::changelog && exit
+		until [[ $# = 0 ]]; do
+			if declare -fp print::changelog::"${1/v}" &>/dev/null; then
+				print::changelog::"${1/v}"
+			else
+				print::error "Version $1 does not exist/is not available"
+			fi
+			shift
+		done
+		exit
+		;;
 	help)   print::help;   exit;;
 	*)
 		log::debug "user input failed: $1"
