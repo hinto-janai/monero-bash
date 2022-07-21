@@ -22,9 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/9579b8a>
-#nix <1658337507>
-#hbc <09e9280>
+#git <monero-bash/7de5707>
+#nix <1658365447>
+#hbc <9210ec7>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/crypto.sh/1eaba1f>
 #lib <stdlib/date.sh/1eaba1f>
@@ -37,6 +37,9 @@
 #lib <stdlib/safety.sh/1eaba1f>
 #lib <stdlib/trace.sh/1eaba1f>
 #lib <stdlib/type.sh/1eaba1f>
+#src <func/debug.sh>
+#src <func/monero_bash/install.sh>
+#src <func/monero_bash/uninstall.sh>
 #src <func/parse/config.sh>
 #src <func/parse/options.sh>
 #src <func/parse/state.sh>
@@ -48,6 +51,10 @@
 #src <func/safety/path.sh>
 #src <func/safety/pipe.sh>
 #src <func/safety/root.sh>
+#src <func/status/monerod.sh>
+#src <func/status/p2pool.sh>
+#src <func/status/table.sh>
+#src <func/status/xmrig.sh>
 #src <readonly.sh>
 
 #-------------------------------------------------------------------------------- BEGIN SAFETY
@@ -622,57 +629,314 @@ free::func() {
 	done
 	return 0
 }
-declare -fr ask::yes
-declare -fr ask::no
-declare -fr ask::sudo
-declare -fr crypto::bytes
-declare -fr crypto::num
-declare -fr crypto::uuid
-declare -fr crypto::encrypt
-declare -fr crypto::decrypt
-declare -fr date::unix_translate
-declare -fr date::unix
-declare -fr date::time
-declare -fr date::calendar
-declare -fr date::now
-declare -fr date::year
-declare -fr date::month
-declare -fr date::day
-declare -fr date::hour
-declare -fr date::minute
-declare -fr date::second
-declare -fr debug
-declare -fr debug::trap
-declare -fr is::int
-declare -fr is::int_pos
-declare -fr is::int_neg
-declare -fr lock::alloc
-declare -fr lock::free
-declare -fr log::ok
-declare -fr log::info
-declare -fr log::warn
-declare -fr log::fail
-declare -fr log::danger
-declare -fr log::tab
-declare -fr log::prog
-declare -fr log::debug
-declare -fr panic
-declare -fr safety::builtin
-declare -fr safety::bash
-declare -fr safety::gnu_linux
-declare -fr ___BEGIN___ERROR___TRACE___
-declare -fr ___ENDOF___ERROR___TRACE___
-declare -fr char
-declare -fr array
-declare -fr map
-declare -fr int
-declare -fr bool
-declare -fr ref
-declare -fr free
-declare -fr free::func
+declare -frg ask::yes
+declare -frg ask::no
+declare -frg ask::sudo
+declare -frg crypto::bytes
+declare -frg crypto::num
+declare -frg crypto::uuid
+declare -frg crypto::encrypt
+declare -frg crypto::decrypt
+declare -frg date::unix_translate
+declare -frg date::unix
+declare -frg date::time
+declare -frg date::calendar
+declare -frg date::now
+declare -frg date::year
+declare -frg date::month
+declare -frg date::day
+declare -frg date::hour
+declare -frg date::minute
+declare -frg date::second
+declare -frg debug
+declare -frg debug::trap
+declare -frg is::int
+declare -frg is::int_pos
+declare -frg is::int_neg
+declare -frg lock::alloc
+declare -frg lock::free
+declare -frg log::ok
+declare -frg log::info
+declare -frg log::warn
+declare -frg log::fail
+declare -frg log::danger
+declare -frg log::tab
+declare -frg log::prog
+declare -frg log::debug
+declare -frg panic
+declare -frg safety::builtin
+declare -frg safety::bash
+declare -frg safety::gnu_linux
+declare -frg ___BEGIN___ERROR___TRACE___
+declare -frg ___ENDOF___ERROR___TRACE___
+declare -frg char
+declare -frg array
+declare -frg map
+declare -frg int
+declare -frg bool
+declare -frg ref
+declare -frg free
+declare -frg free::func
 
 #-------------------------------------------------------------------------------- BEGIN SRC
 trap 'printf "%s\n" "@@@@@@ SRC PANIC @@@@@@" "[line] ${LINENO}" "[file] $0" "[code] $?";set +eo pipefail;trap - ERR;while :;do read;done;exit 115' ERR || exit 115
+DEBUG() {
+	log::debug "starting debug function mode"
+	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BGREEN}%s${OFF}\n" \
+		"====    MONERO-BASH DEBUG MODE   ===="
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@ you are executing a monero-bash   @" \
+		"@ function directly, use carefully! @" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"function(): "
+	local DEBUG_FUNCTION || return 1
+	read -r DEBUG_FUNCTION || return 2
+	if ! declare -fp "$DEBUG_FUNCTION" &>/dev/null; then
+		log::fail "$DEBUG_FUNCTION not found"
+		exit 1
+	fi
+	log::debug "executing debug function: $DEBUG_FUNCTION"
+	$DEBUG_FUNCTION
+	exit
+}
+monero_bash::install() {
+log::debug "starting monero_bash::install()"
+if [[ -d "$HOME"/.monero-bash ]]; then
+	print::error "$HOME/.monero-bash already found!"
+	print::exit  "Exiting for safety..."
+fi
+if [[ -e /usr/local/bin/monero-bash ]]; then
+	print::error "/usr/local/bin/monero-bash already found!"
+	print::exit  "Exiting for safety..."
+fi
+local INSTALL_PWD
+INSTALL_PWD="$(realpath "$0")"
+if [[ $INSTALL_PWD != */monero-bash/monero-bash ]]; then
+	print::error "[monero-bash] is not in the monero-bash folder"
+	print::exit  "Exiting for safety..."
+else
+	INSTALL_PWD="$(dirname "$INSTALL_PWD")"
+fi
+printf "${BRED}%s${OFF}%s\n" \
+	"#-----------------------------------------------------------------#" \
+	"#                    monero-bash installation                     #" \
+	"#-----------------------------------------------------------------#"
+while :; do
+	local INSTALL_DATA_PATH
+	if [[ -d "$HOME"/.bitmonero ]]; then
+		printf "${OFF}%s\n${OFF}%s" \
+			"Monero data folder already detected" \
+			"Use $HOME/.bitmonero? (Y/n) "
+		if ask::yes; then
+			INSTALL_DATA_PATH="$HOME/.bitmonero"
+		else
+			printf "%s\n" "Skipping $HOME/.bitmonero"
+		fi
+	fi
+	if [[ -z $INSTALL_DATA_PATH ]]; then
+		printf "%s" "Monero data path [Enter for default]: "
+		read -r INSTALL_DATA_PATH
+	fi
+	if [[ -z $INSTALL_DATA_PATH ]]; then
+		INSTALL_DATA_PATH="$HOME/.bitmonero"
+	fi
+	printf "${BWHITE}%s${BYELLOW}%s\n${OFF}%s" \
+		"DATA PATH: " \
+		"$INSTALL_DATA_PATH" \
+		"Is this okay? (Y/n) "
+	if ask::yes; then
+		break
+	fi
+done
+if [[ ! -e /usr/local/bin/mb ]]; then
+	printf "${OFF}%s${BRED}%s${OFF}%s${BRED}%s${OFF}\n" \
+		"Symlink creation: " \
+		"[monero-bash] " \
+		"--> " \
+		"[mb]"
+	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n"
+		"This allows you to use " \
+		"[monero-bash] " \
+		"like so: " \
+		"mb update && mb upgrade"
+	printf "${OFF}%s" "Create symlink? (Y/n) "
+	if ask::yes; then
+		local INSTALL_SYMLINK=true
+	else
+		printf "%s\n" "Skipping symlink..."
+	fi
+fi
+echo
+printf "${OFF}%s${BYELLOW}%s\n" \
+	"[monero-bash] will install in | " "$HOME/.monero-bash" \
+	"The path will be set in       | " "/usr/local/bin/monero-bash" \
+	".bitmonero will be set in     | " "$INSTALL_DATA_PATH"
+if [[ $INSTALL_SYMLINK = true ]]; then
+	printf "${OFF}%s${BYELLOW}%s\n" \
+	"A path symlink will be set in | " "/usr/local/bin/mb"
+fi
+echo
+printf "${BWHITE}%s${$BRED}%s${BWHITE}%s${OFF}\n" \
+	"Start " \
+	"[monero-bash] " \
+	"install? (Y/n) "
+if ask::yes; then
+	printf "${OFF}%s${BRED}%s${OFF}%s\n" \
+	"Starting " \
+	"[monero-bash] " \
+	"install..."
+else
+	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		"Canceling " \
+		"[monero-bash] " \
+		"installation"
+	exit 1
+fi
+if ! ask::sudo; then
+	print::exit "sudo is required for installation"
+fi
+log::prog "verifying monero-bash file hashes"
+if sha256sum --quiet --check "src/txt/hashlist"; then
+	log::ok "monero-bash file hashes"
+else
+	log::fail "monero-bash file hashes"
+	print::error "Hash verification has failed."
+	print::exit "Have the files been moved for modified?"
+fi
+___BEGIN___ERROR___TRACE___
+log::prog "creating .monero-bash folders"
+mkdir -p packages
+mkdir -p packages/monero-bash
+mkdir -p wallets
+log::ok "created .monero-bash folders"
+log::prog "copying monero-bash files"
+cp -r monero-bash "$PKG_MONERO_BASH"
+cp -r src "$PKG_MONERO_BASH"
+cp -r gpg "$PKG_MONERO_BASH"
+log::prog "copied monero-bash files"
+log::prog "cleaning git files"
+[[ -e docs ]]         && rm -rf doc
+[[ -e lib ]]          && rm -rf lib
+[[ -e tests ]]        && rm -rf tests
+[[ -e CHANGELOG.md ]] && rm -rf CHANGELOG.md
+[[ -e README.md ]]    && rm -rf README.md
+[[ -e LICENSE ]]      && rm -rf LICENSE
+[[ -e hbc.add ]]      && rm -f hbc.add
+[[ -e hbc.conf ]]     && rm -f hbc.conf
+[[ -e main.sh ]]      && rm -f main.sh
+log::ok "cleaned git files"
+log::prog "moving folder to $HOME/.monero-bash"
+mkdir "$HOME/.monero-bash"
+mv "$INSTALL_PWD" "$HOME/.monero-bash"
+INSTALL_PWD="$HOME/.monero-bash"
+cd "$INSTALL_PWD"
+log::prog "moved folder to $HOME/.monero-bash"
+log::prog "adding [monero-bash] to PATH"
+sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/monero-bash
+log::ok "added [monero-bash] to PATH"
+if [[ $INSTALL_SYMLINK = true ]]; then
+	log::prog "creating [mb] PATH symlink"
+	sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/mb
+	log::ok "created [mb] PATH symlink"
+fi
+log::prog "setting Monero data path"
+sed -i "s/.*data-dir.*/data-dir="$INSTALL_DATA_PATH"/" "$CONFIG_MONEROD"
+log::ok "set Monero data path"
+sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/" "$STATE"
+log::prog "setting folder permissions"
+sudo chown "$USER:$USER" "$INSTALL_PWD"
+log::ok "set folder permissions"
+___ENDOF___ERROR___TRACE___
+printf "${BGREEN}%s${OFF}%s\n" \
+	"#-----------------------------------------------------------------#" \
+	"#                monero-bash installation complete                #" \
+	"#-----------------------------------------------------------------#"
+printf "${BWHITE}%s${BYELLOW}%s\n" \
+	"monero-bash path    | " "$HOME/.monero-bash" \
+	"Monero data path    | " "$INSTALL_DATA_PATH" \
+	"Wallet files        | " "$WALLETS" \
+	"Package folders     | " "$PACKAGES" \
+	"Configuration files | " "$CONFIG"
+echo
+printf "${BWHITE}%s${BRED}%s${BWHITE}%s\n" \
+	"Type: " \
+	"[monero-bash help] " \
+	"to get started"
+exit 0
+}
+monero_bash::uninstall() {
+log::debug "starting monero_bash::uninstall()"
+printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s${OFF}\n" \
+	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+	"@ " \
+	"THIS WILL UNINSTALL [monero-bash], DELETE /.monero-bash/ AND EVERYTHING INSIDE IT " \
+	"@" \
+	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+print::size
+printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
+	"Uninstall " \
+	"[monero-bash]" \
+	"?"
+if ! ask::yes; then
+	print::exit "Canceling [monero-bash] uninstall"
+fi
+local WALLET_COUNT
+WALLET_COUNT=$(ls "$WALLETS" | wc -l) || exit 1
+if [[ $WALLET_COUNT != 0 ]]; then
+	printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s\n${BRED}%s" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@ " \
+		"         WARNING: WALLETS FOUND          " \
+		"@" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) "
+	if ask::no; then
+		exit 1
+	fi
+fi
+if ! ask::sudo; then
+	print::exit "sudo is needed to uninstall"
+fi
+local i
+for i in {10..0}; do
+	printf "\r\e[2K${BYELLOW}%s" "Uninstalling in ${i}..."
+	sleep 1
+done
+log::info "stopping all processes"
+if [[ $MONERO_VER ]]; then
+	if systemctl status monero-bash-monerod &>/dev/null; then
+		process::systemd::stop monerod
+	fi
+fi
+if [[ $P2POOL_VER ]]; then
+	if systemctl status monero-bash-p2pool &>/dev/null; then
+		process::systemd::stop p2pool
+	fi
+fi
+if [[ $XMRIG_VER ]]; then
+	if systemctl status monero-bash-xmrig &>/dev/null; then
+		process::systemd::stop xmrig
+	fi
+fi
+trap "" INT
+___BEGIN___ERROR___TRACE___
+log::prog "Removing $DOT"
+rm -rf "$DOT"
+log::ok "Removed $DOT"
+log::prog "Removing from PATH"
+sudo rm /usr/local/bin/monero-bash
+[[ -e /usr/local/bin/mb ]] && sudo rm /usr/local/bin/monero-bash
+log::ok "Removed from PATH"
+log::prog "Removing systemd services"
+[[ -e "$SYSTEMD/monero-bash-monerod.service" ]] && sudo rm "$SYSTEMD/monero-bash-monerod.service"
+[[ -e "$SYSTEMD/monero-bash-p2pool.service" ]] && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
+[[ -e "$SYSTEMD/monero-bash-xmrig.service" ]] && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
+log::ok "Removed systemd services"
+___ENDOF___ERROR___TRACE___
+echo
+log::ok "Successfully uninstalled [monero-bash]"
+exit 0
+}
 parse::config() {
 	log::debug "parsing monero-bash.conf"
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
@@ -1127,6 +1391,22 @@ safety::root() {
 		print::exit  "Exiting for safety..."
 	fi
 }
+status::monerod() {
+}
+status::p2pool() {
+}
+status::table() {
+	log::debug "creating status table"
+	printf "${OFF}%s\n" \
+		"#-----------------------------------------------#" \
+		"# monero-bash |   Monero   |  P2Pool  |  XMRig  #" \
+		"#-----------------------------------------------#" \
+		"# $MONERO_BASH_VER | $MONERO_VER | $P2POOL_VER | $XMRIG_VER #" \
+		"#-----------------------------------------------#" \
+		"#"
+}
+status::xmrig() {
+}
 readonly DOT="$HOME/.monero-bash"
 readonly CONFIG="$DOT/config"
 readonly WALLETS="$DOT/wallets"
@@ -1145,22 +1425,29 @@ readonly TXT="$SRC/txt"
 readonly HASHLIST="$TXT/hashlist"
 readonly STATE="$TXT/state"
 readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-readonly DIR_SYSTEMD="/etc/systemd/system"
-declare -fr parse::config
-declare -fr parse::options
-declare -fr parse::state
-declare -fr print::changelog::title
-declare -fr print::changelog
-declare -fr print::changelog::2.0.0
-declare -fr print::changelog::1.6.0
-declare -fr print::error
-declare -fr print::exit
-declare -fr print::help
-declare -fr print::title
-declare -fr print::version
-declare -fr safety::path
-declare -fr safety::pipe
-declare -fr safety::root
+readonly SYSTEMD="/etc/systemd/system"
+declare -frg DEBUG
+declare -frg monero_bash::install
+declare -frg monero_bash::uninstall
+declare -frg parse::config
+declare -frg parse::options
+declare -frg parse::state
+declare -frg print::changelog::title
+declare -frg print::changelog
+declare -frg print::changelog::2.0.0
+declare -frg print::changelog::1.6.0
+declare -frg print::error
+declare -frg print::exit
+declare -frg print::help
+declare -frg print::title
+declare -frg print::version
+declare -frg safety::path
+declare -frg safety::pipe
+declare -frg safety::root
+declare -frg status::monerod
+declare -frg status::p2pool
+declare -frg status::table
+declare -frg status::xmrig
 trap - ERR || exit 117
 set +eo pipefail || exit 118
 
@@ -1189,8 +1476,11 @@ set +eo pipefail || exit 118
 
 
 main() {
-#----------------------------------------- log::debug init
+#----------------------------------------- main() START
 log::debug "main() started, log::debug initialization"
+
+#----------------------------------------- DEBUG
+[[ $1 = DEBUG ]] && DEBUG "$@"
 
 #----------------------------------------- SAFETY
 log::debug "starting safety checks"
@@ -1200,8 +1490,6 @@ safety::gnu_linux
 safety::bash
 # check for root
 safety::root
-# check for path
-safety::path
 # check for pipe
 safety::pipe
 
@@ -1212,6 +1500,10 @@ if [[ $FIRST_TIME = true ]]; then
 else
 	log::debug "first time = false, skipping installation"
 fi
+
+#----------------------------------------- MORE SAFETY
+# check for path
+safety::path
 
 #----------------------------------------- PARSE USER CONFIG/STATE
 ___BEGIN___ERROR___TRACE___

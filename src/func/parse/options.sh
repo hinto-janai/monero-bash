@@ -197,18 +197,14 @@ case "$1" in
 		;;
 	reset)
 		shift
-		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
-			"") print::error "Pick one/multiple to reset: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
+			*bash*) struct::pkg bash;;
+			monero) struct::pkg monero;;
+			*p2p*)  struct::pkg p2pool;;
+			*xmr*)  struct::pkg xmrig;;
+			*) print::error "Pick one/multiple to reset: [monerod/p2pool/xmrig]"; exit 1;;
 		esac
-		shift
-		done
-		process::reset
+		process::reset_files
 		exit
 		;;
 	status) status::print; exit;;
