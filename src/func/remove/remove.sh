@@ -20,41 +20,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# print package versions
-print::version() {
-	log::debug "printing versions"
+# remove packages
+# called from remove::prompt()
+# assumes ask::sudo() was called
+remove() {
+	log::debug "starting removal of: ${PKG[name]}"
 
-	printf "${BWHITE}%s" \
-		"monero-bash | "
-	if [[ $MONERO_BASH_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_BASH_VER"
-	else
-		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
-	fi
+	___BEGIN___ERROR___TRACE___
+	trap "" INT
+	print::remove
 
-	printf "${BWHITE}%s" \
-		"Monero      | "
-	if [[ $MONERO_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_VER"
-	else
-		printf "${BGREEN}%s\n" "$MONERO_VER"
-	fi
+	# REMOVE PKG DIRECTORY
+	log::prog "${PKG[directory]}..."
+	rm "${PKG[directory]}"
+	log::ok "${PKG[directory]} deleted"
 
-	printf "${BWHITE}%s" \
-		"P2Pool      | "
-	if [[ $P2POOL_OLD = true ]]; then
-		printf "${BRED}%s\n" "$P2POOL_VER"
-	else
-		printf "${BGREEN}%s\n" "$P2POOL_VER"
-	fi
+	# REMOVE SYSTEMD SERVICE
+	log::prog "${PKG[service]}..."
+	sudo rm "$SYSTEMD/${PKG[service]}"
+	log::ok "${PKG[service]} deleted"
 
-	printf "${BWHITE}%s" \
-		"XMRig       | "
-	if [[ $XMRIG_OLD = true ]]; then
-		printf "${BRED}%s\n" "$XMRIG_VER"
-	else
-		printf "${BGREEN}%s\n" "$XMRIG_VER"
-	fi
+	# UPDATE LOCAL STATE
+	log::prog "Updating local state..."
+	sudo sed \
+		-i -e "s/"${PKG[var]}"_VER=./"${PKG[var]}"_VER=/" "$STATE" \
+		-i -e "s/"${PKG[var]}"_OLD=./"${PKG[var]}"_OLD=\"true\"/" "$STATE"
+	log::ok "Updated local state"
 
-	printf "${OFF}%s"
+	# RELOAD SYSTEMD
+	log::prog "Reloading systemd..."
+	sudo systemctl daemon-reload
+	log::ok "Reloaded systemd"
+
+	# END
+	print::removed
+	___ENDOF___ERROR___TRACE___
 }
+

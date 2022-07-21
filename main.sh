@@ -50,6 +50,8 @@ safety::bash
 safety::root
 # check for pipe
 safety::pipe
+# check for wget/curl
+safety::wget_curl
 
 #----------------------------------------- FIRST TIME INSTALLATION
 if [[ $FIRST_TIME = true ]]; then

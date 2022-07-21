@@ -31,6 +31,7 @@ struct::pkg() {
 	monero)
 		PKG[name]="monero"
 		PKG[pretty]="Monero"
+		PKG[var]="MONERO"
 		PKG[author]="monero-project"
 		PKG[gpg_owner]="binaryFate"
 		PKG[service]="monero-bash-monerod.service"
@@ -47,6 +48,7 @@ struct::pkg() {
 	*bash*)
 		PKG[name]="monero-bash"
 		PKG[pretty]="monero-bash"
+		PKG[var]="MONERO_BASH"
 		PKG[author]="hinto-janaiyo"
 		PKG[gpg_owner]="hinto-janaiyo"
 		PKG[service]=
@@ -63,6 +65,7 @@ struct::pkg() {
 	*p2p*)
 		PKG[name]="p2pool"
 		PKG[pretty]="P2Pool"
+		PKG[var]="P2POOL"
 		PKG[author]="SChernyk"
 		PKG[gpg_owner]="SChernyk"
 		PKG[service]="monero-bash-p2pool.service"
@@ -79,6 +82,7 @@ struct::pkg() {
 	*xmr*)
 		PKG[name]="xmrig"
 		PKG[pretty]="XMRig"
+		PKG[var]="XMRIG"
 		PKG[author]="XMRig"
 		PKG[gpg_owner]="XMRig"
 		PKG[service]="monero-bash-xmrig.service"
@@ -110,6 +114,7 @@ struct::pkg() {
 	log::debug "--- struct::pkg ---"
 	log::debug "PKG[name]            | ${PKG[name]}"
 	log::debug "PKG[pretty]          | ${PKG[pretty]}"
+	log::debug "PKG[var]             | ${PKG[var]}"
 	log::debug "PKG[author]          | ${PKG[author]}"
 	log::debug "PKG[gpg_owner]       | ${PKG[gpg_owner]}"
 	log::debug "PKG[service]         | ${PKG[service]}"

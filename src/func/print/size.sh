@@ -20,41 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# print package versions
-print::version() {
-	log::debug "printing versions"
-
-	printf "${BWHITE}%s" \
-		"monero-bash | "
-	if [[ $MONERO_BASH_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_BASH_VER"
+# print size of monero-bash folders
+print::size() {
+	log::debug "getting folder sizes"
+	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
+	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
+	SIZE_MONERO=$(du -h "$PKG_MONERO")
+	SIZE_P2POOL=$(du -h "$PKG_P2POOL")
+	SIZE_XMRIG=$(du -h "$PKG_XMRIG")
+	SIZE_DOT=$(du -h "$DOT")
+	if [[ -d "$HOME/.bitmonero" ]]; then
+		SIZE_BITMONERO=$(du -h "$HOME/.bitmonero")
 	else
-		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
+		SIZE_BITMONERO="not found"
 	fi
 
-	printf "${BWHITE}%s" \
-		"Monero      | "
-	if [[ $MONERO_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_VER"
-	else
-		printf "${BGREEN}%s\n" "$MONERO_VER"
-	fi
-
-	printf "${BWHITE}%s" \
-		"P2Pool      | "
-	if [[ $P2POOL_OLD = true ]]; then
-		printf "${BRED}%s\n" "$P2POOL_VER"
-	else
-		printf "${BGREEN}%s\n" "$P2POOL_VER"
-	fi
-
-	printf "${BWHITE}%s" \
-		"XMRig       | "
-	if [[ $XMRIG_OLD = true ]]; then
-		printf "${BRED}%s\n" "$XMRIG_VER"
-	else
-		printf "${BGREEN}%s\n" "$XMRIG_VER"
-	fi
-
-	printf "${OFF}%s"
+	log::debug "printing folder sizes"
+	printf "${BWHITE}%s${BYELLOW}%s\n" \
+		"monero-bash    | " "${SIZE_MONERO_BASH/$'\t'*}" \
+		"Monero         | " "${SIZE_MONERO/$'\t'*}" \
+		"P2Pool         | " "${SIZE_P2POOL/$'\t'*}" \
+		"XMRig          | " "${SIZE_XMRIG/$'\t'*}" \
+		"/.bitmonero/   | " "${SIZE_BITMONERO/$'\t'*}" \
+		"/.monero-bash/ | " "${SIZE_DOT/$'\t'*}"
+	return 0
 }

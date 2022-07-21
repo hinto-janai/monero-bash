@@ -37,8 +37,8 @@ case "$1" in
 			monero)       OPTION_INSTALL_MONERO=true;;
 			*p2p*)        OPTION_INSTALL_P2POOL=true;;
 			*xmr*)        OPTION_INSTALL_XMRIG=true;;
-			--force|-f)   OPTION_INSTALL_FORCE=true;;
-			--verbose|-v) OPTION_INSTALL_VERBOSE=true;;
+			--force|-f)   OPTION_FORCE=true;;
+			--verbose|-v) OPTION_VERBOSE=true;;
 			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
 			*)            break;;
 		esac
@@ -55,7 +55,6 @@ case "$1" in
 			monero)       OPTION_REMOVE_MONERO=true;;
 			*p2p*)        OPTION_REMOVE_P2POOL=true;;
 			*xmr*)        OPTION_REMOVE_XMRIG=true;;
-			--verbose|-v) OPTION_REMOVE_VERBOSE=true;;
 			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
 			*)            break;;
 		esac
@@ -73,8 +72,8 @@ case "$1" in
 			monero)       OPTION_UPGRADE_MONERO=true;;
 			*p2p*)        OPTION_UPGRADE_P2POOL=true;;
 			*xmr*)        OPTION_UPGRADE_XMRIG=true;;
-			--force|-f)   OPTION_UPGRADE_FORCE=true;;
-			--verbose|-v) OPTION_UPGRADE_VERBOSE=true;;
+			--force|-f)   OPTION_FORCE=true;;
+			--verbose|-v) OPTION_VERBOSE=true;;
 			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
 			*)            break;;
 		esac

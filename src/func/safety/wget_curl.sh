@@ -20,41 +20,25 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# print package versions
-print::version() {
-	log::debug "printing versions"
+# safety check for wget/curl
+# and set global variable
+safety::wget_curl() {
+	log::debug "starting wget/curl safety check"
 
-	printf "${BWHITE}%s" \
-		"monero-bash | "
-	if [[ $MONERO_BASH_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_BASH_VER"
-	else
-		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
+	declare -g WGET CURL || return 1
+	WGET=false
+	CURL=false
+	if hash wget &>/dev/null; then
+		WGET=true
+	elif hash curl &>/dev/null; then
+		CURL=true
 	fi
 
-	printf "${BWHITE}%s" \
-		"Monero      | "
-	if [[ $MONERO_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_VER"
+	if [[ $WGET = false && $CURL = false ]]; then
+		print::error "both [wget] and [curl] were not found!"
+		print::error "monero-bash needs at least one to be installed"
+		print::exit  "Exiting for safety..."
 	else
-		printf "${BGREEN}%s\n" "$MONERO_VER"
+		return 0
 	fi
-
-	printf "${BWHITE}%s" \
-		"P2Pool      | "
-	if [[ $P2POOL_OLD = true ]]; then
-		printf "${BRED}%s\n" "$P2POOL_VER"
-	else
-		printf "${BGREEN}%s\n" "$P2POOL_VER"
-	fi
-
-	printf "${BWHITE}%s" \
-		"XMRig       | "
-	if [[ $XMRIG_OLD = true ]]; then
-		printf "${BRED}%s\n" "$XMRIG_VER"
-	else
-		printf "${BGREEN}%s\n" "$XMRIG_VER"
-	fi
-
-	printf "${OFF}%s"
 }

@@ -20,41 +20,37 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# print package versions
-print::version() {
-	log::debug "printing versions"
+# collection of titles to print during
+# package installation/upgrade/removal
+# assumes struct::pkg() has been called
+print::download() {
+	printf "${BGREEN}%s\n" "#---------# Downloading [${PKG[pretty]}] #---------#"
+}
 
-	printf "${BWHITE}%s" \
-		"monero-bash | "
-	if [[ $MONERO_BASH_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_BASH_VER"
-	else
-		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
-	fi
+print::remove() {
+	printf "${BRED}%s\n" "#---------# Removing [${PKG[pretty]}] #---------#"
+}
 
-	printf "${BWHITE}%s" \
-		"Monero      | "
-	if [[ $MONERO_OLD = true ]]; then
-		printf "${BRED}%s\n" "$MONERO_VER"
-	else
-		printf "${BGREEN}%s\n" "$MONERO_VER"
-	fi
+print::verify() {
+	printf "${BYELLOW}%s\n" "#---# Verifying [${PKG[pretty]}] #---#"
+}
 
-	printf "${BWHITE}%s" \
-		"P2Pool      | "
-	if [[ $P2POOL_OLD = true ]]; then
-		printf "${BRED}%s\n" "$P2POOL_VER"
-	else
-		printf "${BGREEN}%s\n" "$P2POOL_VER"
-	fi
+print::extract() {
+	printf "${BRED}%s\n" "#---# Extracting [${PKG[pretty]}] #---#"
+}
 
-	printf "${BWHITE}%s" \
-		"XMRig       | "
-	if [[ $XMRIG_OLD = true ]]; then
-		printf "${BRED}%s\n" "$XMRIG_VER"
-	else
-		printf "${BGREEN}%s\n" "$XMRIG_VER"
-	fi
+print::state() {
+	printf "${BBLUE}%s\n" "#---# Updating local state #---#"
+}
 
-	printf "${OFF}%s"
+print::installed() {
+	printf "${BGREEN}%s\n" "#---------# Installed [${PKG[pretty]}] #---------#"
+}
+
+print::upgraded() {
+	printf "${BGREEN}%s\n" "#---------# Upgraded [${PKG[pretty]}] #---------#"
+}
+
+print::removed() {
+	printf "${BRED}%s\n" "#---------# Removed [${PKG[pretty]}] #---------#"
 }

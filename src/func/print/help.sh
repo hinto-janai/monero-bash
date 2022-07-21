@@ -32,8 +32,9 @@ print::help() {
 
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[--verbose]           " "Install one/multiple packages" \
-		"remove  "  "<packages> " "[--verbose]           " "Remove one/multiple packages"
+		"install " "<packages> " "[--verbose]           " "Install one/multiple packages"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"remove  " "<packages>                          " "Remove one/multiple packages"
 	printf "    ${OFF}%s\n" \
 		"update                                   Check for package updates" \
 		"upgrade                                  Upgrade all out-of-date packages"

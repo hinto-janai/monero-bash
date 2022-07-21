@@ -117,6 +117,10 @@ if [[ $INSTALL_SYMLINK = true ]]; then
 	"A path symlink will be set in | " "/usr/local/bin/mb"
 fi
 echo
+printf "${BWHITE}%s${OFF}\n" \
+	"A no-login user called [monero-bash] will be created for process security" \
+	"This will be the user Monero and P2Pool runs as"
+echo
 
 # INSTALLATION PROMPT
 printf "${BWHITE}%s${$BRED}%s${BWHITE}%s${OFF}\n" \
@@ -136,7 +140,7 @@ else
 	exit 1
 fi
 
-# SUDO (for path)
+# SUDO
 if ! ask::sudo; then
 	print::exit "sudo is required for installation"
 fi
@@ -151,8 +155,18 @@ else
 	print::exit "Have the files been moved for modified?"
 fi
 
-# FOLDER CREATION
+# USER CREATION
 ___BEGIN___ERROR___TRACE___
+log::prog "creating monero-bash user"
+local NOLOGIN_SHELL
+NOLOGIN_SHELL="$(which nologin)"
+if ! sudo useradd --shell "$NOLOGIN_SHELL" --no-create-home --system; then
+	print::error "Could not create monero-bash user"
+	print::exit "Exiting for safety..."
+fi
+log::ok "created monero-bash user"
+
+# FOLDER CREATION
 log::prog "creating .monero-bash folders"
 mkdir -p packages
 mkdir -p packages/monero-bash
@@ -210,6 +224,7 @@ sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/" "$STATE"
 # PERMISSIONS
 log::prog "setting folder permissions"
 sudo chown "$USER:$USER" "$INSTALL_PWD"
+sudo chmod -R 755 "$INSTALL_PWD"
 log::ok "set folder permissions"
 ___ENDOF___ERROR___TRACE___
 
