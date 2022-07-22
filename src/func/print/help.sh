@@ -23,23 +23,23 @@
 # print help screen (command list)
 print::help() {
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
-		"MONERO-BASH USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
+		"USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
 
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
-		"monero-bash                              Open wallet menu" \
-		"list                                     List wallets"
+		"monero-bash                              Open interactive wallet menu" \
+		"list                                     List wallets" \
+		"new                                      Enter wallet creation mode"
 
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
 		"install " "<packages> " "[--verbose]           " "Install one/multiple packages"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"remove  " "<packages>                          " "Remove one/multiple packages"
+		"remove  " "<packages>                       " "Remove one/multiple packages"
 	printf "    ${OFF}%s\n" \
-		"update                                   Check for package updates" \
-		"upgrade                                  Upgrade all out-of-date packages"
+		"update                                   Check for package updates"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"upgrade " "<packages> " "[--verbose|--force]   " "Upgrade SPECIFIC packages"
+		"upgrade " "<packages> " "[--verbose|--force]   " "Upgrade pkgs, if none specified, upgrade all out-of-date pkgs"
 
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
@@ -49,8 +49,8 @@ print::help() {
 		"kill    " "<monerod/p2pool/xmrig>           " "Forcefully kill systemd background process" \
 		"restart " "<monerod/p2pool/xmrig>           " "Restart systemd background process" \
 		"watch   " "<monerod/p2pool/xmrig>           " "Watch live output of systemd background process" \
-		"edit    " "<monero/p2pool/xmrig>            " "Edit systemd service file" \
-		"reset   " "<bash/monero/p2pool/xmrig>       " "Reset your config/systemd service file to default"
+		"edit    " "<monerod/p2pool/xmrig>           " "Edit systemd service file" \
+		"reset   " "<bash/monerod/p2pool/xmrig>      " "Reset your config/systemd service file to default"
 
 	printf "\n${BWHITE}%s${OFF}\n"    "STATS"
 	printf "    %s\n" \

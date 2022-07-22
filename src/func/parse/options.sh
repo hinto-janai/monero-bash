@@ -208,6 +208,7 @@ case "$1" in
 		;;
 	status) status::print; exit;;
 	list)   wallet::list;  exit;;
+	new)    wallet::create;exit;;
 	size)   print::size;   exit;;
 	changes)
 		shift

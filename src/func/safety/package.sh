@@ -20,19 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# print error, don't exit
-print::error() {
-	until [[ $# = 0 ]]; do
-		printf "${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
-		shift
-	done
-}
+# checks if package binary is found
+# usage: $1 = package to search for
+safety::package() {
+	log::debug "starting safety::package"
 
-# print error and exit
-print::exit() {
-	until [[ $# = 0 ]]; do
-		printf "${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
-		shift
-	done
-	exit 1
+	[[ $1 ]] || return 1
+	struct::pkg "$1" || return 2
+
+	# check if installed
+	if [[ ${PKG[current_version]} ]]; then
+		log::debug "${PKG[pretty]} (${PKG[current_version]}) is installed"
+	else
+		print::exit "${PKG[pretty]} is not installed"
+	fi
+
+	# check for binary
+	case "${PKG[name]}" in
+		*bash*)   [[ -e $PKG_MONERO_BASH/monero-bash ]] || print::exit "monero-bash not found, this error should be impossible!";;
+		*monero*)
+			[[ -e $PKG_MONERO/monerod ]]                || print::exit "monerod binary was not found!"
+			[[ -e $PKG_MONERO/monero-wallet-cli ]]      || print::exit "monero-wallet-cli binary was not found!"
+			;;
+		*p2p*)    [[ -e $PKG_P2POOL/p2pool ]]           || print::exit "P2Pool binary was not found!";;
+		*xmr*)    [[ -e $PKG_XMRIG/xmrig ]]             || print::exit "XMRig binary was not found!";;
+	esac
+	return 0
 }

@@ -23,85 +23,104 @@
 # create a new wallet
 wallet::create() {
 	log::debug "creating new wallet"
-	char WALLET_TYPE
+	char WALLET_TYPE WALLET_NAME
 
 	# WALLET TYPES
 	while :; do
-	printf "${BYELLOW}%s\n" "Select which method to use to create a new wallet:"
+	echo
 	printf "${BRED}%s${OFF}%s\n" \
-		"[new]          | --generate-new-wallet" \
-		"[view]         | --generate-from-view-key" \
-		"[seed]         | --restore-from-seed" \
-		"[json]         | --generate-from-json" \
-		"[spend]        | --generate-from-spend-key" \
-		"[device]       | --generate-from-device" \
-		"[private]      | --generate-from-keys" \
-		"[multisig]     | --generate-from-multisig-keys"
+		"[new]          " "| --generate-new-wallet" \
+		"[view]         " "| --generate-from-view-key" \
+		"[seed]         " "| --restore-from-seed" \
+		"[json]         " "| --generate-from-json" \
+		"[spend]        " "| --generate-from-spend-key" \
+		"[device]       " "| --generate-from-device" \
+		"[private]      " "| --generate-from-keys" \
+		"[multisig]     " "| --generate-from-multisig-keys" \
+		""
+	printf "${BYELLOW}%s${OFF}" "Select which method to use: "
 
 		read -r WALLET_TYPE
 		case "$WALLET_TYPE" in
-			*new*)     WALLET_TYPE=new     ;break;;
-			*view*)    WALLET_TYPE=view    ;break;;
-			*seed*)    WALLET_TYPE=seed    ;break;;
-			*json*)    WALLET_TYPE=json    ;break;;
-			*spend*)   WALLET_TYPE=spend   ;break;;
-			*device*)  WALLET_TYPE=device  ;break;;
-			*private*) WALLET_TYPE=private ;break;;
-			*multi*)   WALLET_TYPE=multisig;break;;
+			*new*)     WALLET_TYPE=new;;
+			*view*)    WALLET_TYPE=view;;
+			*seed*)    WALLET_TYPE=seed;;
+			*json*)    WALLET_TYPE=json;;
+			*spend*)   WALLET_TYPE=spend;;
+			*device*)  WALLET_TYPE=device;;
+			*private*) WALLET_TYPE=private;;
+			*multi*)   WALLET_TYPE=multisig;;
 			*) print::error "Invalid method!"
 		esac
-		printf "${BWHITE}%s${BRED}%s\n" \
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 			"Create wallet type: " \
-			"[${WALLET_TYPE}]? (Y/n) "
+			"[${WALLET_TYPE}]" \
+			"? (Y/n) "
 		if ask::yes; then
 			break
 		fi
 	done
 
+	# Wallet name
+	while :; do
+		printf "${BWHITE}%s${OFF}" "Wallet name: "
+		read -r WALLET_NAME
+		case "$WALLET_NAME" in
+			"") print::error "Empty input";;
+			*)  break;;
+		esac
+	done
+
+	# log::debug
+	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
+
 	# Create files within /.monero-bash/
 	cd "$DOT"
+
+	# CHECK FOR MONERO
+	safety::package monero
 
 	# Case wallet type
 	case "$WALLET_TYPE" in
 	new)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-new-wallet "$WALLETS/$WALLET_SELECTION" \
+			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	view)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-view-key "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-view-key "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	seed)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-new-wallet "$WALLETS/$WALLET_SELECTION" \
+			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD" \
 			--restore-from-seed
 			;;
 	json)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-json "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-json "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	spend)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-spend-key "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-spend-key "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	device)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-device "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-device "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	private)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-keys "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-keys "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	multisig)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-multisig-keys "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-multisig-keys "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	esac

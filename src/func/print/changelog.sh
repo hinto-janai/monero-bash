@@ -22,12 +22,14 @@
 
 # changelog title
 print::changelog::title() {
-	local CHANGELOG_TITLE || return 1
+	local CHANGELOG_TITLE CHANGELOG_RELEASE_DATE || return 1
 	CHANGELOG_VERSION="$1"
+	CHANGELOG_RELEASE_DATE="$2"
 	printf "${BCYAN}%s\n" \
 		"#==============================#" \
 		"# monero-bash $CHANGELOG_VERSION changelog #" \
 		"#==============================#" \
+		"# RELEASE DATE | $CHANGELOG_RELEASE_DATE" \
 		""
 }
 
@@ -42,7 +44,7 @@ print::changelog::2.0.0() {
 }
 
 print::changelog::1.6.0() {
-	print::changelog::title "v1.6.0"
+	print::changelog::title "v1.6.0" "July 2, 2022"
 
 	printf "${BCYAN}%s\n" \
 		"# Updates"

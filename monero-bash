@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/796a595>
-#nix <1658458020>
+#git <monero-bash/798ee90>
+#nix <1658510247>
 #hbc <5fdfdff>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/crypto.sh/1eaba1f>
@@ -57,6 +57,7 @@
 #src <func/process/reset_files.sh>
 #src <func/remove/prompt.sh>
 #src <func/remove/remove.sh>
+#src <func/safety/package.sh>
 #src <func/safety/path.sh>
 #src <func/safety/pipe.sh>
 #src <func/safety/root.sh>
@@ -1232,6 +1233,7 @@ case "$1" in
 		;;
 	status) status::print; exit;;
 	list)   wallet::list;  exit;;
+	new)    wallet::create;exit;;
 	size)   print::size;   exit;;
 	changes)
 		shift
@@ -1375,12 +1377,14 @@ parse::state() {
 	log::debug "XMRIG_OLD         | $XMRIG_OLD"
 }
 print::changelog::title() {
-	local CHANGELOG_TITLE || return 1
+	local CHANGELOG_TITLE CHANGELOG_RELEASE_DATE || return 1
 	CHANGELOG_VERSION="$1"
+	CHANGELOG_RELEASE_DATE="$2"
 	printf "${BCYAN}%s\n" \
 		"#==============================#" \
 		"# monero-bash $CHANGELOG_VERSION changelog #" \
 		"#==============================#" \
+		"# RELEASE DATE | $CHANGELOG_RELEASE_DATE" \
 		""
 }
 print::changelog() {
@@ -1390,7 +1394,7 @@ print::changelog::2.0.0() {
 	print::changelog::title "v2.0.0"
 }
 print::changelog::1.6.0() {
-	print::changelog::title "v1.6.0"
+	print::changelog::title "v1.6.0" "July 2, 2022"
 	printf "${BCYAN}%s\n" \
 		"# Updates"
 	printf "  ${BOLD}${BWHITE}%s\n" \
@@ -1443,34 +1447,34 @@ print::compromised::gpg() {
 }
 print::error() {
 	until [[ $# = 0 ]]; do
-		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
+		printf "${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
 		shift
 	done
 }
 print::exit() {
 	until [[ $# = 0 ]]; do
-		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
+		printf "${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
 		shift
 	done
 	exit 1
 }
 print::help() {
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
-		"MONERO-BASH USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
+		"USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
-		"monero-bash                              Open wallet menu" \
-		"list                                     List wallets"
+		"monero-bash                              Open interactive wallet menu" \
+		"list                                     List wallets" \
+		"new                                      Enter wallet creation mode"
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
 		"install " "<packages> " "[--verbose]           " "Install one/multiple packages"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"remove  " "<packages>                          " "Remove one/multiple packages"
+		"remove  " "<packages>                       " "Remove one/multiple packages"
 	printf "    ${OFF}%s\n" \
-		"update                                   Check for package updates" \
-		"upgrade                                  Upgrade all out-of-date packages"
+		"update                                   Check for package updates"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"upgrade " "<packages> " "[--verbose|--force]   " "Upgrade SPECIFIC packages"
+		"upgrade " "<packages> " "[--verbose|--force]   " "Upgrade pkgs, if none specified, upgrade all out-of-date pkgs"
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"full    " "<monerod/p2pool/xmrig>           " "Start process fully attached in foreground" \
@@ -1479,8 +1483,8 @@ print::help() {
 		"kill    " "<monerod/p2pool/xmrig>           " "Forcefully kill systemd background process" \
 		"restart " "<monerod/p2pool/xmrig>           " "Restart systemd background process" \
 		"watch   " "<monerod/p2pool/xmrig>           " "Watch live output of systemd background process" \
-		"edit    " "<monero/p2pool/xmrig>            " "Edit systemd service file" \
-		"reset   " "<bash/monero/p2pool/xmrig>       " "Reset your config/systemd service file to default"
+		"edit    " "<monerod/p2pool/xmrig>           " "Edit systemd service file" \
+		"reset   " "<bash/monerod/p2pool/xmrig>      " "Reset your config/systemd service file to default"
 	printf "\n${BWHITE}%s${OFF}\n"    "STATS"
 	printf "    %s\n" \
 		"status                                   Print status of all running processes" \
@@ -1722,6 +1726,26 @@ remove() {
 	print::removed
 	___ENDOF___ERROR___TRACE___
 }
+safety::package() {
+	log::debug "starting safety::package"
+	[[ $1 ]] || return 1
+	struct::pkg "$1" || return 2
+	if [[ ${PKG[current_version]} ]]; then
+		log::debug "${PKG[pretty]} (${PKG[current_version]}) is installed"
+	else
+		print::exit "${PKG[pretty]} is not installed"
+	fi
+	case "${PKG[name]}" in
+		*bash*)   [[ -e $PKG_MONERO_BASH/monero-bash ]] || print::exit "monero-bash not found, this error should be impossible!";;
+		*monero*)
+			[[ -e $PKG_MONERO/monerod ]]                || print::exit "monerod binary was not found!"
+			[[ -e $PKG_MONERO/monero-wallet-cli ]]      || print::exit "monero-wallet-cli binary was not found!"
+			;;
+		*p2p*)    [[ -e $PKG_P2POOL/p2pool ]]           || print::exit "P2Pool binary was not found!";;
+		*xmr*)    [[ -e $PKG_XMRIG/xmrig ]]             || print::exit "XMRig binary was not found!";;
+	esac
+	return 0
+}
 safety::path() {
 	log::debug "starting path safety check"
 	local SAFETY_PATH
@@ -1928,78 +1952,91 @@ systemd::reload() {
 }
 wallet::create() {
 	log::debug "creating new wallet"
-	char WALLET_TYPE
+	char WALLET_TYPE WALLET_NAME
 	while :; do
-	printf "${BYELLOW}%s\n" "Select which method to use to create a new wallet:"
+	echo
 	printf "${BRED}%s${OFF}%s\n" \
-		"[new]          | --generate-new-wallet" \
-		"[view]         | --generate-from-view-key" \
-		"[seed]         | --restore-from-seed" \
-		"[json]         | --generate-from-json" \
-		"[spend]        | --generate-from-spend-key" \
-		"[device]       | --generate-from-device" \
-		"[private]      | --generate-from-keys" \
-		"[multisig]     | --generate-from-multisig-keys"
+		"[new]          " "| --generate-new-wallet" \
+		"[view]         " "| --generate-from-view-key" \
+		"[seed]         " "| --restore-from-seed" \
+		"[json]         " "| --generate-from-json" \
+		"[spend]        " "| --generate-from-spend-key" \
+		"[device]       " "| --generate-from-device" \
+		"[private]      " "| --generate-from-keys" \
+		"[multisig]     " "| --generate-from-multisig-keys" \
+		""
+	printf "${BYELLOW}%s${OFF}" "Select which method to use: "
 		read -r WALLET_TYPE
 		case "$WALLET_TYPE" in
-			*new*)     WALLET_TYPE=new     ;break;;
-			*view*)    WALLET_TYPE=view    ;break;;
-			*seed*)    WALLET_TYPE=seed    ;break;;
-			*json*)    WALLET_TYPE=json    ;break;;
-			*spend*)   WALLET_TYPE=spend   ;break;;
-			*device*)  WALLET_TYPE=device  ;break;;
-			*private*) WALLET_TYPE=private ;break;;
-			*multi*)   WALLET_TYPE=multisig;break;;
+			*new*)     WALLET_TYPE=new;;
+			*view*)    WALLET_TYPE=view;;
+			*seed*)    WALLET_TYPE=seed;;
+			*json*)    WALLET_TYPE=json;;
+			*spend*)   WALLET_TYPE=spend;;
+			*device*)  WALLET_TYPE=device;;
+			*private*) WALLET_TYPE=private;;
+			*multi*)   WALLET_TYPE=multisig;;
 			*) print::error "Invalid method!"
 		esac
-		printf "${BWHITE}%s${BRED}%s\n" \
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 			"Create wallet type: " \
-			"[${WALLET_TYPE}]? (Y/n) "
+			"[${WALLET_TYPE}]" \
+			"? (Y/n) "
 		if ask::yes; then
 			break
 		fi
 	done
+	while :; do
+		printf "${BWHITE}%s${OFF}" "Wallet name: "
+		read -r WALLET_NAME
+		case "$WALLET_NAME" in
+			"") print::error "Empty input";;
+			*)  break;;
+		esac
+	done
+	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
 	cd "$DOT"
+	safety::package monero
 	case "$WALLET_TYPE" in
 	new)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-new-wallet "$WALLETS/$WALLET_SELECTION" \
+			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	view)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-view-key "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-view-key "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	seed)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-new-wallet "$WALLETS/$WALLET_SELECTION" \
+			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD" \
 			--restore-from-seed
 			;;
 	json)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-json "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-json "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	spend)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-spend-key "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-spend-key "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	device)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-device "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-device "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	private)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-keys "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-keys "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	multisig)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-multisig-keys "$WALLETS/$WALLET_SELECTION" \
+			--generate-from-multisig-keys "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_MONEROD"
 			;;
 	esac
@@ -2065,23 +2102,24 @@ wallet::select() {
 			case $SELECT_CREATE in
 			select|Select|SELECT)
 				printf "${BWHITE}%s${BRED}%s${OFF}\n" \
-					"Selecting " \
-					"[$WALLET_SELECTION]"
-					break
-					;;
+				"Selecting " \
+				"[$WALLET_SELECTION]"
+				break
+				;;
 			create|Create|CREATE)
 				printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-					"Creating a" \
-					"[new] " \
-					"wallet"
-					wallet::create
-					exit
-					;;
+				"Creating a" \
+				"[new] " \
+				"wallet"
+				wallet::create
+				exit
+				;;
 			*) print::error "Invalid option!" ;;
 			esac
 		done
 	fi
 	wallet::password
+	safety::package monero
 	wallet::start
 	___ENDOF___ERROR___TRACE___
 	return 0
@@ -2156,6 +2194,7 @@ declare -frg print::version
 declare -frg process::reset_files
 declare -frg remove::prompt
 declare -frg remove
+declare -frg safety::package
 declare -frg safety::path
 declare -frg safety::pipe
 declare -frg safety::root

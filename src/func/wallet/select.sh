@@ -57,18 +57,18 @@ wallet::select() {
 			case $SELECT_CREATE in
 			select|Select|SELECT)
 				printf "${BWHITE}%s${BRED}%s${OFF}\n" \
-					"Selecting " \
-					"[$WALLET_SELECTION]"
-					break
-					;;
+				"Selecting " \
+				"[$WALLET_SELECTION]"
+				break
+				;;
 			create|Create|CREATE)
 				printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-					"Creating a" \
-					"[new] " \
-					"wallet"
-					wallet::create
-					exit
-					;;
+				"Creating a" \
+				"[new] " \
+				"wallet"
+				wallet::create
+				exit
+				;;
 			*) print::error "Invalid option!" ;;
 			esac
 		done
@@ -76,6 +76,9 @@ wallet::select() {
 
 	# WALLET PASS
 	wallet::password
+
+	# CHECK FOR MONERO
+	safety::package monero
 
 	# START WALLET
 	wallet::start
