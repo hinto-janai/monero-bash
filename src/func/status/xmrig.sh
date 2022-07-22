@@ -21,5 +21,5 @@
 # SOFTWARE.
 
 # parse info for xmrig status
-status::xmrig() {
-}
+#status::xmrig() {
+#}

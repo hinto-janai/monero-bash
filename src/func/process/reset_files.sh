@@ -63,9 +63,20 @@ process::reset_files() {
 			;;
 		monero)
 			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
+			cp -f "$PKG_MONERO_BASH/config/monero-wallet-cli.conf" "$CONFIG"
 			systemd::create
+			systemd::reload
 			;;
 		p2pool)
-
+			cp -f "$PKG_MONERO_BASH/config/p2pool.conf" "$CONFIG"
+			systemd::create
+			systemd::reload
+			;;
 		xmrig)
+			cp -f "$PKG_MONERO_BASH/config/xmrig.json" "$CONFIG"
+			systemd::create
+			systemd::reload
+			;;
+	esac
+	return 0
+}

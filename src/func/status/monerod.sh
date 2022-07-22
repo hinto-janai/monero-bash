@@ -21,5 +21,5 @@
 # SOFTWARE.
 
 # parse info for monerod status
-status::monerod() {
-}
+#status::monerod() {
+#}

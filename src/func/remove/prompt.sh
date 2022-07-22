@@ -30,7 +30,7 @@ remove::prompt() {
 	local REMOVAL_LIST || return 1
 	if [[ $OPTION_REMOVE_BASH = true ]]; then
 		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
-			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally"
+			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
 			"type: " \
 			"[monero-bash uninstall]" \
 			"to cleanly uninstall monero-bash from your system"

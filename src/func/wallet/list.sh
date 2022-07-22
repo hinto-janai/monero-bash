@@ -31,8 +31,8 @@ wallet::list() {
 	WALLET_COUNT="$(echo "$WALLETS" | wc -l)"
 
 	# MAKE WALLET LIST []
-	for i in "${WALLET_LIST_ALL[@]}"; do
-		WALLET_LIST="[${i}] $WALLET_LIST"
+	for i in ${WALLET_LIST_ALL[@]}; do
+		WALLET_LIST="[${i}]  $WALLET_LIST"
 	done
 
 	# PRINT WALLET COUNT
@@ -47,7 +47,7 @@ wallet::list() {
 	if [[ $WALLET_COUNT = 0 ]]; then
 		echo
 	else
-		printf "%s\n" "$WALLET_LIST"
+		printf "${BWHITE}%s${OFF}\n\n" "$WALLET_LIST"
 	fi
 
 	return 0

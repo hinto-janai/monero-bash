@@ -43,8 +43,8 @@ remove() {
 	# UPDATE LOCAL STATE
 	log::prog "Updating local state..."
 	sudo sed \
-		-i -e "s/"${PKG[var]}"_VER=./"${PKG[var]}"_VER=/" "$STATE" \
-		-i -e "s/"${PKG[var]}"_OLD=./"${PKG[var]}"_OLD=\"true\"/" "$STATE"
+		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
+		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
 	log::ok "Updated local state"
 
 	# RELOAD SYSTEMD

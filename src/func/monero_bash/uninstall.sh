@@ -103,8 +103,8 @@ log::ok "Removed from PATH"
 
 log::prog "Removing systemd services"
 [[ -e "$SYSTEMD/monero-bash-monerod.service" ]] && sudo rm "$SYSTEMD/monero-bash-monerod.service"
-[[ -e "$SYSTEMD/monero-bash-p2pool.service" ]] && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
-[[ -e "$SYSTEMD/monero-bash-xmrig.service" ]] && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
+[[ -e "$SYSTEMD/monero-bash-p2pool.service" ]]  && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
+[[ -e "$SYSTEMD/monero-bash-xmrig.service" ]]   && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
 log::ok "Removed systemd services"
 ___ENDOF___ERROR___TRACE___
 

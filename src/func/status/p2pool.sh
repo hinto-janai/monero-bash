@@ -21,5 +21,5 @@
 # SOFTWARE.
 
 # parse info for p2pool status
-status::p2pool() {
-}
+#status::p2pool() {
+#}

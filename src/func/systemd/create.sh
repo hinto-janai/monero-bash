@@ -34,12 +34,20 @@ systemd::create() {
 	case "${PKG[name]}" in
 		monero)
 			SYSTEMD_USER=monero-bash
-			SYSTEMD_EXEC="monerod --config-file "$CONFIG_MONEROD" --non-interactive"
+			SYSTEMD_ENV="$CONFIG_MONERO_BASH"
+			SYSTEMD_EXEC="monerod --config-file $CONFIG_MONEROD --non-interactive"
 			;;
 		p2pool)
 			SYSTEMD_USER=monero-bash
-			SYSTEMD_EXEC="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+			SYSTEMD_ENV="$CONFIG_P2POOL"
+			SYSTEMD_EXEC="$PKG_P2POOL/p2pool --wallet \$P2POOL_WALLET"
+			;;
 		xmrig)
+			SYSTEMD_USER=root
+			SYSTEMD_ENV=""
+			SYSTEMD_EXEC="$PKG_XMRIG/xmrig --config $CONFIG_XMRIG --log-file=$PKG_XMRIG/xmrig.log"
+			;;
+	esac
 
 # CREATE
 cat << EOM >> "$TMP_SERVICE"
@@ -51,7 +59,7 @@ Wants=network-online.target
 [Service]
 User=$SYSTEMD_USER
 Type=simple
-EnvironmentFile=$CONFIG_MONERO_BASH
+EnvironmentFile="$SYSTEMD_ENV"
 ExecStart=$SYSTEMD_EXEC
 WorkingDirectory=${PKG[directory]}
 Restart=always
@@ -66,4 +74,5 @@ EOM
 
 	# REMOVE TMP FILE
 	rm "$TMP_SERVICE"
+	umask 0022
 }

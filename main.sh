@@ -66,8 +66,10 @@ fi
 safety::path
 
 #----------------------------------------- PARSE USER CONFIG/STATE
+___BEGIN___ERROR___TRACE___
 parse::state
 parse::config
+___ENDOF___ERROR___TRACE___
 
 #----------------------------------------- PARSE USER INPUT
 [[ $# != 0 ]] && parse::options "$@"

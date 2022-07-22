@@ -31,12 +31,12 @@ wallet::select() {
 	while :; do
 	# SELECT/CREATE WALLET
 	printf "${BYELLOW}%s${OFF}%s${BRED}%s${OFF}%s" \
-		"Select a wallet" \
+		"Select a wallet " \
 		"or " \
-		"[new]"
+		"[new]" \
 		": "
 	read -r WALLET_SELECTION
-	for i in "${WALLET_LIST_ALL[@]}"; do
+	for i in ${WALLET_LIST_ALL[@]}; do
 		[[ $WALLET_SELECTION = "$i" ]] && break
 	done
 	case "$WALLET_SELECTION" in

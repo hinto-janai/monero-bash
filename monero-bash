@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/b960064>
-#nix <1658432922>
+#git <monero-bash/796a595>
+#nix <1658458020>
 #hbc <5fdfdff>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/crypto.sh/1eaba1f>
@@ -39,10 +39,12 @@
 #lib <stdlib/type.sh/1eaba1f>
 #src <func/debug.sh>
 #src <func/install.sh>
+#src <func/key/key.sh>
 #src <func/monero_bash/install.sh>
 #src <func/monero_bash/uninstall.sh>
 #src <func/parse/config.sh>
 #src <func/parse/options.sh>
+#src <func/parse/p2pool.sh>
 #src <func/parse/state.sh>
 #src <func/print/changelog.sh>
 #src <func/print/compromised.sh>
@@ -66,6 +68,11 @@
 #src <func/struct/pkg.sh>
 #src <func/systemd/create.sh>
 #src <func/systemd/reload.sh>
+#src <func/wallet/create.sh>
+#src <func/wallet/list.sh>
+#src <func/wallet/password.sh>
+#src <func/wallet/select.sh>
+#src <func/wallet/start.sh>
 #src <readonly.sh>
 
 #-------------------------------------------------------------------------------- BEGIN SAFETY
@@ -747,6 +754,21 @@ install() {
 	[[ $OPTION_INSTALL_P2POOL = true ]] && struct::pkg p2pool && upgrade
 	[[ $OPTION_INSTALL_XMRIG = true ]]  && struct::pkg xmrig  && upgrade
 }
+crypto::key::create() {
+	log::debug "creating key with 8192 bits of entropy"
+	char CRYPTO_KEY
+	CRYPTO_KEY=$(mktemp /tmp/monero-bash-crypto-key.XXXXXXXXXX)
+	chmod 600 "$CRYPTO_KEY"
+	crypto::bytes 512 | base64 > "$CRYPTO_KEY"
+	log::debug "created key: $CRYPTO_KEY"
+	return 0
+}
+crypto::key::remove() {
+	log::debug "deleting key: $CRYPTO_KEY"
+	[[ -e $CRYPTO_KEY ]]
+	rm "$CRYPTO_KEY"
+	free CRYPTO_KEY
+}
 monero_bash::install() {
 log::debug "starting monero_bash::install()"
 if [[ -d "$HOME"/.monero-bash ]]; then
@@ -802,7 +824,7 @@ if [[ ! -e /usr/local/bin/mb ]]; then
 		"[monero-bash] " \
 		"--> " \
 		"[mb]"
-	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n"
+	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
 		"This allows you to use " \
 		"[monero-bash] " \
 		"like so: " \
@@ -828,7 +850,7 @@ printf "${BWHITE}%s${OFF}\n" \
 	"A no-login user called [monero-bash] will be created for process security" \
 	"This will be the user Monero and P2Pool runs as"
 echo
-printf "${BWHITE}%s${$BRED}%s${BWHITE}%s${OFF}\n" \
+printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
 	"Start " \
 	"[monero-bash] " \
 	"install? (Y/n) "
@@ -891,6 +913,10 @@ mv "$INSTALL_PWD" "$HOME/.monero-bash"
 INSTALL_PWD="$HOME/.monero-bash"
 cd "$INSTALL_PWD"
 log::prog "moved folder to $HOME/.monero-bash"
+log::prog "creating config folder"
+mkdir -p configs
+cp "$PKG_MONERO_BASH/configs/monero-bash.conf" "$CONFIG/"
+log::ok "created config folder"
 log::prog "adding [monero-bash] to PATH"
 sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/monero-bash
 log::ok "added [monero-bash] to PATH"
@@ -900,7 +926,7 @@ if [[ $INSTALL_SYMLINK = true ]]; then
 	log::ok "created [mb] PATH symlink"
 fi
 log::prog "setting Monero data path"
-sed -i "s/.*data-dir.*/data-dir="$INSTALL_DATA_PATH"/" "$CONFIG_MONEROD"
+sed -i "s/.*data-dir.*/data-dir=$INSTALL_DATA_PATH/" "$CONFIG_MONEROD"
 log::ok "set Monero data path"
 sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/" "$STATE"
 log::prog "setting folder permissions"
@@ -990,8 +1016,8 @@ sudo rm /usr/local/bin/monero-bash
 log::ok "Removed from PATH"
 log::prog "Removing systemd services"
 [[ -e "$SYSTEMD/monero-bash-monerod.service" ]] && sudo rm "$SYSTEMD/monero-bash-monerod.service"
-[[ -e "$SYSTEMD/monero-bash-p2pool.service" ]] && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
-[[ -e "$SYSTEMD/monero-bash-xmrig.service" ]] && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
+[[ -e "$SYSTEMD/monero-bash-p2pool.service" ]]  && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
+[[ -e "$SYSTEMD/monero-bash-xmrig.service" ]]   && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
 log::ok "Removed systemd services"
 ___ENDOF___ERROR___TRACE___
 echo
@@ -1002,13 +1028,10 @@ parse::config() {
 	log::debug "parsing monero-bash.conf"
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
 	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
-	for i in "${OPTIONS[@]}"; do
+	for i in "${CONFIG_ARRAY[@]}"; do
 		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
 		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
 		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
-		[[ $i =~ ^P2POOL_WALLET=$ ]]                      && declare -g P2POOL_WALLET="${i/*=/}"
-		[[ $i =~ ^P2POOL_MONEROD_IP=*$ ]]                 && declare -g P2POOL_MONEROD_IP="${i/*=/}"
-		[[ $i =~ ^P2POOL_LOG_LEVEL=*$ ]]                  && declare -g P2POOL_LOG_LEVEL="${i/*=/}"
 		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
 		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
 		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]  && declare -g STD_LOG_DEBUG="true"
@@ -1018,9 +1041,6 @@ parse::config() {
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
 	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
-	log::debug "P2POOL_WALLET             | $P2POOL_WALLET"
-	log::debug "P2POOL_MONEROD_IP         | $P2POOL_MONEROD_IP"
-	log::debug "P2POOL_LOG_LEVEL          | $P2POOL_LOG_LEVEL"
 	log::debug "RPC_IP                    | $RPC_IP"
 	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"
 	log::debug "MONERO_BASH_DEBUG         | $STD_LOG_DEBUG"
@@ -1238,13 +1258,96 @@ case "$1" in
 esac
 done
 }
+parse::p2pool() {
+	log::debug "parsing p2pool.conf"
+	local i IFS=$'\n' CONFIG_ARRAY || return 1
+	mapfile CONFIG_ARRAY < "$CONFIG_P2POOL" || return 2
+	for i in "${CONFIG_ARRAY[@]}"; do
+		[[ $i =~ ^P2POOL_WALLET=*$ ]]       && declare -g P2POOL_WALLET="${i/*=/}"
+		[[ $i =~ ^P2POOL_HOST=*$ ]]         && declare -g P2POOL_HOST="${i/*=/}"
+		[[ $i =~ ^P2POOL_RPC_PORT=*$ ]]     && declare -g P2POOL_RPC_PORT="${i/*=/}"
+		[[ $i =~ ^P2POOL_ZMQ_PORT=*$ ]]     && declare -g P2POOL_ZMQ_PORT="${i/*=/}"
+		[[ $i =~ ^P2POOL_STRATUM=*$ ]]      && declare -g P2POOL_STRATUM="${i/*=/}"
+		[[ $i =~ ^P2POOL_P2P=*$ ]]          && declare -g P2POOL_P2P="${i/*=/}"
+		[[ $i =~ ^P2POOL_ADD_PEERS=*$ ]]    && declare -g P2POOL_ADD_PEERS="${i/*=/}"
+		[[ $i =~ ^P2POOL_LIGHT_MODE=*$ ]]   && declare -g P2POOL_LIGHT_MODE="${i/*=/}"
+		[[ $i =~ ^P2POOL_CONFIG=*$ ]]       && declare -g P2POOL_CONFIG="${i/*=/}"
+		[[ $i =~ ^P2POOL_LOG_LEVEL=*$ ]]    && declare -g P2POOL_LOG_LEVEL="${i/*=/}"
+		[[ $i =~ ^P2POOL_DATA_API=*$ ]]     && declare -g P2POOL_DATA_API="${i/*=/}"
+		[[ $i =~ ^P2POOL_LOCAL_API=*$ ]]    && declare -g P2POOL_LOCAL_API="${i/*=/}"
+		[[ $i =~ ^P2POOL_NO_CACHE=*$ ]]     && declare -g P2POOL_NO_CACHE="${i/*=/}"
+		[[ $i =~ ^P2POOL_NO_COLOR=*$ ]]     && declare -g P2POOL_NO_COLOR="${i/*=/}"
+		[[ $i =~ ^P2POOL_NO_RANDOMX=*$ ]]   && declare -g P2POOL_NO_RANDOMX="${i/*=/}"
+		[[ $i =~ ^P2POOL_OUT_PEERS=*$ ]]    && declare -g P2POOL_OUT_PEERS="${i/*=/}"
+		[[ $i =~ ^P2POOL_IN_PEERS=*$ ]]     && declare -g P2POOL_IN_PEERS="${i/*=/}"
+		[[ $i =~ ^P2POOL_START_MINING=*$ ]] && declare -g P2POOL_START_MINING="${i/*=/}"
+		[[ $i =~ ^P2POOL_MINI=*$ ]]         && declare -g P2POOL_MINI="${i/*=/}"
+		[[ $i =~ ^P2POOL_NO_AUTODIFF=*$ ]]  && declare -g P2POOL_NO_AUTODIFF="${i/*=/}"
+		[[ $i =~ ^P2POOL_RPC_LOGIN=*$ ]]    && declare -g P2POOL_RPC_LOGIN="${i/*=/}"
+	done
+	[[ -z $P2POOL_HOST ]]             && declare -g P2POOL_HOST=127.0.0.1
+	[[ -z $P2POOL_RPC_PORT ]]         && declare -g P2POOL_RPC_PORT=18081
+	[[ -z $P2POOL_ZMQ_PORT ]]         && declare -g P2POOL_ZMQ_PORT=18083
+	[[ $P2POOL_LIGHT_MODE != true ]]  && declare -g P2POOL_LIGHT_MODE=false
+	[[ -z $P2POOL_LOG_LEVEL ]]        && declare -g P2POOL_LOG_LEVEL=2
+	[[ $P2POOL_NO_CACHE != true ]]    && declare -g P2POOL_NO_CACHE=false
+	[[ $P2POOL_NO_COLOR != true ]]    && declare -g P2POOL_NO_COLOR=false
+	[[ $P2POOL_NO_RANDOMX != true ]]  && declare -g P2POOL_NO_RANDOMX=false
+	[[ $P2POOL_MINI != true ]]        && declare -g P2POOL_MINI=false
+	[[ $P2POOL_NO_AUTODIFF != true ]] && declare -g P2POOL_NO_AUTODIFF=false
+	declare -g P2POOL_COMMAND || return 3
+	P2POOL_COMMAND="--wallet $P2POOL_WALLET"
+	P2POOL_COMMAND="$P2POOL_COMMAND --host $P2POOL_HOST"
+	P2POOL_COMMAND="$P2POOL_COMMAND --rpc-port $P2POOL_RPC_PORT"
+	P2POOL_COMMAND="$P2POOL_COMMAND --zmq-port $P2POOL_ZMQ_PORT"
+	[[ $P2POOL_STRATUM ]]            && P2POOL_COMMAND="$P2POOL_COMMAND --stratum $P2POOL_STRATUM"
+	[[ $P2POOL_P2P ]]                && P2POOL_COMMAND="$P2POOL_COMMAND --p2p $P2POOL_P2P"
+	[[ $P2POOL_ADD_PEERS ]]          && P2POOL_COMMAND="$P2POOL_COMMAND --addpeers $P2POOL_ADD_PEERS"
+	[[ $P2POOL_LIGHT_MODE = true ]]  && P2POOL_COMMAND="$P2POOL_COMMAND --light-mode"
+	P2POOL_COMMAND="$P2POOL_COMMAND --loglevel $P2POOL_LOG_LEVEL"
+	[[ $P2POOL_CONFIG ]]             && P2POOL_COMMAND="$P2POOL_COMMAND --config $P2POOL_CONFIG"
+	[[ $P2POOL_DATA_API ]]           && P2POOL_COMMAND="$P2POOL_COMMAND --data-api $P2POOL_DATA_API"
+	[[ $P2POOL_LOCAL_API ]]          && P2POOL_COMMAND="$P2POOL_COMMAND --local-api $P2POOL_LOCAL_API"
+	[[ $P2POOL_NO_CACHE = true ]]    && P2POOL_COMMAND="$P2POOL_COMMAND --no-cache"
+	[[ $P2POOL_NO_COLOR = true ]]    && P2POOL_COMMAND="$P2POOL_COMMAND --no-color"
+	[[ $P2POOL_NO_RANDOMX = true ]]  && P2POOL_COMMAND="$P2POOL_COMMAND --no-randomx"
+	[[ $P2POOL_OUT_PEERS ]]          && P2POOL_COMMAND="$P2POOL_COMMAND --out-peers $P2POOL_OUT_PEERS"
+	[[ $P2POOL_IN_PEERS ]]           && P2POOL_COMMAND="$P2POOL_COMMAND --in-peers $P2POOL_IN_PEERS"
+	[[ $P2POOL_START_MINING ]]       && P2POOL_COMMAND="$P2POOL_COMMAND --start-mining $P2POOL_START_MINING"
+	[[ $P2POOL_MINI = true ]]        && P2POOL_COMMAND="$P2POOL_COMMAND --mini"
+	[[ $P2POOL_NO_AUTODIFF = true ]] && P2POOL_COMMAND="$P2POOL_COMMAND --no-autodiff"
+	[[ $P2POOL_RPC_LOGIN ]]          && P2POOL_COMMAND="$P2POOL_COMMAND --rpc-login $P2POOL_RPC_LOGIN"
+	log::debug "--- p2pool.conf settings ---"
+	log::debug "P2POOL_WALLET       | $P2POOL_WALLET"
+	log::debug "P2POOL_HOST         | $P2POOL_HOST"
+	log::debug "P2POOL_RPC_PORT     | $P2POOL_RPC_PORT"
+	log::debug "P2POOL_ZMQ_PORT     | $P2POOL_ZMQ_PORT"
+	log::debug "P2POOL_STRATUM      | $P2POOL_STRATUM"
+	log::debug "P2POOL_P2P          | $P2POOL_P2P"
+	log::debug "P2POOL_ADD_PEERS    | $P2POOL_ADD_PEERS"
+	log::debug "P2POOL_LIGHT_MODE   | $P2POOL_LIGHT_MODE"
+	log::debug "P2POOL_CONFIG       | $P2POOL_CONFIG"
+	log::debug "P2POOL_LOG_LEVEL    | $P2POOL_LOG_LEVEL"
+	log::debug "P2POOL_DATA_API     | $P2POOL_DATA_API"
+	log::debug "P2POOL_LOCAL_API    | $P2POOL_LOCAL_API"
+	log::debug "P2POOL_NO_CACHE     | $P2POOL_NO_CACHE"
+	log::debug "P2POOL_NO_COLOR     | $P2POOL_NO_COLOR"
+	log::debug "P2POOL_NO_RANDOMX   | $P2POOL_NO_RANDOMX"
+	log::debug "P2POOL_OUT_PEERS    | $P2POOL_OUT_PEERS"
+	log::debug "P2POOL_IN_PEERS     | $P2POOL_IN_PEERS"
+	log::debug "P2POOL_START_MINING | $P2POOL_START_MINING"
+	log::debug "P2POOL_MINI         | $P2POOL_MINI"
+	log::debug "P2POOL_NO_AUTODIFF  | $P2POOL_NO_AUTODIFF"
+	log::debug "P2POOL_RPC_LOGIN    | $P2POOL_RPC_LOGIN"
+	log::debug "final p2pool command: $P2POOL_COMMAND"
+	return 0
+}
 parse::state() {
 	log::debug "parsing state file"
 	local i IFS=$'\n' STATE_ARRAY || return 1
 	mapfile STATE_ARRAY < "$STATE" || return 2
 	for i in "${OPTIONS[@]}"; do
-		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"        || declare -g FIRST_TIME="false"
-		[[ $i =~ ^MINE_UNCONFIGURED=true[[:space:]]+$ ]] && declare -g MINE_UNCONFIGURED="true" || declare -g MINE_UNCONFIGURED="false"
+		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"
 		[[ $i =~ ^MONERO_BASH_VER=*$ ]]                  && declare -g MONERO_BASH_VER="${i/*=/}"
 		[[ $i =~ ^MONERO_VER=*$ ]]                       && declare -g MONERO_VER="${i/*=/}"
 		[[ $i =~ ^P2POOL_VER=*$ ]]                       && declare -g P2POOL_VER="${i/*=/}"
@@ -1254,6 +1357,11 @@ parse::state() {
 		[[ $i =~ ^P2POOL_OLD=true[[:space:]]+$ ]]        && declare -g P2POOL_OLD="true"      || declare -g P2POOL_OLD="false"
 		[[ $i =~ ^XMRIG_OLD=true[[:space:]]+$ ]]         && declare -g XMRIG_OLD="true"       || declare -g XMRIG_OLD="false"
 	done
+	[[ $FIRST_TIME != true ]]        && declare -g FIRST_TIME=false
+	[[ $MONERO_BASH_OLD != true ]]   && declare -g MONERO_BASH_OLD=false
+	[[ $MONERO_OLD != true ]]        && declare -g MONERO_OLD=false
+	[[ $P2POOL_OLD != true ]]        && declare -g P2POOL_OLD=false
+	[[ $XMRIG_OLD != true ]]         && declare -g XMRIG_OLD=false
 	log::debug "--- state file ---"
 	log::debug "FIRST_TIME        | $FIRST_TIME"
 	log::debug "MINE_UNCONFIGURED | $MINE_UNCONFIGURED"
@@ -1300,11 +1408,39 @@ print::changelog::1.6.0() {
 		"Misc"    "- Fix text coloring issues"
 }
 print::compromised::hash() {
-	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s" \
+	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: HASH ERROR!                       " \
-		" [$NAME_PRE
+		" [${PKG[pretty]}] hash did not match!       " \
+		" [${PKG[author]}] might be compromised!     " \
+		" (or more likely, there was an error)       " \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	printf "${BWHITE}%s${BBLUE}%s\n${BWHITE}%s${BRED}%s${OFF}\n" \
+		"ONLINE HASH: " \
+		"$HASH" \
+		"LOCAL HASH: " \
+		"$LOCAL_HASH"
+	[[ $OPTION_VERBOSE = true ]] && print::verbose
+	exit 1
+}
 print::compromised::gpg() {
+	printf "${BWHITE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BWHITE}%s\n" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		" WARNING: GPG ERROR!                       " \
+		" [${PKG[pretty]}] GPG signature failed!     " \
+		" [${PKG[gpg_owner]}] might be compromised!  " \
+		" (or more likely, there was an error)       " \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	printf "${BWHITE}%s${BBLUE}%s\n${BWHITE}%s${BRED}%s\n${BWHITE}%s${BYELLOW}%s\n${OFF}%s\n" \
+		"ONLINE HASH: " \
+		"$HASH" \
+		"LOCAL HASH: " \
+		"$LOCAL_HASH" \
+		"GPG SIGNATURE: " \
+		"$GPG_SIG"
+	[[ $OPTION_VERBOSE = true ]] && print::verbose
+	exit 1
+}
 print::error() {
 	until [[ $# = 0 ]]; do
 		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
@@ -1506,15 +1642,29 @@ process::reset_files() {
 			;;
 		monero)
 			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			sudo cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
+			cp -f "$PKG_MONERO_BASH/config/monero-wallet-cli.conf" "$CONFIG"
+			systemd::create
+			systemd::reload
+			;;
 		p2pool)
+			cp -f "$PKG_MONERO_BASH/config/p2pool.conf" "$CONFIG"
+			systemd::create
+			systemd::reload
+			;;
 		xmrig)
+			cp -f "$PKG_MONERO_BASH/config/xmrig.json" "$CONFIG"
+			systemd::create
+			systemd::reload
+			;;
+	esac
+	return 0
+}
 remove::prompt() {
 	log::debug "starting removal prompt"
 	local REMOVAL_LIST || return 1
 	if [[ $OPTION_REMOVE_BASH = true ]]; then
 		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
-			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally"
+			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
 			"type: " \
 			"[monero-bash uninstall]" \
 			"to cleanly uninstall monero-bash from your system"
@@ -1563,11 +1713,11 @@ remove() {
 	log::ok "${PKG[service]} deleted"
 	log::prog "Updating local state..."
 	sudo sed \
-		-i -e "s/"${PKG[var]}"_VER=./"${PKG[var]}"_VER=/" "$STATE" \
-		-i -e "s/"${PKG[var]}"_OLD=./"${PKG[var]}"_OLD=\"true\"/" "$STATE"
+		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
+		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
 	log::ok "Updated local state"
 	log::prog "Reloading systemd..."
-	sudo systemctl daemon-reload
+	systemd::reload
 	log::ok "Reloaded systemd"
 	print::removed
 	___ENDOF___ERROR___TRACE___
@@ -1618,10 +1768,6 @@ safety::wget_curl() {
 		return 0
 	fi
 }
-status::monerod() {
-}
-status::p2pool() {
-}
 status::table() {
 	log::debug "creating status table"
 	printf "${OFF}%s\n" \
@@ -1631,8 +1777,6 @@ status::table() {
 		"# $MONERO_BASH_VER | $MONERO_VER | $P2POOL_VER | $XMRIG_VER #" \
 		"#-----------------------------------------------#" \
 		"#"
-}
-status::xmrig() {
 }
 struct::pkg() {
 	log::debug "creating pkg structure for: $1"
@@ -1677,8 +1821,8 @@ struct::pkg() {
 		PKG[name]="p2pool"
 		PKG[pretty]="P2Pool"
 		PKG[var]="P2POOL"
-		PKG[author]="SChernyk"
-		PKG[gpg_owner]="SChernyk"
+		PKG[author]="SChernykh"
+		PKG[gpg_owner]="SChernykh"
 		PKG[service]="monero-bash-p2pool.service"
 		PKG[process]="p2pool"
 		PKG[directory]="$PACKAGES/p2pool"
@@ -1740,20 +1884,36 @@ struct::pkg() {
 systemd::create() {
 	log::debug "starting systemd::create()"
 	umask 133 || return 1
-	local TMP_SERVICE || return 2
+	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
+	case "${PKG[name]}" in
+		monero)
+			SYSTEMD_USER=monero-bash
+			SYSTEMD_ENV="$CONFIG_MONERO_BASH"
+			SYSTEMD_EXEC="monerod --config-file $CONFIG_MONEROD --non-interactive"
+			;;
+		p2pool)
+			SYSTEMD_USER=monero-bash
+			SYSTEMD_ENV="$CONFIG_P2POOL"
+			SYSTEMD_EXEC="$PKG_P2POOL/p2pool --wallet \$P2POOL_WALLET"
+			;;
+		xmrig)
+			SYSTEMD_USER=root
+			SYSTEMD_ENV=""
+			SYSTEMD_EXEC="$PKG_XMRIG/xmrig --config $CONFIG_XMRIG --log-file=$PKG_XMRIG/xmrig.log"
+			;;
+	esac
 cat << EOM >> "$TMP_SERVICE"
 [Unit]
 Description=${PKG[service]}
 After=network-online.target
 Wants=network-online.target
 [Service]
-User=$USER
-Group=$USER
+User=$SYSTEMD_USER
 Type=simple
-EnvironmentFile=$CONFIG_MONERO_BASH
-ExecStart=$COMMAND
-WorkingDirectory=$DIRECTORY
+EnvironmentFile="$SYSTEMD_ENV"
+ExecStart=$SYSTEMD_EXEC
+WorkingDirectory=${PKG[directory]}
 Restart=always
 RestartSec=5
 [Install]
@@ -1761,9 +1921,188 @@ WantedBy=multi-user.target
 EOM
 	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
 	rm "$TMP_SERVICE"
+	umask 0022
 }
 systemd::reload() {
 	sudo systemctl daemon-reload || return 1
+}
+wallet::create() {
+	log::debug "creating new wallet"
+	char WALLET_TYPE
+	while :; do
+	printf "${BYELLOW}%s\n" "Select which method to use to create a new wallet:"
+	printf "${BRED}%s${OFF}%s\n" \
+		"[new]          | --generate-new-wallet" \
+		"[view]         | --generate-from-view-key" \
+		"[seed]         | --restore-from-seed" \
+		"[json]         | --generate-from-json" \
+		"[spend]        | --generate-from-spend-key" \
+		"[device]       | --generate-from-device" \
+		"[private]      | --generate-from-keys" \
+		"[multisig]     | --generate-from-multisig-keys"
+		read -r WALLET_TYPE
+		case "$WALLET_TYPE" in
+			*new*)     WALLET_TYPE=new     ;break;;
+			*view*)    WALLET_TYPE=view    ;break;;
+			*seed*)    WALLET_TYPE=seed    ;break;;
+			*json*)    WALLET_TYPE=json    ;break;;
+			*spend*)   WALLET_TYPE=spend   ;break;;
+			*device*)  WALLET_TYPE=device  ;break;;
+			*private*) WALLET_TYPE=private ;break;;
+			*multi*)   WALLET_TYPE=multisig;break;;
+			*) print::error "Invalid method!"
+		esac
+		printf "${BWHITE}%s${BRED}%s\n" \
+			"Create wallet type: " \
+			"[${WALLET_TYPE}]? (Y/n) "
+		if ask::yes; then
+			break
+		fi
+	done
+	cd "$DOT"
+	case "$WALLET_TYPE" in
+	new)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-new-wallet "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	view)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-from-view-key "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	seed)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-new-wallet "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD" \
+			--restore-from-seed
+			;;
+	json)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-from-json "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	spend)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-from-spend-key "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	device)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-from-device "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	private)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-from-keys "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	multisig)
+			"$PKG_MONERO/monero-wallet-cli" \
+			--generate-from-multisig-keys "$WALLETS/$WALLET_SELECTION" \
+			--config-file "$CONFIG_MONEROD"
+			;;
+	esac
+	return 0
+}
+wallet::list() {
+	log::debug "starting wallet list"
+	char WALLET_LIST_ALL
+	local WALLET_COUNT WALLET_LIST i
+	WALLET_LIST_ALL=("$(ls "$WALLETS" | grep -v ".keys")")
+	WALLET_COUNT="$(echo "$WALLETS" | wc -l)"
+	for i in ${WALLET_LIST_ALL[@]}; do
+		WALLET_LIST="[${i}]  $WALLET_LIST"
+	done
+	printf "${BWHITE}%s${OFF}" "$WALLET_COUNT "
+	if [[ $WALLET_COUNT = 1 ]]; then
+		printf "%s\n" "wallet found"
+	else
+		printf "%s\n" "wallets found"
+	fi
+	if [[ $WALLET_COUNT = 0 ]]; then
+		echo
+	else
+		printf "${BWHITE}%s${OFF}\n\n" "$WALLET_LIST"
+	fi
+	return 0
+}
+wallet::password() {
+	log::debug "starting wallet::password()"
+	crypto::key::create
+	printf "${BWHITE}%s${OFF}" "Password: "
+	read -s -r WALLET_PASSWORD
+	WALLET_PASSWORD="$(crypto::encrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
+}
+wallet::select() {
+	log::debug "starting wallet selection"
+	___BEGIN___ERROR___TRACE___
+	char WALLET_SELECTION
+	local i
+	while :; do
+	printf "${BYELLOW}%s${OFF}%s${BRED}%s${OFF}%s" \
+		"Select a wallet " \
+		"or " \
+		"[new]" \
+		": "
+	read -r WALLET_SELECTION
+	for i in ${WALLET_LIST_ALL[@]}; do
+		[[ $WALLET_SELECTION = "$i" ]] && break
+	done
+	case "$WALLET_SELECTION" in
+		"$i") break;;
+		"")   print::error "Empty input";;
+		*)    print::error "Wallet not found";;
+	esac
+	done
+	if [[ $i = new || $i = New || $i = NEW ]]; then
+		while :; do
+			printf "${BWHITE}%s\n${OFF}%s" \
+				"Wallet name is similar to option..." \
+				"SELECT or CREATE? "
+			local SELECT_CREATE
+			read -r SELECT_CREATE
+			case $SELECT_CREATE in
+			select|Select|SELECT)
+				printf "${BWHITE}%s${BRED}%s${OFF}\n" \
+					"Selecting " \
+					"[$WALLET_SELECTION]"
+					break
+					;;
+			create|Create|CREATE)
+				printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+					"Creating a" \
+					"[new] " \
+					"wallet"
+					wallet::create
+					exit
+					;;
+			*) print::error "Invalid option!" ;;
+			esac
+		done
+	fi
+	wallet::password
+	wallet::start
+	___ENDOF___ERROR___TRACE___
+	return 0
+}
+wallet::start() {
+	log::debug "starting wallet: $WALLET_SELECTION"
+	trap 'crypto::key::remove' EXIT
+	cd "$DOT"
+	if [[ $AUTO_START_MONEROD = true ]]; then
+		struct::pkg monero
+		process::start
+	fi
+	"$PKG_MONERO/monero-wallet-cli" \
+		--wallet-file "$WALLETS/$WALLET_SELECTION" \
+		--config-file "$CONFIG_MONEROD" \
+		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
+	if [[ $AUTO_STOP_MONEROD = true ]]; then
+		struct::pkg monero
+		process::stop
+	fi
+	return 0
 }
 readonly DOT="$HOME/.monero-bash"
 readonly CONFIG="$DOT/config"
@@ -1772,7 +2111,7 @@ readonly PACKAGES="$DOT/packages"
 readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
 readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
 readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.json"
+readonly CONFIG_P2POOL="$CONFIG/p2pool.conf"
 readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
 readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
 readonly PKG_MONERO="$PACKAGES/monero"
@@ -1786,10 +2125,13 @@ readonly MAIN="$PKG_MONERO_BASH/monero-bash"
 readonly SYSTEMD="/etc/systemd/system"
 declare -frg DEBUG
 declare -frg install
+declare -frg crypto::key::create
+declare -frg crypto::key::remove
 declare -frg monero_bash::install
 declare -frg monero_bash::uninstall
 declare -frg parse::config
 declare -frg parse::options
+declare -frg parse::p2pool
 declare -frg parse::state
 declare -frg print::changelog::title
 declare -frg print::changelog
@@ -1818,13 +2160,15 @@ declare -frg safety::path
 declare -frg safety::pipe
 declare -frg safety::root
 declare -frg safety::wget_curl
-declare -frg status::monerod
-declare -frg status::p2pool
 declare -frg status::table
-declare -frg status::xmrig
 declare -frg struct::pkg
 declare -frg systemd::create
 declare -frg systemd::reload
+declare -frg wallet::create
+declare -frg wallet::list
+declare -frg wallet::password
+declare -frg wallet::select
+declare -frg wallet::start
 trap - ERR || exit 117
 set +eo pipefail || exit 118
 
@@ -1854,49 +2198,59 @@ set +eo pipefail || exit 118
 
 main() {
 #----------------------------------------- main() START
-log::debug "main() started, log::debug initialization"
-
-#----------------------------------------- DEBUG
-[[ $1 = DEBUG ]] && DEBUG "$@"
-
-#----------------------------------------- SAFETY
-log::debug "starting safety checks"
-# check for gnu/linux
-safety::gnu_linux
-# check for bash v5+
-safety::bash
-# check for root
-safety::root
-# check for pipe
-safety::pipe
-# check for wget/curl
-safety::wget_curl
-
-#----------------------------------------- FIRST TIME INSTALLATION
-if [[ $FIRST_TIME = true ]]; then
-	log::debug "first time detected, starting installation"
-	monero_bash::install
-else
-	log::debug "first time = false, skipping installation"
-fi
-
-#----------------------------------------- MORE SAFETY
-# check for path
-safety::path
-
-#----------------------------------------- PARSE USER CONFIG/STATE
-___BEGIN___ERROR___TRACE___
-parse::state
-parse::config
-___ENDOF___ERROR___TRACE___
+#log::debug "main() started, log::debug initialization"
+#
+##----------------------------------------- DEBUG
+#[[ $1 = DEBUG ]] && DEBUG "$@"
+#
+##----------------------------------------- SAFETY
+#log::debug "starting safety checks"
+## check for gnu/linux
+#safety::gnu_linux
+## check for bash v5+
+#safety::bash
+## check for root
+#safety::root
+## check for pipe
+#safety::pipe
+## check for wget/curl
+#safety::wget_curl
+#
+##----------------------------------------- FIRST TIME INSTALLATION
+#if [[ $FIRST_TIME = true ]]; then
+#	log::debug "first time detected, starting installation"
+#	monero_bash::install
+#else
+#	log::debug "first time = false, skipping installation"
+#fi
+#
+##----------------------------------------- MORE SAFETY
+## check for path
+#safety::path
+#
+##----------------------------------------- PARSE USER CONFIG/STATE
+#___BEGIN___ERROR___TRACE___
+#parse::state
+#parse::config
+#___ENDOF___ERROR___TRACE___
 
 #----------------------------------------- PARSE USER INPUT
 [[ $# != 0 ]] && parse::options "$@"
 
 #----------------------------------------- WALLET
+# title
 print::title
 
+# auto update
+[[ $AUTO_UPDATE = true ]] && update && echo
 
+# print wallets
+wallet::list
+
+# select wallet
+wallet::select
+
+exit 0
 }
 main "$@"
 #-------------------------------------------------------------------------------- ENDOF MAIN

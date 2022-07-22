@@ -93,7 +93,7 @@ if [[ ! -e /usr/local/bin/mb ]]; then
 		"[monero-bash] " \
 		"--> " \
 		"[mb]"
-	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n"
+	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
 		"This allows you to use " \
 		"[monero-bash] " \
 		"like so: " \
@@ -123,7 +123,7 @@ printf "${BWHITE}%s${OFF}\n" \
 echo
 
 # INSTALLATION PROMPT
-printf "${BWHITE}%s${$BRED}%s${BWHITE}%s${OFF}\n" \
+printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
 	"Start " \
 	"[monero-bash] " \
 	"install? (Y/n) "
@@ -222,7 +222,7 @@ fi
 
 # SET MONERO DATA PATH
 log::prog "setting Monero data path"
-sed -i "s/.*data-dir.*/data-dir="$INSTALL_DATA_PATH"/" "$CONFIG_MONEROD"
+sed -i "s/.*data-dir.*/data-dir=$INSTALL_DATA_PATH/" "$CONFIG_MONEROD"
 log::ok "set Monero data path"
 
 # FIRST TIME

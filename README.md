@@ -13,10 +13,9 @@
 ## About
 monero-bash is a wrapper/manager for:
 
-* [`monerod`](https://github.com/monero-project/monero)
-* [`monero-wallet-cli`](https://github.com/monero-project/monero)
-* [`xmrig`](https://github.com/xmrig/xmrig)
-* [`p2pool`](https://github.com/SChernykh/p2pool)
+* [`Monero`](https://github.com/monero-project/monero)
+* [`P2Pool`](https://github.com/SChernykh/p2pool)
+* [`XMRig`](https://github.com/xmrig/xmrig)
 
 monero-bash automates these programs into interactive prompts and simple commands
 
@@ -27,39 +26,41 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 [This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
-* 📦 `PACKAGE MANAGER`
-	- Automatically manage the download/verification/upgrading of packages
-* 💵 `WALLET MENU`
-	- Basic menu that wraps around `monero-wallet-cli` for simple tasks like selecting/creating wallets
-* 👺 `DAEMON`
-	- Control `monerod/p2pool/xmrig` as background processes
-* ⛏️  `MINING`
-	- Interactive mining setup, **built for P2Pool**
-* 👁️  `WATCH`
-	- Switch between normal terminal and live output of `monerod/p2pool/xmrig`
-* 📈 `STATS`
-	- Display general and specific stats (CPU usage, P2Pool shares found per hour, last share, etc)
-* 📋 `RPC`
-	- Interact with monerod's JSON-RPC interface
+* 📦 `PKG MANAGER` | Automatically manage the download/verification/upgrading of packages
+* 💵 `WALLET MENU` | Menu that wraps around `monero-wallet-cli` for selecting/creating wallets
+* 👺 `SYSTEMD`     | Control `monerod/p2pool/xmrig` as background processes
+* ⛏️  `MINING`      | Interactive mining setup, **built for P2Pool**
+* 👁️  `WATCH`       | Switch between normal terminal and live output of `monerod/p2pool/xmrig`
+* 📈 `STATS`       | Display statistics (CPU usage, P2Pool shares, etc)
+* 📋 `RPC`         | Interact with the `monerod` JSON-RPC interface
 
 ## Install
 [To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
 ./monero-bash
 ```
-This will install monero-bash onto your system, to uninstall cleanly: `monero-bash uninstall`
+This will install monero-bash into `$HOME/.monero-bash`
 
-OR
-
+To install with git:
 ```
-git clone https://github.com/hinto-janaiyo/monero-bash &&
-cd monero-bash &&
+git clone https://github.com/hinto-janaiyo/monero-bash
+cd monero-bash
 ./monero-bash
 ```
 **ALWAYS clone the main branch,** the other branches are not tested and may result in system damage
 
+To uninstall cleanly, you can 
+```
+monero-bash uninstall
+```
+
 ## Documentation
-[For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
+* [monero-bash configuration](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
+* [Mining configuration](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/p2pool.md)
+* [monero-bash package upgrade process](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade.md)
+* [monero-bash file structure](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/structure.md)
+* [monero-bash development process](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/development.md)
+* [monero-bash gpg import process](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/gpg.md)
 
 <details>
 <summary>Click for command usage</summary>
@@ -112,10 +113,10 @@ help                                     show this help message
 
 ---
 
-* Monero [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
-* monero-bash [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
-* XMRig [`https://github.com/xmrig/xmrig`](https://github.com/xmrig/xmrig)
-* P2Pool [`https://github.com/SChernykh/p2pool`](https://github.com/SChernykh/p2pool)
+* monero-bash | [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
+* Monero      | [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
+* P2Pool      | [`https://github.com/SChernykh/p2pool`](https://github.com/SChernykh/p2pool)
+* XMRig       | [`https://github.com/xmrig/xmrig`](https://github.com/xmrig/xmrig)
 
 [The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)
 
@@ -130,22 +131,6 @@ Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.t
 </details>
 
 <details>
-<summary>How does monero-bash upgrade packages?</summary>
-
----
-
-[Click here for an explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
-
-To see detailed output when installing/upgrading, type:
-```
-monero-bash install/upgrade <package> verbose
-```
-
----
-
-</details>
-
-<details>
 <summary>Does monero-bash have dependencies?</summary>
 
 ---
@@ -154,12 +139,10 @@ monero-bash install/upgrade <package> verbose
 
 If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you already have everything needed:
 
-* bash
-* wget
-* procfs
+* Bash
+* wget/curl
 * systemd
 * GNU coreutils
-* GNU grep/awk/sed
 
 ---
 </details>
@@ -170,7 +153,7 @@ If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you a
 ---
 
 ```
-monero-bash upgrade <package> force
+monero-bash upgrade <package> --force
 ```
 Will forcefully upgrade, even if up to date
 
@@ -196,9 +179,14 @@ monero-bash uses temporary folders until it's ready to swap binaries:
 /tmp/monero-bash.XXXXXXXXX
 ```
 
-If you cancel ***right*** as the software is being upgraded, monero-bash will swap back your old binaries, and clean up temporary files.
+If you cancel ***RIGHT*** as the package is being upgraded, monero-bash will swap back the old version, and clean up temporary files.
 
-If you cancel ***after*** software is installed, but before the local state is updated, monero-bash will force update it and clean up.
+If you cancel ***AFTER*** the package is installed, but before the local state is updated, monero-bash will force update it and clean up.
+
+You can check your current package versions with
+```
+monero-bash version
+```
 
 ---
 
@@ -211,15 +199,15 @@ If you cancel ***after*** software is installed, but before the local state is u
 
 Installation path:
 ```
-/usr/local/share/monero-bash
+$HOME/.monero-bash
 ```
 PATH symlink:
 ```
 /usr/local/bin/monero-bash
 ```
-User folder:
+systemd files:
 ```
-/home/user/.monero-bash
+/etc/systemd/system/monero-bash-$PACKAGE.service
 ```
 
 ---
@@ -231,7 +219,7 @@ User folder:
 ---
 
 ```
-/usr/local/share/monero-bash/bin/
+$HOME/.monero-bash/packages
 ```
 
 ---
@@ -244,17 +232,12 @@ User folder:
 ```
 monero-bash uninstall
 ```
-This will delete ALL `monero-bash` files AND `.monero-bash`
+This will delete ALL `monero-bash` files
 
 To manually remove everything:
 ```
-sudo rm -r /usr/local/share/monero-bash
-sudo rm /usr/local/bin/monero-bash
-sudo rm -r "$HOME/.monero-bash"
-
-sudo rm /etc/systemd/system/monero-bash-monerod.service
-sudo rm /etc/systemd/system/monero-bash-xmrig.service
-sudo rm /etc/systemd/system/monero-bash-p2pool.service
+sudo rm -r $HOME/.monero-bash
+sudo rm /etc/systemd/system/monero-bash-*
 ```
 
 Please be careful, remember to move your `/wallets/` before uninstalling!

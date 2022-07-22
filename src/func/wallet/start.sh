@@ -42,7 +42,7 @@ wallet::start() {
 	"$PKG_MONERO/monero-wallet-cli" \
 		--wallet-file "$WALLETS/$WALLET_SELECTION" \
 		--config-file "$CONFIG_MONEROD" \
-		--password "$(crypto::decrypt "$WALLET_PASS" "$(cat $CRYPTO_KEY)")"
+		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
 
 	# Auto-stop monerod
 	if [[ $AUTO_STOP_MONEROD = true ]]; then

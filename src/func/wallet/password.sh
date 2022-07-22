@@ -32,5 +32,5 @@ wallet::password() {
 	read -s -r WALLET_PASSWORD
 
 	# encrypt input with key file
-	crypto::encrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)"
+	WALLET_PASSWORD="$(crypto::encrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
 }

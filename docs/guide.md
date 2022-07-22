@@ -1,27 +1,23 @@
-# monero-bash guide:
+# monero-bash configuration
 * [Mining](#mining)
-* [Usage](#usage)
-* [Configuration](#configuration)
+* [Commands](#Commands)
+* [Config](#config)
 * [File Structure](#file-structure)
 * [systemd](#systemd)
 
 ## Mining
 To quickly start mining on P2Pool, make sure you have all the packages:
-* `monero-bash install all`
+* `monero-bash install monero p2pool xmrig`
 
 Configure basic mining settings:
 * `monero-bash config`
 
 You can then:
-* `monero-bash start all`
+* `monero-bash start monero p2pool xmrig`
 
 Remember, you are using your own node to mine. The blockchain has to be fully synced!
 
-
-## Usage
-<details>
-<summary>Click to reveal full command usage</summary>
-
+## Commands
 ```
 monero-bash usage: monero-bash <option> <more options>
 
@@ -62,86 +58,40 @@ integrity                                check hash integrity of monero-bash
 
 help                                     show this help message
 ```
-</details>
 
-## Configuration
-Config files are in `~/.monero-bash/config`, you can edit them or replace them with your own
+## Config
+monero-bash's config files live in `$HOME/.monero-bash/config`
 
-To setup P2Pool, either use `monero-bash config` or edit `.monero-bash/config/monero-bash.conf`
 ```
 ######################
 # monero-bash config #
 ######################
-# monero-bash
-AUTO_START_DAEMON="true"         auto-start daemon on wallet open
-AUTO_STOP_DAEMON="true"          auto-stop daemon on wallet close
-AUTO_UPDATE="false"              check for all updates on wallet open
-PRICE_API_IP_WARNING="true"      warn when checking price API
 
-# hugepages
-AUTO_HUGEPAGES="true"            auto-set hugepages when starting all processes
-HUGEPAGES="3072"                 hugepage size
+#---------------------------------------------------------------------------------------------------# monero-bash
+# auto-start & auto-stop monerod when opening/closing a wallet
+# usage: [true|false]
+AUTO_START_MONEROD=true
+AUTO_STOP_MONEROD=true
 
-# p2pool
-DAEMON_IP="127.0.0.1"            monerod IP to connect to (default: 127.0.0.1/localhost)
-WALLET=""                        wallet address to send payouts to
-LOG_LEVEL="2"                    log/console output level (default: 2, options are 0-6)
+# auto-update packages when opening monero-bash
+# usage: [true|false]
+AUTO_UPDATE=false
 
-# daemon rpc
-DAEMON_RPC_IP="127.0.0.1:18081"  monerod IP used by RPC calls (default is localhost:18081)
-DAEMON_RPC_VERBOSE="false"       print extra messages on RPC calls
+#---------------------------------------------------------------------------------------------------# monerod rpc
+# monerod ip to contact when using "monero-bash rpc"
+# usage: [IP:PORT]
+RPC_IP=127.0.0.1:18081
+
+# show verbose messages when using rpc
+# usage: [true|false]
+RPC_VERBOSE=false
+
+#---------------------------------------------------------------------------------------------------# debug
+# print debug messages for all monero-bash operations
+# usage: [true|false]
+MONERO_BASH_DEBUG=false
+
+# print even more verbose debug info (command line number, function calls)
+MONERO_BASH_DEBUG_VERBOSE=false
 ```
 
-## File Structure
-These are all the folders/files created by `monero-bash` after installation:
-
-**INSTALLATION PATH**
-```
-/usr/local/share/monero-bash/
-├─ monero-bash          main script
-├─ config               backup config files
-├─ gpg                  gpg keys
-├─ src                  source code
-
-/usr/local/bin/monero-bash
-├─ monero-bash          symlink to main script
-```
-
-**HOME FOLDER**
-```
-/home/user/.monero-bash/
-├─ config               config files
-├─ wallets              wallet files
-├─ .bitmonero           monero blockchain/data folder
-```
-*note:* the `.bitmonero` folder path can be set anywhere
-
-**SYSTEMD SERVICES**
-```
-/etc/systemd/system/
-├─ monero-bash-monerod.service
-├─ monero-bash-p2pool.service
-├─ monero-bash-xmrig.service
-```
-
-**TEMP FILES**
-```
-/tmp/
-├─ monero-bash.XXXXXXXXXX
-├─ monero-bash-hash.XXXXXXXXXX
-├─ monero-bash-sig.XXXXXXXXXX
-├─ monero-bash-gpg.XXXXXXXXX
-├─ monero-bash-service.XXXXXXXXX
-```
-*note:* monero-bash `/tmp/` folders are deleted after upgrade, and wiped if computer is rebooted. All files created by `monero-bash` have `700/600` permissions or are within folders that have those permissions. This is to prevent any other user from reading the data. After uninstalling monero-bash, all these files are deleted with the exception of `$HOME/.bitmonero` if you picked that as your data directory.
-
-## systemd
-monero-bash creates and uses systemd service files to control:
-* `monerod`
-* `xmrig`
-* `p2pool`
-
-If you'd like to directly invoke a program:
-* `monero-bash full <daemon/p2pool/xmrig>`
-
-This will launch them in the current terminal
