@@ -47,7 +47,7 @@ cd monero-bash
 ```
 This will start the interactive install process into `$HOME/.monero-bash`
 
-It's recommended to verify the hash and PGP signature before installation.  
+It is recommended to verify the hash and PGP signature before installation.  
 Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify:
 ```
 sha256sum -c SHA256SUM
@@ -131,6 +131,8 @@ HELP
 <details>
 <summary>Where does monero-bash download packages from?</summary>
 
+---
+
 * monero-bash [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
 * Monero [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
 * P2Pool [`https://github.com/SChernykh/p2pool`](https://github.com/SChernykh/p2pool)
@@ -144,10 +146,14 @@ Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.t
 
 [Every other package hash is found on its GitHub page.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify)
 
+---
+
 </details>
 
 <details>
 <summary>Does monero-bash have dependencies?</summary>
+
+---
 
 **No**
 
@@ -158,10 +164,14 @@ If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you a
 * systemd
 * GNU coreutils
 
+---
+
 </details>
 
 <details>
 <summary>monero-bash won't let me upgrade?</summary>
+
+---
 
 ```
 monero-bash upgrade <package> --force
@@ -175,10 +185,14 @@ monero-bash remove <package> &&
 monero-bash install <package>
 ```
 
+---
+
 </details>
 
 <details>
 <summary>Can I cancel mid-upgrade?</summary>
+
+---
 
 **Yes**
 
@@ -196,10 +210,14 @@ You can check your current package versions with
 monero-bash version
 ```
 
+---
+
 </details>
 
 <details>
 <summary>Where does monero-bash install itself?</summary>
+
+---
 
 Installation path:
 ```
@@ -214,14 +232,19 @@ systemd files:
 /etc/systemd/system/monero-bash-$PACKAGE.service
 ```
 
+---
+
 </details>
 
 <details>
 <summary>Where does monero-bash install packages?</summary>
+
+---
 
 ```
 $HOME/.monero-bash/packages
 ```
 
 ---
+
 </details>
