@@ -22,9 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/7de5707>
-#nix <1658365447>
-#hbc <9210ec7>
+#git <monero-bash/b960064>
+#nix <1658432922>
+#hbc <5fdfdff>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/crypto.sh/1eaba1f>
 #lib <stdlib/date.sh/1eaba1f>
@@ -38,23 +38,34 @@
 #lib <stdlib/trace.sh/1eaba1f>
 #lib <stdlib/type.sh/1eaba1f>
 #src <func/debug.sh>
+#src <func/install.sh>
 #src <func/monero_bash/install.sh>
 #src <func/monero_bash/uninstall.sh>
 #src <func/parse/config.sh>
 #src <func/parse/options.sh>
 #src <func/parse/state.sh>
 #src <func/print/changelog.sh>
+#src <func/print/compromised.sh>
 #src <func/print/error.sh>
 #src <func/print/help.sh>
+#src <func/print/package.sh>
+#src <func/print/size.sh>
 #src <func/print/title.sh>
 #src <func/print/version.sh>
+#src <func/process/reset_files.sh>
+#src <func/remove/prompt.sh>
+#src <func/remove/remove.sh>
 #src <func/safety/path.sh>
 #src <func/safety/pipe.sh>
 #src <func/safety/root.sh>
+#src <func/safety/wget_curl.sh>
 #src <func/status/monerod.sh>
 #src <func/status/p2pool.sh>
 #src <func/status/table.sh>
 #src <func/status/xmrig.sh>
+#src <func/struct/pkg.sh>
+#src <func/systemd/create.sh>
+#src <func/systemd/reload.sh>
 #src <readonly.sh>
 
 #-------------------------------------------------------------------------------- BEGIN SAFETY
@@ -699,6 +710,43 @@ DEBUG() {
 	$DEBUG_FUNCTION
 	exit
 }
+install() {
+	log::debug "starting installation prompt"
+	[[ $OPTION_VERBOSE = true ]] && printf "${BBLUE}%s${OFF}\n" "Installing verbosely...!"
+	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "Installing forcefully...!"
+	local INSTALL_LIST || return 1
+	[[ $OPTION_INSTALL_BASH = true ]]   && INSTALL_LIST="[monero-bash]"
+	[[ $OPTION_INSTALL_MONERO = true ]] && INSTALL_LIST="$INSTALL_LIST [monero]"
+	[[ $OPTION_INSTALL_P2POOL = true ]] && INSTALL_LIST="$INSTALL_LIST [p2pool]"
+	[[ $OPTION_INSTALL_XMRIG = true ]]  && INSTALL_LIST="$INSTALL_LIST [xmrig]"
+	if [[ $OPTION_INSTALL_BASH = true && $MONERO_BASH_VER ]]; then
+		printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is already installed"
+		INSTALL_LIST="${INSTALL_LIST/\[monero-bash\]}"
+	fi
+	if [[ $OPTION_INSTALL_MONERO = true && $MONERO_VER ]]; then
+		printf "${OFF}%s\n" "[monero] ($MONERO_VER) is already installed"
+		INSTALL_LIST="${INSTALL_LIST/\[monero\]}"
+	fi
+	if [[ $OPTION_INSTALL_P2POOL = true && $P2POOL_VER ]]; then
+		printf "${OFF}%s\n" "[p2pool] ($P2POOL_VER) is already installed"
+		INSTALL_LIST="${INSTALL_LIST/\[p2pool\]}"
+	fi
+	if [[ $OPTION_INSTALL_XMRIG = true && $XMRIG_VER ]]; then
+		printf "${OFF}%s\n" "[xmrig] ($XMRIG_VER) is already installed"
+		INSTALL_LIST="${INSTALL_LIST/\[xmrig\]}"
+	fi
+	[[ $INSTALL_LIST = " " ]] && exit 1
+	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+		"Packages to install: " \
+		"$INSTALL_LIST" \
+		"Continue with installation? (Y/n) "
+	if ! ask::yes; then
+		print::exit "Canceling installation"
+	fi
+	[[ $OPTION_INSTALL_MONERO = true ]] && struct::pkg monero && upgrade
+	[[ $OPTION_INSTALL_P2POOL = true ]] && struct::pkg p2pool && upgrade
+	[[ $OPTION_INSTALL_XMRIG = true ]]  && struct::pkg xmrig  && upgrade
+}
 monero_bash::install() {
 log::debug "starting monero_bash::install()"
 if [[ -d "$HOME"/.monero-bash ]]; then
@@ -776,6 +824,10 @@ if [[ $INSTALL_SYMLINK = true ]]; then
 	"A path symlink will be set in | " "/usr/local/bin/mb"
 fi
 echo
+printf "${BWHITE}%s${OFF}\n" \
+	"A no-login user called [monero-bash] will be created for process security" \
+	"This will be the user Monero and P2Pool runs as"
+echo
 printf "${BWHITE}%s${$BRED}%s${BWHITE}%s${OFF}\n" \
 	"Start " \
 	"[monero-bash] " \
@@ -804,6 +856,14 @@ else
 	print::exit "Have the files been moved for modified?"
 fi
 ___BEGIN___ERROR___TRACE___
+log::prog "creating monero-bash user"
+local NOLOGIN_SHELL
+NOLOGIN_SHELL="$(which nologin)"
+if ! sudo useradd --shell "$NOLOGIN_SHELL" --no-create-home --system; then
+	print::error "Could not create monero-bash user"
+	print::exit "Exiting for safety..."
+fi
+log::ok "created monero-bash user"
 log::prog "creating .monero-bash folders"
 mkdir -p packages
 mkdir -p packages/monero-bash
@@ -845,6 +905,7 @@ log::ok "set Monero data path"
 sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/" "$STATE"
 log::prog "setting folder permissions"
 sudo chown "$USER:$USER" "$INSTALL_PWD"
+sudo chmod -R 755 "$INSTALL_PWD"
 log::ok "set folder permissions"
 ___ENDOF___ERROR___TRACE___
 printf "${BGREEN}%s${OFF}%s\n" \
@@ -980,8 +1041,8 @@ case "$1" in
 			monero)       OPTION_INSTALL_MONERO=true;;
 			*p2p*)        OPTION_INSTALL_P2POOL=true;;
 			*xmr*)        OPTION_INSTALL_XMRIG=true;;
-			--force|-f)   OPTION_INSTALL_FORCE=true;;
-			--verbose|-v) OPTION_INSTALL_VERBOSE=true;;
+			--force|-f)   OPTION_FORCE=true;;
+			--verbose|-v) OPTION_VERBOSE=true;;
 			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
 			*)            break;;
 		esac
@@ -998,7 +1059,6 @@ case "$1" in
 			monero)       OPTION_REMOVE_MONERO=true;;
 			*p2p*)        OPTION_REMOVE_P2POOL=true;;
 			*xmr*)        OPTION_REMOVE_XMRIG=true;;
-			--verbose|-v) OPTION_REMOVE_VERBOSE=true;;
 			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
 			*)            break;;
 		esac
@@ -1016,8 +1076,8 @@ case "$1" in
 			monero)       OPTION_UPGRADE_MONERO=true;;
 			*p2p*)        OPTION_UPGRADE_P2POOL=true;;
 			*xmr*)        OPTION_UPGRADE_XMRIG=true;;
-			--force|-f)   OPTION_UPGRADE_FORCE=true;;
-			--verbose|-v) OPTION_UPGRADE_VERBOSE=true;;
+			--force|-f)   OPTION_FORCE=true;;
+			--verbose|-v) OPTION_VERBOSE=true;;
 			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
 			*)            break;;
 		esac
@@ -1140,18 +1200,14 @@ case "$1" in
 		;;
 	reset)
 		shift
-		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
-			"") print::error "Pick one/multiple to reset: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
+			*bash*) struct::pkg bash;;
+			monero) struct::pkg monero;;
+			*p2p*)  struct::pkg p2pool;;
+			*xmr*)  struct::pkg xmrig;;
+			*) print::error "Pick one/multiple to reset: [monerod/p2pool/xmrig]"; exit 1;;
 		esac
-		shift
-		done
-		process::reset
+		process::reset_files
 		exit
 		;;
 	status) status::print; exit;;
@@ -1243,6 +1299,12 @@ print::changelog::1.6.0() {
 		"P2Pool"  "- Fetch PGP key from GitHub" \
 		"Misc"    "- Fix text coloring issues"
 }
+print::compromised::hash() {
+	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		" WARNING: HASH ERROR!                       " \
+		" [$NAME_PRE
+print::compromised::gpg() {
 print::error() {
 	until [[ $# = 0 ]]; do
 		printf "\r\e[2K${BRED}%s${OFF}%s\n" "[monero-bash error] " "$1"
@@ -1265,8 +1327,9 @@ print::help() {
 		"list                                     List wallets"
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[--verbose]           " "Install one/multiple packages" \
-		"remove  "  "<packages> " "[--verbose]           " "Remove one/multiple packages"
+		"install " "<packages> " "[--verbose]           " "Install one/multiple packages"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"remove  " "<packages>                          " "Remove one/multiple packages"
 	printf "    ${OFF}%s\n" \
 		"update                                   Check for package updates" \
 		"upgrade                                  Upgrade all out-of-date packages"
@@ -1295,6 +1358,53 @@ print::help() {
 	printf "\n${BWHITE}%s${OFF}\n"    "HELP"
 	printf "    %s\n" \
 		"help                                     Print this help message"
+}
+print::download() {
+	printf "${BGREEN}%s\n" "#---------# Downloading [${PKG[pretty]}] #---------#"
+}
+print::remove() {
+	printf "${BRED}%s\n" "#---------# Removing [${PKG[pretty]}] #---------#"
+}
+print::verify() {
+	printf "${BYELLOW}%s\n" "#---# Verifying [${PKG[pretty]}] #---#"
+}
+print::extract() {
+	printf "${BRED}%s\n" "#---# Extracting [${PKG[pretty]}] #---#"
+}
+print::state() {
+	printf "${BBLUE}%s\n" "#---# Updating local state #---#"
+}
+print::installed() {
+	printf "${BGREEN}%s\n" "#---------# Installed [${PKG[pretty]}] #---------#"
+}
+print::upgraded() {
+	printf "${BGREEN}%s\n" "#---------# Upgraded [${PKG[pretty]}] #---------#"
+}
+print::removed() {
+	printf "${BRED}%s\n" "#---------# Removed [${PKG[pretty]}] #---------#"
+}
+print::size() {
+	log::debug "getting folder sizes"
+	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
+	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
+	SIZE_MONERO=$(du -h "$PKG_MONERO")
+	SIZE_P2POOL=$(du -h "$PKG_P2POOL")
+	SIZE_XMRIG=$(du -h "$PKG_XMRIG")
+	SIZE_DOT=$(du -h "$DOT")
+	if [[ -d "$HOME/.bitmonero" ]]; then
+		SIZE_BITMONERO=$(du -h "$HOME/.bitmonero")
+	else
+		SIZE_BITMONERO="not found"
+	fi
+	log::debug "printing folder sizes"
+	printf "${BWHITE}%s${BYELLOW}%s\n" \
+		"monero-bash    | " "${SIZE_MONERO_BASH/$'\t'*}" \
+		"Monero         | " "${SIZE_MONERO/$'\t'*}" \
+		"P2Pool         | " "${SIZE_P2POOL/$'\t'*}" \
+		"XMRig          | " "${SIZE_XMRIG/$'\t'*}" \
+		"/.bitmonero/   | " "${SIZE_BITMONERO/$'\t'*}" \
+		"/.monero-bash/ | " "${SIZE_DOT/$'\t'*}"
+	return 0
 }
 print::title() {
 	log::debug "seeding title rng"
@@ -1333,6 +1443,7 @@ print::title() {
 	fi
 }
 print::version() {
+	log::debug "printing versions"
 	printf "${BWHITE}%s" \
 		"monero-bash | "
 	if [[ $MONERO_BASH_OLD = true ]]; then
@@ -1363,6 +1474,104 @@ print::version() {
 	fi
 	printf "${OFF}%s"
 }
+process::reset_files() {
+	log::debug "starting process::reset_files"
+	if [[ -z ${PKG[version]} ]]; then
+		print::exit "${PKG[pretty]} is not installed"
+	fi
+	case "${PKG[name]}" in
+		*bash*)
+			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+				"This will overwrite your current " \
+				"[${PKG[pretty]}] " \
+				"config with a new default version"
+			;;
+		*)
+			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+				"This will overwrite your current " \
+				"[${PKG[pretty]}] " \
+				"config & systemd service files with new default versions"
+			;;
+	esac
+	printf "${BWHITE}%s${OFF}" "Continue? (y/N) "
+	if ask::no; then
+		print::exit "Canceling reset"
+	fi
+	if ! ask::sudo; then
+		print::exit "sudo is required"
+	fi
+	case "${PKG[name]}" in
+		*bash*)
+			cp -f "$PKG_MONERO_BASH/config/monero-bash.conf" "$CONFIG"
+			;;
+		monero)
+			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
+			sudo cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
+		p2pool)
+		xmrig)
+remove::prompt() {
+	log::debug "starting removal prompt"
+	local REMOVAL_LIST || return 1
+	if [[ $OPTION_REMOVE_BASH = true ]]; then
+		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
+			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally"
+			"type: " \
+			"[monero-bash uninstall]" \
+			"to cleanly uninstall monero-bash from your system"
+		exit 1
+	fi
+	[[ $OPTION_REMOVE_MONERO = true ]] && REMOVE_LIST="$REMOVE_LIST [monero]"
+	[[ $OPTION_REMOVE_P2POOL = true ]] && REMOVE_LIST="$REMOVE_LIST [p2pool]"
+	[[ $OPTION_REMOVE_XMRIG = true ]]  && REMOVE_LIST="$REMOVE_LIST [xmrig]"
+	if [[ $OPTION_REMOVE_MONERO = true && -z $MONERO_VER ]]; then
+		printf "${OFF}%s\n" "[monero] is not installed"
+		REMOVE_LIST="${REMOVE_LIST/\[monero\]}"
+	fi
+	if [[ $OPTION_REMOVE_P2POOL = true && -z $P2POOL_VER ]]; then
+		printf "${OFF}%s\n" "[p2pool] is not installed"
+		REMOVE_LIST="${REMOVE_LIST/\[p2pool\]}"
+	fi
+	if [[ $OPTION_REMOVE_XMRIG = true && -z $XMRIG_VER ]]; then
+		printf "${OFF}%s\n" "[xmrig] is not installed"
+		REMOVE_LIST="${REMOVE_LIST/\[xmrig\]}"
+	fi
+	[[ $REMOVE_LIST = " " ]] && exit 1
+	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+		"Packages to remove: " \
+		"$REMOVE_LIST" \
+		"Continue with removal? (y/N) "
+	if ask::no; then
+		print::exit "Canceling installation"
+	fi
+	if ! ask::sudo; then
+		print::exit "sudo is required"
+	fi
+	[[ $OPTION_REMOVE_MONERO = true ]] && struct::pkg monero && remove
+	[[ $OPTION_REMOVE_P2POOL = true ]] && struct::pkg p2pool && remove
+	[[ $OPTION_REMOVE_XMRIG = true ]]  && struct::pkg xmrig  && remove
+}
+remove() {
+	log::debug "starting removal of: ${PKG[name]}"
+	___BEGIN___ERROR___TRACE___
+	trap "" INT
+	print::remove
+	log::prog "${PKG[directory]}..."
+	rm "${PKG[directory]}"
+	log::ok "${PKG[directory]} deleted"
+	log::prog "${PKG[service]}..."
+	sudo rm "$SYSTEMD/${PKG[service]}"
+	log::ok "${PKG[service]} deleted"
+	log::prog "Updating local state..."
+	sudo sed \
+		-i -e "s/"${PKG[var]}"_VER=./"${PKG[var]}"_VER=/" "$STATE" \
+		-i -e "s/"${PKG[var]}"_OLD=./"${PKG[var]}"_OLD=\"true\"/" "$STATE"
+	log::ok "Updated local state"
+	log::prog "Reloading systemd..."
+	sudo systemctl daemon-reload
+	log::ok "Reloaded systemd"
+	print::removed
+	___ENDOF___ERROR___TRACE___
+}
 safety::path() {
 	log::debug "starting path safety check"
 	local SAFETY_PATH
@@ -1391,6 +1600,24 @@ safety::root() {
 		print::exit  "Exiting for safety..."
 	fi
 }
+safety::wget_curl() {
+	log::debug "starting wget/curl safety check"
+	declare -g WGET CURL || return 1
+	WGET=false
+	CURL=false
+	if hash wget &>/dev/null; then
+		WGET=true
+	elif hash curl &>/dev/null; then
+		CURL=true
+	fi
+	if [[ $WGET = false && $CURL = false ]]; then
+		print::error "both [wget] and [curl] were not found!"
+		print::error "monero-bash needs at least one to be installed"
+		print::exit  "Exiting for safety..."
+	else
+		return 0
+	fi
+}
 status::monerod() {
 }
 status::p2pool() {
@@ -1406,6 +1633,137 @@ status::table() {
 		"#"
 }
 status::xmrig() {
+}
+struct::pkg() {
+	log::debug "creating pkg structure for: $1"
+	declare -Ag PKG
+	[[ $# != 1 ]] && return 1
+	case "$1" in
+	monero)
+		PKG[name]="monero"
+		PKG[pretty]="Monero"
+		PKG[var]="MONERO"
+		PKG[author]="monero-project"
+		PKG[gpg_owner]="binaryFate"
+		PKG[service]="monero-bash-monerod.service"
+		PKG[process]="monerod"
+		PKG[directory]="$PACKAGES/monero"
+		PKG[regex]="monero-linux-x64.*"
+		PKG[hash]="hashes.txt"
+		PKG[signature]="${PKG[hash]}"
+		PKG[gpg_pub_key]="https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc"
+		PKG[gpg_fingerprint]="81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92"
+		PKG[current_version]="$MONERO_VER"
+		PKG[old]="$MONERO_OLD"
+		;;
+	*bash*)
+		PKG[name]="monero-bash"
+		PKG[pretty]="monero-bash"
+		PKG[var]="MONERO_BASH"
+		PKG[author]="hinto-janaiyo"
+		PKG[gpg_owner]="hinto-janaiyo"
+		PKG[service]=
+		PKG[process]=
+		PKG[directory]="$PACKAGES/monero-bash"
+		PKG[regex]="monero-bash-v.*"
+		PKG[hash]="SHA256SUM"
+		PKG[signature]="${PKG[hash]}"
+		PKG[gpg_pub_key]="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
+		PKG[gpg_fingerprint]="21958EE945980282FCB849C8D7483F6CA27D1B1D"
+		PKG[current_version]="$MONERO_BASH_VER"
+		PKG[old]="$MONERO_BASH_OLD"
+		;;
+	*p2p*)
+		PKG[name]="p2pool"
+		PKG[pretty]="P2Pool"
+		PKG[var]="P2POOL"
+		PKG[author]="SChernyk"
+		PKG[gpg_owner]="SChernyk"
+		PKG[service]="monero-bash-p2pool.service"
+		PKG[process]="p2pool"
+		PKG[directory]="$PACKAGES/p2pool"
+		PKG[regex]="p2pool.*linux-x64.*"
+		PKG[hash]="sha256sums.txt.asc"
+		PKG[signature]="${PKG[hash]}"
+		PKG[gpg_pub_key]="https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc"
+		PKG[gpg_fingerprint]="1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF"
+		PKG[current_version]="$P2POOL_VER"
+		PKG[old]="$P2POOL_OLD"
+		;;
+	*xmr*)
+		PKG[name]="xmrig"
+		PKG[pretty]="XMRig"
+		PKG[var]="XMRIG"
+		PKG[author]="XMRig"
+		PKG[gpg_owner]="XMRig"
+		PKG[service]="monero-bash-xmrig.service"
+		PKG[process]="xmrig"
+		PKG[directory]="$PACKAGES/xmrig"
+		PKG[regex]="xmrig.*linux-static-x64.*"
+		PKG[hash]="SHA256SUMS"
+		PKG[signature]="${PKG[hash]}.sig"
+		PKG[gpg_pub_key]="https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc"
+		PKG[gpg_fingerprint]="9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409"
+		PKG[current_version]="$XMRIG_VER"
+		PKG[old]="$XMRIG_OLD"
+		;;
+	esac
+	case "$1" in
+	monero)
+		PKG[link_api]="https://downloads.getmonero.org/cli/linux64"
+		PKG[link_http]="https://downloads.getmonero.org/cli/linux64"
+		;;
+	*)
+		PKG[link_api]="https://api.github.com/repos/${PKG[author]}/${PKG[name]}/releases/latest"
+		PKG[link_http]="https://github.com/${PKG[author]}/${PKG[name]}/releases/latest"
+		;;
+	esac
+	log::debug "--- struct::pkg ---"
+	log::debug "PKG[name]            | ${PKG[name]}"
+	log::debug "PKG[pretty]          | ${PKG[pretty]}"
+	log::debug "PKG[var]             | ${PKG[var]}"
+	log::debug "PKG[author]          | ${PKG[author]}"
+	log::debug "PKG[gpg_owner]       | ${PKG[gpg_owner]}"
+	log::debug "PKG[service]         | ${PKG[service]}"
+	log::debug "PKG[process]         | ${PKG[process]}"
+	log::debug "PKG[directory]       | ${PKG[directory]}"
+	log::debug "PKG[regex]           | ${PKG[regex]}"
+	log::debug "PKG[hash]            | ${PKG[hash]}"
+	log::debug "PKG[signature]       | ${PKG[signature]}"
+	log::debug "PKG[gpg_pub_key]     | ${PKG[gpg_pub_key]}"
+	log::debug "PKG[gpg_fingerprint] | ${PKG[gpg_fingerprint]}"
+	log::debug "PKG[current_version] | ${PKG[current_version]}"
+	log::debug "PKG[old]             | ${PKG[old]}"
+	log::debug "PKG[link_api]        | ${PKG[link_api]}"
+	log::debug "PKG[link_http]       | ${PKG[link_http]}"
+}
+systemd::create() {
+	log::debug "starting systemd::create()"
+	umask 133 || return 1
+	local TMP_SERVICE || return 2
+	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
+cat << EOM >> "$TMP_SERVICE"
+[Unit]
+Description=${PKG[service]}
+After=network-online.target
+Wants=network-online.target
+[Service]
+User=$USER
+Group=$USER
+Type=simple
+EnvironmentFile=$CONFIG_MONERO_BASH
+ExecStart=$COMMAND
+WorkingDirectory=$DIRECTORY
+Restart=always
+RestartSec=5
+[Install]
+WantedBy=multi-user.target
+EOM
+	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
+	rm "$TMP_SERVICE"
+}
+systemd::reload() {
+	sudo systemctl daemon-reload || return 1
 }
 readonly DOT="$HOME/.monero-bash"
 readonly CONFIG="$DOT/config"
@@ -1427,6 +1785,7 @@ readonly STATE="$TXT/state"
 readonly MAIN="$PKG_MONERO_BASH/monero-bash"
 readonly SYSTEMD="/etc/systemd/system"
 declare -frg DEBUG
+declare -frg install
 declare -frg monero_bash::install
 declare -frg monero_bash::uninstall
 declare -frg parse::config
@@ -1436,18 +1795,36 @@ declare -frg print::changelog::title
 declare -frg print::changelog
 declare -frg print::changelog::2.0.0
 declare -frg print::changelog::1.6.0
+declare -frg print::compromised::hash
+declare -frg print::compromised::gpg
 declare -frg print::error
 declare -frg print::exit
 declare -frg print::help
+declare -frg print::download
+declare -frg print::remove
+declare -frg print::verify
+declare -frg print::extract
+declare -frg print::state
+declare -frg print::installed
+declare -frg print::upgraded
+declare -frg print::removed
+declare -frg print::size
 declare -frg print::title
 declare -frg print::version
+declare -frg process::reset_files
+declare -frg remove::prompt
+declare -frg remove
 declare -frg safety::path
 declare -frg safety::pipe
 declare -frg safety::root
+declare -frg safety::wget_curl
 declare -frg status::monerod
 declare -frg status::p2pool
 declare -frg status::table
 declare -frg status::xmrig
+declare -frg struct::pkg
+declare -frg systemd::create
+declare -frg systemd::reload
 trap - ERR || exit 117
 set +eo pipefail || exit 118
 
@@ -1492,6 +1869,8 @@ safety::bash
 safety::root
 # check for pipe
 safety::pipe
+# check for wget/curl
+safety::wget_curl
 
 #----------------------------------------- FIRST TIME INSTALLATION
 if [[ $FIRST_TIME = true ]]; then

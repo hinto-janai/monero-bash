@@ -66,17 +66,25 @@ fi
 safety::path
 
 #----------------------------------------- PARSE USER CONFIG/STATE
-___BEGIN___ERROR___TRACE___
 parse::state
 parse::config
-___ENDOF___ERROR___TRACE___
 
 #----------------------------------------- PARSE USER INPUT
 [[ $# != 0 ]] && parse::options "$@"
 
 #----------------------------------------- WALLET
+# title
 print::title
 
+# auto update
+[[ $AUTO_UPDATE = true ]] && update && echo
 
+# print wallets
+wallet::list
+
+# select wallet
+wallet::select
+
+exit 0
 }
 main "$@"

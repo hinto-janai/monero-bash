@@ -20,52 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# for resetting config files and systemd services
-process::reset_files() {
-	log::debug "starting process::reset_files"
+# handle creation/removal of cryptographic key files
+# currently used for encrypting wallet passwords
+# assumes trace() is already set.
+# called from: wallet/start.sh
+crypto::key::create() {
+	log::debug "creating key with 8192 bits of entropy"
 
-	# CHECK IF PACKAGE IS INSTALLED
-	if [[ -z ${PKG[version]} ]]; then
-		print::exit "${PKG[pretty]} is not installed"
-	fi
+	# CREATE KEY FILE
+	char CRYPTO_KEY
+	CRYPTO_KEY=$(mktemp /tmp/monero-bash-crypto-key.XXXXXXXXXX)
+	chmod 600 "$CRYPTO_KEY"
 
-	# CASE PACKAGE
-	case "${PKG[name]}" in
-		*bash*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config with a new default version"
-			;;
-		*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config & systemd service files with new default versions"
-			;;
-	esac
+	# 4096 BITS / 512 BYTES OF ENTROPY
+	crypto::bytes 512 | base64 > "$CRYPTO_KEY"
 
-	# PROMPT
-	printf "${BWHITE}%s${OFF}" "Continue? (y/N) "
-	if ask::no; then
-		print::exit "Canceling reset"
-	fi
+	log::debug "created key: $CRYPTO_KEY"
+	return 0
+}
 
-	# SUDO
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
+crypto::key::remove() {
+	log::debug "deleting key: $CRYPTO_KEY"
 
-	# CASE PACKAGE FOR RESET
-	case "${PKG[name]}" in
-		*bash*)
-			cp -f "$PKG_MONERO_BASH/config/monero-bash.conf" "$CONFIG"
-			;;
-		monero)
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			systemd::create
-			;;
-		p2pool)
+	# CHECK IF EXISTS
+	[[ -e $CRYPTO_KEY ]]
 
-		xmrig)
+	# REMOVE
+	rm "$CRYPTO_KEY"
+	free CRYPTO_KEY
+}

@@ -25,13 +25,10 @@ parse::config() {
 	log::debug "parsing monero-bash.conf"
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
 	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
-	for i in "${OPTIONS[@]}"; do
+	for i in "${CONFIG_ARRAY[@]}"; do
 		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
 		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
 		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
-		[[ $i =~ ^P2POOL_WALLET=$ ]]                      && declare -g P2POOL_WALLET="${i/*=/}"
-		[[ $i =~ ^P2POOL_MONEROD_IP=*$ ]]                 && declare -g P2POOL_MONEROD_IP="${i/*=/}"
-		[[ $i =~ ^P2POOL_LOG_LEVEL=*$ ]]                  && declare -g P2POOL_LOG_LEVEL="${i/*=/}"
 		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
 		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
 		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]  && declare -g STD_LOG_DEBUG="true"
@@ -41,9 +38,6 @@ parse::config() {
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
 	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
-	log::debug "P2POOL_WALLET             | $P2POOL_WALLET"
-	log::debug "P2POOL_MONEROD_IP         | $P2POOL_MONEROD_IP"
-	log::debug "P2POOL_LOG_LEVEL          | $P2POOL_LOG_LEVEL"
 	log::debug "RPC_IP                    | $RPC_IP"
 	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"
 	log::debug "MONERO_BASH_DEBUG         | $STD_LOG_DEBUG"

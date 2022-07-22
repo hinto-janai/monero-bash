@@ -20,52 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# for resetting config files and systemd services
-process::reset_files() {
-	log::debug "starting process::reset_files"
+# handle encryption of the password variable
+wallet::password() {
+	log::debug "starting wallet::password()"
 
-	# CHECK IF PACKAGE IS INSTALLED
-	if [[ -z ${PKG[version]} ]]; then
-		print::exit "${PKG[pretty]} is not installed"
-	fi
+	# create one-time key file
+	crypto::key::create
 
-	# CASE PACKAGE
-	case "${PKG[name]}" in
-		*bash*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config with a new default version"
-			;;
-		*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config & systemd service files with new default versions"
-			;;
-	esac
+	# password input
+	printf "${BWHITE}%s${OFF}" "Password: "
+	read -s -r WALLET_PASSWORD
 
-	# PROMPT
-	printf "${BWHITE}%s${OFF}" "Continue? (y/N) "
-	if ask::no; then
-		print::exit "Canceling reset"
-	fi
-
-	# SUDO
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
-
-	# CASE PACKAGE FOR RESET
-	case "${PKG[name]}" in
-		*bash*)
-			cp -f "$PKG_MONERO_BASH/config/monero-bash.conf" "$CONFIG"
-			;;
-		monero)
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			systemd::create
-			;;
-		p2pool)
-
-		xmrig)
+	# encrypt input with key file
+	crypto::encrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)"
+}

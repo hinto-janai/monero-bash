@@ -32,7 +32,7 @@ readonly PACKAGES="$DOT/packages"
 readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
 readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
 readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.json"
+readonly CONFIG_P2POOL="$CONFIG/p2pool.conf"
 readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
 
 # package folders

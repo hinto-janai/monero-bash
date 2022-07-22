@@ -20,52 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# for resetting config files and systemd services
-process::reset_files() {
-	log::debug "starting process::reset_files"
+# count and list wallet names
+wallet::list() {
+	log::debug "starting wallet list"
 
-	# CHECK IF PACKAGE IS INSTALLED
-	if [[ -z ${PKG[version]} ]]; then
-		print::exit "${PKG[pretty]} is not installed"
+	# GET WALLETS
+	char WALLET_LIST_ALL
+	local WALLET_COUNT WALLET_LIST i
+	WALLET_LIST_ALL=("$(ls "$WALLETS" | grep -v ".keys")")
+	WALLET_COUNT="$(echo "$WALLETS" | wc -l)"
+
+	# MAKE WALLET LIST []
+	for i in "${WALLET_LIST_ALL[@]}"; do
+		WALLET_LIST="[${i}] $WALLET_LIST"
+	done
+
+	# PRINT WALLET COUNT
+	printf "${BWHITE}%s${OFF}" "$WALLET_COUNT "
+	if [[ $WALLET_COUNT = 1 ]]; then
+		printf "%s\n" "wallet found"
+	else
+		printf "%s\n" "wallets found"
 	fi
 
-	# CASE PACKAGE
-	case "${PKG[name]}" in
-		*bash*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config with a new default version"
-			;;
-		*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config & systemd service files with new default versions"
-			;;
-	esac
-
-	# PROMPT
-	printf "${BWHITE}%s${OFF}" "Continue? (y/N) "
-	if ask::no; then
-		print::exit "Canceling reset"
+	# PRINT WALLET LIST
+	if [[ $WALLET_COUNT = 0 ]]; then
+		echo
+	else
+		printf "%s\n" "$WALLET_LIST"
 	fi
 
-	# SUDO
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
-
-	# CASE PACKAGE FOR RESET
-	case "${PKG[name]}" in
-		*bash*)
-			cp -f "$PKG_MONERO_BASH/config/monero-bash.conf" "$CONFIG"
-			;;
-		monero)
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			systemd::create
-			;;
-		p2pool)
-
-		xmrig)
+	return 0
+}

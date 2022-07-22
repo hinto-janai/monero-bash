@@ -26,8 +26,7 @@ parse::state() {
 	local i IFS=$'\n' STATE_ARRAY || return 1
 	mapfile STATE_ARRAY < "$STATE" || return 2
 	for i in "${OPTIONS[@]}"; do
-		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"        || declare -g FIRST_TIME="false"
-		[[ $i =~ ^MINE_UNCONFIGURED=true[[:space:]]+$ ]] && declare -g MINE_UNCONFIGURED="true" || declare -g MINE_UNCONFIGURED="false"
+		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"
 		[[ $i =~ ^MONERO_BASH_VER=*$ ]]                  && declare -g MONERO_BASH_VER="${i/*=/}"
 		[[ $i =~ ^MONERO_VER=*$ ]]                       && declare -g MONERO_VER="${i/*=/}"
 		[[ $i =~ ^P2POOL_VER=*$ ]]                       && declare -g P2POOL_VER="${i/*=/}"
@@ -37,6 +36,14 @@ parse::state() {
 		[[ $i =~ ^P2POOL_OLD=true[[:space:]]+$ ]]        && declare -g P2POOL_OLD="true"      || declare -g P2POOL_OLD="false"
 		[[ $i =~ ^XMRIG_OLD=true[[:space:]]+$ ]]         && declare -g XMRIG_OLD="true"       || declare -g XMRIG_OLD="false"
 	done
+
+	# FALSE
+	[[ $FIRST_TIME != true ]]        && declare -g FIRST_TIME=false
+	[[ $MONERO_BASH_OLD != true ]]   && declare -g MONERO_BASH_OLD=false
+	[[ $MONERO_OLD != true ]]        && declare -g MONERO_OLD=false
+	[[ $P2POOL_OLD != true ]]        && declare -g P2POOL_OLD=false
+	[[ $XMRIG_OLD != true ]]         && declare -g XMRIG_OLD=false
+
 	log::debug "--- state file ---"
 	log::debug "FIRST_TIME        | $FIRST_TIME"
 	log::debug "MINE_UNCONFIGURED | $MINE_UNCONFIGURED"

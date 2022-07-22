@@ -20,52 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# for resetting config files and systemd services
-process::reset_files() {
-	log::debug "starting process::reset_files"
+# start monero-wallet-cli.
+# called by: wallet::create()
+#            wallet::select()
+wallet::start() {
+	log::debug "starting wallet: $WALLET_SELECTION"
 
-	# CHECK IF PACKAGE IS INSTALLED
-	if [[ -z ${PKG[version]} ]]; then
-		print::exit "${PKG[pretty]} is not installed"
+	# Delete one-time crypto key
+	trap 'crypto::key::remove' EXIT
+
+	# Create files within /.monero-bash/
+	cd "$DOT"
+
+	# Auto-start monerod
+	if [[ $AUTO_START_MONEROD = true ]]; then
+		struct::pkg monero
+		process::start
 	fi
 
-	# CASE PACKAGE
-	case "${PKG[name]}" in
-		*bash*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config with a new default version"
-			;;
-		*)
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"This will overwrite your current " \
-				"[${PKG[pretty]}] " \
-				"config & systemd service files with new default versions"
-			;;
-	esac
+	# Start monero-wallet-cli
+	"$PKG_MONERO/monero-wallet-cli" \
+		--wallet-file "$WALLETS/$WALLET_SELECTION" \
+		--config-file "$CONFIG_MONEROD" \
+		--password "$(crypto::decrypt "$WALLET_PASS" "$(cat $CRYPTO_KEY)")"
 
-	# PROMPT
-	printf "${BWHITE}%s${OFF}" "Continue? (y/N) "
-	if ask::no; then
-		print::exit "Canceling reset"
+	# Auto-stop monerod
+	if [[ $AUTO_STOP_MONEROD = true ]]; then
+		struct::pkg monero
+		process::stop
 	fi
 
-	# SUDO
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
-
-	# CASE PACKAGE FOR RESET
-	case "${PKG[name]}" in
-		*bash*)
-			cp -f "$PKG_MONERO_BASH/config/monero-bash.conf" "$CONFIG"
-			;;
-		monero)
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			cp -f "$PKG_MONERO_BASH/config/monerod.conf" "$CONFIG"
-			systemd::create
-			;;
-		p2pool)
-
-		xmrig)
+	return 0
+}

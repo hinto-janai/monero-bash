@@ -27,8 +27,19 @@ systemd::create() {
 
 	# CREATE TMP SERVICE FILE
 	umask 133 || return 1
-	local TMP_SERVICE || return 2
+	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
+
+	# CASE PACKAGES FOR UNIQUE COMMANDS
+	case "${PKG[name]}" in
+		monero)
+			SYSTEMD_USER=monero-bash
+			SYSTEMD_EXEC="monerod --config-file "$CONFIG_MONEROD" --non-interactive"
+			;;
+		p2pool)
+			SYSTEMD_USER=monero-bash
+			SYSTEMD_EXEC="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+		xmrig)
 
 # CREATE
 cat << EOM >> "$TMP_SERVICE"
@@ -38,12 +49,11 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=$USER
-Group=$USER
+User=$SYSTEMD_USER
 Type=simple
 EnvironmentFile=$CONFIG_MONERO_BASH
-ExecStart=$COMMAND
-WorkingDirectory=$DIRECTORY
+ExecStart=$SYSTEMD_EXEC
+WorkingDirectory=${PKG[directory]}
 Restart=always
 RestartSec=5
 

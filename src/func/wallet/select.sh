@@ -20,40 +20,66 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# remove packages
-# called from remove::prompt()
-# assumes ask::sudo() was called
-remove() {
-	log::debug "starting removal of: ${PKG[name]}"
-
+# wallet selection screen
+wallet::select() {
+	log::debug "starting wallet selection"
 	___BEGIN___ERROR___TRACE___
-	trap "" INT
-	print::remove
 
-	# REMOVE PKG DIRECTORY
-	log::prog "${PKG[directory]}..."
-	rm "${PKG[directory]}"
-	log::ok "${PKG[directory]} deleted"
+	char WALLET_SELECTION
+	local i
 
-	# REMOVE SYSTEMD SERVICE
-	log::prog "${PKG[service]}..."
-	sudo rm "$SYSTEMD/${PKG[service]}"
-	log::ok "${PKG[service]} deleted"
+	while :; do
+	# SELECT/CREATE WALLET
+	printf "${BYELLOW}%s${OFF}%s${BRED}%s${OFF}%s" \
+		"Select a wallet" \
+		"or " \
+		"[new]"
+		": "
+	read -r WALLET_SELECTION
+	for i in "${WALLET_LIST_ALL[@]}"; do
+		[[ $WALLET_SELECTION = "$i" ]] && break
+	done
+	case "$WALLET_SELECTION" in
+		"$i") break;;
+		"")   print::error "Empty input";;
+		*)    print::error "Wallet not found";;
+	esac
+	done
 
-	# UPDATE LOCAL STATE
-	log::prog "Updating local state..."
-	sudo sed \
-		-i -e "s/"${PKG[var]}"_VER=./"${PKG[var]}"_VER=/" "$STATE" \
-		-i -e "s/"${PKG[var]}"_OLD=./"${PKG[var]}"_OLD=\"true\"/" "$STATE"
-	log::ok "Updated local state"
+	# WALLET NAME COLLISION
+	if [[ $i = new || $i = New || $i = NEW ]]; then
+		while :; do
+			printf "${BWHITE}%s\n${OFF}%s" \
+				"Wallet name is similar to option..." \
+				"SELECT or CREATE? "
+			local SELECT_CREATE
+			read -r SELECT_CREATE
+			case $SELECT_CREATE in
+			select|Select|SELECT)
+				printf "${BWHITE}%s${BRED}%s${OFF}\n" \
+					"Selecting " \
+					"[$WALLET_SELECTION]"
+					break
+					;;
+			create|Create|CREATE)
+				printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+					"Creating a" \
+					"[new] " \
+					"wallet"
+					wallet::create
+					exit
+					;;
+			*) print::error "Invalid option!" ;;
+			esac
+		done
+	fi
 
-	# RELOAD SYSTEMD
-	log::prog "Reloading systemd..."
-	systemd::reload
-	log::ok "Reloaded systemd"
+	# WALLET PASS
+	wallet::password
 
-	# END
-	print::removed
+	# START WALLET
+	wallet::start
+
 	___ENDOF___ERROR___TRACE___
+	return 0
 }
-

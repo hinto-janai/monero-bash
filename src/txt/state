@@ -1,9 +1,8 @@
 # monero-bash uses this file to
 # store longer-term state data
 
-# first time check
+# check for first time installation
 FIRST_TIME=true
-MINE_UNCONFIGURED=true
 
 # versions
 MONERO_BASH_VER=v2.0.0

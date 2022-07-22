@@ -155,8 +155,9 @@ else
 	print::exit "Have the files been moved for modified?"
 fi
 
-# USER CREATION
 ___BEGIN___ERROR___TRACE___
+
+# USER CREATION
 log::prog "creating monero-bash user"
 local NOLOGIN_SHELL
 NOLOGIN_SHELL="$(which nologin)"
@@ -203,6 +204,12 @@ INSTALL_PWD="$HOME/.monero-bash"
 cd "$INSTALL_PWD"
 log::prog "moved folder to $HOME/.monero-bash"
 
+# CREATE CONFIG FOLDER
+log::prog "creating config folder"
+mkdir -p configs
+cp "$PKG_MONERO_BASH/configs/monero-bash.conf" "$CONFIG/"
+log::ok "created config folder"
+
 # ADD TO PATH
 log::prog "adding [monero-bash] to PATH"
 sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/monero-bash
@@ -226,6 +233,7 @@ log::prog "setting folder permissions"
 sudo chown "$USER:$USER" "$INSTALL_PWD"
 sudo chmod -R 755 "$INSTALL_PWD"
 log::ok "set folder permissions"
+
 ___ENDOF___ERROR___TRACE___
 
 # END
@@ -246,21 +254,3 @@ printf "${BWHITE}%s${BRED}%s${BWHITE}%s\n" \
 	"to get started"
 exit 0
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
