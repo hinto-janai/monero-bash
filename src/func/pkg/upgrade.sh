@@ -20,32 +20,40 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# traps for the upgrade process
-trap::pkg_folders() {
+# meta function that upgrades packages
+# called by: pkg::prompt()
+#
+# uses:      trap.sh
+#            tmp.sh
+#            download.sh
+#            verify.sh
+pkg::upgrade() {
 	log::debug "starting ${FUNCNAME}()"
+	if [[ $UPGRADE_LIST ]]; then
+		log::debug "packages getting upgraded: $UPGRADE_LIST"
+	elif [[ $INSTALL_LIST ]]; then
+		log::debug "packages getting installed: $UPGRADE_LIST"
+	fi
 
-	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
-	"[monero-bash] " \
-	"exit signal caught " \
-	"| " \
-	"cleaning up temporary files"
+	# CREATE TMP FOLDERS
+	trap 'pkg::trap::pkg_folders &' EXIT
+	pkg::tmp::pkg_folders
 
-	tmp::remove
+	# PRINT TITLE
+	print::download
+
+	# DOWNLOAD
+	pkg::download
 }
 
-# trap for remove()
-# updates the state
-trap::remove() {
-	log::debug "starting ${FUNCNAME}()"
 
-	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
-	"[monero-bash] " \
-	"exit signal caught " \
-	"| " \
-	"updating local state"
 
-	sudo sed \
-		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
-		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
-}
+
+
+
+
+
+
+
+
 

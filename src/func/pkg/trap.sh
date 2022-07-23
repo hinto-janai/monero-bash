@@ -20,8 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Fetch and filter download links for package upgrades
-info() {
+# traps for the upgrade process
+pkg::trap::pkg_folders() {
 	log::debug "starting ${FUNCNAME}()"
 
+	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
+	"[monero-bash] " \
+	"exit signal caught " \
+	"| " \
+	"cleaning up temporary files"
+
+	tmp::remove
 }
+
+# trap for remove()
+# updates the state
+pkg::trap::remove() {
+	log::debug "starting ${FUNCNAME}()"
+
+	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
+	"[monero-bash] " \
+	"exit signal caught " \
+	"| " \
+	"updating local state"
+
+	sudo sed \
+		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
+		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
+}
+

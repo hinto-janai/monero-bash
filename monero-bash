@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/f29487e>
-#nix <1658543062>
+#git <monero-bash/4b31bd6>
+#nix <1658599186>
 #hbc <5fdfdff>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -42,19 +42,18 @@
 #src <func/debug.sh>
 #src <func/monero_bash/install.sh>
 #src <func/monero_bash/uninstall.sh>
-#src <func/package/download.sh>
-#src <func/package/info.sh>
-#src <func/package/install.sh>
-#src <func/package/prompt.sh>
-#src <func/package/remove.sh>
-#src <func/package/tmp.sh>
-#src <func/package/trap.sh>
-#src <func/package/update.sh>
-#src <func/package/upgrade.sh>
 #src <func/parse/config.sh>
 #src <func/parse/options.sh>
 #src <func/parse/p2pool.sh>
 #src <func/parse/state.sh>
+#src <func/pkg/download.sh>
+#src <func/pkg/info.sh>
+#src <func/pkg/prompt.sh>
+#src <func/pkg/remove.sh>
+#src <func/pkg/tmp.sh>
+#src <func/pkg/trap.sh>
+#src <func/pkg/update.sh>
+#src <func/pkg/upgrade.sh>
 #src <func/print/changelog.sh>
 #src <func/print/compromised.sh>
 #src <func/print/error.sh>
@@ -1058,413 +1057,6 @@ echo
 log::ok "Successfully uninstalled [monero-bash]"
 exit 0
 }
-download() {
-true
-}
-info() {
-	log::debug "starting ${FUNCNAME}()"
-}
-install::prompt() {
-	log::debug "starting ${FUNCNAME}()"
-	[[ $OPTION_VERBOSE = true ]] && printf "${BBLUE}%s${OFF}\n" "Installing verbosely...!"
-	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "Installing forcefully...!"
-	char UPGRADE_LIST
-	[[ $OPTION_INSTALL_BASH = true ]]   && UPGRADE_LIST="[monero-bash]"
-	[[ $OPTION_INSTALL_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST [monero]"
-	[[ $OPTION_INSTALL_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST [p2pool]"
-	[[ $OPTION_INSTALL_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST [xmrig]"
-	if [[ $OPTION_INSTALL_BASH = true && $MONERO_BASH_VER ]]; then
-		printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is already installed"
-		UPGRADE_LIST="${UPGRADE_LIST/\[monero-bash\]}"
-	fi
-	if [[ $OPTION_INSTALL_MONERO = true && $MONERO_VER ]]; then
-		printf "${OFF}%s\n" "[monero] ($MONERO_VER) is already installed"
-		UPGRADE_LIST="${UPGRADE_LIST/\[monero\]}"
-	fi
-	if [[ $OPTION_INSTALL_P2POOL = true && $P2POOL_VER ]]; then
-		printf "${OFF}%s\n" "[p2pool] ($P2POOL_VER) is already installed"
-		UPGRADE_LIST="${UPGRADE_LIST/\[p2pool\]}"
-	fi
-	if [[ $OPTION_INSTALL_XMRIG = true && $XMRIG_VER ]]; then
-		printf "${OFF}%s\n" "[xmrig] ($XMRIG_VER) is already installed"
-		UPGRADE_LIST="${UPGRADE_LIST/\[xmrig\]}"
-	fi
-	if [[ $UPGRADE_LIST = " " || -z $UPGRADE_LIST ]]; then
-		log::debug "UPGRADE_LIST is empty, exiting"
-		exit 1
-	fi
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
-		"Packages to install: " \
-		"$UPGRADE_LIST" \
-		"Continue with installation? (Y/n) "
-	if ! ask::yes; then
-		print::exit "Canceling installation"
-	fi
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
-	log::debug "starting install of packages: $UPGRADE_LIST"
-	UPGRADE_LIST=("$UPGRADE_LIST")
-	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
-	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
-	upgrade
-}
-upgrade::prompt() {
-	log::debug "starting ${FUNCNAME}()"
-	local PROMPT_VERB PROMPT_NOUN
-	if [[ $1 = install ]]; then
-		PROMPT_VERB="Installing"
-		PROMPT_NOUN="install"
-	else
-		PROMPT_VERB="Upgrading"
-		PROMPT_NOUN="upgrade"
-	fi
-	[[ $OPTION_VERBOSE = true ]] && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB verbosely...!"
-	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB forcefully...!"
-	local UPGRADE_LIST
-	[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="[monero-bash]"
-	[[ $OPTION_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST [monero]"
-	[[ $OPTION_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST [p2pool]"
-	[[ $OPTION_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST [xmrig]"
-	if [[ $OPTION_FORCE != true ]]; then
-		if [[ $OPTION_BASH = true && $MONERO_BASH_OLD != true ]]; then
-			printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[monero-bash\]}"
-		fi
-		if [[ $OPTION_MONERO = true && $MONERO_OLD != true ]]; then
-			printf "${OFF}%s\n" "[monero] ($MONERO_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[monero\]}"
-		fi
-		if [[ $OPTION_P2POOL = true && $P2POOL_OLD != true ]]; then
-			printf "${OFF}%s\n" "[p2pool] ($P2POOL_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[p2pool\]}"
-		fi
-		if [[ $OPTION_XMRIG = true && $XMRIG_OLD != true ]]; then
-			printf "${OFF}%s\n" "[xmrig] ($XMRIG_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[xmrig\]}"
-		fi
-		if [[ $UPGRADE_LIST = " " || -z $UPGRADE_LIST ]]; then
-			log::debug "UPGRADE_LIST is empty, exiting"
-			exit 1
-		fi
-	fi
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
-		"Packages to $PROMPT_NOUN: " \
-		"$UPGRADE_LIST" \
-		"Continue with ${PROMPT_NOUN}? (Y/n) "
-	if ! ask::yes; then
-		print::exit "Canceling $PROMPT_NOUN"
-	fi
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
-	log::debug "starting $PROMPT_NOUN of packages: $UPGRADE_LIST"
-	UPGRADE_LIST=("$UPGRADE_LIST")
-	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
-	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
-	upgrade
-}
-remove::prompt() {
-	log::debug "starting ${FUNCNAME}()"
-	local REMOVE_LIST || return 1
-	if [[ $OPTION_REMOVE_BASH = true ]]; then
-		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
-			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
-			"type: " \
-			"[monero-bash uninstall]" \
-			"to cleanly uninstall monero-bash from your system"
-		exit 1
-	fi
-	[[ $OPTION_REMOVE_MONERO = true ]] && REMOVE_LIST="$REMOVE_LIST [monero]"
-	[[ $OPTION_REMOVE_P2POOL = true ]] && REMOVE_LIST="$REMOVE_LIST [p2pool]"
-	[[ $OPTION_REMOVE_XMRIG = true ]]  && REMOVE_LIST="$REMOVE_LIST [xmrig]"
-	if [[ $OPTION_REMOVE_MONERO = true && -z $MONERO_VER ]]; then
-		printf "${OFF}%s\n" "[monero] is not installed"
-		REMOVE_LIST="${REMOVE_LIST/\[monero\]}"
-	fi
-	if [[ $OPTION_REMOVE_P2POOL = true && -z $P2POOL_VER ]]; then
-		printf "${OFF}%s\n" "[p2pool] is not installed"
-		REMOVE_LIST="${REMOVE_LIST/\[p2pool\]}"
-	fi
-	if [[ $OPTION_REMOVE_XMRIG = true && -z $XMRIG_VER ]]; then
-		printf "${OFF}%s\n" "[xmrig] is not installed"
-		REMOVE_LIST="${REMOVE_LIST/\[xmrig\]}"
-	fi
-	[[ $REMOVE_LIST = " " ]] && exit 1
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
-		"Packages to remove: " \
-		"$REMOVE_LIST" \
-		"Continue with removal? (y/N) "
-	if ask::no; then
-		print::exit "Canceling installation"
-	fi
-	if ! ask::sudo; then
-		print::exit "sudo is required"
-	fi
-	[[ $OPTION_REMOVE_MONERO = true ]] && struct::pkg monero && remove
-	[[ $OPTION_REMOVE_P2POOL = true ]] && struct::pkg p2pool && remove
-	[[ $OPTION_REMOVE_XMRIG = true ]]  && struct::pkg xmrig  && remove
-}
-remove() {
-	log::debug "starting ${FUNCNAME}() on package: ${PKG[name]}"
-	___BEGIN___ERROR___TRACE___
-	trap "" INT
-	print::remove
-	trap 'trap::remove &' EXIT
-	log::prog "${PKG[directory]}..."
-	rm "${PKG[directory]}"
-	log::ok "${PKG[directory]} deleted"
-	log::prog "${PKG[service]}..."
-	sudo rm "$SYSTEMD/${PKG[service]}"
-	log::ok "${PKG[service]} deleted"
-	log::prog "Updating local state..."
-	sudo sed \
-		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
-		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
-	log::ok "Updated local state"
-	trap - INT EXIT
-	log::prog "Reloading systemd..."
-	systemd::reload
-	log::ok "Reloaded systemd"
-	print::removed
-	___ENDOF___ERROR___TRACE___
-}
-tmp::pkg() {
-	log::debug "starting ${FUNCNAME}()"
-	tmp::remove
-	log::debug "creating tmp package files/folders"
-	map TMP_PKG TMP_PKG[main] TMP_PKG[pkg] TMP_PKG[hash] TMP_PKG[gpg] TMP_PKG[sig]
-	TMP_PKG[main]="$(mktemp -d /tmp/monero-bash.XXXXXXXXXX)"
-	TMP_PKG[pkg]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-pkg.XXXXXXXXXX)"
-	TMP_PKG[gpg]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-gpg.XXXXXXXXXX)"
-	TMP_PKG[sig]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-sig.XXXXXXXXXX)"
-	TMP_PKG[hash]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-hash.XXXXXXXXXX)"
-	log::debug "--- tmp pkg folders ---"
-	log::debug "TMP_PKG[main] | ${TMP_PKG[main]}"
-	log::debug "TMP_PKG[pkg]  | ${TMP_PKG[pkg]}"
-	log::debug "TMP_PKG[gpg]  | ${TMP_PKG[gpg]}"
-	log::debug "TMP_PKG[sig]  | ${TMP_PKG[sig]}"
-	log::debug "TMP_PKG[hash] | ${TMP_PKG[hash]}"
-}
-tmp::info() {
-	log::debug "starting ${FUNCNAME}()"
-	tmp::remove
-	log::debug "creating tmp package info files"
-	map TMP_INFO TMP_INFO[main] TMP_INFO[bash] TMP_INFO[monero] TMP_INFO[p2pool] TMP_INFO[xmrig]
-	TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
-	TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
-	[[ $MONERO_VER ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[monero]}/monero-info.XXXXXXXXXX)"
-	[[ $P2POOL_VER ]] && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[p2pool]}/p2pool-info.XXXXXXXXXX)"
-	[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
-	log::debug "--- tmp info folders ---"
-	log::debug "TMP_INFO[main]   | ${TMP_INFO[main]}"
-	log::debug "TMP_INFO[bash]   | ${TMP_INFO[bash]}"
-	[[ $MONERO_VER ]] && log::debug "TMP_INFO[monero] | ${TMP_INFO[monero]}"
-	[[ $P2POOL_VER ]] && log::debug "TMP_INFO[p2pool] | ${TMP_INFO[p2pool]}"
-	[[ $XMRIG_VER ]]  && log::debug "TMP_INFO[xmrig]  | ${TMP_INFO[xmrig]}"
-	return 0
-}
-tmp::remove() {
-	log::debug "starting ${FUNCNAME}()"
-	if find /tmp/monero-bash* &>/dev/null; then
-		log::debug "old tmp folders found, removing"
-		rm -rf /tmp/monero-bash*
-	else
-		log::debug "no old tmp folders found, skipping"
-	fi
-}
-trap::pkg_folders() {
-	log::debug "starting ${FUNCNAME}()"
-	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
-	"[monero-bash] " \
-	"exit signal caught " \
-	"| " \
-	"cleaning up temporary files"
-	tmp::remove
-}
-trap::remove() {
-	log::debug "starting ${FUNCNAME}()"
-	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
-	"[monero-bash] " \
-	"exit signal caught " \
-	"| " \
-	"updating local state"
-	sudo sed \
-		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
-		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
-}
-update() {
-	log::debug "starting ${FUNCNAME}()"
-	trap 'tmp::remove; lock::free monero_bash_update' EXIT
-	lock::alloc "monero_bash_update"
-	tmp::info
-	local UPDATE_FOUND INFO HTML
-	declare -a SCRATCH
-	print::update
-	struct::pkg bash
-	log::debug "starting download thread for: ${PKG[pretty]}"
-	if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_api]}"; then
-		HTML_MODE=true
-		printf "${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
-			"GitHub API failure " \
-			"| " \
-			"Switching to HTML filter mode..."
-		if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_html]}"; then
-			print::exit "Update failure - could not connect to GitHub"
-		fi
-	fi
-	if [[ $HTML_MODE = true ]]; then
-		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[bash]}"))
-		INFO="${SCRATCH[0]}"
-		INFO="${INFO//*tag\/}"
-		INFO="${INFO//\"}"
-	else
-		INFO="$(grep -m1 "tag_name" "${TMP_INFO[bash]}")"
-		INFO="${INFO//*: }"
-		INFO="${INFO//\"}"
-		INFO="${INFO//,}"
-	fi
-	if [[ $MONERO_BASH_VER = "${INFO}" ]]; then
-		printf "${BWHITE}%s${BGREEN}%s\n" \
-			"monero-bash | " "$MONERO_BASH_VER"
-	else
-		sed -i "s/MONERO_BASH_OLD=.*/MONERO_BASH_OLD=true/" "$STATE"
-		UPDATE_FOUND=true
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-			"monero-bash | " "$MONERO_BASH_VER " "-> " "$INFO"
-	fi
-	if [[ $MONERO_VER ]]; then
-		struct::pkg monero
-		log::debug "starting download thread for: ${PKG[pretty]}"
-		if [[ $HTML_MODE = true ]]; then
-			$DOWNLOAD_CMD "${TMP_INFO[monero]}" "${PKG[link_html]}" &
-		else
-			$DOWNLOAD_CMD "${TMP_INFO[monero]}" "${PKG[link_api]}" &
-		fi
-	fi
-	if [[ $P2POOL_VER ]]; then
-		struct::pkg p2pool
-		log::debug "starting download thread for: ${PKG[pretty]}"
-		if [[ $HTML_MODE = true ]]; then
-			$DOWNLOAD_CMD "${TMP_INFO[p2pool]}" "${PKG[link_html]}" &
-		else
-			$DOWNLOAD_CMD "${TMP_INFO[p2pool]}" "${PKG[link_api]}" &
-		fi
-	fi
-	if [[ $XMRIG_VER ]]; then
-		struct::pkg xmrig
-		log::debug "starting download thread for: ${PKG[pretty]}"
-		if [[ $HTML_MODE = true ]]; then
-			$DOWNLOAD_CMD "${TMP_INFO[xmrig]}" "${PKG[link_html]}" &
-		else
-			$DOWNLOAD_CMD "${TMP_INFO[xmrig]}" "${PKG[link_api]}" &
-		fi
-	fi
-	local JOB_LIST=$(jobs -p)
-	if [[ $JOB_LIST ]]; then
-		log::debug "waiting for download threads to complete"
-		if ! wait -n; then
-			print::exit "Update failure - could not connect to GitHub"
-		fi
-	fi
-	if [[ $MONERO_VER ]]; then
-		struct::pkg monero
-		if [[ $HTML_MODE = true ]]; then
-			SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[monero]}"))
-			INFO="${SCRATCH[0]}"
-			INFO="${INFO//*tag\/}"
-			INFO="${INFO//\"}"
-		else
-			INFO="$(grep -m1 "tag_name" "${TMP_INFO[monero]}")"
-			INFO="${INFO//*: }"
-			INFO="${INFO//\"}"
-			INFO="${INFO//,}"
-		fi
-		if [[ $MONERO_VER = "${INFO}" ]]; then
-			printf "${BWHITE}%s${BGREEN}%s\n" \
-				"Monero      | " "$MONERO_VER"
-		else
-			sed -i "s/MONERO_OLD=.*/MONERO_OLD=true/" "$STATE"
-			UPDATE_FOUND=true
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-				"Monero      | " "$MONERO_VER " "-> " "$INFO"
-		fi
-	fi
-	if [[ $P2POOL_VER ]]; then
-		struct::pkg p2pool
-		if [[ $HTML_MODE = true ]]; then
-			SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[p2pool]}"))
-			INFO="${SCRATCH[0]}"
-			INFO="${INFO//*tag\/}"
-			INFO="${INFO//\"}"
-		else
-			INFO="$(grep -m1 "tag_name" "${TMP_INFO[p2pool]}")"
-			INFO="${INFO//*: }"
-			INFO="${INFO//\"}"
-			INFO="${INFO//,}"
-		fi
-		if [[ $P2POOL_VER = "${INFO}" ]]; then
-			printf "${BWHITE}%s${BGREEN}%s\n" \
-				"P2Pool      | " "$P2POOL_VER"
-		else
-			sed -i "s/P2POOL_OLD=.*/P2POOL_OLD=true/" "$STATE"
-			UPDATE_FOUND=true
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-				"P2Pool      | " "$P2POOL_VER " "-> " "$INFO"
-		fi
-	fi
-	if [[ $XMRIG_VER ]]; then
-		struct::pkg xmrig
-		if [[ $HTML_MODE = true ]]; then
-			SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[xmrig]}"))
-			INFO="${SCRATCH[0]}"
-			INFO="${INFO//*tag\/}"
-			INFO="${INFO//\"}"
-		else
-			INFO="$(grep -m1 "tag_name" "${TMP_INFO[xmrig]}")"
-			INFO="${INFO//*: }"
-			INFO="${INFO//\"}"
-			INFO="${INFO//,}"
-		fi
-		if [[ $XMRIG_VER = "${INFO}" ]]; then
-			printf "${BWHITE}%s${BGREEN}%s\n" \
-				"XMRig       | " "$XMRIG_VER"
-		else
-			sed -i "s/XMRIG_OLD=.*/XMRIG_OLD=true/" "$STATE"
-			UPDATE_FOUND=true
-			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-				"XMRig       | " "$XMRIG_VER " "-> " "$INFO"
-		fi
-	fi
-	if [[ $UPDATE_FOUND ]]; then
-		echo
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-			"Updates found, type: " \
-			"[monero-bash upgrade] " \
-			"to upgrade all packages"
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-			"Or type: " \
-			"[monero-bash <package>] " \
-			"to upgrade a specific package"
-	else
-		print::updated
-	fi
-	log::debug "update() finished"
-	return 0
-}
-upgrade() {
-	[[ $OPTION_VERBOSE = true ]] && STD_LOG_DEBUG=true
-	log::debug "starting ${FUNCNAME}()"
-	if [[ $UPGRADE_LIST ]]; then
-		log::debug "packages getting upgraded: $UPGRADE_LIST"
-	elif [[ $INSTALL_LIST ]]; then
-		log::debug "packages getting installed: $UPGRADE_LIST"
-	fi
-	trap 'trap::pkg_folders &' EXIT
-	tmp::pkg_folders
-	print::download
-	download
-}
 parse::config() {
 	log::debug "starting ${FUNCNAME}()"
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
@@ -1472,6 +1064,7 @@ parse::config() {
 	for i in "${CONFIG_ARRAY[@]}"; do
 		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
 		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
+		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]         && declare -g XMRIG_ROOT="true"         || declare -g XMRIG_ROOT=""
 		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
 		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
 		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
@@ -1481,6 +1074,7 @@ parse::config() {
 	log::debug "--- monero-bash.conf settings ---"
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
+	log::debug "XMRIG_ROOT                | $XMRIG_ROOT"
 	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
 	log::debug "RPC_IP                    | $RPC_IP"
 	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"
@@ -1497,17 +1091,31 @@ case "$1" in
 	new)       wallet::create  ;exit;;
 	rpc)       rpc::daemon "$@";exit;;
 	list)      wallet::list    ;exit;;
-	help)      print::help     ;exit;;
 	size)      print::size     ;exit;;
 	config)    config          ;exit;;
 	status)    status          ;exit;;
 	version)   print::version  ;exit;;
 	uninstall) monero_bash::uninstall; exit;;
+	help)
+		shift
+		___BEGIN___ERROR___TRACE___
+		if [[ $1 ]]; then
+			print::help::command "$@"
+		else
+			print::help
+		fi
+		exit
+		___ENDOF___ERROR___TRACE___
+		;;
 	update)
+		shift
+		case "$1" in
+			--verbose|-v) OPTION_VERBOSE=true;;
+		esac
 		___BEGIN___ERROR___TRACE___
 		update
-		___ENDOF___ERROR___TRACE___
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	install)
 		shift
@@ -1533,9 +1141,9 @@ case "$1" in
 		shift
 		done
 		___BEGIN___ERROR___TRACE___
-		install::prompt
-		___ENDOF___ERROR___TRACE___
+		pkg::prompt install
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	remove)
 		shift
@@ -1561,8 +1169,8 @@ case "$1" in
 		done
 		___BEGIN___ERROR___TRACE___
 		remove::prompt
-		___ENDOF___ERROR___TRACE___
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	upgrade)
 		shift
@@ -1589,9 +1197,9 @@ case "$1" in
 		shift
 		done
 		___BEGIN___ERROR___TRACE___
-		upgrade::prompt
-		___ENDOF___ERROR___TRACE___
+		pkg::prompt
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	start)
 		shift
@@ -1852,6 +1460,330 @@ parse::state() {
 	log::debug "P2POOL_OLD        | $P2POOL_OLD"
 	log::debug "XMRIG_OLD         | $XMRIG_OLD"
 }
+pkg::download() {
+true
+}
+pkg::info() {
+	log::debug "starting ${FUNCNAME}()"
+}
+pkg::prompt() {
+	log::debug "starting ${FUNCNAME}()"
+	local PROMPT_VERB PROMPT_NOUN
+	if [[ $1 = install ]]; then
+		PROMPT_VERB="Installing"
+		PROMPT_NOUN="install"
+	else
+		PROMPT_VERB="Upgrading"
+		PROMPT_NOUN="upgrade"
+	fi
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+		printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB verbosely...!"
+	fi
+	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB forcefully...!"
+	local UPGRADE_LIST
+	[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="[monero-bash]"
+	[[ $OPTION_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST [monero]"
+	[[ $OPTION_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST [p2pool]"
+	[[ $OPTION_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST [xmrig]"
+	if [[ $OPTION_FORCE != true ]]; then
+		if [[ $OPTION_BASH = true && $MONERO_BASH_OLD != true ]]; then
+			printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST/\[monero-bash\]}"
+		fi
+		if [[ $OPTION_MONERO = true && $MONERO_OLD != true ]]; then
+			printf "${OFF}%s\n" "[monero] ($MONERO_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST/\[monero\]}"
+		fi
+		if [[ $OPTION_P2POOL = true && $P2POOL_OLD != true ]]; then
+			printf "${OFF}%s\n" "[p2pool] ($P2POOL_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST/\[p2pool\]}"
+		fi
+		if [[ $OPTION_XMRIG = true && $XMRIG_OLD != true ]]; then
+			printf "${OFF}%s\n" "[xmrig] ($XMRIG_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST/\[xmrig\]}"
+		fi
+		if [[ $UPGRADE_LIST = " " || -z $UPGRADE_LIST ]]; then
+			log::debug "UPGRADE_LIST is empty, exiting"
+			exit 1
+		fi
+	fi
+	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+		"Packages to $PROMPT_NOUN: " \
+		"$UPGRADE_LIST" \
+		"Continue with ${PROMPT_NOUN}? (Y/n) "
+	if ! ask::yes; then
+		print::exit "Canceling $PROMPT_NOUN"
+	fi
+	if ! ask::sudo; then
+		print::exit "sudo is required"
+	fi
+	log::debug "starting $PROMPT_NOUN of packages: $UPGRADE_LIST"
+	UPGRADE_LIST=("$UPGRADE_LIST")
+	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
+	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
+	pkg::upgrade
+}
+pkg::remove::prompt() {
+	log::debug "starting ${FUNCNAME}()"
+	local REMOVE_LIST || return 1
+	if [[ $OPTION_REMOVE_BASH = true ]]; then
+		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
+			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
+			"type: " \
+			"[monero-bash uninstall]" \
+			"to cleanly uninstall monero-bash from your system"
+		exit 1
+	fi
+	[[ $OPTION_REMOVE_MONERO = true ]] && REMOVE_LIST="$REMOVE_LIST [monero]"
+	[[ $OPTION_REMOVE_P2POOL = true ]] && REMOVE_LIST="$REMOVE_LIST [p2pool]"
+	[[ $OPTION_REMOVE_XMRIG = true ]]  && REMOVE_LIST="$REMOVE_LIST [xmrig]"
+	if [[ $OPTION_REMOVE_MONERO = true && -z $MONERO_VER ]]; then
+		printf "${OFF}%s\n" "[monero] is not installed"
+		REMOVE_LIST="${REMOVE_LIST/\[monero\]}"
+	fi
+	if [[ $OPTION_REMOVE_P2POOL = true && -z $P2POOL_VER ]]; then
+		printf "${OFF}%s\n" "[p2pool] is not installed"
+		REMOVE_LIST="${REMOVE_LIST/\[p2pool\]}"
+	fi
+	if [[ $OPTION_REMOVE_XMRIG = true && -z $XMRIG_VER ]]; then
+		printf "${OFF}%s\n" "[xmrig] is not installed"
+		REMOVE_LIST="${REMOVE_LIST/\[xmrig\]}"
+	fi
+	[[ $REMOVE_LIST = " " ]] && exit 1
+	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+		"Packages to remove: " \
+		"$REMOVE_LIST" \
+		"Continue with removal? (y/N) "
+	if ask::no; then
+		print::exit "Canceling installation"
+	fi
+	if ! ask::sudo; then
+		print::exit "sudo is required"
+	fi
+	[[ $OPTION_REMOVE_MONERO = true ]] && struct::pkg monero && pkg::remove
+	[[ $OPTION_REMOVE_P2POOL = true ]] && struct::pkg p2pool && pkg::remove
+	[[ $OPTION_REMOVE_XMRIG = true ]]  && struct::pkg xmrig  && pkg::remove
+}
+pkg::remove() {
+	log::debug "starting ${FUNCNAME}() on package: ${PKG[name]}"
+	trap "" INT
+	print::remove
+	trap 'trap::remove &' EXIT
+	log::prog "${PKG[directory]}..."
+	rm "${PKG[directory]}"
+	log::ok "${PKG[directory]} deleted"
+	log::prog "${PKG[service]}..."
+	sudo rm "$SYSTEMD/${PKG[service]}"
+	log::ok "${PKG[service]} deleted"
+	log::prog "Updating local state..."
+	sudo sed \
+		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
+		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
+	log::ok "Updated local state"
+	trap - INT EXIT
+	log::prog "Reloading systemd..."
+	systemd::reload
+	log::ok "Reloaded systemd"
+	print::removed
+	exit 0
+}
+pkg::tmp() {
+	log::debug "starting ${FUNCNAME}()"
+	pkg::tmp::remove
+	log::debug "creating tmp package files/folders"
+	map TMP_PKG TMP_PKG[main] TMP_PKG[pkg] TMP_PKG[hash] TMP_PKG[gpg] TMP_PKG[sig]
+	TMP_PKG[main]="$(mktemp -d /tmp/monero-bash.XXXXXXXXXX)"
+	TMP_PKG[pkg]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-pkg.XXXXXXXXXX)"
+	TMP_PKG[gpg]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-gpg.XXXXXXXXXX)"
+	TMP_PKG[sig]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-sig.XXXXXXXXXX)"
+	TMP_PKG[hash]="$(mktemp -d ${TMP_PKG[main]}/monero-bash-hash.XXXXXXXXXX)"
+	log::debug "--- tmp pkg folders ---"
+	log::debug "TMP_PKG[main] | ${TMP_PKG[main]}"
+	log::debug "TMP_PKG[pkg]  | ${TMP_PKG[pkg]}"
+	log::debug "TMP_PKG[gpg]  | ${TMP_PKG[gpg]}"
+	log::debug "TMP_PKG[sig]  | ${TMP_PKG[sig]}"
+	log::debug "TMP_PKG[hash] | ${TMP_PKG[hash]}"
+}
+pkg::tmp::info() {
+	log::debug "starting ${FUNCNAME}()"
+	pkg::tmp::remove
+	log::debug "creating tmp package info files"
+	map TMP_INFO TMP_INFO[main] TMP_INFO[bash] TMP_INFO[monero] TMP_INFO[p2pool] TMP_INFO[xmrig]
+	TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
+	TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
+	[[ $MONERO_VER ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[monero]}/monero-info.XXXXXXXXXX)"
+	[[ $P2POOL_VER ]] && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[p2pool]}/p2pool-info.XXXXXXXXXX)"
+	[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
+	log::debug "--- tmp info folders ---"
+	log::debug "TMP_INFO[main]   | ${TMP_INFO[main]}"
+	log::debug "TMP_INFO[bash]   | ${TMP_INFO[bash]}"
+	[[ $MONERO_VER ]] && log::debug "TMP_INFO[monero] | ${TMP_INFO[monero]}"
+	[[ $P2POOL_VER ]] && log::debug "TMP_INFO[p2pool] | ${TMP_INFO[p2pool]}"
+	[[ $XMRIG_VER ]]  && log::debug "TMP_INFO[xmrig]  | ${TMP_INFO[xmrig]}"
+	return 0
+}
+pkg::tmp::remove() {
+	log::debug "starting ${FUNCNAME}()"
+	if find /tmp/monero-bash* &>/dev/null; then
+		log::debug "old tmp folders found, removing"
+		rm -rf /tmp/monero-bash*
+	else
+		log::debug "no old tmp folders found, skipping"
+	fi
+}
+pkg::trap::pkg_folders() {
+	log::debug "starting ${FUNCNAME}()"
+	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
+	"[monero-bash] " \
+	"exit signal caught " \
+	"| " \
+	"cleaning up temporary files"
+	tmp::remove
+}
+pkg::trap::remove() {
+	log::debug "starting ${FUNCNAME}()"
+	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
+	"[monero-bash] " \
+	"exit signal caught " \
+	"| " \
+	"updating local state"
+	sudo sed \
+		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
+		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
+}
+pkg::update() {
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+	fi
+	log::debug "starting ${FUNCNAME}()"
+	trap 'pkg::tmp::remove; lock::free monero_bash_update' EXIT
+	if ! lock::alloc "monero_bash_update"; then
+		print::error "Could not get update lock!"
+		print::exit  "Is there another [monero-bash] update running?"
+	fi
+	pkg::tmp::info
+	local UPDATE_FOUND INFO HTML
+	declare -a SCRATCH
+	print::update
+	struct::pkg bash
+	log::debug "starting download thread for: ${PKG[pretty]}"
+	if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_api]}"; then
+		HTML_MODE=true
+		printf "${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
+			"GitHub API failure " \
+			"| " \
+			"Switching to HTML filter mode..."
+		if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_html]}"; then
+			print::exit "Update failure - could not connect to GitHub"
+		fi
+	fi
+	pkg::update::filter
+	pkg::update::result
+	if [[ $MONERO_VER ]]; then
+		struct::pkg monero
+		pkg::update::multi
+	fi
+	if [[ $P2POOL_VER ]]; then
+		struct::pkg p2pool
+		pkg::update::multi
+	fi
+	if [[ $XMRIG_VER ]]; then
+		struct::pkg xmrig
+		pkg::update::multi
+	fi
+	local JOB_LIST=$(jobs -p)
+	if [[ $JOB_LIST ]]; then
+		log::debug "waiting for download threads to complete"
+		if ! wait -n; then
+			print::exit "Update failure - could not connect to GitHub"
+		fi
+	fi
+	if [[ $MONERO_VER ]]; then
+		struct::pkg monero
+		pkg::update::filter
+		pkg::update::result
+	fi
+	if [[ $P2POOL_VER ]]; then
+		struct::pkg p2pool
+		pkg::update::filter
+		pkg::update::result
+	fi
+	if [[ $XMRIG_VER ]]; then
+		struct::pkg xmrig
+		pkg::update::filter
+		pkg::update::result
+	fi
+	if [[ $UPDATE_FOUND ]]; then
+		echo
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+			"Updates found, type: " \
+			"[monero-bash upgrade] " \
+			"to upgrade all packages"
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+			"Or type: " \
+			"[monero-bash <package>] " \
+			"to upgrade a specific package"
+	else
+		print::updated
+	fi
+	log::debug "update() finished"
+	exit 0
+}
+pkg::update::multi() {
+	log::debug "starting download thread for: ${PKG[pretty]}"
+	if [[ $HTML_MODE = true ]]; then
+		$DOWNLOAD_CMD "${TMP_INFO[${PKG[name]}]}" "${PKG[link_html]}" &
+	else
+		$DOWNLOAD_CMD "${TMP_INFO[${PKG[name]}]}" "${PKG[link_api]}" &
+	fi
+	return 0
+}
+pkg::update::filter() {
+	if [[ $HTML_MODE = true ]]; then
+		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[${PKG[name]}]}"))
+		INFO="${SCRATCH[0]}"
+		INFO="${INFO//*tag\/}"
+		INFO="${INFO//\"}"
+	else
+		INFO="$(grep -m1 "tag_name" "${TMP_INFO[${PKG[name]}]}")"
+		INFO="${INFO//*: }"
+		INFO="${INFO//\"}"
+		INFO="${INFO//,}"
+	fi
+	return 0
+}
+pkg::update::result() {
+	local UPDATE_NAME
+	case "${PKG[name]}" in
+		*bash*) UPDATE_NAME="monero-bash | ";;
+		monero) UPDATE_NAME="Monero      | ";;
+		*p2p*)  UPDATE_NAME="P2Pool      | ";;
+		*xmr*)  UPDATE_NAME="XMRig       | ";;
+	esac
+	if [[ ${PKG[current_version]} = "${INFO}" ]]; then
+		printf "${BWHITE}%s${BGREEN}%s\n" \
+			"$UPDATE_NAME" "${PKG[current_version]}"
+	else
+		sed -i "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=true/" "$STATE"
+		UPDATE_FOUND=true
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
+			"$UPDATE_NAME" "${PKG[current_version]} " "-> " "$INFO"
+	fi
+	return 0
+}
+pkg::upgrade() {
+	log::debug "starting ${FUNCNAME}()"
+	if [[ $UPGRADE_LIST ]]; then
+		log::debug "packages getting upgraded: $UPGRADE_LIST"
+	elif [[ $INSTALL_LIST ]]; then
+		log::debug "packages getting installed: $UPGRADE_LIST"
+	fi
+	trap 'pkg::trap::pkg_folders &' EXIT
+	pkg::tmp::pkg_folders
+	print::download
+	pkg::download
+}
 print::changelog::title() {
 	log::debug "starting ${FUNCNAME}()"
 	local CHANGELOG_TITLE CHANGELOG_RELEASE_DATE || return 1
@@ -1943,41 +1875,510 @@ print::help() {
 		"USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
-		"monero-bash                              Open interactive wallet menu" \
-		"list                                     List wallets" \
-		"new                                      Enter wallet creation mode"
+		"monero-bash                                Open interactive wallet menu" \
+		"list                                       List wallets"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"new     " "<wallet type>                      " "Enter wallet creation mode"
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[--verbose]           " "Install one/multiple packages"
-	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"remove  " "<packages>                       " "Remove one/multiple packages"
-	printf "    ${OFF}%s\n" \
-		"update                                   Check for package updates"
-	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"upgrade " "<packages> " "[--verbose|--force]   " "Upgrade pkgs, if none specified, upgrade all out-of-date pkgs"
+		"install " "<packages> " "[--verbose]             " "Install one/multiple packages" \
+		"remove  " "<packages> " "[--verbose]             " "Remove one/multiple packages"
+	printf "    ${OFF}%s${BPURPLE}%s${OFF}%s\n" \
+		"update  " "[--verbose]                        " "Check for package updates" \
+		"upgrade " "[--verbose] [--force]              " "Upgrade all out-of-date packages"
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"full    " "<monerod/p2pool/xmrig>           " "Start process fully attached in foreground" \
-		"start   " "<monerod/p2pool/xmrig>           " "Start process as systemd background process" \
-		"stop    " "<monerod/p2pool/xmrig>           " "Gracefully stop systemd background process" \
-		"kill    " "<monerod/p2pool/xmrig>           " "Forcefully kill systemd background process" \
-		"restart " "<monerod/p2pool/xmrig>           " "Restart systemd background process" \
-		"watch   " "<monerod/p2pool/xmrig>           " "Watch live output of systemd background process" \
-		"edit    " "<monerod/p2pool/xmrig>           " "Edit systemd service file" \
-		"reset   " "<bash/monerod/p2pool/xmrig>      " "Reset your config/systemd service file to default"
+		"full    " "<process>                          " "Start <process> fully attached in foreground" \
+		"config  " "<processes>                        " "Enter interactive configuration for <process>"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"default " "<processes> " "[--config] [--systemd] " "Reset your config/systemd file to the default"
+	printf "\n${BWHITE}%s${OFF}\n" "SYSTEMD"
+	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"start   " "<processes>                        " "Start process as systemd background process" \
+		"stop    " "<processes>                        " "Gracefully stop systemd background process" \
+		"kill    " "<processes>                        " "Forcefully kill systemd background process" \
+		"restart " "<processes>                        " "Restart systemd background process" \
+		"enable  " "<processes>                        " "Enable <process> to auto-start on computer boot" \
+		"disable " "<processes>                        " "Disable <process> from auto-starting on computer boot" \
+		"edit    " "<processes>                        " "Edit systemd service file" \
+		"refresh " "<processes>                        " "Refresh your systemd service file to match your config" \
+		"watch   " "<processes>                        " "Watch live output of systemd background process"
 	printf "\n${BWHITE}%s${OFF}\n"    "STATS"
 	printf "    %s\n" \
-		"status                                   Print status of all running processes" \
-		"size                                     Print size of all packages and folders" \
-		"version                                  Print current package versions"
+		"status                                     Print status of all running processes" \
+		"size                                       Print size of all packages and folders" \
+		"version                                    Print current package versions"
+	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"changes " "<monero-bash version>            " "Print current/specified monero-bash changelog"
-	printf "\n${BWHITE}%s${OFF}\n"    "RPC"
-	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"rpc     " "<JSON-RPC method>                " "Send a JSON-RPC call to monerod"
-	printf "\n${BWHITE}%s${OFF}\n"    "HELP"
-	printf "    %s\n" \
-		"help                                     Print this help message"
+		"rpc     " "<JSON-RPC method>                  " "Send a JSON-RPC call to monerod" \
+		"changes " "<monero-bash version>              " "Print current/specified monero-bash changelog" \
+		"help    " "<command>                          " "Print help for a command, or all if none specified"
+}
+print::help::command() {
+	until [[ $# = 0 ]]; do
+	log::debug "starting ${FUNCNAME}() for: $1"
+	case "$1" in
+		monero-bash)
+			printf "${BWHITE}%s${BRED}%s\n\n" "USAGE: " "monero-bash"
+			printf "${OFF}%s\n" \
+			"Open the interactive wallet menu." \
+			"" \
+			"Looks for wallets inside the wallet folder:" \
+			"[\$HOME/.monero-bash/wallets]" \
+			"Ignores [.keys] files, only looking for wallet files." \
+			"" \
+			"Allows selection of existing wallets and interactive" \
+			"creation of a new wallet with these types: " \
+			"" \
+			"--generate-new-wallet         | [new]" \
+			"--generate-from-view-key      | [view]" \
+			"--restore-from-seed           | [seed]" \
+			"--generate-from-json          | [json]" \
+			"--generate-from-spend-key     | [spend]" \
+			"--generate-from-device        | [device]" \
+			"--generate-from-keys          | [private]" \
+			"--generate-from-multisig-keys | [multisig]" \
+			"" \
+			"Each time the [monero-bash] title is printed, it rolls" \
+			"some RNG to print varying levels of title rarity:" \
+			"" \
+			"RED    # | common    | 60%" \
+			"BLUE   x | rare      | 30%" \
+			"PURPLE : | ultra     | 9%" \
+			"GOLDEN / | legendary | 0.99%" \
+			"GREEN  # | lottery   | 0.0030519%"
+			;;
+		list)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s\n\n" "USAGE: " "monero-bash " "list"
+			printf "${OFF}%s\n" \
+			"Print the full list and amount of wallets." \
+			"" \
+			"Looks for wallets inside of the wallet folder:" \
+			"[\$HOME/.monero-bash/wallets]" \
+			"Ignores [.keys] files, only looking for wallet files." \
+			"" \
+			"Each time the [monero-bash] title is printed, it rolls" \
+			"some RNG to print varying levels of title rarity:" \
+			"" \
+			"RED    # | common    | 60%" \
+			"BLUE   x | rare      | 30%" \
+			"PURPLE : | ultra     | 9%" \
+			"GOLDEN / | legendary | 0.99%" \
+			"GREEN  # | lottery   | 0.0030519%"
+			;;
+		new)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "new " "<wallet type>"
+			printf "${OFF}%s\n" \
+			"Create a new wallet." \
+			"" \
+			"If a wallet type is given, wallet creation is started" \
+			"with that type, if no wallet type is given, interactive" \
+			"wallet creation mode is started. Creates wallets inside" \
+			"of the wallet folder: [\$HOME/.monero-bash/wallets]" \
+			"Allows creation of a wallet with these types:" \
+			"" \
+			"--generate-new-wallet         | [new]" \
+			"--generate-from-view-key      | [view]" \
+			"--restore-from-seed           | [seed]" \
+			"--generate-from-json          | [json]" \
+			"--generate-from-spend-key     | [spend]" \
+			"--generate-from-device        | [device]" \
+			"--generate-from-keys          | [private]" \
+			"--generate-from-multisig-keys | [multisig]"
+			;;
+		install)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[--verbose]"
+			printf "${OFF}%s\n" \
+			"Start the installation process of packages." \
+			"" \
+			"Packages are installed in their respective folders in:" \
+			"[\$HOME/.monero-bash/packages/<PACKAGE_NAME>]" \
+			"and [systemd] service files are created, if not already" \
+			"found in: [/etc/systemd/system]" \
+			"" \
+			"Packages are verified by hash and PGP signature before" \
+			"installation. PGP keys are automatically verified, then" \
+			"imported if not already found. If verification fails, the" \
+			"package will not be installed. The rest of the packages" \
+			"will continue to be installed." \
+			"" \
+			"A single package or multiple packages can be installed at the same time." \
+			"" \
+			"--- PACKAGE LIST ---" \
+			"[monero]" \
+			"[p2pool]" \
+			"[xmrig]" \
+			"" \
+			"If the [--verbose] option is given, detailed" \
+			"debug information will be printed during the install."
+			;;
+		remove)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[--verbose]"
+			printf "${OFF}%s\n" \
+			"Start the removal process of packages." \
+			"" \
+			"Packages folders are deleted: [\$HOME/.monero-bash/packages/<PACKAGE_NAME>]" \
+			"and systemd service files are removed: [/etc/systemd/system/<PACKAGE_NAME>.service]" \
+			"Configuration files are left alone: [\$HOME/.monero-bash/config/<PACKAGE_CONFIG>]" \
+			"A single package or multiple packages can be removed at the same time." \
+			"" \
+			"--- PACKAGE LIST ---" \
+			"[monero]" \
+			"[p2pool]" \
+			"[xmrig]" \
+			"" \
+			"If the [--verbose] option is given, detailed" \
+			"debug information will be printed during the removal."
+			;;
+		update)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[--verbose]"
+			printf "${OFF}%s\n" \
+			"Check for new versions of installed packages." \
+			"" \
+			"If a new version is found, the new update will" \
+			"be printed along with the old version:" \
+			"<PACKAGE_NAME> | [OLD_VERSION] -> [NEW_VERSION]" \
+			"The package version from that point will be" \
+			"printed in [RED] instead of [GREEN] until it" \
+			"is upgraded with [monero-bash upgrade]." \
+			"" \
+			"If the [--verbose] option is given, detailed" \
+			"debug information will be printed during the update."
+			;;
+		upgrade)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[--verbose]"
+			printf "${OFF}%s\n" \
+			"Upgrade all installed packages that are out-of-date." \
+			"" \
+			"Packages folders are upgraded:" \
+			"[\$HOME/.monero-bash/packages/<PACKAGE_NAME>]" \
+			"" \
+			"Packages are verified by hash and PGP signature before" \
+			"upgrade. PGP keys are automatically verified, then" \
+			"imported if not already found. If verification fails, the" \
+			"package will not be upgraded. The rest of the packages" \
+			"will continue to be upgraded." \
+			"" \
+			"--- PACKAGE LIST ---" \
+			"[monero]" \
+			"[p2pool]" \
+			"[xmrig]" \
+			"" \
+			"If the [--verbose] option is given, detailed" \
+			"debug information will be printed during the upgrade."
+			;;
+		full)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "full " "<process>"
+			printf "${OFF}%s\n" \
+			"Start a process attached to the current terminal." \
+			"" \
+			"The process will be started in the foreground in the" \
+			"current terminal with configuration sourced from the" \
+			"processes configuration file found in:" \
+			"[\$HOME/.monero-bash/config/<PROCESS_CONFIG>]" \
+			"" \
+			"The process will be ran as the [monero-bash] user for" \
+			"security reasons. It has a [nologin] shell. The exeception" \
+			"is [XMRig] which runs as [root] for hugepage allocation." \
+			"This can be disabled by editing the XMRIG_ROOT option in:" \
+			"[\$HOME/.monero-bash/config/monero-bash.conf]"\
+			"" \
+			"#---------------------------------------------------------------#" \
+			"# PROCESS | USER        | CONFIG FILE                           #" \
+			"#---------------------------------------------------------------#" \
+			"# Monero  | monero-bash | monerod.conf & monero-wallet-cli.conf #" \
+			"# P2Pool  | monero-bash | p2pool.conf (& optional p2pool.json)  #" \
+			"# XMRig   | root        | xmrig.json                            #" \
+			"#---------------------------------------------------------------#"
+			;;
+		config)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "config " "<processes>"
+			printf "${OFF}%s\n" \
+			"Start interactive configuration for processes." \
+			"" \
+			"This will edit the configuration files found in:" \
+			"[\$HOME/.monero-bash/config/<PROCESS_CONFIG>]" \
+			"" \
+			"#-----------------------------------------------------#" \
+			"# PROCESS     | CONFIG FILE                           #" \
+			"#-----------------------------------------------------#" \
+			"# monero-bash | monero-bash.conf                      #" \
+			"# Monero      | monerod.conf & monero-wallet-cli.conf #" \
+			"# P2Pool      | p2pool.conf                           #" \
+			"# XMRig       | xmrig.json                            #" \
+			"#-----------------------------------------------------#" \
+			"" \
+			"After configuration, a prompt will ask you if you'd like to" \
+			"refresh your [systemd] service to match the configuration." \
+			"This can also manually be done with: [monero-bash refresh <processes>]"
+			;;
+		default)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "default " "<processes> " "[--config] [--systemd]"
+			printf "${OFF}%s\n" \
+			"Reset config files/systemd services to the default." \
+			"" \
+			"This will reset the configuration files of <process>" \
+			"found in: [\$HOME/.monero-bash/config/<PROCESS_CONFIG>]" \
+			"and the [systemd] service files found in: [/etc/systemd/system]" \
+			"to a generic default version." \
+			"" \
+			"#-----------------------------------------------------------------------------------#" \
+			"# PROCESS     | CONFIG FILE                           | SYSTEMD SERVICE FILE        #" \
+			"#-----------------------------------------------------------------------------------#" \
+			"# monero-bash | monero-bash.conf                      |                             #" \
+			"# Monero      | monerod.conf & monero-wallet-cli.conf | monero-bash-monerod.service #" \
+			"# P2Pool      | p2pool.conf                           | monero-bash-p2pool.service  #" \
+			"# XMRig       | xmrig.json                            | monero-bash-xmrig.service   #" \
+			"#-----------------------------------------------------------------------------------#" \
+			"" \
+			"If no options are supplied, both the config file and systemd file are reset."
+			;;
+		start)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "start " "<processes>"
+			printf "${OFF}%s\n" \
+			"Start a process in the background with systemd" \
+			"" \
+			"The process will be started in the background with a" \
+			"[systemd] service file found in: [/etc/systemd/system]" \
+			"" \
+			"The process will be ran as the [monero-bash] user for" \
+			"security reasons. It has a [nologin] shell. The exeception" \
+			"is [XMRig] which runs as [root] for hugepage allocation." \
+			"This can be disabled by editing the XMRIG_ROOT option in:" \
+			"[\$HOME/.monero-bash/config/monero-bash.conf]"\
+			"and then refreshing the [systemd] service with:" \
+			"[monero-bash refresh xmrig]" \
+			"" \
+			"#-----------------------------------------------------#" \
+			"# PROCESS | USER        | SYSTEMD SERVICE FILE        #" \
+			"#-----------------------------------------------------#" \
+			"# Monero  | monero-bash | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash | monero-bash-p2pool.service  #" \
+			"# XMRig   | root        | monero-bash-xmrig.service   #" \
+			"#-----------------------------------------------------#"
+			;;
+		stop)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "stop " "<processes>"
+			printf "${OFF}%s\n" \
+			"Gracefully stop a background process with systemd" \
+			"" \
+			"[systemd] service files are found in: [/etc/systemd/system]" \
+			"" \
+			"#---------------------------------------#" \
+			"# PROCESS | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------#" \
+			"# Monero  | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash-p2pool.service  #" \
+			"# XMRig   | monero-bash-xmrig.service   #" \
+			"#---------------------------------------#"
+			;;
+		kill)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "kill " "<processes>"
+			printf "${OFF}%s\n" \
+			"Forcefully kill a background process with systemd" \
+			"" \
+			"[systemd] service files are found in: [/etc/systemd/system]" \
+			"" \
+			"#---------------------------------------#" \
+			"# PROCESS | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------#" \
+			"# Monero  | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash-p2pool.service  #" \
+			"# XMRig   | monero-bash-xmrig.service   #" \
+			"#---------------------------------------#"
+			;;
+		restart)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "restart " "<processes>"
+			printf "${OFF}%s\n" \
+			"Gracefully restart a background process with systemd" \
+			"" \
+			"[systemd] service files are found in: [/etc/systemd/system]" \
+			"" \
+			"#---------------------------------------#" \
+			"# PROCESS | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------#" \
+			"# Monero  | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash-p2pool.service  #" \
+			"# XMRig   | monero-bash-xmrig.service   #" \
+			"#---------------------------------------#"
+			;;
+		enable)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "enable " "<processes>"
+			printf "${OFF}%s\n" \
+			"Enable a background process to auto-start" \
+			"on computer boot with systemd" \
+			"" \
+			"[systemd] service files are found in: [/etc/systemd/system]" \
+			"" \
+			"#---------------------------------------#" \
+			"# PROCESS | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------#" \
+			"# Monero  | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash-p2pool.service  #" \
+			"# XMRig   | monero-bash-xmrig.service   #" \
+			"#---------------------------------------#"
+			;;
+		disable)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "disable " "<processes>"
+			printf "${OFF}%s\n" \
+			"Disable background process from auto-start" \
+			"on computer boot with systemd" \
+			"" \
+			"[systemd] service files are found in: [/etc/systemd/system]" \
+			"" \
+			"#---------------------------------------#" \
+			"# PROCESS | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------#" \
+			"# Monero  | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash-p2pool.service  #" \
+			"# XMRig   | monero-bash-xmrig.service   #" \
+			"#---------------------------------------#"
+			;;
+		edit)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "edit " "<processes>"
+			printf "${OFF}%s\n" \
+			"Edit a process's systemd service file." \
+			"" \
+			"After editing, systemd is reloaded automatically." \
+			"[systemd] service files are found in: [/etc/systemd/system]" \
+			"" \
+			"#---------------------------------------#" \
+			"# PROCESS | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------#" \
+			"# Monero  | monero-bash-monerod.service #" \
+			"# P2Pool  | monero-bash-p2pool.service  #" \
+			"# XMRig   | monero-bash-xmrig.service   #" \
+			"#---------------------------------------#"
+			;;
+		refresh)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "refresh " "<processes> "
+			printf "${OFF}%s\n" \
+			"Refresh [systemd] to match configuration files." \
+			"" \
+			"This will reset the [systemd] service of <process>" \
+			"to match the configuration options found in:" \
+			"[\$HOME/.monero-bash/config/<PROCESS_CONFIG>]" \
+			"" \
+			"By default, packages will come with a generic [systemd] service file." \
+			"" \
+			"#---------------------------------------------------------------------------#" \
+			"# PROCESS     | CONFIG FILE TO MATCH          | SYSTEMD SERVICE FILE        #" \
+			"#---------------------------------------------------------------------------#" \
+			"# Monero      | monerod.conf                  | monero-bash-monerod.service #" \
+			"# P2Pool      | p2pool.conf                   | monero-bash-p2pool.service  #" \
+			"# XMRig       | monero-bash.conf + xmrig.json | monero-bash-xmrig.service   #" \
+			"#---------------------------------------------------------------------------#" \
+			"" \
+			"If no options are supplied, both the config file and systemd file are reset."
+			;;
+		watch)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "watch " "<processes>"
+			printf "${OFF}%s\n" \
+			"Watch live output of a background systemd process" \
+			"" \
+			"The terminal will switch to output of <processes>" \
+			"To exit and return: <CTRL+C>" \
+			"If multiple procceses are selected, they are queued." \
+			"" \
+			"--- PROCESSES ---" \
+			"[monero]" \
+			"[p2pool]" \
+			"[xmrig]"
+			;;
+		status)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s\n\n" "USAGE: " "monero-bash " "status"
+			printf "${OFF}%s\n" \
+			"Print status of all running processes." \
+			"" \
+			"#---------------------------------------------------------------------------#" \
+			"# PROCESS     | INFORMATION PRINTED                                         #" \
+			"#---------------------------------------------------------------------------#" \
+			"# Monero      | Blockchain stats + /.bitmonero/ size                        #" \
+			"# P2Pool      | Wallet + Latest share + Latest payout + Shares per hour/day #" \
+			"# XMRig       | Wallet + Hashrate + Shares + Pool                           #" \
+			"#---------------------------------------------------------------------------#"
+			;;
+		size)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s\n\n" "USAGE: " "monero-bash " "size"
+			printf "${OFF}%s\n" "Print size of installed packages and blockchain folder."
+			;;
+		version)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s\n\n" "USAGE: " "monero-bash " "version"
+			printf "${OFF}%s\n" \
+			"Print version of installed packages." \
+			"" \
+			"Versions will be printed in [BOLD RED] if they" \
+			"are out-of-date. Otherwise they will be printed" \
+			"in [BOLD GREEN]."
+			;;
+		rpc)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value]"
+			printf "${OFF}%s\n" \
+			"Send a JSON-RPC call to monerod." \
+			"" \
+			"This will send a JSON-RPC call to the monerod IP" \
+			"specified in [\$HOME/.monero-bash/config/monero-bash.conf]" \
+			"Setting RPC_VERBOSE to true will make [monero-bash] print" \
+			"the payload before sending." \
+			"" \
+			"The default IP is your own monerod: [127.0.0.1:18081]" \
+			"But any monerod IP is able to be used: [node.community.rino.io:18081]" \
+			"" \
+			"The code for this function is originally from: https://github.com/jtgrassie/xmrpc" \
+			"Copyright (c) 2014-2022, The Monero Project"
+			printf "\n${BWHITE}%s${OFF}\n" "EXAMPLE"
+			printf "    ${BRED}%s${OFF}%s${BYELLOW}%s\n" "monero-bash " "rpc " "get_block"
+			printf "    ${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s\n" "monero-bash " "rpc " "node.community.rino.io:18081 " "get_block"
+			printf "    ${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s\n" \
+			"monero-bash " "rpc " "127.0.0.1:18081 " "get_block " "height:123456" \
+			"monero-bash " "rpc " "localhost:18081 " "get_block " "hash:418015bb9ae982a1975da7d79277c2705727a56894ba0fb246adaabb1f4632e3"
+			printf "\n${BWHITE}%s${OFF}\n" "JSON RPC Methods"
+			printf "    ${OFF}%s\n" \
+			"get_block_count" \
+			"on_get_block_hash" \
+			"get_block_template" \
+			"submit_block" \
+			"get_last_block_header" \
+			"get_block_header_by_hash" \
+			"get_block_header_by_height" \
+			"get_block_headers_range" \
+			"get_block" \
+			"get_connections" \
+			"get_info" \
+			"hard_fork_info" \
+			"set_bans" \
+			"get_bans" \
+			"get_output_histogram" \
+			"get_version" \
+			"get_coinbase_tx_sum" \
+			"get_fee_estimate" \
+			"get_alternate_chains" \
+			"relay_tx" \
+			"sync_info" \
+			"get_txpool_backlog" \
+			"get_output_distribution"
+			;;
+		changes)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "changes " "<monero-bash version>"
+			printf "${OFF}%s\n" \
+			"Print the changelog of [monero-bash]." \
+			"" \
+			"If no version is given, the current version's" \
+			"changelog will be printed."
+			;;
+		help)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "help " "<command>"
+			printf "${OFF}%s\n" \
+			"Print help for [monero-bash] commands." \
+			"" \
+			"If no command is given, the general help" \
+			"menu will be printed for all commands."
+			;;
+		*) print::error "Invalid option: $1 command does not exist";;
+	esac
+	shift
+	done
+	exit
 }
 print::download() {
 	printf "${BGREEN}%s${OFF}\n" "#---------# Downloading #---------#"
@@ -2584,23 +2985,25 @@ declare -frg crypto::key::remove
 declare -frg DEBUG
 declare -frg monero_bash::install
 declare -frg monero_bash::uninstall
-declare -frg download
-declare -frg info
-declare -frg install::prompt
-declare -frg upgrade::prompt
-declare -frg remove::prompt
-declare -frg remove
-declare -frg tmp::pkg
-declare -frg tmp::info
-declare -frg tmp::remove
-declare -frg trap::pkg_folders
-declare -frg trap::remove
-declare -frg update
-declare -frg upgrade
 declare -frg parse::config
 declare -frg parse::options
 declare -frg parse::p2pool
 declare -frg parse::state
+declare -frg pkg::download
+declare -frg pkg::info
+declare -frg pkg::prompt
+declare -frg pkg::remove::prompt
+declare -frg pkg::remove
+declare -frg pkg::tmp
+declare -frg pkg::tmp::info
+declare -frg pkg::tmp::remove
+declare -frg pkg::trap::pkg_folders
+declare -frg pkg::trap::remove
+declare -frg pkg::update
+declare -frg pkg::update::multi
+declare -frg pkg::update::filter
+declare -frg pkg::update::result
+declare -frg pkg::upgrade
 declare -frg print::changelog::title
 declare -frg print::changelog
 declare -frg print::changelog::2.0.0
@@ -2610,6 +3013,7 @@ declare -frg print::compromised::gpg
 declare -frg print::error
 declare -frg print::exit
 declare -frg print::help
+declare -frg print::help::command
 declare -frg print::download
 declare -frg print::update
 declare -frg print::remove

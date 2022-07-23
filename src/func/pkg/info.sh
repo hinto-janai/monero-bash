@@ -20,42 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# meta function that upgrades packages
-# called by: install::prompt()
-#
-# uses:      trap()
-#            mktemp()
-#            download()
-#            verify()
-upgrade() {
-	# log::debug
-	[[ $OPTION_VERBOSE = true ]] && STD_LOG_DEBUG=true
+# Fetch and filter download links for package upgrades
+pkg::info() {
 	log::debug "starting ${FUNCNAME}()"
-	if [[ $UPGRADE_LIST ]]; then
-		log::debug "packages getting upgraded: $UPGRADE_LIST"
-	elif [[ $INSTALL_LIST ]]; then
-		log::debug "packages getting installed: $UPGRADE_LIST"
-	fi
 
-	# CREATE TMP FOLDERS
-	trap 'trap::pkg_folders &' EXIT
-	tmp::pkg_folders
-
-	# PRINT TITLE
-	print::download
-
-	# DOWNLOAD
-	download
 }
-
-
-
-
-
-
-
-
-
-
-
-

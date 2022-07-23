@@ -28,6 +28,7 @@ parse::config() {
 	for i in "${CONFIG_ARRAY[@]}"; do
 		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
 		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
+		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]         && declare -g XMRIG_ROOT="true"         || declare -g XMRIG_ROOT=""
 		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
 		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
 		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
@@ -37,6 +38,7 @@ parse::config() {
 	log::debug "--- monero-bash.conf settings ---"
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
+	log::debug "XMRIG_ROOT                | $XMRIG_ROOT"
 	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
 	log::debug "RPC_IP                    | $RPC_IP"
 	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"

@@ -24,8 +24,8 @@
 
 # prompt for removing packages
 # uses variables from parse/options.sh
-# continues to remove()
-remove::prompt() {
+# continues to pkg::remove()
+pkg::remove::prompt() {
 	log::debug "starting ${FUNCNAME}()"
 
 	# CREATE REMOVE LIST
@@ -72,18 +72,15 @@ remove::prompt() {
 	fi
 
 	# START REMOVAL
-	[[ $OPTION_REMOVE_MONERO = true ]] && struct::pkg monero && remove
-	[[ $OPTION_REMOVE_P2POOL = true ]] && struct::pkg p2pool && remove
-	[[ $OPTION_REMOVE_XMRIG = true ]]  && struct::pkg xmrig  && remove
+	[[ $OPTION_REMOVE_MONERO = true ]] && struct::pkg monero && pkg::remove
+	[[ $OPTION_REMOVE_P2POOL = true ]] && struct::pkg p2pool && pkg::remove
+	[[ $OPTION_REMOVE_XMRIG = true ]]  && struct::pkg xmrig  && pkg::remove
 }
 
-# remove packages
-# called from remove::prompt()
-# assumes ask::sudo() was called
-remove() {
+# pkg::remove packages
+# called from pkg::remove::prompt()
+pkg::remove() {
 	log::debug "starting ${FUNCNAME}() on package: ${PKG[name]}"
-
-	___BEGIN___ERROR___TRACE___
 	trap "" INT
 	print::remove
 
@@ -117,5 +114,5 @@ remove() {
 
 	# END
 	print::removed
-	___ENDOF___ERROR___TRACE___
+	exit 0
 }

@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 # create temporary folders/files for upgrade()
-tmp::pkg() {
+pkg::tmp() {
 	log::debug "starting ${FUNCNAME}()"
-	tmp::remove
+	pkg::tmp::remove
 	log::debug "creating tmp package files/folders"
 
 	# general package folders
@@ -49,9 +49,9 @@ tmp::pkg() {
 # is almost impossible without eval, so
 # temporary ram files are used in place of
 # direct variables containing info.
-tmp::info() {
+pkg::tmp::info() {
 	log::debug "starting ${FUNCNAME}()"
-	tmp::remove
+	pkg::tmp::remove
 	log::debug "creating tmp package info files"
 
 	map TMP_INFO TMP_INFO[main] TMP_INFO[bash] TMP_INFO[monero] TMP_INFO[p2pool] TMP_INFO[xmrig]
@@ -73,7 +73,7 @@ tmp::info() {
 }
 
 # remove monero-bash temp files
-tmp::remove() {
+pkg::tmp::remove() {
 	log::debug "starting ${FUNCNAME}()"
 	if find /tmp/monero-bash* &>/dev/null; then
 		log::debug "old tmp folders found, removing"

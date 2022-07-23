@@ -20,11 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# Upgrade prompt. Creates the UPGRADE_LIST array.
-# Called by: upgrade()
-#            install()
-
-upgrade::prompt() {
+# Package install/upgrade prompt. Creates the UPGRADE_LIST array.
+pkg::prompt() {
 	log::debug "starting ${FUNCNAME}()"
 
 	# CHANGE BEHAVIOR ON INSTALL
@@ -38,7 +35,10 @@ upgrade::prompt() {
 	fi
 
 	# CHECK FOR VERBOSE/FORCE
-	[[ $OPTION_VERBOSE = true ]] && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB verbosely...!"
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+		printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB verbosely...!"
+	fi
 	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB forcefully...!"
 
 	# CREATE UPGRADE LIST
@@ -91,5 +91,5 @@ upgrade::prompt() {
 	UPGRADE_LIST=("$UPGRADE_LIST")
 	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
 	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
-	upgrade
+	pkg::upgrade
 }

@@ -28,7 +28,7 @@
 #     5. GitHub will often rate-limit VPNs/Tor: if so, download HTML dump of regular link
 #     6. Filter output for latest release download
 #     7. wget/curl the found download link
-download() {
+pkg::download() {
 true
 #	# if API fetch fails, use HTML dump instead
 #	API="true"

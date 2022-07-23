@@ -33,17 +33,31 @@ case "$1" in
 	new)       wallet::create  ;exit;;
 	rpc)       rpc::daemon "$@";exit;;
 	list)      wallet::list    ;exit;;
-	help)      print::help     ;exit;;
 	size)      print::size     ;exit;;
 	config)    config          ;exit;;
 	status)    status          ;exit;;
 	version)   print::version  ;exit;;
 	uninstall) monero_bash::uninstall; exit;;
+	help)
+		shift
+		___BEGIN___ERROR___TRACE___
+		if [[ $1 ]]; then
+			print::help::command "$@"
+		else
+			print::help
+		fi
+		exit
+		___ENDOF___ERROR___TRACE___
+		;;
 	update)
+		shift
+		case "$1" in
+			--verbose|-v) OPTION_VERBOSE=true;;
+		esac
 		___BEGIN___ERROR___TRACE___
 		update
-		___ENDOF___ERROR___TRACE___
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	# PACKAGE MANAGER
 	install)
@@ -70,9 +84,9 @@ case "$1" in
 		shift
 		done
 		___BEGIN___ERROR___TRACE___
-		install::prompt
-		___ENDOF___ERROR___TRACE___
+		pkg::prompt install
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	remove)
 		shift
@@ -98,8 +112,8 @@ case "$1" in
 		done
 		___BEGIN___ERROR___TRACE___
 		remove::prompt
-		___ENDOF___ERROR___TRACE___
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 	upgrade)
 		shift
@@ -126,9 +140,9 @@ case "$1" in
 		shift
 		done
 		___BEGIN___ERROR___TRACE___
-		upgrade::prompt
-		___ENDOF___ERROR___TRACE___
+		pkg::prompt
 		exit
+		___ENDOF___ERROR___TRACE___
 		;;
 
 	# PROCESS
