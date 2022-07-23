@@ -22,7 +22,7 @@
 
 # parse [p2pool.conf] safely
 parse::p2pool() {
-	log::debug "parsing p2pool.conf"
+	log::debug "starting ${FUNCNAME}()"
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
 	mapfile CONFIG_ARRAY < "$CONFIG_P2POOL" || return 2
 	for i in "${CONFIG_ARRAY[@]}"; do

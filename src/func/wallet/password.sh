@@ -22,7 +22,10 @@
 
 # handle encryption of the password variable
 wallet::password() {
-	log::debug "starting wallet::password()"
+	log::debug "starting ${FUNCNAME}()"
+
+	# delete key on exit
+	trap 'crypto::key::remove' EXIT
 
 	# create one-time key file
 	crypto::key::create

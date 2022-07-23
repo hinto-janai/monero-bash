@@ -22,36 +22,38 @@
 
 # create a new wallet
 wallet::create() {
-	log::debug "creating new wallet"
+	log::debug "starting ${FUNCNAME}()"
 	char WALLET_TYPE WALLET_NAME
 
 	# WALLET TYPES
 	while :; do
-	echo
-	printf "${BRED}%s${OFF}%s\n" \
-		"[new]          " "| --generate-new-wallet" \
-		"[view]         " "| --generate-from-view-key" \
-		"[seed]         " "| --restore-from-seed" \
-		"[json]         " "| --generate-from-json" \
-		"[spend]        " "| --generate-from-spend-key" \
-		"[device]       " "| --generate-from-device" \
-		"[private]      " "| --generate-from-keys" \
-		"[multisig]     " "| --generate-from-multisig-keys" \
-		""
-	printf "${BYELLOW}%s${OFF}" "Select which method to use: "
+		while :; do
+			echo
+			printf "${BPURPLE}%s${OFF}%s${BRED}%s${OFF}\n" \
+				"--generate-new-wallet         " "| " "[new]" \
+				"--generate-from-view-key      " "| " "[view]" \
+				"--restore-from-seed           " "| " "[seed]" \
+				"--generate-from-json          " "| " "[json]" \
+				"--generate-from-spend-key     " "| " "[spend]" \
+				"--generate-from-device        " "| " "[device]" \
+				"--generate-from-keys          " "| " "[private]" \
+				"--generate-from-multisig-keys " "| " "[multisig]" \
+				""
+			printf "${BYELLOW}%s${OFF}" "Select which method to use: "
 
-		read -r WALLET_TYPE
-		case "$WALLET_TYPE" in
-			*new*)     WALLET_TYPE=new;;
-			*view*)    WALLET_TYPE=view;;
-			*seed*)    WALLET_TYPE=seed;;
-			*json*)    WALLET_TYPE=json;;
-			*spend*)   WALLET_TYPE=spend;;
-			*device*)  WALLET_TYPE=device;;
-			*private*) WALLET_TYPE=private;;
-			*multi*)   WALLET_TYPE=multisig;;
-			*) print::error "Invalid method!"
-		esac
+			read -r WALLET_TYPE
+			case "$WALLET_TYPE" in
+				--generate-new-wallet|*new*)           WALLET_TYPE=new;break;;
+				--generate-from-view-key|*view*)       WALLET_TYPE=view;break;;
+				--restore-from-seed|*seed*)            WALLET_TYPE=seed;break;;
+				--generate-from-json|*json*)           WALLET_TYPE=json;break;;
+				--generate-from-spend-key|*spend*)     WALLET_TYPE=spend;break;;
+				--generate-from-device|*device*)       WALLET_TYPE=device;break;;
+				--generate-from-keys|*private*)        WALLET_TYPE=private;break;;
+				--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;break;;
+				*) print::error "Invalid method!"
+			esac
+		done
 		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 			"Create wallet type: " \
 			"[${WALLET_TYPE}]" \

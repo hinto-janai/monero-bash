@@ -22,7 +22,7 @@
 
 # structures for packages
 struct::pkg() {
-	log::debug "creating pkg structure for: $1"
+	log::debug "creating struct::pkg() for: $1"
 	declare -Ag PKG
 
 	# pick package with $1
@@ -99,34 +99,26 @@ struct::pkg() {
 	esac
 
 	# inferred variables
-	case "$1" in
-	monero)
-		PKG[link_api]="https://downloads.getmonero.org/cli/linux64"
-		PKG[link_http]="https://downloads.getmonero.org/cli/linux64"
-		;;
-	*)
-		PKG[link_api]="https://api.github.com/repos/${PKG[author]}/${PKG[name]}/releases/latest"
-		PKG[link_http]="https://github.com/${PKG[author]}/${PKG[name]}/releases/latest"
-		;;
-	esac
+	PKG[link_api]="https://api.github.com/repos/${PKG[author]}/${PKG[name]}/releases/latest"
+	PKG[link_html]="https://github.com/${PKG[author]}/${PKG[name]}/releases/latest"
 
 	# log::debug
-	log::debug "--- struct::pkg ---"
-	log::debug "PKG[name]            | ${PKG[name]}"
-	log::debug "PKG[pretty]          | ${PKG[pretty]}"
-	log::debug "PKG[var]             | ${PKG[var]}"
-	log::debug "PKG[author]          | ${PKG[author]}"
-	log::debug "PKG[gpg_owner]       | ${PKG[gpg_owner]}"
-	log::debug "PKG[service]         | ${PKG[service]}"
-	log::debug "PKG[process]         | ${PKG[process]}"
-	log::debug "PKG[directory]       | ${PKG[directory]}"
-	log::debug "PKG[regex]           | ${PKG[regex]}"
-	log::debug "PKG[hash]            | ${PKG[hash]}"
-	log::debug "PKG[signature]       | ${PKG[signature]}"
-	log::debug "PKG[gpg_pub_key]     | ${PKG[gpg_pub_key]}"
-	log::debug "PKG[gpg_fingerprint] | ${PKG[gpg_fingerprint]}"
-	log::debug "PKG[current_version] | ${PKG[current_version]}"
-	log::debug "PKG[old]             | ${PKG[old]}"
-	log::debug "PKG[link_api]        | ${PKG[link_api]}"
-	log::debug "PKG[link_http]       | ${PKG[link_http]}"
+#	log::debug "--- struct::pkg ---"
+#	log::debug "PKG[name]            | ${PKG[name]}"
+#	log::debug "PKG[pretty]          | ${PKG[pretty]}"
+#	log::debug "PKG[var]             | ${PKG[var]}"
+#	log::debug "PKG[author]          | ${PKG[author]}"
+#	log::debug "PKG[gpg_owner]       | ${PKG[gpg_owner]}"
+#	log::debug "PKG[service]         | ${PKG[service]}"
+#	log::debug "PKG[process]         | ${PKG[process]}"
+#	log::debug "PKG[directory]       | ${PKG[directory]}"
+#	log::debug "PKG[regex]           | ${PKG[regex]}"
+#	log::debug "PKG[hash]            | ${PKG[hash]}"
+#	log::debug "PKG[signature]       | ${PKG[signature]}"
+#	log::debug "PKG[gpg_pub_key]     | ${PKG[gpg_pub_key]}"
+#	log::debug "PKG[gpg_fingerprint] | ${PKG[gpg_fingerprint]}"
+#	log::debug "PKG[current_version] | ${PKG[current_version]}"
+#	log::debug "PKG[old]             | ${PKG[old]}"
+#	log::debug "PKG[link_api]        | ${PKG[link_api]}"
+#	log::debug "PKG[link_html]       | ${PKG[link_html]}"
 }

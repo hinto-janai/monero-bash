@@ -22,50 +22,60 @@
 
 # prompt for installing packages
 # uses variables from parse/options.sh
-install() {
-	log::debug "starting installation prompt"
+install::prompt() {
+	log::debug "starting ${FUNCNAME}()"
 
 	# CHECK FOR VERBOSE/FORCE
 	[[ $OPTION_VERBOSE = true ]] && printf "${BBLUE}%s${OFF}\n" "Installing verbosely...!"
 	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "Installing forcefully...!"
 
 	# CREATE INSTALL LIST
-	local INSTALL_LIST || return 1
-	[[ $OPTION_INSTALL_BASH = true ]]   && INSTALL_LIST="[monero-bash]"
-	[[ $OPTION_INSTALL_MONERO = true ]] && INSTALL_LIST="$INSTALL_LIST [monero]"
-	[[ $OPTION_INSTALL_P2POOL = true ]] && INSTALL_LIST="$INSTALL_LIST [p2pool]"
-	[[ $OPTION_INSTALL_XMRIG = true ]]  && INSTALL_LIST="$INSTALL_LIST [xmrig]"
+	char UPGRADE_LIST
+	[[ $OPTION_INSTALL_BASH = true ]]   && UPGRADE_LIST="[monero-bash]"
+	[[ $OPTION_INSTALL_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST [monero]"
+	[[ $OPTION_INSTALL_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST [p2pool]"
+	[[ $OPTION_INSTALL_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST [xmrig]"
 
 	# CHECK IF PACKAGE IS ALREADY INSTALLED
 	if [[ $OPTION_INSTALL_BASH = true && $MONERO_BASH_VER ]]; then
 		printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is already installed"
-		INSTALL_LIST="${INSTALL_LIST/\[monero-bash\]}"
+		UPGRADE_LIST="${UPGRADE_LIST/\[monero-bash\]}"
 	fi
 	if [[ $OPTION_INSTALL_MONERO = true && $MONERO_VER ]]; then
 		printf "${OFF}%s\n" "[monero] ($MONERO_VER) is already installed"
-		INSTALL_LIST="${INSTALL_LIST/\[monero\]}"
+		UPGRADE_LIST="${UPGRADE_LIST/\[monero\]}"
 	fi
 	if [[ $OPTION_INSTALL_P2POOL = true && $P2POOL_VER ]]; then
 		printf "${OFF}%s\n" "[p2pool] ($P2POOL_VER) is already installed"
-		INSTALL_LIST="${INSTALL_LIST/\[p2pool\]}"
+		UPGRADE_LIST="${UPGRADE_LIST/\[p2pool\]}"
 	fi
 	if [[ $OPTION_INSTALL_XMRIG = true && $XMRIG_VER ]]; then
 		printf "${OFF}%s\n" "[xmrig] ($XMRIG_VER) is already installed"
-		INSTALL_LIST="${INSTALL_LIST/\[xmrig\]}"
+		UPGRADE_LIST="${UPGRADE_LIST/\[xmrig\]}"
 	fi
-	[[ $INSTALL_LIST = " " ]] && exit 1
+	if [[ $UPGRADE_LIST = " " || -z $UPGRADE_LIST ]]; then
+		log::debug "UPGRADE_LIST is empty, exiting"
+		exit 1
+	fi
 
 	# PROMPT
 	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
 		"Packages to install: " \
-		"$INSTALL_LIST" \
+		"$UPGRADE_LIST" \
 		"Continue with installation? (Y/n) "
 	if ! ask::yes; then
 		print::exit "Canceling installation"
 	fi
 
+	# SUDO
+	if ! ask::sudo; then
+		print::exit "sudo is required"
+	fi
+
 	# START UPGRADE
-	[[ $OPTION_INSTALL_MONERO = true ]] && struct::pkg monero && upgrade
-	[[ $OPTION_INSTALL_P2POOL = true ]] && struct::pkg p2pool && upgrade
-	[[ $OPTION_INSTALL_XMRIG = true ]]  && struct::pkg xmrig  && upgrade
+	log::debug "starting install of packages: $UPGRADE_LIST"
+	UPGRADE_LIST=("$UPGRADE_LIST")
+	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
+	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
+	upgrade
 }

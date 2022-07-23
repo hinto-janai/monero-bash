@@ -22,7 +22,7 @@
 
 # wallet selection screen
 wallet::select() {
-	log::debug "starting wallet selection"
+	log::debug "starting ${FUNCNAME}()"
 	___BEGIN___ERROR___TRACE___
 
 	char WALLET_SELECTION
@@ -41,6 +41,7 @@ wallet::select() {
 	done
 	case "$WALLET_SELECTION" in
 		"$i") break;;
+		new|New|NEW) break;;
 		"")   print::error "Empty input";;
 		*)    print::error "Wallet not found";;
 	esac
@@ -49,9 +50,11 @@ wallet::select() {
 	# WALLET NAME COLLISION
 	if [[ $i = new || $i = New || $i = NEW ]]; then
 		while :; do
-			printf "${BWHITE}%s\n${OFF}%s" \
+			printf "${BWHITE}%s\n${BYELLOW}%s${OFF}%s${BRED}%s${OFF}" \
 				"Wallet name is similar to option..." \
-				"SELECT or CREATE? "
+				"SELECT " \
+				"or " \
+				"CREATE? "
 			local SELECT_CREATE
 			read -r SELECT_CREATE
 			case $SELECT_CREATE in
@@ -59,11 +62,13 @@ wallet::select() {
 				printf "${BWHITE}%s${BRED}%s${OFF}\n" \
 				"Selecting " \
 				"[$WALLET_SELECTION]"
-				break
+				wallet::password
+				wallet::start
+				exit
 				;;
 			create|Create|CREATE)
 				printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-				"Creating a" \
+				"Creating a " \
 				"[new] " \
 				"wallet"
 				wallet::create
@@ -74,15 +79,24 @@ wallet::select() {
 		done
 	fi
 
+	# NEW WALLET
+	case "$WALLET_SELECTION" in
+		new|New|NEW)
+			printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+			"Creating a " \
+			"[new] " \
+			"wallet"
+			wallet::create
+			exit
+			;;
+	esac
+
 	# WALLET PASS
 	wallet::password
-
-	# CHECK FOR MONERO
-	safety::package monero
 
 	# START WALLET
 	wallet::start
 
 	___ENDOF___ERROR___TRACE___
-	return 0
+	exit 0
 }

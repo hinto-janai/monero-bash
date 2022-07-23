@@ -22,13 +22,13 @@
 
 # count and list wallet names
 wallet::list() {
-	log::debug "starting wallet list"
+	log::debug "starting ${FUNCNAME}()"
 
 	# GET WALLETS
 	char WALLET_LIST_ALL
 	local WALLET_COUNT WALLET_LIST i
 	WALLET_LIST_ALL=("$(ls "$WALLETS" | grep -v ".keys")")
-	WALLET_COUNT="$(echo "$WALLETS" | wc -l)"
+	WALLET_COUNT="$(echo "${WALLET_LIST_ALL[@]}" | wc -l)"
 
 	# MAKE WALLET LIST []
 	for i in ${WALLET_LIST_ALL[@]}; do

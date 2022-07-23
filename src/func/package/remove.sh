@@ -20,14 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+### functions for removing packages
+
 # prompt for removing packages
 # uses variables from parse/options.sh
 # continues to remove()
 remove::prompt() {
-	log::debug "starting removal prompt"
+	log::debug "starting ${FUNCNAME}()"
 
-	# CREATE REMOVAL LIST
-	local REMOVAL_LIST || return 1
+	# CREATE REMOVE LIST
+	local REMOVE_LIST || return 1
 	if [[ $OPTION_REMOVE_BASH = true ]]; then
 		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
 			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
@@ -73,4 +75,47 @@ remove::prompt() {
 	[[ $OPTION_REMOVE_MONERO = true ]] && struct::pkg monero && remove
 	[[ $OPTION_REMOVE_P2POOL = true ]] && struct::pkg p2pool && remove
 	[[ $OPTION_REMOVE_XMRIG = true ]]  && struct::pkg xmrig  && remove
+}
+
+# remove packages
+# called from remove::prompt()
+# assumes ask::sudo() was called
+remove() {
+	log::debug "starting ${FUNCNAME}() on package: ${PKG[name]}"
+
+	___BEGIN___ERROR___TRACE___
+	trap "" INT
+	print::remove
+
+	# SET TRAP
+	trap 'trap::remove &' EXIT
+
+	# REMOVE PKG DIRECTORY
+	log::prog "${PKG[directory]}..."
+	rm "${PKG[directory]}"
+	log::ok "${PKG[directory]} deleted"
+
+	# REMOVE SYSTEMD SERVICE
+	log::prog "${PKG[service]}..."
+	sudo rm "$SYSTEMD/${PKG[service]}"
+	log::ok "${PKG[service]} deleted"
+
+	# UPDATE LOCAL STATE
+	log::prog "Updating local state..."
+	sudo sed \
+		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
+		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
+	log::ok "Updated local state"
+
+	# FREE TRAP
+	trap - INT EXIT
+
+	# RELOAD SYSTEMD
+	log::prog "Reloading systemd..."
+	systemd::reload
+	log::ok "Reloaded systemd"
+
+	# END
+	print::removed
+	___ENDOF___ERROR___TRACE___
 }

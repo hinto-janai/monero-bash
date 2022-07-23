@@ -22,7 +22,7 @@
 
 # for resetting config files and systemd services
 process::reset_files() {
-	log::debug "starting process::reset_files"
+	log::debug "starting ${FUNCNAME}()"
 
 	# CHECK IF PACKAGE IS INSTALLED
 	if [[ -z ${PKG[version]} ]]; then

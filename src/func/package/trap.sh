@@ -20,40 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# remove packages
-# called from remove::prompt()
-# assumes ask::sudo() was called
-remove() {
-	log::debug "starting removal of: ${PKG[name]}"
+# traps for the upgrade process
+trap::pkg_folders() {
+	log::debug "starting ${FUNCNAME}()"
 
-	___BEGIN___ERROR___TRACE___
-	trap "" INT
-	print::remove
+	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
+	"[monero-bash] " \
+	"exit signal caught " \
+	"| " \
+	"cleaning up temporary files"
 
-	# REMOVE PKG DIRECTORY
-	log::prog "${PKG[directory]}..."
-	rm "${PKG[directory]}"
-	log::ok "${PKG[directory]} deleted"
+	tmp::remove
+}
 
-	# REMOVE SYSTEMD SERVICE
-	log::prog "${PKG[service]}..."
-	sudo rm "$SYSTEMD/${PKG[service]}"
-	log::ok "${PKG[service]} deleted"
+# trap for remove()
+# updates the state
+trap::remove() {
+	log::debug "starting ${FUNCNAME}()"
 
-	# UPDATE LOCAL STATE
-	log::prog "Updating local state..."
+	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
+	"[monero-bash] " \
+	"exit signal caught " \
+	"| " \
+	"updating local state"
+
 	sudo sed \
 		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
 		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
-	log::ok "Updated local state"
-
-	# RELOAD SYSTEMD
-	log::prog "Reloading systemd..."
-	systemd::reload
-	log::ok "Reloaded systemd"
-
-	# END
-	print::removed
-	___ENDOF___ERROR___TRACE___
 }
 

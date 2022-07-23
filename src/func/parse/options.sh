@@ -23,75 +23,123 @@
 # parse user input
 
 parse::options() {
-log::debug "parsing user input"
+log::debug "starting ${FUNCNAME}"
 log::debug "user input: $*"
+log::debug "unsetting OPTION variables"
+unset -v OPTION_BASH OPTION_MONERO OPTION_P2POOL OPTION_XMRIG OPTION_VERBOSE OPTION_FORCE
+
 until [[ $# = 0 ]]; do
 case "$1" in
+	new)       wallet::create  ;exit;;
+	rpc)       rpc::daemon "$@";exit;;
+	list)      wallet::list    ;exit;;
+	help)      print::help     ;exit;;
+	size)      print::size     ;exit;;
+	config)    config          ;exit;;
+	status)    status          ;exit;;
+	version)   print::version  ;exit;;
 	uninstall) monero_bash::uninstall; exit;;
-	rpc)       rpc::daemon "$@"; exit;;
+	update)
+		___BEGIN___ERROR___TRACE___
+		update
+		___ENDOF___ERROR___TRACE___
+		exit
+		;;
+	# PACKAGE MANAGER
 	install)
 		shift
+		if [[ $# = 0 ]]; then
+			print::error "Pick one/multiple packages"
+			print::version
+			exit 1
+		fi
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_INSTALL_BASH=true;;
-			monero)       OPTION_INSTALL_MONERO=true;;
-			*p2p*)        OPTION_INSTALL_P2POOL=true;;
-			*xmr*)        OPTION_INSTALL_XMRIG=true;;
-			--force|-f)   OPTION_FORCE=true;;
-			--verbose|-v) OPTION_VERBOSE=true;;
-			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
-			*)            break;;
+			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+			monero|Monero|MONERO) OPTION_MONERO=true;;
+			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+			--verbose|-v)         OPTION_VERBOSE=true;;
+			*)
+				print::error "Invalid option: $1"
+				print::error "Pick one/multiple packages"
+				print::version
+				exit 1
+				;;
 		esac
 		shift
 		done
-		install::pkg
+		___BEGIN___ERROR___TRACE___
+		install::prompt
+		___ENDOF___ERROR___TRACE___
 		exit
 		;;
 	remove)
 		shift
+		if [[ $# = 0 ]]; then
+			print::error "Pick one/multiple packages"
+			print::version
+			exit 1
+		fi
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_REMOVE_BASH=true;;
-			monero)       OPTION_REMOVE_MONERO=true;;
-			*p2p*)        OPTION_REMOVE_P2POOL=true;;
-			*xmr*)        OPTION_REMOVE_XMRIG=true;;
-			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
-			*)            break;;
+			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+			monero|Monero|MONERO) OPTION_MONERO=true;;
+			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+			*)
+				print::error "Invalid option: $1"
+				print::error "Pick one/multiple packages"
+				print::version
+				exit 1
+				;;
 		esac
 		shift
 		done
-		remove::pkg
+		___BEGIN___ERROR___TRACE___
+		remove::prompt
+		___ENDOF___ERROR___TRACE___
 		exit
 		;;
-	update) update::pkg; exit;;
 	upgrade)
 		shift
+		if [[ $# = 0 ]]; then
+			print::error "Pick one/multiple packages"
+			print::version
+			exit 1
+		fi
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_UPGRADE_BASH=true;;
-			monero)       OPTION_UPGRADE_MONERO=true;;
-			*p2p*)        OPTION_UPGRADE_P2POOL=true;;
-			*xmr*)        OPTION_UPGRADE_XMRIG=true;;
-			--force|-f)   OPTION_FORCE=true;;
-			--verbose|-v) OPTION_VERBOSE=true;;
-			"") print::error "Pick one/multiple packages"; print::version; exit 1;;
-			*)            break;;
+			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+			monero|Monero|MONERO) OPTION_MONERO=true;;
+			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+			--force|-f)           OPTION_FORCE=true;;
+			--verbose|-v)         OPTION_VERBOSE=true;;
+			*)
+				print::error "Invalid option: $1"
+				print::error "Pick one/multiple packages"
+				print::version
+				exit 1
+				;;
 		esac
 		shift
 		done
-		upgrade::pkg
+		___BEGIN___ERROR___TRACE___
+		upgrade::prompt
+		___ENDOF___ERROR___TRACE___
 		exit
 		;;
-	version) print::version; exit;;
-	config)  config::mining; exit;;
+
+	# PROCESS
 	start)
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -104,10 +152,10 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -120,10 +168,10 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -136,10 +184,10 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -152,10 +200,10 @@ case "$1" in
 		shift
 		[[ $# -gt 1 ]] && print::error "Pick one process: [monerod/p2pool/xmrig]"; exit 1
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one process: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -166,10 +214,10 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -182,10 +230,10 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
-			*bash*)       OPTION_PROCESS_BASH=true;;
-			monero)       OPTION_PROCESS_MONERO=true;;
-			*p2p*)        OPTION_PROCESS_P2POOL=true;;
-			*xmr*)        OPTION_PROCESS_XMRIG=true;;
+			*bash*)       OPTION_BASH=true;;
+			monero)       OPTION_MONERO=true;;
+			*p2p*)        OPTION_P2POOL=true;;
+			*xmr*)        OPTION_XMRIG=true;;
 			"") print::error "Pick one/multiple to edit: [monerod/p2pool/xmrig]"; exit 1;;
 			*)            break;;
 		esac
@@ -206,10 +254,8 @@ case "$1" in
 		process::reset_files
 		exit
 		;;
-	status) status::print; exit;;
-	list)   wallet::list;  exit;;
-	new)    wallet::create;exit;;
-	size)   print::size;   exit;;
+
+	# MISC
 	changes)
 		shift
 		[[ $# = 0 ]] && print::changelog && exit
@@ -223,14 +269,10 @@ case "$1" in
 		done
 		exit
 		;;
-	help)   print::help;   exit;;
 	*)
 		log::debug "user input failed: $1"
-		print::error "invalid option!"
-		printf "${OFF}%s${BRED}%s${OFF}\n" \
-			"for help, type:" \
-			"monero-bash help"
-		exit 1
+		print::error "Invalid option!"
+		print::exit "$(printf "${OFF}%s${BYELLOW}%s${OFF}\n" "For help, type: " "monero-bash help")"
 		;;
 esac
 done

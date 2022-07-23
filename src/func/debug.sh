@@ -24,7 +24,9 @@
 # this skips safety checks and option parsing
 # use carefully!
 DEBUG() {
-	log::debug "starting debug function mode"
+	log::debug "starting ${FUNCNAME}()"
+	log::debug "entering debug function mode"
+
 	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BGREEN}%s${OFF}\n" \
 		"====    MONERO-BASH DEBUG MODE   ===="
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \

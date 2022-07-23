@@ -22,6 +22,7 @@
 
 #include <stdlib/src/ask.sh>
 #include <stdlib/src/crypto.sh>
+#include <stdlib/src/const.sh>
 #include <stdlib/src/date.sh>
 #include <stdlib/src/debug.sh>
 #include <stdlib/src/is.sh>
@@ -36,7 +37,9 @@
 main() {
 #----------------------------------------- main() START
 #log::debug "main() started, log::debug initialization"
-#
+# allow for job control
+set -m
+
 ##----------------------------------------- DEBUG
 #[[ $1 = DEBUG ]] && DEBUG "$@"
 #
@@ -51,7 +54,7 @@ main() {
 ## check for pipe
 #safety::pipe
 ## check for wget/curl
-#safety::wget_curl
+safety::wget_curl
 #
 ##----------------------------------------- FIRST TIME INSTALLATION
 #if [[ $FIRST_TIME = true ]]; then

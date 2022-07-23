@@ -22,7 +22,9 @@
 
 # print size of monero-bash folders
 print::size() {
+	log::debug "starting ${FUNCNAME}()"
 	log::debug "getting folder sizes"
+
 	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
 	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
 	SIZE_MONERO=$(du -h "$PKG_MONERO")

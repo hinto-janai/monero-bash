@@ -26,8 +26,8 @@
 wallet::start() {
 	log::debug "starting wallet: $WALLET_SELECTION"
 
-	# Delete one-time crypto key
-	trap 'crypto::key::remove' EXIT
+	# Check for Monero
+	safety::pkg monero
 
 	# Create files within /.monero-bash/
 	cd "$DOT"

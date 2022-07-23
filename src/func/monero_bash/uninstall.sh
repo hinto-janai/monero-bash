@@ -23,7 +23,7 @@
 # uninstall for monero-bash
 monero_bash::uninstall() {
 
-log::debug "starting monero_bash::uninstall()"
+log::debug "starting ${FUNCNAME}()"
 
 # TITLE
 printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s${OFF}\n" \

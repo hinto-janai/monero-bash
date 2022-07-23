@@ -22,6 +22,8 @@
 
 # changelog title
 print::changelog::title() {
+	log::debug "starting ${FUNCNAME}()"
+
 	local CHANGELOG_TITLE CHANGELOG_RELEASE_DATE || return 1
 	CHANGELOG_VERSION="$1"
 	CHANGELOG_RELEASE_DATE="$2"

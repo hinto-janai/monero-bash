@@ -20,26 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# safety check for wget/curl
-# and set global variable
-safety::wget_curl() {
+# Fetch and filter download links for package upgrades
+info() {
 	log::debug "starting ${FUNCNAME}()"
 
-	char DOWNLOAD_CMD
-	if hash curl &>/dev/null; then
-		DOWNLOAD_CMD="curl --silent -o"
-		log::debug "curl found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
-	elif hash wget &>/dev/null; then
-		DOWNLOAD_CMD="wget --quiet -o"
-		log::debug "wget found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
-	fi
-	const::char DOWNLOAD_CMD
-
-	if [[ -z $DOWNLOAD_CMD ]]; then
-		print::error "both [wget] and [curl] were not found!"
-		print::error "monero-bash needs at least one to be installed"
-		print::exit  "Exiting for safety..."
-	else
-		return 0
-	fi
 }

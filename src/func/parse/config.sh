@@ -22,7 +22,7 @@
 
 # parse [monero-bash.conf] safely
 parse::config() {
-	log::debug "parsing monero-bash.conf"
+	log::debug "starting ${FUNCNAME}()"
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
 	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
 	for i in "${CONFIG_ARRAY[@]}"; do

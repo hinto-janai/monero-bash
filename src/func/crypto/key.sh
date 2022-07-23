@@ -20,30 +20,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# checks if package binary is found
-# usage: $1 = package to search for
-safety::package() {
-	log::debug "starting safety::package"
+# handle creation/removal of cryptographic key files
+# currently used for encrypting wallet passwords
+# assumes trace() is already set.
+# called from: wallet/start.sh
+crypto::key::create() {
+	log::debug "creating one-time key with 4096 bits of entropy"
 
-	[[ $1 ]] || return 1
-	struct::pkg "$1" || return 2
+	# CREATE KEY FILE
+	char CRYPTO_KEY
+	CRYPTO_KEY=$(mktemp /tmp/monero-bash-crypto-key.XXXXXXXXXX)
+	chmod 600 "$CRYPTO_KEY"
 
-	# check if installed
-	if [[ ${PKG[current_version]} ]]; then
-		log::debug "${PKG[pretty]} (${PKG[current_version]}) is installed"
-	else
-		print::exit "${PKG[pretty]} is not installed"
-	fi
+	# 4096 BITS / 512 BYTES OF ENTROPY
+	crypto::bytes 512 | base64 > "$CRYPTO_KEY"
 
-	# check for binary
-	case "${PKG[name]}" in
-		*bash*)   [[ -e $PKG_MONERO_BASH/monero-bash ]] || print::exit "monero-bash not found, this error should be impossible!";;
-		*monero*)
-			[[ -e $PKG_MONERO/monerod ]]                || print::exit "monerod binary was not found!"
-			[[ -e $PKG_MONERO/monero-wallet-cli ]]      || print::exit "monero-wallet-cli binary was not found!"
-			;;
-		*p2p*)    [[ -e $PKG_P2POOL/p2pool ]]           || print::exit "P2Pool binary was not found!";;
-		*xmr*)    [[ -e $PKG_XMRIG/xmrig ]]             || print::exit "XMRig binary was not found!";;
-	esac
+	log::debug "created one-time key: $CRYPTO_KEY"
 	return 0
+}
+
+crypto::key::remove() {
+	log::debug "deleting one-time key: $CRYPTO_KEY"
+
+	# CHECK IF EXISTS
+	[[ -e $CRYPTO_KEY ]]
+
+	# REMOVE
+	rm "$CRYPTO_KEY"
+	free CRYPTO_KEY
 }

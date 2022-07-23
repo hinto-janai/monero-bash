@@ -23,7 +23,7 @@
 # create a systemd service file for packages
 # assumes ask::sudo() is already triggered
 systemd::create() {
-	log::debug "starting systemd::create()"
+	log::debug "starting ${FUNCNAME}()"
 
 	# CREATE TMP SERVICE FILE
 	umask 133 || return 1

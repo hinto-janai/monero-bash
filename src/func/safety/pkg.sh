@@ -20,26 +20,30 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# safety check for wget/curl
-# and set global variable
-safety::wget_curl() {
+# checks if package binary is found
+# usage: $1 = package to search for
+safety::pkg() {
 	log::debug "starting ${FUNCNAME}()"
 
-	char DOWNLOAD_CMD
-	if hash curl &>/dev/null; then
-		DOWNLOAD_CMD="curl --silent -o"
-		log::debug "curl found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
-	elif hash wget &>/dev/null; then
-		DOWNLOAD_CMD="wget --quiet -o"
-		log::debug "wget found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
-	fi
-	const::char DOWNLOAD_CMD
+	[[ $1 ]] || return 1
+	struct::pkg "$1" || return 2
 
-	if [[ -z $DOWNLOAD_CMD ]]; then
-		print::error "both [wget] and [curl] were not found!"
-		print::error "monero-bash needs at least one to be installed"
-		print::exit  "Exiting for safety..."
+	# check if installed
+	if [[ ${PKG[current_version]} ]]; then
+		log::debug "${PKG[pretty]} (${PKG[current_version]}) is installed"
 	else
-		return 0
+		print::exit "${PKG[pretty]} is not installed"
 	fi
+
+	# check for binary
+	case "${PKG[name]}" in
+		*bash*)   [[ -e $PKG_MONERO_BASH/monero-bash ]] || print::exit "monero-bash not found, this error should be impossible!";;
+		*monero*)
+			[[ -e $PKG_MONERO/monerod ]]                || print::exit "monerod binary was not found!"
+			[[ -e $PKG_MONERO/monero-wallet-cli ]]      || print::exit "monero-wallet-cli binary was not found!"
+			;;
+		*p2p*)    [[ -e $PKG_P2POOL/p2pool ]]           || print::exit "P2Pool binary was not found!";;
+		*xmr*)    [[ -e $PKG_XMRIG/xmrig ]]             || print::exit "XMRig binary was not found!";;
+	esac
+	return 0
 }

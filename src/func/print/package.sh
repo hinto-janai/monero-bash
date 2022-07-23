@@ -24,33 +24,41 @@
 # package installation/upgrade/removal
 # assumes struct::pkg() has been called
 print::download() {
-	printf "${BGREEN}%s\n" "#---------# Downloading [${PKG[pretty]}] #---------#"
+	printf "${BGREEN}%s${OFF}\n" "#---------# Downloading #---------#"
+}
+
+print::update() {
+	printf "${BYELLOW}%s${OFF}\n" "#---------# Updating #---------#"
 }
 
 print::remove() {
-	printf "${BRED}%s\n" "#---------# Removing [${PKG[pretty]}] #---------#"
+	printf "${BRED}%s${OFF}\n" "#---------# Removing [${PKG[pretty]}] #---------#"
 }
 
 print::verify() {
-	printf "${BYELLOW}%s\n" "#---# Verifying [${PKG[pretty]}] #---#"
+	printf "${BYELLOW}%s${OFF}\n" "#---# Verifying #---#"
 }
 
 print::extract() {
-	printf "${BRED}%s\n" "#---# Extracting [${PKG[pretty]}] #---#"
+	printf "${BRED}%s${OFF}\n" "#---# Extracting #---#"
 }
 
 print::state() {
-	printf "${BBLUE}%s\n" "#---# Updating local state #---#"
+	printf "${BBLUE}%s${OFF}\n" "#---# Updating local state #---#"
 }
 
 print::installed() {
-	printf "${BGREEN}%s\n" "#---------# Installed [${PKG[pretty]}] #---------#"
+	printf "${BGREEN}%s${OFF}\n" "#---------# Install done #---------#"
 }
 
 print::upgraded() {
-	printf "${BGREEN}%s\n" "#---------# Upgraded [${PKG[pretty]}] #---------#"
+	printf "${BGREEN}%s${OFF}\n" "#---------# Upgrade done #---------#"
 }
 
 print::removed() {
-	printf "${BRED}%s\n" "#---------# Removed [${PKG[pretty]}] #---------#"
+	printf "${BRED}%s${OFF}\n" "#---------# Removed [${PKG[pretty]}] #---------#"
+}
+
+print::updated() {
+	printf "${BYELLOW}%s${OFF}\n" "#---------# All packages up-to-date #---------#"
 }

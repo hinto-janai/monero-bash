@@ -22,7 +22,7 @@
 
 # path sanity checks
 safety::path() {
-	log::debug "starting path safety check"
+	log::debug "starting ${FUNCNAME}()"
 	local SAFETY_PATH
 	SAFETY_PATH="$(realpath $0)"
 	log::debug "realpath: $SAFETY_PATH"

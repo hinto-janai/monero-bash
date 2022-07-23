@@ -23,7 +23,7 @@
 # install for monero-bash
 monero_bash::install() {
 
-log::debug "starting monero_bash::install()"
+log::debug "starting ${FUNCNAME}()"
 
 # SAFETY CHECKS
 # monero-bash already found

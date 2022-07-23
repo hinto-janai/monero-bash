@@ -22,6 +22,8 @@
 
 # message to print when [hash/gpg] is wrong
 print::compromised::hash() {
+	log::debug "package hash error has occurred for: ${PKG[name]}"
+
 	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: HASH ERROR!                       " \
@@ -39,6 +41,8 @@ print::compromised::hash() {
 }
 
 print::compromised::gpg() {
+	log::debug "package gpg error has occurred for: ${PKG[name]}"
+
 	printf "${BWHITE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: GPG ERROR!                       " \

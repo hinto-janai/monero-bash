@@ -22,7 +22,7 @@
 
 # parse the state file safely
 parse::state() {
-	log::debug "parsing state file"
+	log::debug "starting ${FUNCNAME}()"
 	local i IFS=$'\n' STATE_ARRAY || return 1
 	mapfile STATE_ARRAY < "$STATE" || return 2
 	for i in "${OPTIONS[@]}"; do

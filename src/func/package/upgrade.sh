@@ -20,32 +20,42 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# handle creation/removal of cryptographic key files
-# currently used for encrypting wallet passwords
-# assumes trace() is already set.
-# called from: wallet/start.sh
-crypto::key::create() {
-	log::debug "creating key with 8192 bits of entropy"
+# meta function that upgrades packages
+# called by: install::prompt()
+#
+# uses:      trap()
+#            mktemp()
+#            download()
+#            verify()
+upgrade() {
+	# log::debug
+	[[ $OPTION_VERBOSE = true ]] && STD_LOG_DEBUG=true
+	log::debug "starting ${FUNCNAME}()"
+	if [[ $UPGRADE_LIST ]]; then
+		log::debug "packages getting upgraded: $UPGRADE_LIST"
+	elif [[ $INSTALL_LIST ]]; then
+		log::debug "packages getting installed: $UPGRADE_LIST"
+	fi
 
-	# CREATE KEY FILE
-	char CRYPTO_KEY
-	CRYPTO_KEY=$(mktemp /tmp/monero-bash-crypto-key.XXXXXXXXXX)
-	chmod 600 "$CRYPTO_KEY"
+	# CREATE TMP FOLDERS
+	trap 'trap::pkg_folders &' EXIT
+	tmp::pkg_folders
 
-	# 4096 BITS / 512 BYTES OF ENTROPY
-	crypto::bytes 512 | base64 > "$CRYPTO_KEY"
+	# PRINT TITLE
+	print::download
 
-	log::debug "created key: $CRYPTO_KEY"
-	return 0
+	# DOWNLOAD
+	download
 }
 
-crypto::key::remove() {
-	log::debug "deleting key: $CRYPTO_KEY"
 
-	# CHECK IF EXISTS
-	[[ -e $CRYPTO_KEY ]]
 
-	# REMOVE
-	rm "$CRYPTO_KEY"
-	free CRYPTO_KEY
-}
+
+
+
+
+
+
+
+
+
