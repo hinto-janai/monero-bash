@@ -43,7 +43,7 @@ readonly PKG_XMRIG="$PACKAGES/xmrig"
 
 # monero-bash package source files
 readonly SRC="$PKG_MONERO_BASH/src"
-readonly TXT="$SRC/txt"
+readonly TXT="$PKG_MONERO_BASH/txt"
 readonly HASHLIST="$TXT/hashlist"
 readonly STATE="$TXT/state"
 readonly MAIN="$PKG_MONERO_BASH/monero-bash"

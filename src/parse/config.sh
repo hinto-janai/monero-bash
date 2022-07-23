@@ -26,15 +26,24 @@ parse::config() {
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
 	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
 	for i in "${CONFIG_ARRAY[@]}"; do
-		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
-		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
-		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]         && declare -g XMRIG_ROOT="true"         || declare -g XMRIG_ROOT=""
-		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
-		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
-		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
-		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]  && declare -g STD_LOG_DEBUG="true"
-		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE="true"
+		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]]        && declare -g AUTO_START_MONEROD=true
+		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]         && declare -g AUTO_STOP_MONEROD=true
+		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]                && declare -g XMRIG_ROOT=true
+		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]               && declare -g AUTO_UPDATE=true
+		[[ $i =~ ^RPC_IP=*$ ]]                                   && declare -g RPC_IP="${i/*=/}"
+		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]         && declare -g STD_LOG_DEBUG=true
+		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
 	done
+
+	# DEFAULTS
+	[[ $AUTO_START_MONEROD != true ]]        && declare -g AUTO_START_MONEROD=false
+	[[ $AUTO_STOP_MONEROD != true ]]         && declare -g AUTO_STOP_MONEROD=false
+	[[ $XMRIG_ROOT != true ]]                && declare -g XMRIG_ROOT=false
+	[[ $AUTO_UPDATE != true ]]               && declare -g AUTO_UPDATE=false
+	[[ -z $RPC_IP ]]                         && declare -g RPC_IP="localhost:18081"
+	[[ $MONERO_BASH_DEBUG != true ]]         && declare -g MONERO_BASH_DEBUG=false
+	[[ $MONERO_BASH_DEBUG_VERBOSE != true ]] && declare -g MONERO_BASH_DEBUG_VERBOSE=false
+
 	log::debug "--- monero-bash.conf settings ---"
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"

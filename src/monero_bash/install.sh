@@ -147,7 +147,7 @@ fi
 
 # HASH CHECK
 log::prog "verifying monero-bash file hashes"
-if sha256sum --quiet --check "src/txt/hashlist"; then
+if sha256sum --quiet --check "txt/hashlist"; then
 	log::ok "monero-bash file hashes"
 else
 	log::fail "monero-bash file hashes"
@@ -178,6 +178,7 @@ log::ok "created .monero-bash folders"
 log::prog "copying monero-bash files"
 cp -r monero-bash "$PKG_MONERO_BASH"
 cp -r src "$PKG_MONERO_BASH"
+cp -r txt "$PKG_MONERO_BASH"
 cp -r gpg "$PKG_MONERO_BASH"
 log::prog "copied monero-bash files"
 

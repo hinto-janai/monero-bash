@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/4b31bd6>
-#nix <1658599186>
+#git <monero-bash/27a2ab2>
+#nix <1658607693>
 #hbc <5fdfdff>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -38,49 +38,50 @@
 #lib <stdlib/safety.sh/1eaba1f>
 #lib <stdlib/trace.sh/1eaba1f>
 #lib <stdlib/type.sh/1eaba1f>
-#src <func/crypto/key.sh>
-#src <func/debug.sh>
-#src <func/monero_bash/install.sh>
-#src <func/monero_bash/uninstall.sh>
-#src <func/parse/config.sh>
-#src <func/parse/options.sh>
-#src <func/parse/p2pool.sh>
-#src <func/parse/state.sh>
-#src <func/pkg/download.sh>
-#src <func/pkg/info.sh>
-#src <func/pkg/prompt.sh>
-#src <func/pkg/remove.sh>
-#src <func/pkg/tmp.sh>
-#src <func/pkg/trap.sh>
-#src <func/pkg/update.sh>
-#src <func/pkg/upgrade.sh>
-#src <func/print/changelog.sh>
-#src <func/print/compromised.sh>
-#src <func/print/error.sh>
-#src <func/print/help.sh>
-#src <func/print/package.sh>
-#src <func/print/size.sh>
-#src <func/print/title.sh>
-#src <func/print/version.sh>
-#src <func/process/reset_files.sh>
-#src <func/safety/path.sh>
-#src <func/safety/pipe.sh>
-#src <func/safety/pkg.sh>
-#src <func/safety/root.sh>
-#src <func/safety/wget_curl.sh>
-#src <func/status/monerod.sh>
-#src <func/status/p2pool.sh>
-#src <func/status/table.sh>
-#src <func/status/xmrig.sh>
-#src <func/struct/pkg.sh>
-#src <func/systemd/create.sh>
-#src <func/systemd/reload.sh>
-#src <func/wallet/create.sh>
-#src <func/wallet/list.sh>
-#src <func/wallet/password.sh>
-#src <func/wallet/select.sh>
-#src <func/wallet/start.sh>
+#src <crypto/key.sh>
+#src <debug.sh>
+#src <monero_bash/install.sh>
+#src <monero_bash/uninstall.sh>
+#src <parse/config.sh>
+#src <parse/options.sh>
+#src <parse/p2pool.sh>
+#src <parse/state.sh>
+#src <pkg/download.sh>
+#src <pkg/info.sh>
+#src <pkg/prompt.sh>
+#src <pkg/remove.sh>
+#src <pkg/tmp.sh>
+#src <pkg/trap.sh>
+#src <pkg/update.sh>
+#src <pkg/upgrade.sh>
+#src <print/changelog.sh>
+#src <print/compromised.sh>
+#src <print/error.sh>
+#src <print/help.sh>
+#src <print/package.sh>
+#src <print/size.sh>
+#src <print/title.sh>
+#src <print/version.sh>
+#src <process/reset_files.sh>
 #src <readonly.sh>
+#src <rpc.sh>
+#src <safety/path.sh>
+#src <safety/pipe.sh>
+#src <safety/pkg.sh>
+#src <safety/root.sh>
+#src <safety/wget_curl.sh>
+#src <status/monerod.sh>
+#src <status/p2pool.sh>
+#src <status/table.sh>
+#src <status/xmrig.sh>
+#src <struct/pkg.sh>
+#src <systemd/create.sh>
+#src <systemd/reload.sh>
+#src <wallet/create.sh>
+#src <wallet/list.sh>
+#src <wallet/password.sh>
+#src <wallet/select.sh>
+#src <wallet/start.sh>
 
 #-------------------------------------------------------------------------------- BEGIN SAFETY
 POSIXLY_CORRECT= || exit 90
@@ -903,7 +904,7 @@ if ! ask::sudo; then
 	print::exit "sudo is required for installation"
 fi
 log::prog "verifying monero-bash file hashes"
-if sha256sum --quiet --check "src/txt/hashlist"; then
+if sha256sum --quiet --check "txt/hashlist"; then
 	log::ok "monero-bash file hashes"
 else
 	log::fail "monero-bash file hashes"
@@ -927,6 +928,7 @@ log::ok "created .monero-bash folders"
 log::prog "copying monero-bash files"
 cp -r monero-bash "$PKG_MONERO_BASH"
 cp -r src "$PKG_MONERO_BASH"
+cp -r txt "$PKG_MONERO_BASH"
 cp -r gpg "$PKG_MONERO_BASH"
 log::prog "copied monero-bash files"
 log::prog "cleaning git files"
@@ -1062,15 +1064,21 @@ parse::config() {
 	local i IFS=$'\n' CONFIG_ARRAY || return 1
 	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
 	for i in "${CONFIG_ARRAY[@]}"; do
-		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]] && declare -g AUTO_START_MONEROD="true" || declare -g AUTO_START_MONEROD="false"
-		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]  && declare -g AUTO_STOP_MONEROD="true"  || declare -g AUTO_STOP_MONEROD="false"
-		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]         && declare -g XMRIG_ROOT="true"         || declare -g XMRIG_ROOT=""
-		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]        && declare -g AUTO_UPDATE="true"        || declare -g AUTO_UPDATE="false"
-		[[ $i =~ ^RPC_IP=*$ ]]                            && declare -g RPC_IP="${i/*=/}"
-		[[ $i =~ ^RPC_VERBOSE=true[[:space:]]+$ ]]        && declare -g RPC_VERBOSE="true" || declare -g RPC_VERBOSE="false"
-		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]  && declare -g STD_LOG_DEBUG="true"
-		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE="true"
+		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]]        && declare -g AUTO_START_MONEROD=true
+		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]         && declare -g AUTO_STOP_MONEROD=true
+		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]                && declare -g XMRIG_ROOT=true
+		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]               && declare -g AUTO_UPDATE=true
+		[[ $i =~ ^RPC_IP=*$ ]]                                   && declare -g RPC_IP="${i/*=/}"
+		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]         && declare -g STD_LOG_DEBUG=true
+		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
 	done
+	[[ $AUTO_START_MONEROD != true ]]        && declare -g AUTO_START_MONEROD=false
+	[[ $AUTO_STOP_MONEROD != true ]]         && declare -g AUTO_STOP_MONEROD=false
+	[[ $XMRIG_ROOT != true ]]                && declare -g XMRIG_ROOT=false
+	[[ $AUTO_UPDATE != true ]]               && declare -g AUTO_UPDATE=false
+	[[ -z $RPC_IP ]]                         && declare -g RPC_IP="localhost:18081"
+	[[ $MONERO_BASH_DEBUG != true ]]         && declare -g MONERO_BASH_DEBUG=false
+	[[ $MONERO_BASH_DEBUG_VERBOSE != true ]] && declare -g MONERO_BASH_DEBUG_VERBOSE=false
 	log::debug "--- monero-bash.conf settings ---"
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
@@ -1081,247 +1089,210 @@ parse::config() {
 	log::debug "MONERO_BASH_DEBUG         | $STD_LOG_DEBUG"
 	log::debug "MONERO_BASH_DEBUG_VERBOSE | $STD_LOG_DEBUG_VERBOSE"
 }
+parse::options::pkg() {
+	[[ $# = 1 ]] && print::help::command "$1"
+	shift
+	case "$1" in
+		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+		monero|Monero|MONERO) OPTION_MONERO=true;;
+		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+		*)
+			print::error "Invalid option: $1"
+			print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
+			;;
+	esac
+	until [[ $# = 0 ]]; do
+	shift
+	case "$1" in
+		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+		monero|Monero|MONERO) OPTION_MONERO=true;;
+		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+		--verbose|-v)         OPTION_VERBOSE=true;;
+		--force|-f)           OPTION_FORCE=true;;
+		"")                   return 0;;
+		*)
+			print::error "Invalid option: $1"
+			print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
+			;;
+	esac
+	done
+}
+parse::options::process() {
+	[[ $# = 1 ]] && print::help::command "$1"
+	shift
+	case "$1" in
+		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+		monero|Monero|MONERO) OPTION_MONERO=true;;
+		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+		*)
+			print::error "Invalid option: $1"
+			print::exit  "Pick one/multiple processes: [bash|monero|p2pool|xmrig]"
+			;;
+	esac
+	until [[ $# = 0 ]]; do
+	shift
+	case "$1" in
+		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+		monero|Monero|MONERO) OPTION_MONERO=true;;
+		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+		"")                   return 0;;
+		*)
+			print::error "Invalid option: $1"
+			print::exit  "Pick one/multiple processes: [bash|monero|p2pool|xmrig]"
+			;;
+	esac
+	done
+}
+parse::options::systemd() {
+	[[ $# = 1 ]] && print::help::command "$1"
+	until [[ $# = 0 ]]; do
+	shift
+	case "$1" in
+		monero|Monero|MONERO) OPTION_MONERO=true;;
+		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+		"")                   return 0;;
+		*)
+			print::error "Invalid option: $1"
+			print::exit  "Pick one/multiple processes: [monero|p2pool|xmrig]"
+			;;
+	esac
+	done
+}
 parse::options() {
 log::debug "starting ${FUNCNAME}"
 log::debug "user input: $*"
 log::debug "unsetting OPTION variables"
 unset -v OPTION_BASH OPTION_MONERO OPTION_P2POOL OPTION_XMRIG OPTION_VERBOSE OPTION_FORCE
-until [[ $# = 0 ]]; do
 case "$1" in
-	new)       wallet::create  ;exit;;
-	rpc)       rpc::daemon "$@";exit;;
-	list)      wallet::list    ;exit;;
-	size)      print::size     ;exit;;
-	config)    config          ;exit;;
-	status)    status          ;exit;;
-	version)   print::version  ;exit;;
-	uninstall) monero_bash::uninstall; exit;;
-	help)
-		shift
-		___BEGIN___ERROR___TRACE___
-		if [[ $1 ]]; then
-			print::help::command "$@"
-		else
-			print::help
-		fi
-		exit
-		___ENDOF___ERROR___TRACE___
-		;;
+	new)  wallet::create;;
+	list) wallet::list;;
+	size) print::size;;
 	update)
+		[[ $# = 1 ]] && print::help::command "$1"
 		shift
 		case "$1" in
 			--verbose|-v) OPTION_VERBOSE=true;;
 		esac
 		___BEGIN___ERROR___TRACE___
 		update
-		exit
 		___ENDOF___ERROR___TRACE___
 		;;
 	install)
-		shift
-		if [[ $# = 0 ]]; then
-			print::error "Pick one/multiple packages"
-			print::version
-			exit 1
-		fi
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
-			monero|Monero|MONERO) OPTION_MONERO=true;;
-			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
-			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
-			--verbose|-v)         OPTION_VERBOSE=true;;
-			*)
-				print::error "Invalid option: $1"
-				print::error "Pick one/multiple packages"
-				print::version
-				exit 1
-				;;
-		esac
-		shift
-		done
+		parse::options::pkg "$@"
 		___BEGIN___ERROR___TRACE___
 		pkg::prompt install
-		exit
 		___ENDOF___ERROR___TRACE___
 		;;
 	remove)
-		shift
-		if [[ $# = 0 ]]; then
-			print::error "Pick one/multiple packages"
-			print::version
-			exit 1
-		fi
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
-			monero|Monero|MONERO) OPTION_MONERO=true;;
-			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
-			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
-			*)
-				print::error "Invalid option: $1"
-				print::error "Pick one/multiple packages"
-				print::version
-				exit 1
-				;;
-		esac
-		shift
-		done
+		parse::options::pkg "$@"
 		___BEGIN___ERROR___TRACE___
 		remove::prompt
-		exit
 		___ENDOF___ERROR___TRACE___
 		;;
 	upgrade)
+		parse::options::pkg "$@"
+		___BEGIN___ERROR___TRACE___
+		pkg::prompt
+		___ENDOF___ERROR___TRACE___
+		;;
+	full)
+		[[ $# = 1 ]] && print::help::command "$1"
 		shift
-		if [[ $# = 0 ]]; then
-			print::error "Pick one/multiple packages"
-			print::version
-			exit 1
-		fi
-		until [[ $# = 0 ]]; do
+		[[ $# -gt 1 ]] && print::exit "Pick one process: [monero|p2pool|xmrig]"
 		case "$1" in
 			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
 			monero|Monero|MONERO) OPTION_MONERO=true;;
 			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
 			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
-			--force|-f)           OPTION_FORCE=true;;
-			--verbose|-v)         OPTION_VERBOSE=true;;
 			*)
-				print::error "Invalid option: $1"
-				print::error "Pick one/multiple packages"
-				print::version
-				exit 1
+				print::error "Invalid process: $1"
+				print::exit  "Pick one process: [monero|p2pool|xmrig]"
 				;;
 		esac
+		process::full
+		;;
+	config)
+		parse::options::process "$@"
+		process::config
+		;;
+	default)
+		[[ $# = 1 ]] && print::help::command "$1"
 		shift
+		case "$1" in
+			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+			monero|Monero|MONERO) OPTION_MONERO=true;;
+			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+			*)
+				print::error "Invalid option: $1"
+				print::error  "Pick one/multiple processes: [bash|monero|p2pool|xmrig]"
+				;;
+		esac
+		until [[ $# = 0 ]]; do
+		shift
+		case "$1" in
+			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+			monero|Monero|MONERO) OPTION_MONERO=true;;
+			*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+			--config|-c)          OPTION_CONFIG=true;;
+			--systemd|-s)         OPTION_SYSTEMD=true;;
+			*)
+				print::error "Invalid process: $1"
+				print::exit  "Pick one process: [bash|monero|p2pool|xmrig]"
+				;;
+		esac
 		done
-		___BEGIN___ERROR___TRACE___
-		pkg::prompt
-		exit
-		___ENDOF___ERROR___TRACE___
+		process::default
 		;;
 	start)
-		shift
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		shift
-		done
-		process::start
-		exit
+		parse::options::systemd "$@"
+		systemd::start
 		;;
 	stop)
-		shift
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		shift
-		done
-		process::stop
-		exit
+		parse::options::systemd "$@"
+		systemd::stop
 		;;
 	kill)
-		shift
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		shift
-		done
-		process::kill
-		exit
+		parse::options::systemd "$@"
+		systemd::kill
 		;;
 	restart)
-		shift
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		shift
-		done
-		process::restart
-		exit
-		;;
-	full)
-		shift
-		[[ $# -gt 1 ]] && print::error "Pick one process: [monerod/p2pool/xmrig]"; exit 1
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one process: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		process::full
-		exit
+		parse::options::systemd "$@"
+		systemd::restart
 		;;
 	watch)
-		shift
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one/multiple processes: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		shift
-		done
-		process::watch
-		exit
+		parse::options::systemd "$@"
+		systemd::watch
 		;;
 	edit)
-		shift
-		until [[ $# = 0 ]]; do
-		case "$1" in
-			*bash*)       OPTION_BASH=true;;
-			monero)       OPTION_MONERO=true;;
-			*p2p*)        OPTION_P2POOL=true;;
-			*xmr*)        OPTION_XMRIG=true;;
-			"") print::error "Pick one/multiple to edit: [monerod/p2pool/xmrig]"; exit 1;;
-			*)            break;;
-		esac
-		shift
-		done
-		process::edit
-		exit
+		parse::options::systemd "$@"
+		systemd::edit
 		;;
-	reset)
+	refresh)
+		parse::options::systemd "$@"
+		systemd::refresh
+		;;
+	enable)
+		parse::options::systemd "$@"
+		systemd::enable
+		;;
+	disable)
+		parse::options::systemd "$@"
+		systemd::disable
+		;;
+	status)  status;;
+	version) print::version;;
+	uninstall) monero_bash::uninstall;;
+	rpc)
+		[[ $# = 1 ]] && print::help::command "$1"
 		shift
-		case "$1" in
-			*bash*) struct::pkg bash;;
-			monero) struct::pkg monero;;
-			*p2p*)  struct::pkg p2pool;;
-			*xmr*)  struct::pkg xmrig;;
-			*) print::error "Pick one/multiple to reset: [monerod/p2pool/xmrig]"; exit 1;;
-		esac
-		process::reset_files
-		exit
+		rpc "$@"
 		;;
 	changes)
 		shift
@@ -1334,15 +1305,24 @@ case "$1" in
 			fi
 			shift
 		done
-		exit
+		;;
+	help)
+		shift
+		___BEGIN___ERROR___TRACE___
+		if [[ $1 ]]; then
+			print::help::command "$@"
+		else
+			print::help
+		fi
+		___ENDOF___ERROR___TRACE___
 		;;
 	*)
-		log::debug "user input failed: $1"
-		print::error "Invalid option!"
+		log::debug "user input failed: $*"
+		print::error "Invalid option: $*"
 		print::exit "$(printf "${OFF}%s${BYELLOW}%s${OFF}\n" "For help, type: " "monero-bash help")"
 		;;
 esac
-done
+exit
 }
 parse::p2pool() {
 	log::debug "starting ${FUNCNAME}()"
@@ -2074,7 +2054,7 @@ print::help::command() {
 			"" \
 			"The process will be started in the foreground in the" \
 			"current terminal with configuration sourced from the" \
-			"processes configuration file found in:" \
+			"process's configuration file found in:" \
 			"[\$HOME/.monero-bash/config/<PROCESS_CONFIG>]" \
 			"" \
 			"The process will be ran as the [monero-bash] user for" \
@@ -2552,6 +2532,88 @@ process::reset_files() {
 	esac
 	return 0
 }
+readonly DOT="$HOME/.monero-bash"
+readonly CONFIG="$DOT/config"
+readonly WALLETS="$DOT/wallets"
+readonly PACKAGES="$DOT/packages"
+readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
+readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
+readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
+readonly CONFIG_P2POOL="$CONFIG/p2pool.conf"
+readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
+readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
+readonly PKG_MONERO="$PACKAGES/monero"
+readonly PKG_P2POOL="$PACKAGES/p2pool"
+readonly PKG_XMRIG="$PACKAGES/xmrig"
+readonly SRC="$PKG_MONERO_BASH/src"
+readonly TXT="$PKG_MONERO_BASH/txt"
+readonly HASHLIST="$TXT/hashlist"
+readonly STATE="$TXT/state"
+readonly MAIN="$PKG_MONERO_BASH/monero-bash"
+readonly SYSTEMD="/etc/systemd/system"
+rpc() {
+	log::debug "starting ${FUNCNAME}()"
+	if [[ "$1" == *:* ]]; then
+	    RPC_IP="$1/json_rpc"
+		shift
+	elif [[ "$1" != *:* && -z "$RPC_IP" ]]; then
+	    RPC_IP="http://localhost:18081/json_rpc"
+	elif [[ "$1" != *:* && "$RPC_IP" ]]; then
+		RPC_IP="${RPC_IP}/json_rpc"
+	fi
+	method="$1" ; shift
+	payload="{\"jsonrpc\":\"2.0\",\"id\":\"0\",\"method\":\"$method\""
+	if [ -n "$1" ]; then
+	    if [[ "${1::1}" == "[" ]]; then
+	        payload="$payload,\"params\":$(rpc::parse_arr $1)"
+	    else
+	        payload="$payload,\"params\":{"
+	        while [ -n "$1" ]; do
+	            payload="${payload}$(rpc::parse_nv $1)"
+	            [ -n "$2" ] && payload="$payload,"
+	            shift
+	        done
+	        payload="$payload}"
+	    fi
+	fi
+	payload="$payload}"
+	if [[ $CURL = true ]]; then
+		curl -sd "$payload" "$RPC_IP"
+	else
+		wget \
+		-qO- \
+		"$RPC_IP" \
+		--header='Content-Type:application/json' \
+		--post-data="$payload"
+	fi
+	echo
+	log::debug "--- RPC INFO ---"
+	log::debug "RPC_IP  | $RPC_IP"
+	log::debug "PAYLOAD | $payload"
+	exit
+}
+rpc::quote() {
+    [[ "$1" =~ ^[0-9]+$ ]] && echo -n "$1" && return
+    [[ "$1" =~ ^true|false$ ]] && echo -n "$1" && return
+    [[ "${1::1}" == "[" ]] && echo -n "$(rpc::parse_arr $1)" && return
+    echo -n "\"$1\""
+}
+rpc::parse_arr() {
+    let e=${#1}-2
+    sz=${1:1:$e}
+    a=(${sz//,/ })
+    for i in "${!a[@]}"; do
+        a[$i]=$(rpc::quote ${a[i]})
+    done
+    aj=$(printf ",%s" "${a[@]}")
+    aj=${aj:1}
+    echo -n "[${aj}]"
+}
+rpc::parse_nv() {
+    nv=(${1//:/ })
+    c=${#nv[@]}
+    [[ $c == 2 ]] && echo -n "$(rpc::quote ${nv[0]}):$(rpc::quote ${nv[1]})"
+}
 safety::path() {
 	log::debug "starting ${FUNCNAME}()"
 	local SAFETY_PATH
@@ -2602,15 +2664,17 @@ safety::root() {
 }
 safety::wget_curl() {
 	log::debug "starting ${FUNCNAME}()"
-	char DOWNLOAD_CMD
+	char DOWNLOAD_CMD WGET CURL
 	if hash curl &>/dev/null; then
+		CURL=true
 		DOWNLOAD_CMD="curl --silent -o"
 		log::debug "curl found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
 	elif hash wget &>/dev/null; then
+		WGET=true
 		DOWNLOAD_CMD="wget --quiet -o"
 		log::debug "wget found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
 	fi
-	const::char DOWNLOAD_CMD
+	const::char DOWNLOAD_CMD CURL WGET
 	if [[ -z $DOWNLOAD_CMD ]]; then
 		print::error "both [wget] and [curl] were not found!"
 		print::error "monero-bash needs at least one to be installed"
@@ -2961,31 +3025,15 @@ wallet::start() {
 	fi
 	return 0
 }
-readonly DOT="$HOME/.monero-bash"
-readonly CONFIG="$DOT/config"
-readonly WALLETS="$DOT/wallets"
-readonly PACKAGES="$DOT/packages"
-readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
-readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
-readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.conf"
-readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
-readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
-readonly PKG_MONERO="$PACKAGES/monero"
-readonly PKG_P2POOL="$PACKAGES/p2pool"
-readonly PKG_XMRIG="$PACKAGES/xmrig"
-readonly SRC="$PKG_MONERO_BASH/src"
-readonly TXT="$SRC/txt"
-readonly HASHLIST="$TXT/hashlist"
-readonly STATE="$TXT/state"
-readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-readonly SYSTEMD="/etc/systemd/system"
 declare -frg crypto::key::create
 declare -frg crypto::key::remove
 declare -frg DEBUG
 declare -frg monero_bash::install
 declare -frg monero_bash::uninstall
 declare -frg parse::config
+declare -frg parse::options::pkg
+declare -frg parse::options::process
+declare -frg parse::options::systemd
 declare -frg parse::options
 declare -frg parse::p2pool
 declare -frg parse::state
@@ -3028,6 +3076,10 @@ declare -frg print::size
 declare -frg print::title
 declare -frg print::version
 declare -frg process::reset_files
+declare -frg rpc
+declare -frg rpc::quote
+declare -frg rpc::parse_arr
+declare -frg rpc::parse_nv
 declare -frg safety::path
 declare -frg safety::pipe
 declare -frg safety::pkg

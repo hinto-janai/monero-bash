@@ -25,15 +25,17 @@
 safety::wget_curl() {
 	log::debug "starting ${FUNCNAME}()"
 
-	char DOWNLOAD_CMD
+	char DOWNLOAD_CMD WGET CURL
 	if hash curl &>/dev/null; then
+		CURL=true
 		DOWNLOAD_CMD="curl --silent -o"
 		log::debug "curl found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
 	elif hash wget &>/dev/null; then
+		WGET=true
 		DOWNLOAD_CMD="wget --quiet -o"
 		log::debug "wget found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
 	fi
-	const::char DOWNLOAD_CMD
+	const::char DOWNLOAD_CMD CURL WGET
 
 	if [[ -z $DOWNLOAD_CMD ]]; then
 		print::error "both [wget] and [curl] were not found!"
