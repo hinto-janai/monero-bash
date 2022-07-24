@@ -20,40 +20,53 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# traps for the upgrade process
-pkg::trap::pkg_folders() {
+# multi-threaded extraction of the
+# tar files created by: pkg::download()
+# inside of the tmp folders.
+pkg::extract() {
 	log::debug "starting ${FUNCNAME}()"
 
-	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
-	"[monero-bash] " \
-	"exit signal caught " \
-	"| " \
-	"cleaning up temporary files"
+	# start multi-threaded download per package
+	# into it's own ${TMP_PKG[pkg]} folder
+	# and remove tar.
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		struct::pkg bash
+		pkg::extract::multi &
+	fi
+	if [[ $MONERO_OLD = true ]]; then
+		struct::pkg monero
+		pkg::extract::multi &
+	fi
+	if [[ $P2POOL_OLD = true ]]; then
+		struct::pkg p2pool
+		pkg::extract::multi &
+	fi
+	if [[ $XMRIG_OLD = true ]]; then
+		struct::pkg xmrig
+		pkg::extract::multi &
+	fi
 
-	tmp::remove
+	# WAIT FOR THREADS
+	log::debug "waiting for extraction threads to complete"
+	if ! wait -n; then
+		print::exit "Upgrade failure - extraction failed"
+	fi
+
+	return 0
 }
 
-# apply the old/current state variable to
-# the existing [monero-bash] state file
-pkg::trap::state::old() {
-	log::debug "starting ${FUNCNAME}()"
+pkg::extract::multi() {
+	log::debug "starting extraction thread for: ${PKG[pretty]}"
 
-	echo "${HOOK_BASH_STATE[@]}" > "$STATE"
+	# extract
+	tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}"
+	log::debug "extraction complete for: ${TMP_PKG[${PKG[short]}_tar]}"
+
+	# remove tar
+	rm "${TMP_PKG[${PKG[short]}_tar]}"
+	log::debug "removed tar: ${TMP_PKG[${PKG[short]}_tar]}"
+
+	# get folder name
+	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
+	log::debug "extracted package folder: ${TMP_PKG[${PKG[short]}_folder]}"
 }
-
-# trap for remove()
-# updates the state
-pkg::trap::remove() {
-	log::debug "starting ${FUNCNAME}()"
-
-	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
-	"[monero-bash] " \
-	"exit signal caught " \
-	"| " \
-	"updating local state"
-
-	sudo sed \
-		-i -e "s/${PKG[var]}_VER=./${PKG[var]}_VER=/" "$STATE" \
-		-i -e "s/${PKG[var]}_OLD=./${PKG[var]}_OLD=\"true\"/" "$STATE"
-}
-

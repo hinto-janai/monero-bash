@@ -36,17 +36,17 @@ pkg::download() {
 		pkg::tmp::download
 		pkg::download::multi &
 	fi
-	if [[ $MONERO_OLD ]]; then
+	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::tmp::download
 		pkg::download::multi &
 	fi
-	if [[ $P2POOL_OLD ]]; then
+	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::tmp::download
 		pkg::download::multi &
 	fi
-	if [[ $XMRIG_OLD ]]; then
+	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::tmp::download
 		pkg::download::multi &
@@ -65,10 +65,11 @@ pkg::download() {
 # sets the $TMP_PKG[${PKG[short]}_tar] variable
 pkg::download::multi() {
 	log::debug "starting download thread for: ${PKG[pretty]}"
-	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "$TMP_PKG[${PKG[short]}_sig]}" "$LINK_SIG" &
-	$DOWNLOAD_OUT "$TMP_PKG[${PKG[short]}_hash]}" "$LINK_HASH" &
-	$DOWNLOAD_CMD "$TMP_PKG[${PKG[short]}_pkg]}" "$LINK_PKG" &
+	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "$LINK_SIG" &
+	$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_hash]}" "$LINK_HASH" &
+	$DOWNLOAD_CMD "${TMP_PKG[${PKG[short]}_pkg]}" "$LINK_PKG" &
 
 	TMP_PKG[${PKG[short]}_tar]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_tar]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_tar]}"
+	log::debug "downloaded tar: ${TMP_PKG[${PKG[short]}_tar]}"
 }

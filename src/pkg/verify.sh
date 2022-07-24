@@ -30,15 +30,15 @@ pkg::verify() {
 		struct::pkg bash
 		pkg::verify::key
 	fi
-	if [[ $MONERO_OLD ]]; then
+	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::verify::key
 	fi
-	if [[ $P2POOL_OLD ]]; then
+	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::verify::key
 	fi
-	if [[ $XMRIG_OLD ]]; then
+	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::verify::key
 	fi
@@ -49,15 +49,15 @@ pkg::verify() {
 		struct::pkg bash
 		pkg::verify::hash_calc &
 	fi
-	if [[ $MONERO_OLD ]]; then
+	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::verify::hash_calc &
 	fi
-	if [[ $P2POOL_OLD ]]; then
+	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::verify::hash_calc &
 	fi
-	if [[ $XMRIG_OLD ]]; then
+	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::verify::hash_calc &
 	fi
@@ -68,17 +68,17 @@ pkg::verify() {
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
-	if [[ $MONERO_OLD ]]; then
+	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
-	if [[ $P2POOL_OLD ]]; then
+	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
-	if [[ $XMRIG_OLD ]]; then
+	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::verify::hash
 		pkg::verify::pgp

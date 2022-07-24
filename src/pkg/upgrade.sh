@@ -25,8 +25,15 @@
 #
 # uses:      trap.sh
 #            tmp.sh
+#            info.sh
 #            download.sh
 #            verify.sh
+#            hook.sh
+#            extract.sh
+#            copy.sh
+#
+# creates lock file: /tmp/std_lock_monero_bash_upgrade.XXXXXXXXX
+
 pkg::upgrade() {
 	log::debug "starting ${FUNCNAME}()"
 	if [[ $UPGRADE_LIST ]]; then
@@ -37,7 +44,10 @@ pkg::upgrade() {
 
 	# CREATE TMP FILES AND LOCK
 	trap '{ pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
-	if ! lock::alloc monero_bash_upgrade; then
+	if lock::alloc monero_bash_upgrade; then
+		log::debug "created lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
+	else
+		log::debug "lock file already found: ${STD_LOCK_FILE[monero_bash_upgrade]}"
 		print::error "Could not get upgrade lock!"
 		print::exit  "Is there another [monero-bash] upgrade running?"
 	fi
@@ -46,7 +56,7 @@ pkg::upgrade() {
 	print::download
 
 	# FETCH PKG INFO
-	printf "${BWHITE}%s${OFF}\n" "Fetching metadata... "
+	log::prog "Fetching metadata... "
 	pkg::info
 
 	# DOWNLOAD
@@ -55,6 +65,10 @@ pkg::upgrade() {
 	# VERIFY
 	print::verify
 	pkg::verify
+
+	# PRE HOOKS
+	print::pkg::hooks::pre
+	pkg::hooks::pre
 
 	# INSTALLING/UPGRADING TITLE
 	if [[ $UPGRADE_LIST ]]; then
@@ -66,12 +80,29 @@ pkg::upgrade() {
 	# EXTRACT
 	pkg::extract
 
-	# -> folder for old pkg
-	# -> install for monero-bash
-	# -> install for rest
-	# -> post-hook for p2pool files
-	# -> systemd hook
-	# -> state update
+	# TRAP COPY POST HOOKS
+	trap '{ pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
+
+	# COPY NEW PACKAGES INTO NEW
+	pkg::copy
+
+	# POST HOOKS
+	print::pkg::hooks::post
+	pkg::hooks::post
+
+	# FREE LOCK
+	log::debug "freeing lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
+	lock::free monero_bash_upgrade
+
+	# END
+	if [[ $UPGRADE_LIST ]]; then
+		print::upgrade
+	elif [[ $INSTALL_LIST ]]; then
+		print::install
+	fi
+	trap - EXIT
+	log::debug "pkg::upgrade() done"
+	exit 0
 }
 
 

@@ -23,12 +23,12 @@
 # create a systemd service file for packages
 # assumes ask::sudo() is already triggered
 systemd::create() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
 
 	# CREATE TMP SERVICE FILE
-	umask 133 || return 1
 	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
+	chmod 600 "$TMP_SERVICE"
 
 	# CASE PACKAGES FOR UNIQUE COMMANDS
 	case "${PKG[name]}" in
@@ -74,5 +74,4 @@ EOM
 
 	# REMOVE TMP FILE
 	rm "$TMP_SERVICE"
-	umask 0022
 }

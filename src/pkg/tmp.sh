@@ -67,10 +67,10 @@ pkg::tmp::info() {
 		[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
 	elif [[ $1 = info ]]; then
 		TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
-		[[ $MONERO_BASH_OLD ]] && TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
-		[[ $MONERO_OLD ]]      && TMP_INFO[monero]="$(mktemp ${TMP_INFO[monero]}/monero-info.XXXXXXXXXX)"
-		[[ $P2POOL_OLD ]]      && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[p2pool]}/p2pool-info.XXXXXXXXXX)"
-		[[ $XMRIG_OLD ]]       && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
+		[[ $MONERO_BASH_OLD = true ]] && TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
+		[[ $MONERO_OLD = true ]]      && TMP_INFO[monero]="$(mktemp ${TMP_INFO[monero]}/monero-info.XXXXXXXXXX)"
+		[[ $P2POOL_OLD = true ]]      && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[p2pool]}/p2pool-info.XXXXXXXXXX)"
+		[[ $XMRIG_OLD = true ]]       && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
 	fi
 
 	# log::debug

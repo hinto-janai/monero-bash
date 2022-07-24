@@ -20,53 +20,35 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# collection of titles to print during
-# package installation/upgrade/removal
-# assumes struct::pkg() has been called
-print::download() {
-	printf "${BCYAN}%s${OFF}\n" "#------------------# Downloading"
+# Copy the new packages in tmp folders
+# into the [.monero-bash/packages] folder.
+pkg::copy() {
+	log::debug "starting ${FUNCNAME}()"
+
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		struct::pkg bash
+		pkg::copy::cp
+	fi
+	if [[ $MONERO_OLD = true ]]; then
+		struct::pkg monero
+		pkg::copy::cp
+	fi
+	if [[ $P2POOL_OLD = true ]]; then
+		struct::pkg p2pool
+		pkg::copy::cp
+	fi
+	if [[ $XMRIG_OLD = true ]]; then
+		struct::pkg xmrig
+		pkg::copy::cp
+	fi
+
+	return 0
 }
 
-print::update() {
-	printf "${BBLUE}%s${OFF}\n" "#------------------# Updating"
-}
-
-print::remove() {
-	printf "${BRED}%s${OFF}\n" "#------------------# Removing [${PKG[pretty]}]"
-}
-
-print::verify() {
-	printf "${BYELLOW}%s${OFF}\n" "#------# Verifying"
-}
-
-print::install() {
-	printf "${BRED}%s${OFF}\n" "#------# Installing"
-}
-
-print::upgrade() {
-	printf "${BRED}%s${OFF}\n" "#------# Upgrading"
-}
-
-print::hook::pre() {
-	printf "${BPURPLE}%s${OFF}\n" "#------# Hooks::Pre"
-}
-
-print::hook::post() {
-	printf "${BPURPLE}%s${OFF}\n" "#------# Hooks::Post"
-}
-
-print::installed() {
-	printf "${BGREEN}%s${OFF}\n" "#------------------# Install done"
-}
-
-print::upgraded() {
-	printf "${BGREEN}%s${OFF}\n" "#------------------# Upgrade done"
-}
-
-print::removed() {
-	printf "${BRED}%s${OFF}\n" "#------------------# Removed [${PKG[pretty]}]"
-}
-
-print::updated() {
-	printf "${BCYAN}%s${OFF}\n" "#------------------# All packages up-to-date"
+pkg::copy::cp() {
+		log::prog "${PKG[pretty]}"
+		mkdir -p "${PKG[directory]}"
+		cp -fr "${TMP_PKG[${PKG[short]}_folder]}/*" "${PKG[directory]}"
+		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
+		log::ok "${PKG[pretty]}"
 }

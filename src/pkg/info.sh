@@ -36,15 +36,15 @@ pkg::info() {
 		struct::pkg bash
 		pkg::update::multi &
 	fi
-	if [[ $MONERO_OLD ]]; then
+	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::update::multi &
 	fi
-	if [[ $P2POOL_OLD ]]; then
+	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::update::multi &
 	fi
-	if [[ $XMRIG_OLD ]]; then
+	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::update::multi &
 	fi
@@ -62,19 +62,19 @@ pkg::info() {
 		pkg::info::down
 		pkg::info::hash
 	fi
-	if [[ $MONERO_OLD ]]; then
+	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 	fi
-	if [[ $P2POOL_OLD ]]; then
+	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 	fi
-	if [[ $XMRIG_OLD ]]; then
+	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::update::ver
 		pkg::info::down
@@ -96,12 +96,12 @@ pkg::info::down() {
 
 	# filter output of other packages
 	if [[ ${HTML[${PKG[short]}} = true ]]; then
-		LINK_DOWN[${PKG[short]}]="$(grep -o "/${PKG[author]}/${PKG[name]}/releases/download/.*/${PKG[regex]}" "${TMP_INFO[${PKG[short]}}")"
-		LINK_DOWN[${PKG[short]}]="${LINK_DOWN[${PKG[short]}//\"*}"
-		LINK_DOWN[${PKG[short]}]="https://github.com/${LINK_DOWN[${PKG[short]}"
+		LINK_DOWN[${PKG[short]}]="$(grep -o "/${PKG[author]}/${PKG[name]}/releases/download/.*/${PKG[regex]}" "${TMP_INFO[${PKG[short]}]}")"
+		LINK_DOWN[${PKG[short]}]="${LINK_DOWN[${PKG[short]}]//\"*}"
+		LINK_DOWN[${PKG[short]}]="https://github.com/${LINK_DOWN[${PKG[short]}]}"
 	else
-		LINK_DOWN[${PKG[short]}]="$(grep -o "https://github.com/${PKG[author]}/${PKG[name]}/releases/download/.*/${PKG[regex]}" "${TMP_INFO[${PKG[short]}}")"
-		LINK_DOWN[${PKG[short]}]="${LINK_DOWN[${PKG[short]}//\"}"
+		LINK_DOWN[${PKG[short]}]="$(grep -o "https://github.com/${PKG[author]}/${PKG[name]}/releases/download/.*/${PKG[regex]}" "${TMP_INFO[${PKG[short]}]}")"
+		LINK_DOWN[${PKG[short]}]="${LINK_DOWN[${PKG[short]}]//\"}"
 	fi
 	log::debug "${PKG[name]} download link found: $LINK_DOWN"
 }

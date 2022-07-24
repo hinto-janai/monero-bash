@@ -45,6 +45,8 @@ struct::pkg() {
 		PKG[gpg_fingerprint]="81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92"
 		PKG[current_version]="$MONERO_VER"
 		PKG[old]="$MONERO_OLD"
+		PKG[conf]="$CONFIG_MONEROD"
+		PKG[conf_name]="monerod.conf"
 		;;
 	*bash*)
 		PKG[name]="monero-bash"
@@ -63,6 +65,8 @@ struct::pkg() {
 		PKG[gpg_fingerprint]="21958EE945980282FCB849C8D7483F6CA27D1B1D"
 		PKG[current_version]="$MONERO_BASH_VER"
 		PKG[old]="$MONERO_BASH_OLD"
+		PKG[conf]="$CONFIG_MONERO_BASH"
+		PKG[conf_name]="monero-bash.conf"
 		;;
 	*p2p*)
 		PKG[name]="p2pool"
@@ -81,6 +85,8 @@ struct::pkg() {
 		PKG[gpg_fingerprint]="1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF"
 		PKG[current_version]="$P2POOL_VER"
 		PKG[old]="$P2POOL_OLD"
+		PKG[conf]="$CONFIG_P2POOL"
+		PKG[conf_name]="p2pool.conf"
 		;;
 	*xmr*)
 		PKG[name]="xmrig"
@@ -99,6 +105,8 @@ struct::pkg() {
 		PKG[gpg_fingerprint]="9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409"
 		PKG[current_version]="$XMRIG_VER"
 		PKG[old]="$XMRIG_OLD"
+		PKG[conf]="$CONFIG_XMRIG"
+		PKG[conf_name]="xmrig.json"
 		;;
 	esac
 

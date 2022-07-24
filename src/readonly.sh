@@ -47,6 +47,7 @@ readonly TXT="$PKG_MONERO_BASH/txt"
 readonly HASHLIST="$TXT/hashlist"
 readonly STATE="$TXT/state"
 readonly MAIN="$PKG_MONERO_BASH/monero-bash"
+readonyl SRC_CONFIG="$PKG_MONERO_BASH/config"
 
 # system folders
 readonly SYSTEMD="/etc/systemd/system"
