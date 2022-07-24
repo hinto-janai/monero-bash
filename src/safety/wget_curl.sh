@@ -26,20 +26,30 @@ safety::wget_curl() {
 	log::debug "starting ${FUNCNAME}()"
 
 	char DOWNLOAD_CMD WGET CURL
-	if hash curl &>/dev/null; then
-		CURL=true
-		DOWNLOAD_CMD="curl --silent -o"
-		log::debug "curl found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
-	elif hash wget &>/dev/null; then
+	if hash wget &>/dev/null; then
 		WGET=true
-		DOWNLOAD_CMD="wget --quiet -o"
-		log::debug "wget found, DOWNLOAD_CMD: $DOWNLOAD_CMD"
+		DOWNLOAD_CMD="wget --quiet --show-progress --content-disposition -P"
+		DOWNLOAD_DIR="wget --quiet --content-disposition -P"
+		DOWNLOAD_OUT="wget --quiet -O"
+		log::debug "wget found"
+		log::debug "DOWNLOAD_CMD | $DOWNLOAD_CMD"
+		log::debug "DOWNLOAD_DIR | $DOWNLOAD_DIR"
+		log::debug "DOWNLOAD_OUT | $DOWNLOAD_OUT"
+	elif hash curl &>/dev/null; then
+		CURL=true
+		DOWNLOAD_CMD="curl --progress-bar -L -O --output-dir"
+		DOWNLOAD_DIR="curl --silent -L -O --output-dir"
+		DOWNLOAD_OUT="curl --silent -L --output"
+		log::debug "curl found"
+		log::debug "DOWNLOAD_CMD | $DOWNLOAD_CMD"
+		log::debug "DOWNLOAD_DIR | $DOWNLOAD_DIR"
+		log::debug "DOWNLOAD_OUT | $DOWNLOAD_OUT"
 	fi
 	const::char DOWNLOAD_CMD CURL WGET
 
-	if [[ -z $DOWNLOAD_CMD ]]; then
+	if [[ -z $WGET && -z $CURL ]]; then
 		print::error "both [wget] and [curl] were not found!"
-		print::error "monero-bash needs at least one to be installed"
+		print::error "monero-bash needs at least one to install packages"
 		print::exit  "Exiting for safety..."
 	else
 		return 0

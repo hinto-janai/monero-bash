@@ -35,15 +35,43 @@ pkg::upgrade() {
 		log::debug "packages getting installed: $UPGRADE_LIST"
 	fi
 
-	# CREATE TMP FOLDERS
-	trap 'pkg::trap::pkg_folders &' EXIT
-	pkg::tmp::pkg_folders
+	# CREATE TMP FILES AND LOCK
+	trap '{ pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
+	if ! lock::alloc monero_bash_upgrade; then
+		print::error "Could not get upgrade lock!"
+		print::exit  "Is there another [monero-bash] upgrade running?"
+	fi
 
 	# PRINT TITLE
 	print::download
 
+	# FETCH PKG INFO
+	printf "${BWHITE}%s${OFF}\n" "Fetching metadata... "
+	pkg::info
+
 	# DOWNLOAD
 	pkg::download
+
+	# VERIFY
+	print::verify
+	pkg::verify
+
+	# INSTALLING/UPGRADING TITLE
+	if [[ $UPGRADE_LIST ]]; then
+		print::upgrade
+	elif [[ $INSTALL_LIST ]]; then
+		print::install
+	fi
+
+	# EXTRACT
+	pkg::extract
+
+	# -> folder for old pkg
+	# -> install for monero-bash
+	# -> install for rest
+	# -> post-hook for p2pool files
+	# -> systemd hook
+	# -> state update
 }
 
 

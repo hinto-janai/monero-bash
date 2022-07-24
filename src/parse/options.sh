@@ -116,13 +116,13 @@ case "$1" in
 
 	# PACKAGE MANAGER
 	update)
-		[[ $# = 1 ]] && print::help::command "$1"
-		shift
-		case "$1" in
+		case "$2" in
 			--verbose|-v) OPTION_VERBOSE=true;;
+			"")           :;;
+			*)            print::help::command update;;
 		esac
 		___BEGIN___ERROR___TRACE___
-		update
+		pkg::update
 		___ENDOF___ERROR___TRACE___
 		;;
 	install)

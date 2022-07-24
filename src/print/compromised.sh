@@ -31,32 +31,26 @@ print::compromised::hash() {
 		" [${PKG[author]}] might be compromised!     " \
 		" (or more likely, there was an error)       " \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	printf "${BWHITE}%s${BBLUE}%s\n${BWHITE}%s${BRED}%s${OFF}\n" \
-		"ONLINE HASH: " \
-		"$HASH" \
-		"LOCAL HASH: " \
-		"$LOCAL_HASH"
-	[[ $OPTION_VERBOSE = true ]] && print::verbose
+	printf "${BWHITE}%s${BRED}%s${OFF}\n" \
+		"INVALID HASH: " \
+		"${HASH[${PKG[short]}]}"
 	exit 1
 }
 
-print::compromised::gpg() {
-	log::debug "package gpg error has occurred for: ${PKG[name]}"
+print::compromised::pgp() {
+	log::debug "package pgp error has occurred for: ${PKG[name]}"
 
 	printf "${BWHITE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		" WARNING: GPG ERROR!                       " \
-		" [${PKG[pretty]}] GPG signature failed!     " \
+		" WARNING: PGP ERROR!                       " \
+		" [${PKG[pretty]}] PGP signature failed!     " \
 		" [${PKG[gpg_owner]}] might be compromised!  " \
 		" (or more likely, there was an error)       " \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	printf "${BWHITE}%s${BBLUE}%s\n${BWHITE}%s${BRED}%s\n${BWHITE}%s${BYELLOW}%s\n${OFF}%s\n" \
-		"ONLINE HASH: " \
-		"$HASH" \
-		"LOCAL HASH: " \
-		"$LOCAL_HASH" \
-		"GPG SIGNATURE: " \
-		"$GPG_SIG"
-	[[ $OPTION_VERBOSE = true ]] && print::verbose
+	printf "${BWHITE}%s${BRED}%s\n${BWHITE}%s\n${OFF}%s\n" \
+		"TAR FILE HASH: " \
+		"${HASH[${PKG[short]}]}" \
+		"BAD SIGNATURE: " \
+		"$(cat ${TMP_PKG[${PKG[short]}_gpg]})"
 	exit 1
 }

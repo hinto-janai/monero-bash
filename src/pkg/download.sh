@@ -20,48 +20,55 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# order of operations:
-#     1. Create array of packages
-#     2. Create tmp folder for each package
-#     3. Send request to GitHub API for each package
-#     4. Save output into $DUMP array (to reuse later)
-#     5. GitHub will often rate-limit VPNs/Tor: if so, download HTML dump of regular link
-#     6. Filter output for latest release download
-#     7. wget/curl the found download link
+# this downloads all the links provided by pkg::info().
+# including: tar file
+#            hash file
+#            signature file
+#
+# downloads are multi-threaded per package.
 pkg::download() {
-true
-#	# if API fetch fails, use HTML dump instead
-#	API="true"
-#	HTML="false"
-#	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
-#	if [[ $? != "0" ]]; then
-#		$ired; echo "GitHub API error detected..."
-#		$white; echo "Trying GitHub HTML filter instead..."
-#		DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
-#		API="false"
-#		HTML="true"
-#	fi
-#
-#	# if downloading Monero, just use the static getmonero.org link
-#	if [[ $downloadMonero = "true" ]]; then
-#		LINK="https://downloads.getmonero.org/cli/linux64"
-#		wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
-#		code_Wget
-#	else
-#
-#	# else, search for the download link on github
-#		if [[ "$HTML" = "true" ]]; then
-#			LINK="$(echo "$DUMP" \
-#				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \
-#				| awk '{print $1}' \
-#				| tr -d '"' \
-#				| sed 's@^@https://github.com@')"
-#		else
-#			LINK="$(echo "$DUMP" \
-#				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \
-#				| tr -d '"')"
-#		fi
-#		wget -P "$tmp" -q --show-progress "$LINK"
-#		code_Wget
-#	fi
+	log::debug "starting ${FUNCNAME}()"
+
+	# start multi-threaded download per package
+	# into it's own ${TMP_PKG[main]} folder
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		struct::pkg bash
+		pkg::tmp::download
+		pkg::download::multi &
+	fi
+	if [[ $MONERO_OLD ]]; then
+		struct::pkg monero
+		pkg::tmp::download
+		pkg::download::multi &
+	fi
+	if [[ $P2POOL_OLD ]]; then
+		struct::pkg p2pool
+		pkg::tmp::download
+		pkg::download::multi &
+	fi
+	if [[ $XMRIG_OLD ]]; then
+		struct::pkg xmrig
+		pkg::tmp::download
+		pkg::download::multi &
+	fi
+
+	# WAIT FOR THREADS
+	log::debug "waiting for download threads to complete"
+	if ! wait -n; then
+		print::exit "Upgrade failure - download failed"
+	fi
+
+	return 0
+}
+
+# download all links provided by pkg::info()
+# sets the $TMP_PKG[${PKG[short]}_tar] variable
+pkg::download::multi() {
+	log::debug "starting download thread for: ${PKG[pretty]}"
+	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "$TMP_PKG[${PKG[short]}_sig]}" "$LINK_SIG" &
+	$DOWNLOAD_OUT "$TMP_PKG[${PKG[short]}_hash]}" "$LINK_HASH" &
+	$DOWNLOAD_CMD "$TMP_PKG[${PKG[short]}_pkg]}" "$LINK_PKG" &
+
+	TMP_PKG[${PKG[short]}_tar]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
+	TMP_PKG[${PKG[short]}_tar]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_tar]}"
 }

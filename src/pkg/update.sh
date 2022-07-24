@@ -30,76 +30,60 @@ pkg::update() {
 	log::debug "starting ${FUNCNAME}()"
 
 	# CREATE TMP FILES AND LOCK
-	trap 'pkg::tmp::remove; lock::free monero_bash_update' EXIT
+	trap '{ pkg::tmp::remove; lock::free monero_bash_update; } &' EXIT
 	if ! lock::alloc "monero_bash_update"; then
 		print::error "Could not get update lock!"
 		print::exit  "Is there another [monero-bash] update running?"
 	fi
-	pkg::tmp::info
+	pkg::tmp::info update
 
 	# VARIABLE
-	local UPDATE_FOUND INFO HTML
+	map VER HTML
+	local UPDATE_FOUND
 	declare -a SCRATCH
 
 	# TITLE
 	print::update
 
-	# ALWAYS UPDATE MONERO-BASH
+	# START METADATA THREADS
 	struct::pkg bash
-	log::debug "starting download thread for: ${PKG[pretty]}"
-	# switch to html mode if github api fails
-	if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_api]}"; then
-		HTML_MODE=true
-		printf "${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
-			"GitHub API failure " \
-			"| " \
-			"Switching to HTML filter mode..."
-		if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_html]}"; then
-			print::exit "Update failure - could not connect to GitHub"
-		fi
-	fi
-	# filter result
-	pkg::update::filter
-	# print result and update state
-	pkg::update::result
-
-	# START MULTI-THREADED DOWNLOAD ON OTHER PACKAGES
+	pkg::update::multi &
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
-		pkg::update::multi
+		pkg::update::multi &
 	fi
 	if [[ $P2POOL_VER ]]; then
 		struct::pkg p2pool
-		pkg::update::multi
+		pkg::update::multi &
 	fi
 	if [[ $XMRIG_VER ]]; then
 		struct::pkg xmrig
-		pkg::update::multi
+		pkg::update::multi &
 	fi
 
 	# WAIT FOR THREADS
-	local JOB_LIST=$(jobs -p)
-	if [[ $JOB_LIST ]]; then
-		log::debug "waiting for download threads to complete"
-		if ! wait -n; then
-			print::exit "Update failure - could not connect to GitHub"
-		fi
+	log::debug "waiting for metadata threads to complete"
+	if ! wait -n; then
+		print::exit "Update failure - unable to connect to GitHub"
 	fi
 
 	# FILTER RESULT AND PRINT
+	# always for [monero-bash]
+	struct::pkg bash
+	pkg::update::result
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
-		pkg::update::filter
+		pkg::update::ver
 		pkg::update::result
 	fi
 	if [[ $P2POOL_VER ]]; then
 		struct::pkg p2pool
-		pkg::update::filter
+		pkg::update::ver
 		pkg::update::result
 	fi
 	if [[ $XMRIG_VER ]]; then
 		struct::pkg xmrig
-		pkg::update::filter
+		pkg::update::ver
 		pkg::update::result
 	fi
 
@@ -110,68 +94,71 @@ pkg::update() {
 			"Updates found, type: " \
 			"[monero-bash upgrade] " \
 			"to upgrade all packages"
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-			"Or type: " \
-			"[monero-bash <package>] " \
-			"to upgrade a specific package"
 	else
 		print::updated
 	fi
 
-	log::debug "update() finished"
+	log::debug "update() done"
 	exit 0
 }
 
 # a template for multi-threaded updates
 # uses struct::pkg to determine package
 pkg::update::multi() {
-	log::debug "starting download thread for: ${PKG[pretty]}"
-	# api/html
-	if [[ $HTML_MODE = true ]]; then
-		$DOWNLOAD_CMD "${TMP_INFO[${PKG[name]}]}" "${PKG[link_html]}" &
+	log::debug "starting metadata thread for: ${PKG[pretty]}"
+
+	# switch to html mode if github api fails
+	if $DOWNLOAD_OUT "${TMP_INFO[${PKG[short]}]}" "${PKG[link_api]}"; then
+		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
 	else
-		$DOWNLOAD_CMD "${TMP_INFO[${PKG[name]}]}" "${PKG[link_api]}" &
+		HTML[${PKG[short]}]=true
+		log::debug "GitHub API failure for ${PKG[pretty]} | Switching to HTML filter mode..."
+		if $DOWNLOAD_OUT "${TMP_INFO[${PKG[short]}]}" "${PKG[link_html]}"; then
+			log::debug "downloaded ${PKG[link_html]} into ${TMP_INFO[${PKG[short]}]}"
+		else
+			log::debug "Update failure for ${PKG[pretty]} - HTML mode failure"
+			return 1
+		fi
 	fi
 	return 0
 }
 
-# a template for filtering output
-# of the info file created by pkg::update::multi()
-pkg::update::filter() {
-	if [[ $HTML_MODE = true ]]; then
-		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[${PKG[name]}]}"))
-		INFO="${SCRATCH[0]}"
-		INFO="${INFO//*tag\/}"
-		INFO="${INFO//\"}"
+# a template for filtering for the $VER from
+# the info file created by pkg::update::multi()
+pkg::update::ver() {
+	# filter output
+	if [[ ${HTML[${PKG[short]}} = true ]]; then
+		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[${PKG[short]}]}"))
+		VER[${PKG[short]}]="${SCRATCH[0]}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}//*tag\/}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}//\"}"
 	else
-		INFO="$(grep -m1 "tag_name" "${TMP_INFO[${PKG[name]}]}")"
-		INFO="${INFO//*: }"
-		INFO="${INFO//\"}"
-		INFO="${INFO//,}"
+		VER[${PKG[short]}]="$(grep -m 1 "tag_name" "${TMP_INFO[${PKG[short]}]}")"
+		VER[${PKG[short]}]="${VER[${PKG[short]}//*: }"
+		VER[${PKG[short]}]="${VER[${PKG[short]}//\"}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}//,}"
 	fi
-	return 0
 }
 
-# a template for printing the result
-# of pkg::update::filter()
 pkg::update::result() {
 	# case formatting of package name
 	local UPDATE_NAME
-	case "${PKG[name]}" in
+	case "${PKG[short]}" in
 		*bash*) UPDATE_NAME="monero-bash | ";;
 		monero) UPDATE_NAME="Monero      | ";;
 		*p2p*)  UPDATE_NAME="P2Pool      | ";;
 		*xmr*)  UPDATE_NAME="XMRig       | ";;
 	esac
+
 	# print result and update state
-	if [[ ${PKG[current_version]} = "${INFO}" ]]; then
+	if [[ ${PKG[current_version]} = "${VER[${PKG[short]}]}" ]]; then
 		printf "${BWHITE}%s${BGREEN}%s\n" \
 			"$UPDATE_NAME" "${PKG[current_version]}"
 	else
 		sed -i "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=true/" "$STATE"
 		UPDATE_FOUND=true
 		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-			"$UPDATE_NAME" "${PKG[current_version]} " "-> " "$INFO"
+			"$UPDATE_NAME" "${PKG[current_version]} " "-> " "${VER[${PKG[short]}]}"
 	fi
 	return 0
 }

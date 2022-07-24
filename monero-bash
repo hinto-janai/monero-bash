@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/27a2ab2>
-#nix <1658607693>
+#git <monero-bash/3afcfd4>
+#nix <1658610886>
 #hbc <5fdfdff>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -623,7 +623,7 @@ ___ENDOF___ERROR___TRACE___() {
 	if [[ $BASH_SUBSHELL != 0 ]]; then
 		printf "\e[1;93m%s\e[0m\n" "======  SUB-SHELLS TERMINATED  ======"
 	fi
-	builtin kill -s TERM 0 "$(jobs -p)"
+	builtin kill -s TERM 0
 	exit 99
 	printf "\e[1;97m%s\e[0m\n" "=KILL/EXIT FAIL, BEGIN INFINITE LOOP="
 	while :; do read -s -r; done
@@ -1173,13 +1173,13 @@ case "$1" in
 	list) wallet::list;;
 	size) print::size;;
 	update)
-		[[ $# = 1 ]] && print::help::command "$1"
-		shift
-		case "$1" in
+		case "$2" in
 			--verbose|-v) OPTION_VERBOSE=true;;
+			"")           :;;
+			*)            print::help::command update;;
 		esac
 		___BEGIN___ERROR___TRACE___
-		update
+		pkg::update
 		___ENDOF___ERROR___TRACE___
 		;;
 	install)
@@ -1648,13 +1648,18 @@ pkg::update() {
 	print::update
 	struct::pkg bash
 	log::debug "starting download thread for: ${PKG[pretty]}"
-	if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_api]}"; then
+	if $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_api]}"; then
+		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[bash]}"
+	else
+		log::debug "setting HTML_MODE = true"
 		HTML_MODE=true
 		printf "${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
 			"GitHub API failure " \
 			"| " \
 			"Switching to HTML filter mode..."
-		if ! $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_html]}"; then
+		if $DOWNLOAD_CMD "${TMP_INFO[bash]}" "${PKG[link_html]}"; then
+			log::debug "downloaded ${PKG[link_html]} into ${TMP_INFO[bash]}"
+		else
 			print::exit "Update failure - could not connect to GitHub"
 		fi
 	fi
@@ -1675,7 +1680,13 @@ pkg::update() {
 	local JOB_LIST=$(jobs -p)
 	if [[ $JOB_LIST ]]; then
 		log::debug "waiting for download threads to complete"
-		if ! wait -n; then
+		if wait -n; then
+			if [[ $HTML_MODE = true ]]; then
+				log::debug "downloaded ${PKG[link_html]} into ${TMP_INFO[${PKG[short]}]}"
+			else
+				log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
+			fi
+		else
 			print::exit "Update failure - could not connect to GitHub"
 		fi
 	fi
@@ -1713,20 +1724,20 @@ pkg::update() {
 pkg::update::multi() {
 	log::debug "starting download thread for: ${PKG[pretty]}"
 	if [[ $HTML_MODE = true ]]; then
-		$DOWNLOAD_CMD "${TMP_INFO[${PKG[name]}]}" "${PKG[link_html]}" &
+		$DOWNLOAD_CMD "${TMP_INFO[${PKG[short]}]}" "${PKG[link_html]}" &
 	else
-		$DOWNLOAD_CMD "${TMP_INFO[${PKG[name]}]}" "${PKG[link_api]}" &
+		$DOWNLOAD_CMD "${TMP_INFO[${PKG[short]}]}" "${PKG[link_api]}" &
 	fi
 	return 0
 }
 pkg::update::filter() {
 	if [[ $HTML_MODE = true ]]; then
-		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[${PKG[name]}]}"))
+		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[${PKG[short]}]}"))
 		INFO="${SCRATCH[0]}"
 		INFO="${INFO//*tag\/}"
 		INFO="${INFO//\"}"
 	else
-		INFO="$(grep -m1 "tag_name" "${TMP_INFO[${PKG[name]}]}")"
+		INFO="$(grep -m 1 "tag_name" "${TMP_INFO[${PKG[short]}]}")"
 		INFO="${INFO//*: }"
 		INFO="${INFO//\"}"
 		INFO="${INFO//,}"
@@ -2700,6 +2711,7 @@ struct::pkg() {
 	case "$1" in
 	monero)
 		PKG[name]="monero"
+		PKG[short]="monero"
 		PKG[pretty]="Monero"
 		PKG[var]="MONERO"
 		PKG[author]="monero-project"
@@ -2717,6 +2729,7 @@ struct::pkg() {
 		;;
 	*bash*)
 		PKG[name]="monero-bash"
+		PKG[short]="bash"
 		PKG[pretty]="monero-bash"
 		PKG[var]="MONERO_BASH"
 		PKG[author]="hinto-janaiyo"
@@ -2734,6 +2747,7 @@ struct::pkg() {
 		;;
 	*p2p*)
 		PKG[name]="p2pool"
+		PKG[short]="p2pool"
 		PKG[pretty]="P2Pool"
 		PKG[var]="P2POOL"
 		PKG[author]="SChernykh"
@@ -2751,6 +2765,7 @@ struct::pkg() {
 		;;
 	*xmr*)
 		PKG[name]="xmrig"
+		PKG[short]="xmrig"
 		PKG[pretty]="XMRig"
 		PKG[var]="XMRIG"
 		PKG[author]="XMRig"
