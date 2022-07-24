@@ -23,16 +23,26 @@
 # parse [monero-bash.conf] safely
 parse::config() {
 	log::debug "starting ${FUNCNAME}()"
-	local i IFS=$'\n' CONFIG_ARRAY || return 1
-	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
-	for i in "${CONFIG_ARRAY[@]}"; do
-		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]]        && declare -g AUTO_START_MONEROD=true
-		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]         && declare -g AUTO_STOP_MONEROD=true
-		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]                && declare -g XMRIG_ROOT=true
-		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]               && declare -g AUTO_UPDATE=true
-		[[ $i =~ ^RPC_IP=*$ ]]                                   && declare -g RPC_IP="${i/*=/}"
-		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]         && declare -g STD_LOG_DEBUG=true
-		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
+	local i IFS=$'\n' CONFIG_ARRAY CONFIG_PATH || return 1
+
+	# check relative directory instead of $CONFIG
+	# this is so first time installations can
+	# properly find the config file.
+	if [[ -e "${RELATIVE}/config/monero-bash.conf" ]]; then
+		log::debug "config found, using: ${RELATIVE}/config/monero-bash.conf"
+		mapfile CONFIG_ARRAY < "${RELATIVE}/config/monero-bash.conf" || return 2
+	else
+		print::exit "[monero-bash.conf] not found"
+	fi
+
+	for i in ${CONFIG_ARRAY[@]}; do
+		[[ $i =~ ^AUTO_START_MONEROD=true*$ ]]        && declare -g AUTO_START_MONEROD=true
+		[[ $i =~ ^AUTO_STOP_MONEROD=true*$ ]]         && declare -g AUTO_STOP_MONEROD=true
+		[[ $i =~ ^XMRIG_ROOT=true*$ ]]                && declare -g XMRIG_ROOT=true
+		[[ $i =~ ^AUTO_UPDATE=true*$ ]]               && declare -g AUTO_UPDATE=true
+		[[ $i =~ ^RPC_IP=* ]]                         && declare -g RPC_IP="${i/*=/}"
+		[[ $i =~ ^MONERO_BASH_DEBUG=true*$ ]]         && declare -g STD_LOG_DEBUG=true
+		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true*$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
 	done
 
 	# DEFAULTS

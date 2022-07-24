@@ -80,7 +80,7 @@ wallet::create() {
 	cd "$DOT"
 
 	# CHECK FOR MONERO
-	safety::package monero
+	safety::pkg monero
 
 	# Case wallet type
 	case "$WALLET_TYPE" in

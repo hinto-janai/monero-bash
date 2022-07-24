@@ -22,7 +22,7 @@
 
 # structures for packages
 struct::pkg() {
-	log::debug "creating struct::pkg() for: $1"
+	log::debug "defining struct::pkg() for: $1"
 	declare -Ag PKG
 
 	# pick package with $1

@@ -23,15 +23,28 @@
 # path sanity checks
 safety::path() {
 	log::debug "starting ${FUNCNAME}()"
-	local SAFETY_PATH
-	SAFETY_PATH="$(realpath $0)"
-	log::debug "realpath: $SAFETY_PATH"
 
-	if [[ $SAFETY_PATH = "$MAIN" ]]; then
-		log::debug "current path = $MAIN"
+	if [[ $REAL = "$MAIN" ]]; then
+		log::debug "PATH OK: $MAIN"
+		return 0
 	else
-		log::debug "incorrect path detected: $SAFETY_PATH"
-		print::error "[monero-bash] is outside of $DOT!"
-		print::exit  "Exiting for safety..."
+		log::debug "PATH is not in: $MAIN"
+		log::debug "REAL: $REAL"
+		if [[ $REAL = */monero-bash/monero-bash ]]; then
+			log::debug "PATH detected to be in [monero-bash] folder, checking FIRST_TIME"
+			if [[ $FIRST_TIME = true ]]; then
+				log::debug "FIRST_TIME = true | OK, continuing to install"
+				return 0
+			else
+				print::error "FIRST_TIME = $FIRST_TIME | something is very wrong"
+				print::error "monero-bash is in the [monero-bash] folder, yet FIRST_TIME is not true"
+				print::error "The state file might be corrupted"
+				print::exit  "Exiting for safety..."
+			fi
+		fi
 	fi
+
+	log::debug   "incorrect path detected: $REAL"
+	print::error "[monero-bash] is in an unknown PATH"
+	print::exit  "Exiting for safety..."
 }

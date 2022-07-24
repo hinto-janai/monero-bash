@@ -20,41 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# global readonly variables.
+# create hashlist for [monero-bash] files.
+# sends output to --> txt/hashlist
 
-# PATH
-REAL="$(realpath $0)"
-RELATIVE="$(dirname "$REAL")"
-BINARY="/usr/local/bin/monero-bash"
-SYMLINK="/usr/local/bin/mb"
-readonly REAL RELATIVE
+set -ex
 
-# main dot folder
-readonly DOT="$HOME/.monero-bash"
-readonly CONFIG="$DOT/config"
-readonly WALLETS="$DOT/wallets"
-readonly PACKAGES="$DOT/packages"
+# CHECK PATH
+[[ $PWD = */utils ]] && cd ..
+[[ $PWD = */monero-bash ]]
 
-# config files
-readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
-readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
-readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.conf"
-readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
+# HASHLIST PATH
+HASHLIST=txt/hashlist
 
-# package folders
-readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
-readonly PKG_MONERO="$PACKAGES/monero"
-readonly PKG_P2POOL="$PACKAGES/p2pool"
-readonly PKG_XMRIG="$PACKAGES/xmrig"
-
-# monero-bash package source files
-readonly SRC="$PKG_MONERO_BASH/src"
-readonly TXT="$PKG_MONERO_BASH/txt"
-readonly HASHLIST="$TXT/hashlist"
-readonly STATE="$TXT/state"
-readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-readonly SRC_CONFIG="$PKG_MONERO_BASH/config"
-
-# system folders
-readonly SYSTEMD="/etc/systemd/system"
+# FILES
+sha256sum monero-bash > $HASHLIST
+sha256sum txt/state >> $HASHLIST
+sha256sum config/* >> $HASHLIST
+sha256sum gpg/* >> $HASHLIST

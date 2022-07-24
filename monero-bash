@@ -22,9 +22,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/8f3b564>
-#nix <1658695670>
-#hbc <5fdfdff>
+#git <monero-bash/b82e556>
+#nix <1658718989>
+#hbc <06b0e03>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
 #lib <stdlib/crypto.sh/1eaba1f>
@@ -90,12 +90,13 @@
 #-------------------------------------------------------------------------------- BEGIN SAFETY
 POSIXLY_CORRECT= || exit 90
 	# bash builtins
-\unset -f . : [ alias bg bind break builtin caller cd command compgen complete compopt continue declare dirs disown echo enable eval exec exit export false fc fg getopts hash help history jobs kill let local logout mapfile popd printf pushd pwd read readarray readonly return set shift shopt source suspend test times trap true type typeset ulimit umask unalias unset wait || exit 91
+\unset -f alias bg bind break builtin caller cd command compgen complete compopt continue declare dirs disown echo enable eval exec exit export false fc fg getopts hash help history jobs kill let local logout mapfile popd printf pushd pwd read readarray readonly return set shift shopt source suspend test times trap true type typeset ulimit umask unalias unset wait || exit 91
 	# gnu core-utils
 \unset -f arch base64 basename cat chcon chgrp chmod chown chroot cksum comm cp csplit cut date dd df dir dircolors dirname du echo env expand expr factor false fmt fold groups head hostid hostname id install join kill link ln logname ls md5sum mkdir mkfifo mknod mktemp mv nice nl nohup nproc numfmt od paste pathchk pinky pr printenv printf ptx pwd readlink realpath rm rmdir runcon seq shred shuf sleep sort split stat stdbuf stty sum tac tail tee test timeout touch tr true truncate tsort tty uname unexpand uniq unlink uptime users vdir wc who whoami yes || exit 92
 \unalias -a || exit 93
 unset POSIXLY_CORRECT || exit 94
-set -eo pipefail || exit 95
+unset -f . : [ || exit 95
+set -eo pipefail || exit 96
 
 #-------------------------------------------------------------------------------- BEGIN LIB
 trap 'printf "%s\n" "@@@@@@ LIB PANIC @@@@@@" "[line] ${LINENO}" "[file] $0" "[code] $?";set +eo pipefail;trap - ERR;while :;do read;done;exit 112' ERR || exit 112
@@ -393,7 +394,7 @@ log::debug() {
 	[[ $STD_LOG_DEBUG != true ]] && return 0
 	if [[ -z $STD_LOG_DEBUG_INIT ]]; then
 		declare -g STD_LOG_DEBUG_INIT
-		STD_LOG_DEBUG_INIT=${EPOCHREALTIME//./}
+		STD_LOG_DEBUG_INIT=${EPOCHREALTIME//[!0-9]/}
 		printf "\r\e[2K\e[1;90m%s\e[0m%s" "[log::debug 0.000000] " "$* "
 		if [[ $STD_LOG_DEBUG_VERBOSE = true ]]; then
 			printf "\e[1;93m%s" "-> "
@@ -409,7 +410,7 @@ log::debug() {
 		return
 	fi
 	local STD_LOG_DEBUG_ADJUSTED STD_LOG_DEBUG_DOT
-	STD_LOG_DEBUG_ADJUSTED=$((${EPOCHREALTIME//./}-STD_LOG_DEBUG_INIT))
+	STD_LOG_DEBUG_ADJUSTED=$((${EPOCHREALTIME//[!0-9]/}-STD_LOG_DEBUG_INIT))
 	case ${#STD_LOG_DEBUG_ADJUSTED} in
 		1) STD_LOG_DEBUG_ADJUSTED=00000${STD_LOG_DEBUG_ADJUSTED};;
 		2) STD_LOG_DEBUG_ADJUSTED=0000${STD_LOG_DEBUG_ADJUSTED};;
@@ -442,6 +443,7 @@ panic() {
 	\unset -f trap set return exit printf echo local unalias unset builtin kill || exit 22
 	\unalias -a || exit 33
 	unset POSIXLY_CORRECT || exit 44
+	unset : || exit 55
 	printf "\e[7m\e[0;m%s\e[0m\n" "@@@@@@@@  panic  @@@@@@@@"
 	local STD_PANIC_CMD
 	mapfile -s $((STD_TRACE_CMD_NUM-1)) -n 1 STD_PANIC_CMD < $0
@@ -546,9 +548,10 @@ safety::gnu_linux() {
 }
 ___BEGIN___ERROR___TRACE___() {
 	POSIXLY_CORRECT= || exit 8
-	\unset -f : true false trap set return exit printf unset local return read unalias mapfile kill builtin wait || exit 9
+	\unset -f true false trap set return exit printf unset local return read unalias mapfile kill builtin wait || exit 9
 	\unalias -a || exit 10
 	unset -v POSIXLY_CORRECT || exit 11
+	unset -f : || exit 1
 	trap 'STD_TRACE_CMD="$BASH_COMMAND" STD_TRACE_FUNC=(${BASH_LINENO[@]}) STD_TRACE_CMD_NUM="$LINENO" STD_TRACE_PIPE=(${PIPESTATUS[@]}); ___ENDOF___ERROR___TRACE___ > /dev/tty || exit 100' ERR || exit 12
 	unset -v STD_TRACE_CMD STD_TRACE_FUNC_NUM STD_TRACE_CMD_NUM STD_TRACE_PIPE || exit 13
 	set -E -e -o pipefail || exit 14
@@ -556,9 +559,10 @@ ___BEGIN___ERROR___TRACE___() {
 }
 ___ENDOF___ERROR___TRACE___() {
 	POSIXLY_CORRECT= || exit 15
-	\unset -f : true false trap set return exit printf unset local return read unalias mapfile kill builtin wait || exit 16
+	\unset -f true false trap set return exit printf unset local return read unalias mapfile kill builtin wait || exit 16
 	\unalias -a || exit 17
 	unset -v POSIXLY_CORRECT || exit 18
+	unset -f : || exit 1
 	if [[ -z $STD_TRACE_PIPE ]]; then
 		POSIXLY_CORRECT= || exit 19
 		\unset -f trap set return exit return || exit 20
@@ -807,40 +811,84 @@ DEBUG() {
 	$DEBUG_FUNCTION
 	exit
 }
+monero_bash::install:trap::user() {
+	trap "" INT
+	log::prog "Deleting user [monero-bash]"
+	if sudo userdel monero-bash; then
+		log::ok "Deleted user [monero-bash]"
+	else
+		log::fail "Could not delete user [monero-bash]"
+	fi
+}
+monero_bash::install::trap::clean() {
+	print::error "Install failed, starting cleanup"
+	trap "" INT
+	if [[ -d "$DOT" ]]; then
+		log::debug "DOT found: $DOT"
+		log::prog "Deleting: $DOT"
+		if rm -rf "$DOT" &>/dev/null; then
+			log::ok "Deleted: $DOT"
+		else
+			log::fail "Could not delete: $DOT"
+		fi
+	else
+		log::debug "no DOT found at: $DOT"
+	fi
+	if [[ -e "$BINARY" || -h "$BINARY" ]]; then
+		log::debug "BINARY found: $BINARY"
+		log::prog "Deleting: $BINARY"
+		if sudo rm -rf "$BINARY" &>/dev/null; then
+			log::ok "Deleted: $BINARY"
+		else
+			log::fail "Could not delete: $BINARY"
+		fi
+	else
+		log::debug "no BINARY found at: $BINARY"
+	fi
+	if [[ -e "$SYMLINK" || -h "$SYMLINK" ]]; then
+		local SYMLINK_OUTPUT="$(ls "$SYMLINK")"
+		if [[ $SYMLINK_OUTPUT = *${BINARY}* ]]; then
+			log::prog "SYMLINK found: $SYMLINK"
+			log::prog "Deleting: $SYMLINK"
+			if sudo rm -rf "$SYMLINK" &>/dev/null; then
+				log::ok "Deleted: $SYMLINK"
+			else
+				log::fail "Could not delete: $SYMLINK"
+			fi
+		else
+			log::debug "no SYMLINK found at: $SYMLINK"
+		fi
+	fi
+	exit 0
+}
 monero_bash::install() {
 log::debug "starting ${FUNCNAME}()"
 if [[ -d "$HOME"/.monero-bash ]]; then
-	print::error "$HOME/.monero-bash already found!"
+	print::error "[monero-bash] install folder already found: $HOME/.monero-bash"
 	print::exit  "Exiting for safety..."
 fi
-if [[ -e /usr/local/bin/monero-bash ]]; then
+if [[ -e "$BINARY" || -h "$BINARY" ]]; then
 	print::error "/usr/local/bin/monero-bash already found!"
 	print::exit  "Exiting for safety..."
 fi
-local INSTALL_PWD
-INSTALL_PWD="$(realpath "$0")"
-if [[ $INSTALL_PWD != */monero-bash/monero-bash ]]; then
-	print::error "[monero-bash] is not in the monero-bash folder"
-	print::exit  "Exiting for safety..."
-else
-	INSTALL_PWD="$(dirname "$INSTALL_PWD")"
-fi
-printf "${BRED}%s${OFF}%s\n" \
+printf "${BRED}%s${OFF}\n" \
 	"#-----------------------------------------------------------------#" \
 	"#                    monero-bash installation                     #" \
 	"#-----------------------------------------------------------------#"
-while :; do
-	local INSTALL_DATA_PATH
-	if [[ -d "$HOME"/.bitmonero ]]; then
-		printf "${OFF}%s\n${OFF}%s" \
-			"Monero data folder already detected" \
-			"Use $HOME/.bitmonero? (Y/n) "
-		if ask::yes; then
-			INSTALL_DATA_PATH="$HOME/.bitmonero"
-		else
-			printf "%s\n" "Skipping $HOME/.bitmonero"
-		fi
+local INSTALL_DATA_PATH
+if [[ -d "$HOME"/.bitmonero ]]; then
+	printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s" \
+		"Monero data folder already detected" \
+		"Use " \
+		"$HOME/.bitmonero? " \
+		"(Y/n) "
+	if ask::yes; then
+		INSTALL_DATA_PATH="$HOME/.bitmonero"
+	else
+		printf "%s\n\n" "Skipping: $HOME/.bitmonero"
 	fi
+fi
+while :; do
 	if [[ -z $INSTALL_DATA_PATH ]]; then
 		printf "%s" "Monero data path [Enter for default]: "
 		read -r INSTALL_DATA_PATH
@@ -848,21 +896,25 @@ while :; do
 	if [[ -z $INSTALL_DATA_PATH ]]; then
 		INSTALL_DATA_PATH="$HOME/.bitmonero"
 	fi
-	printf "${BWHITE}%s${BYELLOW}%s\n${OFF}%s" \
+	printf "\n${BWHITE}%s${BYELLOW}%s\n${OFF}%s" \
 		"DATA PATH: " \
 		"$INSTALL_DATA_PATH" \
 		"Is this okay? (Y/n) "
 	if ask::yes; then
+		echo
 		break
+	else
+		unset -v INSTALL_DATA_PATH
 	fi
+	echo
 done
-if [[ ! -e /usr/local/bin/mb ]]; then
+if [[ ! -e $SYMLINK && ! -h $SYMLINK ]]; then
 	printf "${OFF}%s${BRED}%s${OFF}%s${BRED}%s${OFF}\n" \
 		"Symlink creation: " \
 		"[monero-bash] " \
-		"--> " \
+		"-> " \
 		"[mb]"
-	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
+	printf "${OFF}%s${BRED}%s${OFF}%s${BCYAN}%s${OFF}\n" \
 		"This allows you to use " \
 		"[monero-bash] " \
 		"like so: " \
@@ -870,110 +922,115 @@ if [[ ! -e /usr/local/bin/mb ]]; then
 	printf "${OFF}%s" "Create symlink? (Y/n) "
 	if ask::yes; then
 		local INSTALL_SYMLINK=true
+		printf "%s\n" "Will create [mb] symlink"
 	else
-		printf "%s\n" "Skipping symlink..."
+		printf "%s\n" "Skipping [mb] symlink..."
 	fi
 fi
-echo
+local i
+printf "\n${BRED}%s" "#"
+for ((i=0; i < 65; i++)); do
+	read -r -t 0.01 || true
+	printf "%s" "-"
+done
+printf "${BRED}%s${OFF}\n\n" "#"
 printf "${OFF}%s${BYELLOW}%s\n" \
 	"[monero-bash] will install in | " "$HOME/.monero-bash" \
-	"The path will be set in       | " "/usr/local/bin/monero-bash" \
-	".bitmonero will be set in     | " "$INSTALL_DATA_PATH"
+	"The PATH will be set in       | " "/usr/local/bin/monero-bash" \
+	"[.bitmonero] will be set in   | " "$INSTALL_DATA_PATH"
 if [[ $INSTALL_SYMLINK = true ]]; then
 	printf "${OFF}%s${BYELLOW}%s\n" \
-	"A path symlink will be set in | " "/usr/local/bin/mb"
+	"A PATH symlink will be set in | " "/usr/local/bin/mb"
 fi
 echo
 printf "${BWHITE}%s${OFF}\n" \
 	"A no-login user called [monero-bash] will be created for process security" \
-	"This will be the user Monero and P2Pool runs as"
+	"[Monero] and [P2Pool] will run as this user. [XMRig] by default, runs as ROOT." \
+	"This can be changed in [monero-bash.conf]: XMRIG_ROOT=false"
 echo
-printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 	"Start " \
 	"[monero-bash] " \
 	"install? (Y/n) "
-if ask::yes; then
-	printf "${OFF}%s${BRED}%s${OFF}%s\n" \
-	"Starting " \
-	"[monero-bash] " \
-	"install..."
-else
-	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-		"Canceling " \
-		"[monero-bash] " \
-		"installation"
+if ! ask::yes; then
+	printf "$${OFF}%s\n" "Canceling [monero-bash] installation..."
 	exit 1
 fi
 if ! ask::sudo; then
 	print::exit "sudo is required for installation"
 fi
-log::prog "verifying monero-bash file hashes"
-if sha256sum --quiet --check "txt/hashlist"; then
-	log::ok "monero-bash file hashes"
+log::prog "verifying [monero-bash] file hashes"
+if sha256sum --check "txt/hashlist" &>/dev/null; then
+	log::ok "[monero-bash] file hashes"
 else
-	log::fail "monero-bash file hashes"
+	log::fail "[monero-bash] file hashes"
 	print::error "Hash verification has failed."
 	print::exit "Have the files been moved for modified?"
 fi
-___BEGIN___ERROR___TRACE___
-log::prog "creating monero-bash user"
+log::prog "creating [monero-bash] user"
 local NOLOGIN_SHELL
 NOLOGIN_SHELL="$(which nologin)"
-if ! sudo useradd --shell "$NOLOGIN_SHELL" --no-create-home --system; then
-	print::error "Could not create monero-bash user"
+log::debug "[nologin] shell found: $NOLOGIN_SHELL"
+trap 'monero_bash::install::trap::clean' EXIT
+if ! sudo useradd --no-create-home --system --shell "$NOLOGIN_SHELL" monero-bash; then
+	print::error "Could not create [monero-bash] user"
 	print::exit "Exiting for safety..."
+else
+	trap 'monero::install::trap::user; monero_bash::install::trap::clean' EXIT
+	log::ok "created [monero-bash] user"
 fi
-log::ok "created monero-bash user"
-log::prog "creating .monero-bash folders"
-mkdir -p packages
-mkdir -p packages/monero-bash
-mkdir -p wallets
-log::ok "created .monero-bash folders"
-log::prog "copying monero-bash files"
-cp -r monero-bash "$PKG_MONERO_BASH"
-cp -r src "$PKG_MONERO_BASH"
-cp -r txt "$PKG_MONERO_BASH"
-cp -r gpg "$PKG_MONERO_BASH"
-log::prog "copied monero-bash files"
+log::prog "creating [.monero-bash] folders"
+mkdir "$DOT"
+mkdir "$PACKAGES"
+mkdir "$PKG_MONERO_BASH"
+mkdir "$WALLETS"
+log::ok "created [.monero-bash] folders"
 log::prog "cleaning git files"
 [[ -e docs ]]         && rm -rf doc
 [[ -e lib ]]          && rm -rf lib
 [[ -e tests ]]        && rm -rf tests
-[[ -e CHANGELOG.md ]] && rm -rf CHANGELOG.md
-[[ -e README.md ]]    && rm -rf README.md
-[[ -e LICENSE ]]      && rm -rf LICENSE
+[[ -e utils ]]        && rm -rf utils
+[[ -e src ]]          && rm -rf src
+[[ -e CHANGELOG.md ]] && rm -f CHANGELOG.md
+[[ -e README.md ]]    && rm -f README.md
+[[ -e LICENSE ]]      && rm -f LICENSE
 [[ -e hbc.add ]]      && rm -f hbc.add
 [[ -e hbc.conf ]]     && rm -f hbc.conf
 [[ -e main.sh ]]      && rm -f main.sh
+[[ -e .git ]]         && rm -rf .git
+[[ -e .gitignore ]]   && rm -f .gitignore
+[[ -e .gitmodules ]]  && rm -f .gitmodules
 log::ok "cleaned git files"
-log::prog "moving folder to $HOME/.monero-bash"
-mkdir "$HOME/.monero-bash"
-mv "$INSTALL_PWD" "$HOME/.monero-bash"
-INSTALL_PWD="$HOME/.monero-bash"
-cd "$INSTALL_PWD"
-log::prog "moved folder to $HOME/.monero-bash"
+log::prog "moving folder to: [$HOME/.monero-bash]"
+mv -f "$RELATIVE" "$PACKAGES"
+log::ok "moved folder to: [$HOME/.monero-bash]"
 log::prog "creating config folder"
-mkdir -p configs
-cp "$PKG_MONERO_BASH/configs/monero-bash.conf" "$CONFIG/"
+mkdir -p "$CONFIG"
+cp "$SRC_CONFIG/monero-bash.conf" "$CONFIG/"
+cp "$SRC_CONFIG/monerod.conf" "$CONFIG/"
+cp "$SRC_CONFIG/monero-wallet-cli.conf" "$CONFIG/"
 log::ok "created config folder"
 log::prog "adding [monero-bash] to PATH"
-sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/monero-bash
+sudo ln -s "$MAIN" /usr/local/bin/monero-bash
 log::ok "added [monero-bash] to PATH"
 if [[ $INSTALL_SYMLINK = true ]]; then
 	log::prog "creating [mb] PATH symlink"
-	sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/mb
+	sudo ln -s "$MAIN" /usr/local/bin/mb
 	log::ok "created [mb] PATH symlink"
 fi
 log::prog "setting Monero data path"
-sed -i "s/.*data-dir.*/data-dir=$INSTALL_DATA_PATH/" "$CONFIG_MONEROD"
+sed -i "s@data-dir.*@data-dir=$INSTALL_DATA_PATH@g" "$CONFIG_MONEROD"
 log::ok "set Monero data path"
-sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/" "$STATE"
+log::debug "setting FIRST_TIME = false"
+sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/g" "$STATE"
+log::debug "set FIRST_TIME = false"
 log::prog "setting folder permissions"
-sudo chown "$USER:$USER" "$INSTALL_PWD"
-sudo chmod -R 755 "$INSTALL_PWD"
+sudo chown "$USER:$USER" "$DOT"
+sudo chmod -R 770 "$DOT"
 log::ok "set folder permissions"
-___ENDOF___ERROR___TRACE___
-printf "${BGREEN}%s${OFF}%s\n" \
+trap - EXIT
+printf "${BGREEN}%s${OFF}\n" \
+	"" \
 	"#-----------------------------------------------------------------#" \
 	"#                monero-bash installation complete                #" \
 	"#-----------------------------------------------------------------#"
@@ -1065,16 +1122,21 @@ exit 0
 }
 parse::config() {
 	log::debug "starting ${FUNCNAME}()"
-	local i IFS=$'\n' CONFIG_ARRAY || return 1
-	mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
-	for i in "${CONFIG_ARRAY[@]}"; do
-		[[ $i =~ ^AUTO_START_MONEROD=true[[:space:]]+$ ]]        && declare -g AUTO_START_MONEROD=true
-		[[ $i =~ ^AUTO_STOP_MONEROD=true[[:space:]]+$ ]]         && declare -g AUTO_STOP_MONEROD=true
-		[[ $i =~ ^XMRIG_ROOT=true[[:space:]]+$ ]]                && declare -g XMRIG_ROOT=true
-		[[ $i =~ ^AUTO_UPDATE=true[[:space:]]+$ ]]               && declare -g AUTO_UPDATE=true
-		[[ $i =~ ^RPC_IP=*$ ]]                                   && declare -g RPC_IP="${i/*=/}"
-		[[ $i =~ ^MONERO_BASH_DEBUG=true[[:space:]]+$ ]]         && declare -g STD_LOG_DEBUG=true
-		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true[[:space:]]+$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
+	local i IFS=$'\n' CONFIG_ARRAY CONFIG_PATH || return 1
+	if [[ -e "${RELATIVE}/config/monero-bash.conf" ]]; then
+		log::debug "config found, using: ${RELATIVE}/config/monero-bash.conf"
+		mapfile CONFIG_ARRAY < "${RELATIVE}/config/monero-bash.conf" || return 2
+	else
+		print::exit "[monero-bash.conf] not found"
+	fi
+	for i in ${CONFIG_ARRAY[@]}; do
+		[[ $i =~ ^AUTO_START_MONEROD=true*$ ]]        && declare -g AUTO_START_MONEROD=true
+		[[ $i =~ ^AUTO_STOP_MONEROD=true*$ ]]         && declare -g AUTO_STOP_MONEROD=true
+		[[ $i =~ ^XMRIG_ROOT=true*$ ]]                && declare -g XMRIG_ROOT=true
+		[[ $i =~ ^AUTO_UPDATE=true*$ ]]               && declare -g AUTO_UPDATE=true
+		[[ $i =~ ^RPC_IP=* ]]                         && declare -g RPC_IP="${i/*=/}"
+		[[ $i =~ ^MONERO_BASH_DEBUG=true*$ ]]         && declare -g STD_LOG_DEBUG=true
+		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true*$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
 	done
 	[[ $AUTO_START_MONEROD != true ]]        && declare -g AUTO_START_MONEROD=false
 	[[ $AUTO_STOP_MONEROD != true ]]         && declare -g AUTO_STOP_MONEROD=false
@@ -1414,24 +1476,29 @@ parse::p2pool() {
 }
 parse::state() {
 	log::debug "starting ${FUNCNAME}()"
-	local i IFS=$'\n' STATE_ARRAY || return 1
-	mapfile STATE_ARRAY < "$STATE" || return 2
-	for i in "${OPTIONS[@]}"; do
-		[[ $i =~ ^FIRST_TIME=true[[:space:]]+$ ]]        && declare -g FIRST_TIME="true"
-		[[ $i =~ ^MONERO_BASH_VER=*$ ]]                  && declare -g MONERO_BASH_VER="${i/*=/}"
-		[[ $i =~ ^MONERO_VER=*$ ]]                       && declare -g MONERO_VER="${i/*=/}"
-		[[ $i =~ ^P2POOL_VER=*$ ]]                       && declare -g P2POOL_VER="${i/*=/}"
-		[[ $i =~ ^XMRIG_VER=*$ ]]                        && declare -g XMRIG_VER="${i/*=/}"
-		[[ $i =~ ^MONERO_BASH_OLD=true[[:space:]]+$ ]]   && declare -g MONERO_BASH_OLD="true" || declare -g MONERO_BASH_OLD="false"
-		[[ $i =~ ^MONERO_OLD=true[[:space:]]+$ ]]        && declare -g MONERO_OLD="true"      || declare -g MONERO_OLD="false"
-		[[ $i =~ ^P2POOL_OLD=true[[:space:]]+$ ]]        && declare -g P2POOL_OLD="true"      || declare -g P2POOL_OLD="false"
-		[[ $i =~ ^XMRIG_OLD=true[[:space:]]+$ ]]         && declare -g XMRIG_OLD="true"       || declare -g XMRIG_OLD="false"
+	local i IFS=$'\n' STATE_ARRAY STATE_PATH || return 1
+	if [[ -e "$RELATIVE/txt/state" ]]; then
+		log::debug "state found, using: ${RELATIVE}/txt/state"
+		mapfile STATE_ARRAY < "${RELATIVE}/txt/state" || return 2
+	else
+		print::exit "state file was not found"
+	fi
+	for i in ${STATE_ARRAY[@]}; do
+		[[ $i =~ ^FIRST_TIME=true*$ ]]      && declare -g FIRST_TIME=true
+		[[ $i =~ ^MONERO_BASH_VER=* ]]      && declare -g MONERO_BASH_VER="${i/*=/}"
+		[[ $i =~ ^MONERO_VER=* ]]           && declare -g MONERO_VER="${i/*=/}"
+		[[ $i =~ ^P2POOL_VER=* ]]           && declare -g P2POOL_VER="${i/*=/}"
+		[[ $i =~ ^XMRIG_VER=* ]]            && declare -g XMRIG_VER="${i/*=/}"
+		[[ $i =~ ^MONERO_BASH_OLD=true*$ ]] && declare -g MONERO_BASH_OLD=true
+		[[ $i =~ ^MONERO_OLD=true*$ ]]      && declare -g MONERO_OLD=true
+		[[ $i =~ ^P2POOL_OLD=true*$ ]]      && declare -g P2POOL_OLD=true
+		[[ $i =~ ^XMRIG_OLD=true*$ ]]       && declare -g XMRIG_OLD=true
 	done
-	[[ $FIRST_TIME != true ]]        && declare -g FIRST_TIME=false
-	[[ $MONERO_BASH_OLD != true ]]   && declare -g MONERO_BASH_OLD=false
-	[[ $MONERO_OLD != true ]]        && declare -g MONERO_OLD=false
-	[[ $P2POOL_OLD != true ]]        && declare -g P2POOL_OLD=false
-	[[ $XMRIG_OLD != true ]]         && declare -g XMRIG_OLD=false
+	[[ $FIRST_TIME != true ]]        && declare -g FIRST_TIME=
+	[[ $MONERO_BASH_OLD != true ]]   && declare -g MONERO_BASH_OLD=
+	[[ $MONERO_OLD != true ]]        && declare -g MONERO_OLD=
+	[[ $P2POOL_OLD != true ]]        && declare -g P2POOL_OLD=
+	[[ $XMRIG_OLD != true ]]         && declare -g XMRIG_OLD=
 	log::debug "--- state file ---"
 	log::debug "FIRST_TIME        | $FIRST_TIME"
 	log::debug "MINE_UNCONFIGURED | $MINE_UNCONFIGURED"
@@ -2971,6 +3038,11 @@ process::reset_files() {
 	esac
 	return 0
 }
+REAL="$(realpath $0)"
+RELATIVE="$(dirname "$REAL")"
+BINARY="/usr/local/bin/monero-bash"
+SYMLINK="/usr/local/bin/mb"
+readonly REAL RELATIVE
 readonly DOT="$HOME/.monero-bash"
 readonly CONFIG="$DOT/config"
 readonly WALLETS="$DOT/wallets"
@@ -2989,7 +3061,7 @@ readonly TXT="$PKG_MONERO_BASH/txt"
 readonly HASHLIST="$TXT/hashlist"
 readonly STATE="$TXT/state"
 readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-readonyl SRC_CONFIG="$PKG_MONERO_BASH/config"
+readonly SRC_CONFIG="$PKG_MONERO_BASH/config"
 readonly SYSTEMD="/etc/systemd/system"
 rpc() {
 	log::debug "starting ${FUNCNAME}()"
@@ -3056,16 +3128,28 @@ rpc::parse_nv() {
 }
 safety::path() {
 	log::debug "starting ${FUNCNAME}()"
-	local SAFETY_PATH
-	SAFETY_PATH="$(realpath $0)"
-	log::debug "realpath: $SAFETY_PATH"
-	if [[ $SAFETY_PATH = "$MAIN" ]]; then
-		log::debug "current path = $MAIN"
+	if [[ $REAL = "$MAIN" ]]; then
+		log::debug "PATH OK: $MAIN"
+		return 0
 	else
-		log::debug "incorrect path detected: $SAFETY_PATH"
-		print::error "[monero-bash] is outside of $DOT!"
-		print::exit  "Exiting for safety..."
+		log::debug "PATH is not in: $MAIN"
+		log::debug "REAL: $REAL"
+		if [[ $REAL = */monero-bash/monero-bash ]]; then
+			log::debug "PATH detected to be in [monero-bash] folder, checking FIRST_TIME"
+			if [[ $FIRST_TIME = true ]]; then
+				log::debug "FIRST_TIME = true | OK, continuing to install"
+				return 0
+			else
+				print::error "FIRST_TIME = $FIRST_TIME | something is very wrong"
+				print::error "monero-bash is in the [monero-bash] folder, yet FIRST_TIME is not true"
+				print::error "The state file might be corrupted"
+				print::exit  "Exiting for safety..."
+			fi
+		fi
 	fi
+	log::debug   "incorrect path detected: $REAL"
+	print::error "[monero-bash] is in an unknown PATH"
+	print::exit  "Exiting for safety..."
 }
 safety::pipe() {
 	log::debug "starting ${FUNCNAME}()"
@@ -3073,6 +3157,7 @@ safety::pipe() {
 		print::error "Pipe detected. [monero-bash] does not support pipes!"
 		print::exit  "Exiting for safety..."
 	fi
+	log::debug "no pipe detected"
 }
 safety::pkg() {
 	log::debug "starting ${FUNCNAME}()"
@@ -3110,7 +3195,7 @@ safety::wget_curl() {
 		DOWNLOAD_CMD="wget --quiet --show-progress --content-disposition -P"
 		DOWNLOAD_DIR="wget --quiet --content-disposition -P"
 		DOWNLOAD_OUT="wget --quiet -O"
-		log::debug "wget found"
+		log::debug "--- wget found ---"
 		log::debug "DOWNLOAD_CMD | $DOWNLOAD_CMD"
 		log::debug "DOWNLOAD_DIR | $DOWNLOAD_DIR"
 		log::debug "DOWNLOAD_OUT | $DOWNLOAD_OUT"
@@ -3119,7 +3204,7 @@ safety::wget_curl() {
 		DOWNLOAD_CMD="curl --progress-bar -L -O --output-dir"
 		DOWNLOAD_DIR="curl --silent -L -O --output-dir"
 		DOWNLOAD_OUT="curl --silent -L --output"
-		log::debug "curl found"
+		log::debug "--- curl found ---"
 		log::debug "DOWNLOAD_CMD | $DOWNLOAD_CMD"
 		log::debug "DOWNLOAD_DIR | $DOWNLOAD_DIR"
 		log::debug "DOWNLOAD_OUT | $DOWNLOAD_OUT"
@@ -3144,7 +3229,7 @@ status::table() {
 		"#"
 }
 struct::pkg() {
-	log::debug "creating struct::pkg() for: $1"
+	log::debug "defining struct::pkg() for: $1"
 	declare -Ag PKG
 	[[ $# != 1 ]] && return 1
 	case "$1" in
@@ -3325,7 +3410,7 @@ wallet::create() {
 	done
 	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
 	cd "$DOT"
-	safety::package monero
+	safety::pkg monero
 	case "$WALLET_TYPE" in
 	new)
 			"$PKG_MONERO/monero-wallet-cli" \
@@ -3489,6 +3574,8 @@ wallet::start() {
 declare -frg crypto::key::create
 declare -frg crypto::key::remove
 declare -frg DEBUG
+declare -frg monero_bash::install:trap::user
+declare -frg monero_bash::install::trap::clean
 declare -frg monero_bash::install
 declare -frg monero_bash::uninstall
 declare -frg parse::config
@@ -3606,43 +3693,45 @@ set +eo pipefail || exit 118
 
 main() {
 #----------------------------------------- main() START
-#log::debug "main() started, log::debug initialization"
+log::debug "main() started"
 # allow for job control
 set -m
 
-##----------------------------------------- DEBUG
-#[[ $1 = DEBUG ]] && DEBUG "$@"
-#
-##----------------------------------------- SAFETY
-#log::debug "starting safety checks"
-## check for gnu/linux
-#safety::gnu_linux
-## check for bash v5+
-#safety::bash
-## check for root
-#safety::root
-## check for pipe
-#safety::pipe
-## check for wget/curl
+#----------------------------------------- DEBUG
+[[ $1 = DEBUG ]] && DEBUG "$@"
+
+#----------------------------------------- SAFETY
+log::debug "starting safety checks"
+# check for gnu/linux
+safety::gnu_linux
+# check for bash v5+
+safety::bash
+# check for root
+safety::root
+# check for pipe
+safety::pipe
+# check for wget/curl
 safety::wget_curl
-#
-##----------------------------------------- FIRST TIME INSTALLATION
-#if [[ $FIRST_TIME = true ]]; then
-#	log::debug "first time detected, starting installation"
-#	monero_bash::install
-#else
-#	log::debug "first time = false, skipping installation"
-#fi
-#
-##----------------------------------------- MORE SAFETY
-## check for path
-#safety::path
-#
-##----------------------------------------- PARSE USER CONFIG/STATE
-#___BEGIN___ERROR___TRACE___
-#parse::state
-#parse::config
-#___ENDOF___ERROR___TRACE___
+
+#----------------------------------------- PARSE USER CONFIG/STATE
+___BEGIN___ERROR___TRACE___
+parse::state
+parse::config
+___ENDOF___ERROR___TRACE___
+
+#----------------------------------------- MORE SAFETY
+# check for path
+safety::path
+
+#----------------------------------------- FIRST TIME INSTALLATION
+if [[ $FIRST_TIME = true ]]; then
+	___BEGIN___ERROR___TRACE___
+	log::debug "FIRST_TIME = true | starting installation"
+	monero_bash::install
+	___ENDOF___ERROR___TRACE___
+else
+	log::debug "FIRST_TIME = false | skipping installation"
+fi
 
 #----------------------------------------- PARSE USER INPUT
 [[ $# != 0 ]] && parse::options "$@"

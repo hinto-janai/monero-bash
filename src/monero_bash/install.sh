@@ -20,6 +20,66 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# delete the [monero-bash] user
+monero_bash::install:trap::user() {
+	trap "" INT
+	log::prog "Deleting user [monero-bash]"
+	if sudo userdel monero-bash; then
+		log::ok "Deleted user [monero-bash]"
+	else
+		log::fail "Could not delete user [monero-bash]"
+	fi
+}
+
+# clean $DOT, $BINARY, $SYMLINK
+monero_bash::install::trap::clean() {
+	print::error "Install failed, starting cleanup"
+	trap "" INT
+
+	# DELETE DOT
+	if [[ -d "$DOT" ]]; then
+		log::debug "DOT found: $DOT"
+		log::prog "Deleting: $DOT"
+		if rm -rf "$DOT" &>/dev/null; then
+			log::ok "Deleted: $DOT"
+		else
+			log::fail "Could not delete: $DOT"
+		fi
+	else
+		log::debug "no DOT found at: $DOT"
+	fi
+
+	# DELETE PATH
+	if [[ -e "$BINARY" || -h "$BINARY" ]]; then
+		log::debug "BINARY found: $BINARY"
+		log::prog "Deleting: $BINARY"
+		if sudo rm -rf "$BINARY" &>/dev/null; then
+			log::ok "Deleted: $BINARY"
+		else
+			log::fail "Could not delete: $BINARY"
+		fi
+	else
+		log::debug "no BINARY found at: $BINARY"
+	fi
+
+	# DELETE SYMLINK IF WE CREATED IT
+	if [[ -e "$SYMLINK" || -h "$SYMLINK" ]]; then
+		local SYMLINK_OUTPUT="$(ls "$SYMLINK")"
+		if [[ $SYMLINK_OUTPUT = *${BINARY}* ]]; then
+			log::prog "SYMLINK found: $SYMLINK"
+			log::prog "Deleting: $SYMLINK"
+			if sudo rm -rf "$SYMLINK" &>/dev/null; then
+				log::ok "Deleted: $SYMLINK"
+			else
+				log::fail "Could not delete: $SYMLINK"
+			fi
+		else
+			log::debug "no SYMLINK found at: $SYMLINK"
+		fi
+	fi
+	exit 0
+}
+
 # install for monero-bash
 monero_bash::install() {
 
@@ -28,44 +88,37 @@ log::debug "starting ${FUNCNAME}()"
 # SAFETY CHECKS
 # monero-bash already found
 if [[ -d "$HOME"/.monero-bash ]]; then
-	print::error "$HOME/.monero-bash already found!"
+	print::error "[monero-bash] install folder already found: $HOME/.monero-bash"
 	print::exit  "Exiting for safety..."
 fi
-if [[ -e /usr/local/bin/monero-bash ]]; then
+if [[ -e "$BINARY" || -h "$BINARY" ]]; then
 	print::error "/usr/local/bin/monero-bash already found!"
 	print::exit  "Exiting for safety..."
 fi
-# path check
-local INSTALL_PWD
-INSTALL_PWD="$(realpath "$0")"
-if [[ $INSTALL_PWD != */monero-bash/monero-bash ]]; then
-	print::error "[monero-bash] is not in the monero-bash folder"
-	print::exit  "Exiting for safety..."
-else
-	INSTALL_PWD="$(dirname "$INSTALL_PWD")"
-fi
 
 # TITLE
-printf "${BRED}%s${OFF}%s\n" \
+printf "${BRED}%s${OFF}\n" \
 	"#-----------------------------------------------------------------#" \
 	"#                    monero-bash installation                     #" \
 	"#-----------------------------------------------------------------#"
 
 # DATA PATH
-while :; do
-	# check for .bitmonero
-	local INSTALL_DATA_PATH
-	if [[ -d "$HOME"/.bitmonero ]]; then
-		printf "${OFF}%s\n${OFF}%s" \
-			"Monero data folder already detected" \
-			"Use $HOME/.bitmonero? (Y/n) "
-		if ask::yes; then
-			INSTALL_DATA_PATH="$HOME/.bitmonero"
-		else
-			printf "%s\n" "Skipping $HOME/.bitmonero"
-		fi
+# check for .bitmonero
+local INSTALL_DATA_PATH
+if [[ -d "$HOME"/.bitmonero ]]; then
+	printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s" \
+		"Monero data folder already detected" \
+		"Use " \
+		"$HOME/.bitmonero? " \
+		"(Y/n) "
+	if ask::yes; then
+		INSTALL_DATA_PATH="$HOME/.bitmonero"
+	else
+		printf "%s\n\n" "Skipping: $HOME/.bitmonero"
 	fi
+fi
 
+while :; do
 	# ask for monero data path
 	if [[ -z $INSTALL_DATA_PATH ]]; then
 		printf "%s" "Monero data path [Enter for default]: "
@@ -77,23 +130,27 @@ while :; do
 	fi
 
 	# confirm monero data path
-	printf "${BWHITE}%s${BYELLOW}%s\n${OFF}%s" \
+	printf "\n${BWHITE}%s${BYELLOW}%s\n${OFF}%s" \
 		"DATA PATH: " \
 		"$INSTALL_DATA_PATH" \
 		"Is this okay? (Y/n) "
 	if ask::yes; then
+		echo
 		break
+	else
+		unset -v INSTALL_DATA_PATH
 	fi
+	echo
 done
 
 # MB ALIAS
-if [[ ! -e /usr/local/bin/mb ]]; then
+if [[ ! -e $SYMLINK && ! -h $SYMLINK ]]; then
 	printf "${OFF}%s${BRED}%s${OFF}%s${BRED}%s${OFF}\n" \
 		"Symlink creation: " \
 		"[monero-bash] " \
-		"--> " \
+		"-> " \
 		"[mb]"
-	printf "${OFF}%s${BRED}%s${OFF}%s${BYELLOW}%s${OFF}\n" \
+	printf "${OFF}%s${BRED}%s${OFF}%s${BCYAN}%s${OFF}\n" \
 		"This allows you to use " \
 		"[monero-bash] " \
 		"like so: " \
@@ -101,42 +158,44 @@ if [[ ! -e /usr/local/bin/mb ]]; then
 	printf "${OFF}%s" "Create symlink? (Y/n) "
 	if ask::yes; then
 		local INSTALL_SYMLINK=true
+		printf "%s\n" "Will create [mb] symlink"
 	else
-		printf "%s\n" "Skipping symlink..."
+		printf "%s\n" "Skipping [mb] symlink..."
 	fi
 fi
 
 # INSTALLATION INFORMATION
-echo
+local i
+# CONFIRM
+printf "\n${BRED}%s" "#"
+for ((i=0; i < 65; i++)); do
+	read -r -t 0.01 || true
+	printf "%s" "-"
+done
+printf "${BRED}%s${OFF}\n\n" "#"
+
 printf "${OFF}%s${BYELLOW}%s\n" \
 	"[monero-bash] will install in | " "$HOME/.monero-bash" \
-	"The path will be set in       | " "/usr/local/bin/monero-bash" \
-	".bitmonero will be set in     | " "$INSTALL_DATA_PATH"
+	"The PATH will be set in       | " "/usr/local/bin/monero-bash" \
+	"[.bitmonero] will be set in   | " "$INSTALL_DATA_PATH"
 if [[ $INSTALL_SYMLINK = true ]]; then
 	printf "${OFF}%s${BYELLOW}%s\n" \
-	"A path symlink will be set in | " "/usr/local/bin/mb"
+	"A PATH symlink will be set in | " "/usr/local/bin/mb"
 fi
 echo
 printf "${BWHITE}%s${OFF}\n" \
 	"A no-login user called [monero-bash] will be created for process security" \
-	"This will be the user Monero and P2Pool runs as"
+	"[Monero] and [P2Pool] will run as this user. [XMRig] by default, runs as ROOT." \
+	"This can be changed in [monero-bash.conf]: XMRIG_ROOT=false"
 echo
 
 # INSTALLATION PROMPT
-printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 	"Start " \
 	"[monero-bash] " \
 	"install? (Y/n) "
-if ask::yes; then
-	printf "${OFF}%s${BRED}%s${OFF}%s\n" \
-	"Starting " \
-	"[monero-bash] " \
-	"install..."
-else
-	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
-		"Canceling " \
-		"[monero-bash] " \
-		"installation"
+if ! ask::yes; then
+	printf "$${OFF}%s\n" "Canceling [monero-bash] installation..."
 	exit 1
 fi
 
@@ -146,99 +205,102 @@ if ! ask::sudo; then
 fi
 
 # HASH CHECK
-log::prog "verifying monero-bash file hashes"
-if sha256sum --quiet --check "txt/hashlist"; then
-	log::ok "monero-bash file hashes"
+log::prog "verifying [monero-bash] file hashes"
+if sha256sum --check "txt/hashlist" &>/dev/null; then
+	log::ok "[monero-bash] file hashes"
 else
-	log::fail "monero-bash file hashes"
+	log::fail "[monero-bash] file hashes"
 	print::error "Hash verification has failed."
 	print::exit "Have the files been moved for modified?"
 fi
 
-___BEGIN___ERROR___TRACE___
-
 # USER CREATION
-log::prog "creating monero-bash user"
+log::prog "creating [monero-bash] user"
 local NOLOGIN_SHELL
 NOLOGIN_SHELL="$(which nologin)"
-if ! sudo useradd --shell "$NOLOGIN_SHELL" --no-create-home --system; then
-	print::error "Could not create monero-bash user"
+log::debug "[nologin] shell found: $NOLOGIN_SHELL"
+
+trap 'monero_bash::install::trap::clean' EXIT
+
+if ! sudo useradd --no-create-home --system --shell "$NOLOGIN_SHELL" monero-bash; then
+	print::error "Could not create [monero-bash] user"
 	print::exit "Exiting for safety..."
+else
+	trap 'monero::install::trap::user; monero_bash::install::trap::clean' EXIT
+	log::ok "created [monero-bash] user"
 fi
-log::ok "created monero-bash user"
 
 # FOLDER CREATION
-log::prog "creating .monero-bash folders"
-mkdir -p packages
-mkdir -p packages/monero-bash
-mkdir -p wallets
-log::ok "created .monero-bash folders"
-
-# COPY MONERO-BASH INTO PACKAGES/
-log::prog "copying monero-bash files"
-cp -r monero-bash "$PKG_MONERO_BASH"
-cp -r src "$PKG_MONERO_BASH"
-cp -r txt "$PKG_MONERO_BASH"
-cp -r gpg "$PKG_MONERO_BASH"
-log::prog "copied monero-bash files"
+log::prog "creating [.monero-bash] folders"
+mkdir "$DOT"
+mkdir "$PACKAGES"
+mkdir "$PKG_MONERO_BASH"
+mkdir "$WALLETS"
+log::ok "created [.monero-bash] folders"
 
 # CLEAN GIT FILES
 log::prog "cleaning git files"
 [[ -e docs ]]         && rm -rf doc
 [[ -e lib ]]          && rm -rf lib
 [[ -e tests ]]        && rm -rf tests
-[[ -e CHANGELOG.md ]] && rm -rf CHANGELOG.md
-[[ -e README.md ]]    && rm -rf README.md
-[[ -e LICENSE ]]      && rm -rf LICENSE
+[[ -e utils ]]        && rm -rf utils
+[[ -e src ]]          && rm -rf src
+[[ -e CHANGELOG.md ]] && rm -f CHANGELOG.md
+[[ -e README.md ]]    && rm -f README.md
+[[ -e LICENSE ]]      && rm -f LICENSE
 [[ -e hbc.add ]]      && rm -f hbc.add
 [[ -e hbc.conf ]]     && rm -f hbc.conf
 [[ -e main.sh ]]      && rm -f main.sh
+[[ -e .git ]]         && rm -rf .git
+[[ -e .gitignore ]]   && rm -f .gitignore
+[[ -e .gitmodules ]]  && rm -f .gitmodules
 log::ok "cleaned git files"
 
 # MOVE TO .monero-bash
-log::prog "moving folder to $HOME/.monero-bash"
-mkdir "$HOME/.monero-bash"
-mv "$INSTALL_PWD" "$HOME/.monero-bash"
-
-# RESET VARIABLES
-INSTALL_PWD="$HOME/.monero-bash"
-cd "$INSTALL_PWD"
-log::prog "moved folder to $HOME/.monero-bash"
+log::prog "moving folder to: [$HOME/.monero-bash]"
+mv -f "$RELATIVE" "$PACKAGES"
+log::ok "moved folder to: [$HOME/.monero-bash]"
 
 # CREATE CONFIG FOLDER
 log::prog "creating config folder"
-mkdir -p configs
-cp "$PKG_MONERO_BASH/configs/monero-bash.conf" "$CONFIG/"
+mkdir -p "$CONFIG"
+cp "$SRC_CONFIG/monero-bash.conf" "$CONFIG/"
+cp "$SRC_CONFIG/monerod.conf" "$CONFIG/"
+cp "$SRC_CONFIG/monero-wallet-cli.conf" "$CONFIG/"
 log::ok "created config folder"
 
 # ADD TO PATH
 log::prog "adding [monero-bash] to PATH"
-sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/monero-bash
+sudo ln -s "$MAIN" /usr/local/bin/monero-bash
 log::ok "added [monero-bash] to PATH"
 if [[ $INSTALL_SYMLINK = true ]]; then
 	log::prog "creating [mb] PATH symlink"
-	sudo ln -s "$INSTALL_PWD/packages/monero-bash/monero-bash" /usr/local/bin/mb
+	sudo ln -s "$MAIN" /usr/local/bin/mb
 	log::ok "created [mb] PATH symlink"
 fi
 
 # SET MONERO DATA PATH
 log::prog "setting Monero data path"
-sed -i "s/.*data-dir.*/data-dir=$INSTALL_DATA_PATH/" "$CONFIG_MONEROD"
+sed -i "s@data-dir.*@data-dir=$INSTALL_DATA_PATH@g" "$CONFIG_MONEROD"
 log::ok "set Monero data path"
 
 # FIRST TIME
-sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/" "$STATE"
+log::debug "setting FIRST_TIME = false"
+sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/g" "$STATE"
+log::debug "set FIRST_TIME = false"
 
 # PERMISSIONS
 log::prog "setting folder permissions"
-sudo chown "$USER:$USER" "$INSTALL_PWD"
-sudo chmod -R 755 "$INSTALL_PWD"
+sudo chown "$USER:$USER" "$DOT"
+sudo chmod -R 770 "$DOT"
 log::ok "set folder permissions"
 
-___ENDOF___ERROR___TRACE___
+# DISARM TRAP
+trap - EXIT
 
 # END
-printf "${BGREEN}%s${OFF}%s\n" \
+printf "${BGREEN}%s${OFF}\n" \
+	"" \
 	"#-----------------------------------------------------------------#" \
 	"#                monero-bash installation complete                #" \
 	"#-----------------------------------------------------------------#"

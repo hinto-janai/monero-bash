@@ -11,7 +11,10 @@ P2POOL_VER=
 XMRIG_VER=
 
 # old state
+# if package is not
+# installed, it is
+# set to false
 MONERO_BASH_OLD=false
-MONERO_OLD=false
-P2POOL_OLD=false
-XMRIG_OLD=false
+MONERO_OLD=true
+P2POOL_OLD=true
+XMRIG_OLD=true

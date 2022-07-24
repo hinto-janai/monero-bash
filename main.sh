@@ -36,43 +36,45 @@
 
 main() {
 #----------------------------------------- main() START
-#log::debug "main() started, log::debug initialization"
+log::debug "main() started"
 # allow for job control
 set -m
 
-##----------------------------------------- DEBUG
-#[[ $1 = DEBUG ]] && DEBUG "$@"
-#
-##----------------------------------------- SAFETY
-#log::debug "starting safety checks"
-## check for gnu/linux
-#safety::gnu_linux
-## check for bash v5+
-#safety::bash
-## check for root
-#safety::root
-## check for pipe
-#safety::pipe
-## check for wget/curl
+#----------------------------------------- DEBUG
+[[ $1 = DEBUG ]] && DEBUG "$@"
+
+#----------------------------------------- SAFETY
+log::debug "starting safety checks"
+# check for gnu/linux
+safety::gnu_linux
+# check for bash v5+
+safety::bash
+# check for root
+safety::root
+# check for pipe
+safety::pipe
+# check for wget/curl
 safety::wget_curl
-#
-##----------------------------------------- FIRST TIME INSTALLATION
-#if [[ $FIRST_TIME = true ]]; then
-#	log::debug "first time detected, starting installation"
-#	monero_bash::install
-#else
-#	log::debug "first time = false, skipping installation"
-#fi
-#
-##----------------------------------------- MORE SAFETY
-## check for path
-#safety::path
-#
-##----------------------------------------- PARSE USER CONFIG/STATE
-#___BEGIN___ERROR___TRACE___
-#parse::state
-#parse::config
-#___ENDOF___ERROR___TRACE___
+
+#----------------------------------------- PARSE USER CONFIG/STATE
+___BEGIN___ERROR___TRACE___
+parse::state
+parse::config
+___ENDOF___ERROR___TRACE___
+
+#----------------------------------------- MORE SAFETY
+# check for path
+safety::path
+
+#----------------------------------------- FIRST TIME INSTALLATION
+if [[ $FIRST_TIME = true ]]; then
+	___BEGIN___ERROR___TRACE___
+	log::debug "FIRST_TIME = true | starting installation"
+	monero_bash::install
+	___ENDOF___ERROR___TRACE___
+else
+	log::debug "FIRST_TIME = false | skipping installation"
+fi
 
 #----------------------------------------- PARSE USER INPUT
 [[ $# != 0 ]] && parse::options "$@"

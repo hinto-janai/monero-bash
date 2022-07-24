@@ -27,4 +27,5 @@ safety::pipe() {
 		print::error "Pipe detected. [monero-bash] does not support pipes!"
 		print::exit  "Exiting for safety..."
 	fi
+	log::debug "no pipe detected"
 }
