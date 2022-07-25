@@ -245,6 +245,7 @@ log::prog "cleaning git files"
 [[ -e tests ]]        && rm -rf tests
 [[ -e utils ]]        && rm -rf utils
 [[ -e src ]]          && rm -rf src
+[[ -e pgp ]]          && rm -rf pgp
 [[ -e CHANGELOG.md ]] && rm -f CHANGELOG.md
 [[ -e README.md ]]    && rm -f README.md
 [[ -e LICENSE ]]      && rm -f LICENSE

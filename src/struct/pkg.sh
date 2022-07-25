@@ -61,7 +61,7 @@ struct::pkg() {
 		PKG[regex]="monero-bash-v.*"
 		PKG[hash]="SHA256SUM"
 		PKG[sig]="${PKG[hash]}"
-		PKG[gpg_pub_key]="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
+		PKG[gpg_pub_key]="https://github.com/hinto-janaiyo/monero-bash/blob/main/pgp/hinto-janaiyo.asc"
 		PKG[gpg_fingerprint]="21958EE945980282FCB849C8D7483F6CA27D1B1D"
 		PKG[current_version]="$MONERO_BASH_VER"
 		PKG[old]="$MONERO_BASH_OLD"
