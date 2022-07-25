@@ -69,7 +69,7 @@ print::help() {
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"rpc     " "<JSON-RPC method>                  " "Send a JSON-RPC call to monerod" \
-		"changes " "<monero-bash version>              " "Print current/specified monero-bash changelog" \
+		"changes " "<package>                          " "Print the latests changes for <package>" \
 		"help    " "<command>                          " "Print help for a command, or all if none specified"
 }
 
@@ -532,12 +532,14 @@ print::help::command() {
 			"get_output_distribution"
 			;;
 		changes)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "changes " "<monero-bash version>"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "changes " "<package>"
 			printf "${OFF}%s\n" \
-			"Print the changelog of [monero-bash]." \
+			"Print the changelog of <package>." \
 			"" \
-			"If no version is given, the current version's" \
-			"changelog will be printed."
+			"During package installations/upgrades, [monero-bash]" \
+			"will save a local changelog inside:" \
+			"[\$HOME/.monero-bash/packages/changes]" \
+			"This file is read and parsed for MARKDOWN syntax, then printed."
 			;;
 		help)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "help " "<command>"

@@ -34,6 +34,7 @@ pkg::tmp::download() {
 	TMP_PKG[${PKG[short]}_gpg]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-gpg.XXXXXXXXXX)"
 	TMP_PKG[${PKG[short]}_sig]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-sig.XXXXXXXXXX)"
 	TMP_PKG[${PKG[short]}_hash]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_changes]="${mktemp ${TMP_PKG[${PKG[short]}_changes]}/monero-bash-changes.XXXXXXXXXX)"
 
 	# log::debug
 	log::debug "--- tmp pkg folders ---"

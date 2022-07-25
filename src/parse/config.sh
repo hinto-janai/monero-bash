@@ -41,8 +41,6 @@ parse::config() {
 		[[ $i =~ ^XMRIG_ROOT=true*$ ]]                && declare -g XMRIG_ROOT=true
 		[[ $i =~ ^AUTO_UPDATE=true*$ ]]               && declare -g AUTO_UPDATE=true
 		[[ $i =~ ^RPC_IP=* ]]                         && declare -g RPC_IP="${i/*=/}"
-		[[ $i =~ ^MONERO_BASH_DEBUG=true*$ ]]         && declare -g STD_LOG_DEBUG=true
-		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true*$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
 	done
 
 	# DEFAULTS
@@ -51,8 +49,6 @@ parse::config() {
 	[[ $XMRIG_ROOT != true ]]                && declare -g XMRIG_ROOT=false
 	[[ $AUTO_UPDATE != true ]]               && declare -g AUTO_UPDATE=false
 	[[ -z $RPC_IP ]]                         && declare -g RPC_IP="localhost:18081"
-	[[ $MONERO_BASH_DEBUG != true ]]         && declare -g MONERO_BASH_DEBUG=false
-	[[ $MONERO_BASH_DEBUG_VERBOSE != true ]] && declare -g MONERO_BASH_DEBUG_VERBOSE=false
 
 	log::debug "--- monero-bash.conf settings ---"
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
@@ -60,7 +56,4 @@ parse::config() {
 	log::debug "XMRIG_ROOT                | $XMRIG_ROOT"
 	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
 	log::debug "RPC_IP                    | $RPC_IP"
-	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"
-	log::debug "MONERO_BASH_DEBUG         | $STD_LOG_DEBUG"
-	log::debug "MONERO_BASH_DEBUG_VERBOSE | $STD_LOG_DEBUG_VERBOSE"
 }

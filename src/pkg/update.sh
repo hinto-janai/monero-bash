@@ -38,7 +38,7 @@ pkg::update() {
 	pkg::tmp::info update
 
 	# VARIABLE
-	map VER HTML
+	map VER
 	local UPDATE_FOUND
 	declare -a SCRATCH
 
@@ -64,7 +64,7 @@ pkg::update() {
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
 	if ! wait -n; then
-		print::exit "Update failure - unable to connect to GitHub"
+		print::exit "Update failure - update threads failed"
 	fi
 
 	# FILTER RESULT AND PRINT
@@ -107,37 +107,25 @@ pkg::update() {
 pkg::update::multi() {
 	log::debug "starting metadata thread for: ${PKG[pretty]}"
 
-	# switch to html mode if github api fails
+	# attempt metadata download
 	if $DOWNLOAD_OUT "${TMP_INFO[${PKG[short]}]}" "${PKG[link_api]}"; then
 		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
+		return 0
 	else
-		HTML[${PKG[short]}]=true
-		log::debug "GitHub API failure for ${PKG[pretty]} | Switching to HTML filter mode..."
-		if $DOWNLOAD_OUT "${TMP_INFO[${PKG[short]}]}" "${PKG[link_html]}"; then
-			log::debug "downloaded ${PKG[link_html]} into ${TMP_INFO[${PKG[short]}]}"
-		else
-			log::debug "Update failure for ${PKG[pretty]} - HTML mode failure"
-			return 1
-		fi
+		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
+		print::error "Are you using a VPN/TOR? GitHub API will often rate-limit them."
+		return 1
 	fi
-	return 0
 }
 
 # a template for filtering for the $VER from
 # the info file created by pkg::update::multi()
 pkg::update::ver() {
 	# filter output
-	if [[ ${HTML[${PKG[short]}} = true ]]; then
-		SCRATCH=($(grep -o -m 1 "/${PKG[author]}/${PKG[name]}/releases/tag/.*\"" "${TMP_INFO[${PKG[short]}]}"))
-		VER[${PKG[short]}]="${SCRATCH[0]}"
-		VER[${PKG[short]}]="${VER[${PKG[short]}//*tag\/}"
-		VER[${PKG[short]}]="${VER[${PKG[short]}//\"}"
-	else
-		VER[${PKG[short]}]="$(grep -m 1 "tag_name" "${TMP_INFO[${PKG[short]}]}")"
-		VER[${PKG[short]}]="${VER[${PKG[short]}//*: }"
-		VER[${PKG[short]}]="${VER[${PKG[short]}//\"}"
-		VER[${PKG[short]}]="${VER[${PKG[short]}//,}"
-	fi
+	VER[${PKG[short]}]="$(grep -m 1 "tag_name" "${TMP_INFO[${PKG[short]}]}")"
+	VER[${PKG[short]}]="${VER[${PKG[short]}//*: }"
+	VER[${PKG[short]}]="${VER[${PKG[short]}//\"}"
+	VER[${PKG[short]}]="${VER[${PKG[short]}//,}"
 }
 
 pkg::update::result() {

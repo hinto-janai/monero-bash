@@ -34,6 +34,7 @@ pkg::hook::pre() {
 # hooks to run post-upgrade
 # order:
 # - update state
+# - create changelog
 # - individual pkgs
 # - create config files
 # - create systemd files
@@ -42,26 +43,40 @@ pkg::hook::pre() {
 pkg::hook::post() {
 	log::debug "starting ${FUNCNAME}()"
 
-	# state update
-	log::debug "recreating old state in: $STATE"
+	# state restore
+	log::prog "recreating old state..."
 	echo "${HOOK_BASH_STATE[@]}" > "$STATE"
+	log::ok "recreated old state"
 
 	# individual package hooks
 	[[ $MONERO_BASH_OLD = true ]] && pkg::hook::post::bash
 
-	# configs/system
+	# state + changes + configs + system
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		struct::pkg bash
+		pkg::hook::post::state
+		pkg::hook::post::changes
+		pkg::hook::post::config
+		pkg::hook::post::systemd
+	fi
 	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
+		pkg::hook::post::state
+		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
 	fi
 	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg monero
+		pkg::hook::post::state
+		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
 	fi
 	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg monero
+		pkg::hook::post::state
+		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
 	fi
@@ -79,6 +94,30 @@ pkg::hook::post() {
 	sudo chown -R "monero-bash:$USER" "$PACKAGES"
 	log::ok "Set permissions"
 }
+
+pkg::hook::post::state() {
+	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+
+	log::prog "${PKG[pretty]} | ... | ..."
+	sed -i "s/${PKG[var]}_VER=.*/${PKG[var]}_VER=\"${VER[${PKG[short]}]}\"/g" "$STATE"
+	log::ok "${PKG[pretty]} | ${VER[${PKG[short]}]} | ${RELEASE[${PKG[short]}]}"
+}
+
+pkg::hook::post::changes() {
+	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+
+	log::prog "Creating changelog for: ${PKG[pretty]}..."
+	mkdir -p "$CHANGES"
+
+	echo "# PACKAGE | ${PKG[pretty]}"            > "$CHANGES/${PKG[name]}"
+	echo "# VERSION | ${VER[${PKG[short]}]}"     >> "$CHANGES/${PKG[name]}"
+	echo "# RELEASE | ${RELEASE[${PKG[short]}]}" >> "$CHANGES/${PKG[name]}"
+	echo >> "$CHANGES/${PKG[name]}"
+	echo "${BODY[${PKG[short]}]}" > "$CHANGES/${PKG[name]}"
+
+	log::ok "${PKG[pretty]} changelog created"
+}
+
 
 # create config files for packages.
 pkg::hook::post::config() {

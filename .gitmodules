@@ -1,3 +1,6 @@
 [submodule "lib/stdlib"]
 	path = lib/stdlib
 	url = git@github.com:hinto-janaiyo/stdlib.git
+[submodule "external/xmrpc"]
+	path = external/xmrpc
+	url = https://github.com/jtgrassie/xmrpc

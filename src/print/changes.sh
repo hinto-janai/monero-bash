@@ -20,42 +20,61 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# global readonly variables.
+# Parse a markdown file and
+# create syntax highlighting.
+print::changes() {
+	log::debug "starting ${FUNCNAME}() for: $1"
 
-# PATH
-REAL="$(realpath $0)"
-RELATIVE="$(dirname "$REAL")"
-BINARY="/usr/local/bin/monero-bash"
-SYMLINK="/usr/local/bin/mb"
-readonly REAL RELATIVE
+	# TURN OFF GLOBBING
+	set -f
 
-# main dot folder
-readonly DOT="$HOME/.monero-bash"
-readonly CONFIG="$DOT/config"
-readonly WALLETS="$DOT/wallets"
-readonly PACKAGES="$DOT/packages"
-readonly CHANGES="$PACKAGES/changes"
+	local LINE WORD IFS=$'\n' i w SET_CODE_BLOCK
+	mapfile LINE < "$CHANGES/$1"
 
-# config files
-readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
-readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
-readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
-readonly CONFIG_P2POOL="$CONFIG/p2pool.conf"
-readonly CONFIG_XMRIG="$CONFIG/xmrig.json"
+	# PARSE PER LINE
+	for i in ${LINE[@]}; do
+		i="${i//$'\r'}"
+		unset -v WORD
+		IFS=' '
+		WORD=($i)
 
-# package folders
-readonly PKG_MONERO_BASH="$PACKAGES/monero-bash"
-readonly PKG_MONERO="$PACKAGES/monero"
-readonly PKG_P2POOL="$PACKAGES/p2pool"
-readonly PKG_XMRIG="$PACKAGES/xmrig"
+		# PARSE PER WORD
+		for w in ${WORD[@]}; do
+		case "$w" in
 
-# monero-bash package source files
-readonly SRC="$PKG_MONERO_BASH/src"
-readonly TXT="$PKG_MONERO_BASH/txt"
-readonly HASHLIST="$TXT/hashlist"
-readonly STATE="$TXT/state"
-readonly MAIN="$PKG_MONERO_BASH/monero-bash"
-readonly SRC_CONFIG="$PKG_MONERO_BASH/config"
+		# TITLES
+		\#*) printf "${BCYAN}%s" "$w";;
+		\*) printf "${BWHITE}•${OFF}%s" "${w/\*}";;
+		-) printf "${IWHITE}    •${OFF}%s" "${w/-}";;
 
-# system folders
-readonly SYSTEMD="/etc/systemd/system"
+		# BOLD/ITALIC
+		\*\**) printf "${BWHITE}%s" " ${w//\*\*}";;
+		*\*\*) printf "%s${OFF}" " ${w//\*\*}";;
+
+		# LINKS
+		\[*\]\(*\)) printf "${BPURPLE}%s${OFF}" " $w";;
+		[*) printf "${BPURPLE}%s" " $w";;
+		*]\(*\)) printf "%s${OFF}" " $w";;
+
+		# CODE BLOCKS
+		*\`\`\`*)
+			if [[ $SET_CODE_BLOCK != true ]]; then
+				SET_CODE_BLOCK=true
+				printf "\e[1;93m"
+			else
+				SET_CODE_BLOCK=false
+				printf "${OFF}"
+			fi
+			;;
+		\`*\`) printf " \e[1;91m%s${OFF}" "${w//\`}";;
+		\`*) printf " \e[1;91m%s" "${w//\`}";;
+		*\`) printf "\e[1;91m %s${OFF}" "${w//\`}";;
+
+		# EVERYTHING ELSE
+		*) printf "%s" " $w";;
+
+		esac
+		done
+		printf "\n"
+	done
+}

@@ -112,25 +112,4 @@ struct::pkg() {
 
 	# inferred variables
 	PKG[link_api]="https://api.github.com/repos/${PKG[author]}/${PKG[name]}/releases/latest"
-	PKG[link_html]="https://github.com/${PKG[author]}/${PKG[name]}/releases/latest"
-
-	# log::debug
-#	log::debug "--- struct::pkg ---"
-#	log::debug "PKG[name]            | ${PKG[name]}"
-#	log::debug "PKG[pretty]          | ${PKG[pretty]}"
-#	log::debug "PKG[var]             | ${PKG[var]}"
-#	log::debug "PKG[author]          | ${PKG[author]}"
-#	log::debug "PKG[gpg_owner]       | ${PKG[gpg_owner]}"
-#	log::debug "PKG[service]         | ${PKG[service]}"
-#	log::debug "PKG[process]         | ${PKG[process]}"
-#	log::debug "PKG[directory]       | ${PKG[directory]}"
-#	log::debug "PKG[regex]           | ${PKG[regex]}"
-#	log::debug "PKG[hash]            | ${PKG[hash]}"
-#	log::debug "PKG[signature]       | ${PKG[signature]}"
-#	log::debug "PKG[gpg_pub_key]     | ${PKG[gpg_pub_key]}"
-#	log::debug "PKG[gpg_fingerprint] | ${PKG[gpg_fingerprint]}"
-#	log::debug "PKG[current_version] | ${PKG[current_version]}"
-#	log::debug "PKG[old]             | ${PKG[old]}"
-#	log::debug "PKG[link_api]        | ${PKG[link_api]}"
-#	log::debug "PKG[link_html]       | ${PKG[link_html]}"
 }

@@ -22,8 +22,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-#git <monero-bash/b82e556>
-#nix <1658718989>
+#git <monero-bash/a561905>
+#nix <1658764043>
 #hbc <06b0e03>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -392,10 +392,22 @@ log::prog() {
 }
 log::debug() {
 	[[ $STD_LOG_DEBUG != true ]] && return 0
+	if [[ $STD_LOG_DEBUG_LAST_FUNC != "${FUNCNAME[1]}" ]]; then
+		declare -g STD_LOG_DEBUG_LAST_FUNC="${FUNCNAME[1]}"
+		case "$STD_LOG_DEBUG_FUNC_COLOR" in
+			"\e[1;91m") STD_LOG_DEBUG_FUNC_COLOR="\e[1;92m";;
+			"\e[1;92m") STD_LOG_DEBUG_FUNC_COLOR="\e[1;93m";;
+			"\e[1;93m") STD_LOG_DEBUG_FUNC_COLOR="\e[1;94m";;
+			"\e[1;94m") STD_LOG_DEBUG_FUNC_COLOR="\e[1;95m";;
+			"\e[1;95m") STD_LOG_DEBUG_FUNC_COLOR="\e[1;96m";;
+			"\e[1;96m") STD_LOG_DEBUG_FUNC_COLOR="\e[1;97m";;
+			*) STD_LOG_DEBUG_FUNC_COLOR="\e[1;91m";;
+		esac
+	fi
 	if [[ -z $STD_LOG_DEBUG_INIT ]]; then
 		declare -g STD_LOG_DEBUG_INIT
 		STD_LOG_DEBUG_INIT=${EPOCHREALTIME//[!0-9]/}
-		printf "\r\e[2K\e[1;90m%s\e[0m%s" "[log::debug 0.000000] " "$* "
+		printf "\r\e[2K\e[1;90m%s${STD_LOG_DEBUG_FUNC_COLOR}%s\e[0m%s" "[log::debug 0.000000] " "${FUNCNAME[1]}() " "$* "
 		if [[ $STD_LOG_DEBUG_VERBOSE = true ]]; then
 			printf "\e[1;93m%s" "-> "
 			local f i
@@ -420,10 +432,10 @@ log::debug() {
 	esac
 	STD_LOG_DEBUG_DOT=$((${#STD_LOG_DEBUG_ADJUSTED}-6))
 	if [[ $STD_LOG_DEBUG_DOT -eq 0 ]]; then
-		printf "\r\e[2K\e[1;90m%s\e[0m%s" "[log::debug 0.${STD_LOG_DEBUG_ADJUSTED}] " "$* "
+		printf "\r\e[2K\e[1;90m%s${STD_LOG_DEBUG_FUNC_COLOR}%s\e[0m%s" "[log::debug 0.${STD_LOG_DEBUG_ADJUSTED}] " "${FUNCNAME[1]}() " "$* "
 	else
-		printf "\r\e[2K\e[1;90m%s\e[0m%s" \
-			"[log::debug ${STD_LOG_DEBUG_ADJUSTED:0:${STD_LOG_DEBUG_DOT}}.${STD_LOG_DEBUG_ADJUSTED:${STD_LOG_DEBUG_DOT}}] " "$* "
+		printf "\r\e[2K\e[1;90m%s${STD_LOG_DEBUG_FUNC_COLOR}%s\e[0m%s" \
+			"[log::debug ${STD_LOG_DEBUG_ADJUSTED:0:${STD_LOG_DEBUG_DOT}}.${STD_LOG_DEBUG_ADJUSTED:${STD_LOG_DEBUG_DOT}}] " "${FUNCNAME[1]}() " "$* "
 	fi
 	if [[ $STD_LOG_DEBUG_VERBOSE = true ]]; then
 		printf "\e[1;93m%s" "-> "
@@ -991,6 +1003,7 @@ log::prog "cleaning git files"
 [[ -e tests ]]        && rm -rf tests
 [[ -e utils ]]        && rm -rf utils
 [[ -e src ]]          && rm -rf src
+[[ -e pgp ]]          && rm -rf pgp
 [[ -e CHANGELOG.md ]] && rm -f CHANGELOG.md
 [[ -e README.md ]]    && rm -f README.md
 [[ -e LICENSE ]]      && rm -f LICENSE
@@ -1135,25 +1148,18 @@ parse::config() {
 		[[ $i =~ ^XMRIG_ROOT=true*$ ]]                && declare -g XMRIG_ROOT=true
 		[[ $i =~ ^AUTO_UPDATE=true*$ ]]               && declare -g AUTO_UPDATE=true
 		[[ $i =~ ^RPC_IP=* ]]                         && declare -g RPC_IP="${i/*=/}"
-		[[ $i =~ ^MONERO_BASH_DEBUG=true*$ ]]         && declare -g STD_LOG_DEBUG=true
-		[[ $i =~ ^MONERO_BASH_DEBUG_VERBOSE=true*$ ]] && declare -g STD_LOG_DEBUG_VERBOSE=true
 	done
 	[[ $AUTO_START_MONEROD != true ]]        && declare -g AUTO_START_MONEROD=false
 	[[ $AUTO_STOP_MONEROD != true ]]         && declare -g AUTO_STOP_MONEROD=false
 	[[ $XMRIG_ROOT != true ]]                && declare -g XMRIG_ROOT=false
 	[[ $AUTO_UPDATE != true ]]               && declare -g AUTO_UPDATE=false
 	[[ -z $RPC_IP ]]                         && declare -g RPC_IP="localhost:18081"
-	[[ $MONERO_BASH_DEBUG != true ]]         && declare -g MONERO_BASH_DEBUG=false
-	[[ $MONERO_BASH_DEBUG_VERBOSE != true ]] && declare -g MONERO_BASH_DEBUG_VERBOSE=false
 	log::debug "--- monero-bash.conf settings ---"
 	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
 	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
 	log::debug "XMRIG_ROOT                | $XMRIG_ROOT"
 	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
 	log::debug "RPC_IP                    | $RPC_IP"
-	log::debug "RPC_VERBOSE               | $RPC_VERBOSE"
-	log::debug "MONERO_BASH_DEBUG         | $STD_LOG_DEBUG"
-	log::debug "MONERO_BASH_DEBUG_VERBOSE | $STD_LOG_DEBUG_VERBOSE"
 }
 parse::options::pkg() {
 	[[ $# = 1 ]] && print::help::command "$1"
@@ -2171,38 +2177,46 @@ pkg::upgrade() {
 }
 pkg::verify() {
 	log::debug "starting ${FUNCNAME}()"
-	if [[ $MONERO_BASH_OLD = true ]]; then
-		struct::pkg bash
-		pkg::verify::key
-	fi
-	if [[ $MONERO_OLD = true ]]; then
-		struct::pkg monero
-		pkg::verify::key
-	fi
-	if [[ $P2POOL_OLD = true ]]; then
-		struct::pkg p2pool
-		pkg::verify::key
-	fi
-	if [[ $XMRIG_OLD = true ]]; then
-		struct::pkg xmrig
-		pkg::verify::key
-	fi
 	map HASH
 	if [[ $MONERO_BASH_OLD = true ]]; then
 		struct::pkg bash
 		pkg::verify::hash_calc &
+		pkg::verify::check_key &
 	fi
 	if [[ $MONERO_OLD = true ]]; then
 		struct::pkg monero
 		pkg::verify::hash_calc &
+		pkg::verify::check_key &
 	fi
 	if [[ $P2POOL_OLD = true ]]; then
 		struct::pkg p2pool
 		pkg::verify::hash_calc &
+		pkg::verify::check_key &
 	fi
 	if [[ $XMRIG_OLD = true ]]; then
 		struct::pkg xmrig
 		pkg::verify::hash_calc &
+		pkg::verify::check_key &
+	fi
+	log::debug "pkg::verify: waiting for hash_calc() & check_key() threads to complete"
+	if ! wait -n; then
+		print::exit "Upgrade failure - Hash calculation or PGP key download failed"
+	fi
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		struct::pkg bash
+		pkg::verify::import_key
+	fi
+	if [[ $MONERO_OLD = true ]]; then
+		struct::pkg monero
+		pkg::verify::import_key
+	fi
+	if [[ $P2POOL_OLD = true ]]; then
+		struct::pkg p2pool
+		pkg::verify::import_key
+	fi
+	if [[ $XMRIG_OLD = true ]]; then
+		struct::pkg xmrig
+		pkg::verify::import_key
 	fi
 	if [[ $MONERO_BASH_OLD = true ]]; then
 		struct::pkg bash
@@ -2225,15 +2239,33 @@ pkg::verify() {
 		pkg::verify::pgp
 	fi
 }
-pkg::verify::key() {
+pkg::verify::check_key() {
 	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
 	if gpg --list-keys "${PKG[fingerprint]}" &>/dev/null; then
 		log::debug "PGP key found: ${PKG[gpg_owner]} - ${PKG[fingerprint]}"
 	else
 		log::debug "PGP key not found: ${PKG[gpg_owner]} - ${PKG[fingerprint]}"
-		log::debug "Importing from: $PKG_MONERO_BASH/gpg/${PKG[gpg_owner]}.asc"
-		gpg --quiet --import "$PKG_MONERO_BASH/gpg/${PKG[gpg_owner]}.asc"
+		printf "${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
+			"Importing " \
+			"${PKG[gpg_owner]}'s " \
+			"PGP key..."
+		TMP_PKG[${PKG[short]}_key]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key.XXXXXXXXXX)"
+		TMP_PKG[${PKG[short]}_key_output]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key-output.XXXXXXXXXX)"
+		log::debug "storing ${PKG[gpg_owner]}.asc into: ${TMP_PKG[${PKG[short]}_key]}"
+		log::debug "storing import output into: ${TMP_PKG[${PKG[short]}_key_output]}"
+		log::debug "starting PGP key download thread for: ${PKG[gpg_pub_key]}"
+		$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_key]}" "${PKG[gpg_pub_key]}"
 	fi
+}
+pkg::verify::import_key() {
+		log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+		gpg --import "${TMP_PKG[${PKG[short]}_key]}" &> "${TMP_PKG[${PKG[short]}_key_output]}"
+		local IMPORT_KEY_OUTPUT i IFS=$'\n'
+		mapfile IMPORT_KEY_OUTPUT < "${TMP_PKG[${PKG[short]}_key_output]}"
+		log::debug "--- imported ${PKG[gpg_owner]}'s PGP key ---"
+		for i in ${IMPORT_KEY_OUTPUT[@]}; do
+			log::debug "$i"
+		done
 }
 pkg::verify::hash_calc() {
 	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
@@ -2262,10 +2294,18 @@ pkg::verify::pgp() {
 		TMP_PKG[${PKG[short]}_hash]="${TMP_PKG[${PKG[short]}_sig]}"
 	fi
 	if gpg --verify "${TMP_PKG[${PKG[short]}_hash]}" &> "${TMP_PKG[${PKG[short]}_gpg]}"; then
-		log::debug "PGP success: $(cat ${TMP_PKG[${PKG[short]}_gpg]})"
 		log::ok "${PKG[pretty]} PGP signed by: ${PKG[gpg_owner]}"
+		local PGP_OUTPUT IFS=$'\n' i
+		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
+		log::debug "PGP success for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
+		for i in ${TMP_PKG[${PKG[short]}_gpg]}; do
+			log::debug "$i"
+		done
 	else
-		log::debug "PGP failure"
+		log::debug "PGP failure for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
+		for i in ${TMP_PKG[${PKG[short]}_gpg]}; do
+			log::debug "$i"
+		done
 		print::compromised::pgp
 		exit 1
 	fi
@@ -3266,7 +3306,7 @@ struct::pkg() {
 		PKG[regex]="monero-bash-v.*"
 		PKG[hash]="SHA256SUM"
 		PKG[sig]="${PKG[hash]}"
-		PKG[gpg_pub_key]="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
+		PKG[gpg_pub_key]="https://github.com/hinto-janaiyo/monero-bash/blob/main/pgp/hinto-janaiyo.asc"
 		PKG[gpg_fingerprint]="21958EE945980282FCB849C8D7483F6CA27D1B1D"
 		PKG[current_version]="$MONERO_BASH_VER"
 		PKG[old]="$MONERO_BASH_OLD"
@@ -3616,7 +3656,8 @@ declare -frg pkg::update::ver
 declare -frg pkg::update::result
 declare -frg pkg::upgrade
 declare -frg pkg::verify
-declare -frg pkg::verify::key
+declare -frg pkg::verify::check_key
+declare -frg pkg::verify::import_key
 declare -frg pkg::verify::hash_calc
 declare -frg pkg::verify::hash
 declare -frg pkg::verify::pgp
@@ -3693,45 +3734,45 @@ set +eo pipefail || exit 118
 
 main() {
 #----------------------------------------- main() START
-log::debug "main() started"
-# allow for job control
-set -m
-
-#----------------------------------------- DEBUG
-[[ $1 = DEBUG ]] && DEBUG "$@"
-
-#----------------------------------------- SAFETY
-log::debug "starting safety checks"
-# check for gnu/linux
-safety::gnu_linux
-# check for bash v5+
-safety::bash
-# check for root
-safety::root
-# check for pipe
-safety::pipe
-# check for wget/curl
-safety::wget_curl
-
-#----------------------------------------- PARSE USER CONFIG/STATE
-___BEGIN___ERROR___TRACE___
-parse::state
-parse::config
-___ENDOF___ERROR___TRACE___
-
-#----------------------------------------- MORE SAFETY
-# check for path
-safety::path
-
-#----------------------------------------- FIRST TIME INSTALLATION
-if [[ $FIRST_TIME = true ]]; then
-	___BEGIN___ERROR___TRACE___
-	log::debug "FIRST_TIME = true | starting installation"
-	monero_bash::install
-	___ENDOF___ERROR___TRACE___
-else
-	log::debug "FIRST_TIME = false | skipping installation"
-fi
+#log::debug "main() started"
+## allow for job control
+#set -m
+#
+##----------------------------------------- DEBUG
+#[[ $1 = DEBUG ]] && DEBUG "$@"
+#
+##----------------------------------------- SAFETY
+#log::debug "starting safety checks"
+## check for gnu/linux
+#safety::gnu_linux
+## check for bash v5+
+#safety::bash
+## check for root
+#safety::root
+## check for pipe
+#safety::pipe
+## check for wget/curl
+#safety::wget_curl
+#
+##----------------------------------------- PARSE USER CONFIG/STATE
+#___BEGIN___ERROR___TRACE___
+#parse::state
+#parse::config
+#___ENDOF___ERROR___TRACE___
+#
+##----------------------------------------- MORE SAFETY
+## check for path
+#safety::path
+#
+##----------------------------------------- FIRST TIME INSTALLATION
+#if [[ $FIRST_TIME = true ]]; then
+#	___BEGIN___ERROR___TRACE___
+#	log::debug "FIRST_TIME = true | starting installation"
+#	monero_bash::install
+#	___ENDOF___ERROR___TRACE___
+#else
+#	log::debug "FIRST_TIME = false | skipping installation"
+#fi
 
 #----------------------------------------- PARSE USER INPUT
 [[ $# != 0 ]] && parse::options "$@"

@@ -65,9 +65,9 @@ pkg::download() {
 # sets the $TMP_PKG[${PKG[short]}_tar] variable
 pkg::download::multi() {
 	log::debug "starting download thread for: ${PKG[pretty]}"
-	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "$LINK_SIG" &
-	$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_hash]}" "$LINK_HASH" &
-	$DOWNLOAD_CMD "${TMP_PKG[${PKG[short]}_pkg]}" "$LINK_PKG" &
+	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "${LINK_SIG[${PKG[short]}]}" &
+	$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_hash]}" "${LINK_HASH${PKG[short]}]}" &
+	$DOWNLOAD_CMD "${TMP_PKG[${PKG[short]}_pkg]}" "${LINK_PKG[${PKG[short]}]}" &
 
 	TMP_PKG[${PKG[short]}_tar]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_tar]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_tar]}"
