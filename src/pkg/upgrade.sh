@@ -35,11 +35,12 @@
 # creates lock file: /tmp/std_lock_monero_bash_upgrade.XXXXXXXXX
 
 pkg::upgrade() {
-	log::debug "starting ${FUNCNAME}()"
-	if [[ $UPGRADE_LIST ]]; then
-		log::debug "packages getting upgraded: $UPGRADE_LIST"
-	elif [[ $INSTALL_LIST ]]; then
+	log::debug "starting"
+
+	if [[ $1 = install ]]; then
 		log::debug "packages getting installed: $UPGRADE_LIST"
+	else
+		log::debug "packages getting upgraded: $UPGRADE_LIST"
 	fi
 
 	# CREATE TMP FILES AND LOCK
@@ -67,14 +68,14 @@ pkg::upgrade() {
 	pkg::verify
 
 	# PRE HOOKS
-	print::pkg::hooks::pre
-	pkg::hooks::pre
+	print::hook::pre
+	pkg::hook::pre
 
 	# INSTALLING/UPGRADING TITLE
-	if [[ $UPGRADE_LIST ]]; then
-		print::upgrade
-	elif [[ $INSTALL_LIST ]]; then
+	if [[ $1 = install ]]; then
 		print::install
+	else
+		print::upgrade
 	fi
 
 	# EXTRACT
@@ -87,32 +88,20 @@ pkg::upgrade() {
 	pkg::copy
 
 	# POST HOOKS
-	print::pkg::hooks::post
-	pkg::hooks::post
+	print::hook::post
+	pkg::hook::post
 
 	# FREE LOCK
 	log::debug "freeing lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
 	lock::free monero_bash_upgrade
 
 	# END
-	if [[ $UPGRADE_LIST ]]; then
-		print::upgrade
-	elif [[ $INSTALL_LIST ]]; then
-		print::install
+	if [[ $1 = install ]]; then
+		print::installed
+	else
+		print::upgraded
 	fi
 	trap - EXIT
 	log::debug "pkg::upgrade() done"
 	exit 0
 }
-
-
-
-
-
-
-
-
-
-
-
-

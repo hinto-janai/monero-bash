@@ -211,7 +211,7 @@ if sha256sum --check "txt/hashlist" &>/dev/null; then
 else
 	log::fail "[monero-bash] file hashes"
 	print::error "Hash verification has failed."
-	print::exit "Have the files been moved for modified?"
+	print::exit "Have the files been moved or modified?"
 fi
 
 # USER CREATION
@@ -245,6 +245,7 @@ log::prog "cleaning git files"
 [[ -e tests ]]        && rm -rf tests
 [[ -e utils ]]        && rm -rf utils
 [[ -e src ]]          && rm -rf src
+[[ -e external ]]     && rm -rf external
 [[ -e pgp ]]          && rm -rf pgp
 [[ -e CHANGELOG.md ]] && rm -f CHANGELOG.md
 [[ -e README.md ]]    && rm -f README.md

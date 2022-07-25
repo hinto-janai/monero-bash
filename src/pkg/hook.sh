@@ -22,9 +22,9 @@
 
 # hooks to run pre-upgrade
 pkg::hook::pre() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		pkg::hook::pre::bash
 	else
 		log::ok "no hooks found"
@@ -41,40 +41,40 @@ pkg::hook::pre() {
 # - refresh systemd
 # - set permissions
 pkg::hook::post() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	# state restore
-	log::prog "recreating old state..."
+	log::prog "Recreating old state..."
 	echo "${HOOK_BASH_STATE[@]}" > "$STATE"
-	log::ok "recreated old state"
+	log::ok "Recreated old state"
 
 	# individual package hooks
-	[[ $MONERO_BASH_OLD = true ]] && pkg::hook::post::bash
+	[[ $UPGRADE_LIST = *bash* ]] && pkg::hook::post::bash
 
 	# state + changes + configs + system
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
 		pkg::hook::post::state
 		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
 		pkg::hook::post::state
 		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
-		struct::pkg monero
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
+		struct::pkg p2pool
 		pkg::hook::post::state
 		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
-		struct::pkg monero
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
+		struct::pkg xmrig
 		pkg::hook::post::state
 		pkg::hook::post::changes
 		pkg::hook::post::config
@@ -82,21 +82,23 @@ pkg::hook::post() {
 	fi
 
 	# refresh systemd
-	if [[ $MONERO_OLD = true || $P2POOL_OLD = true || $XMRIG_OLD = true ]]; then
+	case "$UPGRADE_LIST" in
+		*monero*|*xmr*|*p2p*)
 		log::prog "Reloading systemd..."
 		systemd::reload
 		log::ok "Reloaded systemd"
-	fi
+		;;
+	esac
 
 	# set permissions
-	log::prog "Setting permissions..."
+	log::prog "Setting file permissions..."
 	sudo chmod -R 770 "$PACKAGES"
 	sudo chown -R "monero-bash:$USER" "$PACKAGES"
-	log::ok "Set permissions"
+	log::ok "Set file permissions"
 }
 
 pkg::hook::post::state() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 
 	log::prog "${PKG[pretty]} | ... | ..."
 	sed -i "s/${PKG[var]}_VER=.*/${PKG[var]}_VER=\"${VER[${PKG[short]}]}\"/g" "$STATE"
@@ -104,7 +106,7 @@ pkg::hook::post::state() {
 }
 
 pkg::hook::post::changes() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 
 	log::prog "Creating changelog for: ${PKG[pretty]}..."
 	mkdir -p "$CHANGES"
@@ -115,13 +117,13 @@ pkg::hook::post::changes() {
 	echo >> "$CHANGES/${PKG[name]}"
 	echo "${BODY[${PKG[short]}]}" > "$CHANGES/${PKG[name]}"
 
-	log::ok "${PKG[pretty]} changelog created"
+	log::ok "${PKG[pretty]} | changelog created"
 }
 
 
 # create config files for packages.
 pkg::hook::post::config() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 
 	log::prog "${PKG[pretty]} | config file check: ${PKG[conf_name]}..."
 	if [[ -e ${PKG[config]} ]]; then
@@ -146,8 +148,8 @@ pkg::hook::post::config() {
 }
 
 # create systemd files for packages.
-pkg::hook::post:systemd() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+pkg::hook::post::systemd() {
+	log::debug "starting: ${PKG[pretty]}"
 
 	log::prog "${PKG[pretty]} | systemd service check: ${PKG[service]}..."
 	if [[ -e "$SYSTEMD/${PKG[service]}" ]]; then
@@ -162,7 +164,7 @@ pkg::hook::post:systemd() {
 # pre-upgrade hook for [monero-bash].
 # save the state file.
 pkg::hook::pre::bash() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	log::prog "monero-bash | saving state..."
 
 	map HOOK_BASH_STATE
@@ -175,7 +177,7 @@ pkg::hook::pre::bash() {
 # compare diffs between old and new text files.
 # looks for [monero-bash.conf], [state] and [p2pool.conf]
 pkg::hook::post::bash() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	unset -v DIFF
 	local DIFF

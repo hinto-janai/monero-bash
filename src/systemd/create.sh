@@ -71,7 +71,4 @@ EOM
 
 	# MOVE TO SYSTEMD DIRECTORY
 	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
-
-	# REMOVE TMP FILE
-	rm "$TMP_SERVICE"
 }

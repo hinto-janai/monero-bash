@@ -22,7 +22,7 @@
 
 # parse the state file safely
 parse::state() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	local i IFS=$'\n' STATE_ARRAY STATE_PATH || return 1
 
 	# check relative directory instead of $STATE

@@ -22,7 +22,7 @@
 
 # check if running in a pipe (not supported)
 safety::pipe() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	if [[ -p /dev/stdin ]]; then
 		print::error "Pipe detected. [monero-bash] does not support pipes!"
 		print::exit  "Exiting for safety..."

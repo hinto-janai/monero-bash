@@ -22,7 +22,7 @@
 
 # create temporary folders/files for pkg::download()
 pkg::tmp::download() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	pkg::tmp::remove
 	log::debug "creating tmp package files/folders"
 
@@ -34,15 +34,20 @@ pkg::tmp::download() {
 	TMP_PKG[${PKG[short]}_gpg]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-gpg.XXXXXXXXXX)"
 	TMP_PKG[${PKG[short]}_sig]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-sig.XXXXXXXXXX)"
 	TMP_PKG[${PKG[short]}_hash]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_changes]="${mktemp ${TMP_PKG[${PKG[short]}_changes]}/monero-bash-changes.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_changes]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-changes.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_key]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_key_output]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key-output.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_hash_calc]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash-calc.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_folder]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash-folder.XXXXXXXXXX)"
 
 	# log::debug
 	log::debug "--- tmp pkg folders ---"
-	log::debug "TMP_PKG[main] | ${TMP_PKG[main]}"
-	log::debug "TMP_PKG[pkg]  | ${TMP_PKG[pkg]}"
-	log::debug "TMP_PKG[gpg]  | ${TMP_PKG[gpg]}"
-	log::debug "TMP_PKG[sig]  | ${TMP_PKG[sig]}"
-	log::debug "TMP_PKG[hash] | ${TMP_PKG[hash]}"
+	log::debug "TMP_PKG[main]    | ${TMP_PKG[${PKG[short]}_main]}"
+	log::debug "TMP_PKG[pkg]     | ${TMP_PKG[${PKG[short]}_pkg]}"
+	log::debug "TMP_PKG[gpg]     | ${TMP_PKG[${PKG[short]}_gpg]}"
+	log::debug "TMP_PKG[sig]     | ${TMP_PKG[${PKG[short]}_sig]}"
+	log::debug "TMP_PKG[hash]    | ${TMP_PKG[${PKG[short]}_hash]}"
+	log::debug "TMP_PKG[changes] | ${TMP_PKG[${PKG[short]}_changes]}"
 }
 
 # create temporary files for pkg::update() and pkg::info()
@@ -54,7 +59,7 @@ pkg::tmp::download() {
 # usage: $1 = [update|info]
 # changes behavior on folder creation
 pkg::tmp::info() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting ${FUNCNAME}() for: $1"
 	pkg::tmp::remove
 	log::debug "creating tmp package info files"
 
@@ -63,15 +68,15 @@ pkg::tmp::info() {
 	if [[ $1 = update ]]; then
 		TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
 		TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
-		[[ $MONERO_VER ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[monero]}/monero-info.XXXXXXXXXX)"
-		[[ $P2POOL_VER ]] && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[p2pool]}/p2pool-info.XXXXXXXXXX)"
-		[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
+		[[ $MONERO_VER ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[main]}/monero-info.XXXXXXXXXX)"
+		[[ $P2POOL_VER ]] && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[main]}/p2pool-info.XXXXXXXXXX)"
+		[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[main]}/xmrig-info.XXXXXXXXXX)"
 	elif [[ $1 = info ]]; then
 		TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
-		[[ $MONERO_BASH_OLD = true ]] && TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
-		[[ $MONERO_OLD = true ]]      && TMP_INFO[monero]="$(mktemp ${TMP_INFO[monero]}/monero-info.XXXXXXXXXX)"
-		[[ $P2POOL_OLD = true ]]      && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[p2pool]}/p2pool-info.XXXXXXXXXX)"
-		[[ $XMRIG_OLD = true ]]       && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[xmrig]}/xmrig-info.XXXXXXXXXX)"
+		[[ $UPGRADE_LIST = *bash* ]]     && TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
+		[[ $UPGRADE_LIST = *monero* ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[main]}/monero-info.XXXXXXXXXX)"
+		[[ $UPGRADE_LIST = *p2p* ]]      && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[main]}/p2pool-info.XXXXXXXXXX)"
+		[[ $UPGRADE_LIST = *xmr* ]]      && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[main]}/xmrig-info.XXXXXXXXXX)"
 	fi
 
 	# log::debug
@@ -86,7 +91,7 @@ pkg::tmp::info() {
 
 # remove monero-bash temp files
 pkg::tmp::remove() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	if find /tmp/monero-bash* &>/dev/null; then
 		log::debug "old tmp folders found, removing"
 		rm -rf /tmp/monero-bash*

@@ -23,7 +23,7 @@
 # checks if package binary is found
 # usage: $1 = package to search for
 safety::pkg() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	[[ $1 ]] || return 1
 	struct::pkg "$1" || return 2

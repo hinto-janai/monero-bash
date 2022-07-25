@@ -22,7 +22,7 @@
 
 # path sanity checks
 safety::path() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	if [[ $REAL = "$MAIN" ]]; then
 		log::debug "PATH OK: $MAIN"

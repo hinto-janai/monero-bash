@@ -24,32 +24,54 @@
 # tar files created by: pkg::download()
 # inside of the tmp folders.
 pkg::extract() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
+
+	unset -v JOB
+	declare -a JOB
+	local i
 
 	# start multi-threaded download per package
 	# into it's own ${TMP_PKG[pkg]} folder
 	# and remove tar.
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
-		pkg::extract::multi &
+		pkg::extract::multi & JOB[0]=$!
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
-		pkg::extract::multi &
+		pkg::extract::multi & JOB[1]=$!
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
-		pkg::extract::multi &
+		pkg::extract::multi & JOB[2]=$!
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
-		pkg::extract::multi &
+		pkg::extract::multi & JOB[3]=$!
 	fi
 
 	# WAIT FOR THREADS
 	log::debug "waiting for extraction threads to complete"
-	if ! wait -n; then
-		print::exit "Upgrade failure - extraction failed"
+	for i in ${JOB[@]}; do
+		wait -n $i || print::exit "Upgrade failure - extraction process failed"
+	done
+
+	# get folder PKG variable
+	if [[ $UPGRADE_LIST = *bash* ]]; then
+		struct::pkg bash
+		pkg::extract::folder
+	fi
+	if [[ $UPGRADE_LIST = *monero* ]]; then
+		struct::pkg monero
+		pkg::extract::folder
+	fi
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
+		struct::pkg p2pool
+		pkg::extract::folder
+	fi
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
+		struct::pkg xmrig
+		pkg::extract::folder
 	fi
 
 	return 0
@@ -65,8 +87,11 @@ pkg::extract::multi() {
 	# remove tar
 	rm "${TMP_PKG[${PKG[short]}_tar]}"
 	log::debug "removed tar: ${TMP_PKG[${PKG[short]}_tar]}"
+}
 
+pkg::extract::folder() {
 	# get folder name
 	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
+	TMP_PKG[${PKG[short]}_folder]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_folder]}"
 	log::debug "extracted package folder: ${TMP_PKG[${PKG[short]}_folder]}"
 }

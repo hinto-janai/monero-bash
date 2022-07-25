@@ -36,4 +36,4 @@ HASHLIST=txt/hashlist
 sha256sum monero-bash > $HASHLIST
 sha256sum txt/state >> $HASHLIST
 sha256sum config/* >> $HASHLIST
-sha256sum gpg/* >> $HASHLIST
+sha256sum pgp/* >> $HASHLIST

@@ -28,61 +28,63 @@
 #
 # uses functions from pkg::update()
 pkg::info() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	# VARIABLE AND TMP
 	pkg::tmp::info info
 	map VER RELEASE BODY LINK_DOWN LINK_HASH LINK_SIG
-	local UPDATE_FOUND
+	local UPDATE_FOUND i
 	declare -a SCRATCH
+	unset -v JOB
+	declare -a JOB
 
 	# MULTI-THREAD PKG METADATA DOWNLOAD
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
-		pkg::update::multi &
+		pkg::update::multi & JOB[0]=$!
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
-		pkg::update::multi &
+		pkg::update::multi & JOB[1]=$!
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
-		pkg::update::multi &
+		pkg::update::multi & JOB[2]=$!
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
-		pkg::update::multi &
+		pkg::update::multi & JOB[3]=$!
 	fi
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	if ! wait -n; then
-		print::exit "Update failure - update threads failed"
-	fi
+	for i in ${JOB[@]}; do
+		wait -n $i || print::exit "Upgrade failure - metadata process failed"
+	done
 
 	# FILTER VERSION VARIABLE $VER[${PKG[short]}}
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 		pkg::info::changes
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 		pkg::info::changes
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 		pkg::info::changes
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
 		pkg::update::ver
 		pkg::info::down
@@ -94,7 +96,7 @@ pkg::info() {
 
 # filter for the package download link
 pkg::info::down() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting: ${PKG[pretty]}"
 
 	# use static link for [Monero]
 	if [[ ${PKG[name]} = monero ]]; then
@@ -110,7 +112,7 @@ pkg::info::down() {
 
 # create the hash link out of existing variables
 pkg::info::hash() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting: ${PKG[pretty]}"
 
 	# use static link for [Monero]
 	if [[ ${PKG[name]} = monero ]]; then
@@ -127,7 +129,7 @@ pkg::info::hash() {
 # only used for XMRig, everyone else has the
 # signature within the hash file.
 pkg::info::sig() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting: ${PKG[pretty]}"
 
 	LINK_SIG[${PKG[short]}]="https://github.com/${PKG[author]}/${PKG[name]}/releases/download/${VER[${PKG[short]}]}/${PKG[sig]}"
 	log::debug "${PKG[pretty]} sig link: ${LINK_SIG[${PKG[short]}]}"
@@ -139,7 +141,7 @@ pkg::info::sig() {
 #
 # used to create local CHANGELOG files.
 pkg::info::changes() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 
 	# created_at (release time)
 	RELEASE[${PKG[short]}]="$(grep -m 1 "created_at" "${TMP_INFO[${PKG[short]}]}")"

@@ -27,47 +27,84 @@
 #
 # downloads are multi-threaded per package.
 pkg::download() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
+
+	unset -v JOB
+	declare -a JOB
+	local i
 
 	# start multi-threaded download per package
 	# into it's own ${TMP_PKG[main]} folder
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
 		pkg::tmp::download
-		pkg::download::multi &
+		pkg::download::multi & JOB[0]=$!
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
 		pkg::tmp::download
-		pkg::download::multi &
+		pkg::download::multi & JOB[1]=$!
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
 		pkg::tmp::download
-		pkg::download::multi &
+		pkg::download::multi & JOB[2]=$!
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
 		pkg::tmp::download
-		pkg::download::multi &
+		pkg::download::multi & JOB[3]=$!
 	fi
 
 	# WAIT FOR THREADS
 	log::debug "waiting for download threads to complete"
-	if ! wait -n; then
-		print::exit "Upgrade failure - download failed"
+	for i in ${JOB[@]}; do
+		wait -n $i || print::exit "Upgrade failure - download process failed"
+	done
+
+	# DEFINE TAR PATH VARIABLE
+	if [[ $UPGRADE_LIST = *bash* ]]; then
+		struct::pkg bash
+		pkg::download::tar
+	fi
+	if [[ $UPGRADE_LIST = *monero* ]]; then
+		struct::pkg monero
+		pkg::download::tar
+	fi
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
+		struct::pkg p2pool
+		pkg::download::tar
+	fi
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
+		struct::pkg xmrig
+		pkg::download::tar
 	fi
 
 	return 0
 }
 
 # download all links provided by pkg::info()
-# sets the $TMP_PKG[${PKG[short]}_tar] variable
 pkg::download::multi() {
 	log::debug "starting download thread for: ${PKG[pretty]}"
-	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "${LINK_SIG[${PKG[short]}]}" &
-	$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_hash]}" "${LINK_HASH${PKG[short]}]}" &
-	$DOWNLOAD_CMD "${TMP_PKG[${PKG[short]}_pkg]}" "${LINK_PKG[${PKG[short]}]}" &
+
+	declare -A MULTI_JOB
+
+	[[ ${PKG[name]} = xmrig ]] && $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "${LINK_SIG[${PKG[short]}]}" & MULTI_JOB[sig]=$!
+	$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_hash]}" "${LINK_HASH[${PKG[short]}]}" & MULTI_JOB[hash]=$!
+	$DOWNLOAD_CMD "${TMP_PKG[${PKG[short]}_pkg]}" "${LINK_DOWN[${PKG[short]}]}" & MULTI_JOB[pkg]=$!
+
+	if [[ ${PKG[name]} = xmrig ]]; then
+		wait -n ${MULTI_JOB[sig]}  || print::exit "Upgrade failure - ${PKG[pretty]} signature download failed"
+	fi
+	wait -n ${MULTI_JOB[hash]} || print::exit "Upgrade failure - ${PKG[pretty]} hash download failed"
+	wait -n ${MULTI_JOB[pkg]}  || print::exit "Upgrade failure - ${PKG[pretty]} package download failed"
+}
+
+# sets the $TMP_PKG[${PKG[short]}_tar] variable
+pkg::download::tar() {
+	log::debug "starting: ${PKG[pretty]}"
+
+	map TMP_PKG[${PKG[short]}_tar]
 
 	TMP_PKG[${PKG[short]}_tar]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_tar]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_tar]}"

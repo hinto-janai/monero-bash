@@ -26,7 +26,7 @@
 # uses variables from parse/options.sh
 # continues to pkg::remove()
 pkg::remove::prompt() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	# CREATE REMOVE LIST
 	local REMOVE_LIST || return 1
@@ -96,6 +96,11 @@ pkg::remove() {
 	log::prog "${PKG[service]}..."
 	sudo rm "$SYSTEMD/${PKG[service]}"
 	log::ok "${PKG[service]} deleted"
+
+	# REMOVE CHANGELOG
+	log::prog "${PKG[pretty]} changelog..."
+	rm "$CHANGES/${PKG[name]}"
+	log::ok
 
 	# UPDATE LOCAL STATE
 	log::prog "Updating local state..."

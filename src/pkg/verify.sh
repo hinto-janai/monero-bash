@@ -23,108 +23,91 @@
 # filter out the hash and verify the tar.
 # import GPG key if not found.
 pkg::verify() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
+
+	# VARIABLES
+	local i
+	unset -v JOB
+	declare -a JOB
+	map HASH
 
 	# CALCULATE HASH AND CHECK FOR PGP KEY
-	map HASH
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
-		pkg::verify::hash_calc &
-		pkg::verify::check_key &
+		pkg::verify::hash_calc & JOB[0]=$!
+		pkg::verify::check_key & JOB[1]=$!
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
-		pkg::verify::hash_calc &
-		pkg::verify::check_key &
+		pkg::verify::hash_calc & JOB[2]=$!
+		pkg::verify::check_key & JOB[3]=$!
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
-		pkg::verify::hash_calc &
-		pkg::verify::check_key &
+		pkg::verify::hash_calc & JOB[4]=$!
+		pkg::verify::check_key & JOB[5]=$!
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
-		pkg::verify::hash_calc &
-		pkg::verify::check_key &
+		pkg::verify::hash_calc & JOB[6]=$!
+		pkg::verify::check_key & JOB[7]=$!
 	fi
 
-	# WAIT FOR THREADS TO FINISH
-	log::debug "pkg::verify: waiting for hash_calc() & check_key() threads to complete"
-	if ! wait -n; then
-		print::exit "Upgrade failure - Hash calculation or PGP key download failed"
-	fi
-
-	# IMPORT PGP KEY
-	if [[ $MONERO_BASH_OLD = true ]]; then
-		struct::pkg bash
-		pkg::verify::import_key
-	fi
-	if [[ $MONERO_OLD = true ]]; then
-		struct::pkg monero
-		pkg::verify::import_key
-	fi
-	if [[ $P2POOL_OLD = true ]]; then
-		struct::pkg p2pool
-		pkg::verify::import_key
-	fi
-	if [[ $XMRIG_OLD = true ]]; then
-		struct::pkg xmrig
-		pkg::verify::import_key
-	fi
+	# WAIT FOR THREADS
+	log::debug "waiting for hash_calc() & check_key() threads to complete"
+	for i in ${JOB[@]}; do
+		wait -n $i || print::exit "Upgrade failure - Hash calculation or PGP key download failed"
+	done
 
 	# VERIFY HASH AND PGP
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
 		pkg::verify::hash
 		pkg::verify::pgp
 	fi
 }
 
+# calculate hash of the downloaded tar.
+pkg::verify::hash_calc() {
+	log::debug "starting: ${PKG[pretty]}"
+	sha256sum "${TMP_PKG[${PKG[short]}_tar]}" > "${TMP_PKG[${PKG[short]}_hash_calc]}"
+}
+
 # check for ${PKG[gpg_owner]} keys
-# start download thread if not found.
+# if not found, start download and import.
 pkg::verify::check_key() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 
 	if gpg --list-keys "${PKG[fingerprint]}" &>/dev/null; then
-		log::debug "PGP key found: ${PKG[gpg_owner]} - ${PKG[fingerprint]}"
+		log::debug "PGP key found: ${PKG[gpg_owner]} | ${PKG[fingerprint]}"
 	else
-		log::debug "PGP key not found: ${PKG[gpg_owner]} - ${PKG[fingerprint]}"
+		log::debug "PGP key not found: ${PKG[gpg_owner]} | ${PKG[fingerprint]}"
 		printf "${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
 			"Importing " \
 			"${PKG[gpg_owner]}'s " \
 			"PGP key..."
 
-		# create tmp files for PGP key
-		TMP_PKG[${PKG[short]}_key]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key.XXXXXXXXXX)"
-		TMP_PKG[${PKG[short]}_key_output]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key-output.XXXXXXXXXX)"
 		log::debug "storing ${PKG[gpg_owner]}.asc into: ${TMP_PKG[${PKG[short]}_key]}"
 		log::debug "storing import output into: ${TMP_PKG[${PKG[short]}_key_output]}"
 
 		# start download thread for PGP key (found on github)
 		log::debug "starting PGP key download thread for: ${PKG[gpg_pub_key]}"
 		$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_key]}" "${PKG[gpg_pub_key]}"
-	fi
-}
-
-# import PGP key downloaded by
-# pkg::verify::check_key()
-pkg::verify::import_key() {
-		log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
 
 		# import
 		gpg --import "${TMP_PKG[${PKG[short]}_key]}" &> "${TMP_PKG[${PKG[short]}_key_output]}"
@@ -136,29 +119,33 @@ pkg::verify::import_key() {
 		for i in ${IMPORT_KEY_OUTPUT[@]}; do
 			log::debug "$i"
 		done
-}
-
-# calculate hash of the downloaded tar.
-pkg::verify::hash_calc() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
-	HASH[${PKG[short]}]=$(sha256sum "${TMP_PKG[${PKG[short]}_tar]}")
+	fi
 }
 
 # look for a matching hash in the hash file.
 pkg::verify::hash() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 	log::prog "${PKG[pretty]} HASH..."
+
+	# tmp hash into variable
+	local VERIFY_HASH
+	mapfile VERIFY_HASH < "${TMP_PKG[${PKG[short]}_hash_calc]}"
+	HASH[${PKG[short]}]="${VERIFY_HASH// *}"
+	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
+
+	# sanity check
+	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && print::exit "Upgrade failure | NULL Hash variable"
 
 	# grep for hash in hash file
 	if grep -o "${HASH[${PKG[short]}]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
-		log::debug "${PKG[pretty]} hash match found: ${TMP_PKG[${PKG[short]}_hash]}"
+		log::debug "${PKG[pretty]} hash match found"
 
 		# calculate first and last 6 digits of hash
 		local HASH_START HASH_END HASH_DIGIT
-		HASH_DIGIT="${#TMP_PKG[${PKG[short]}_hash]}"
-		HASH_START="${TMP_PKG[${PKG[short]}_hash]:0:6}"
+		HASH_DIGIT="${#HASH[${PKG[short]}]}"
+		HASH_START="${HASH[${PKG[short]}]:0:6}"
 		HASH_END="$((HASH_DIGIT-6))"
-		HASH_END="${TMP_PKG[${PKG[short]}_hash]:${HASH_END}}"
+		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
 		log::ok "${PKG[pretty]} HASH: ${HASH_START}...${HASH_END}"
 
 	# else exit on incorrect hash
@@ -170,35 +157,44 @@ pkg::verify::hash() {
 
 # verify pgp signature
 pkg::verify::pgp() {
-	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
+	log::debug "starting: ${PKG[pretty]}"
 	log::prog "${PKG[pretty]} PGP..."
 
-	# XMRig uses a different file, so
-	# use [sig] instead of [hash]
-	if [[ ${PKG[name]} = xmrig ]]; then
-		TMP_PKG[${PKG[short]}_hash]="${TMP_PKG[${PKG[short]}_sig]}"
+	# SPECIAL CASE FOR XMRIG
+	# ----------------------
+	# xmrig seperates the signature and
+	# hashes, so you need the verify the
+	# hash file with the signature.
+	# all other packages don't do this.
+	if [[ ${PKG[short]} = xmrig ]]; then
+		local VERIFY_PGP_CMD="gpg --verify ${TMP_PKG[${PKG[short]}_sig]} ${TMP_PKG[${PKG[short]}_hash]}"
+	else
+		local VERIFY_PGP_CMD="gpg --verify ${TMP_PKG[${PKG[short]}_hash]}"
 	fi
 
 	# verify and redirect output to tmp file
-	if gpg --verify "${TMP_PKG[${PKG[short]}_hash]}" &> "${TMP_PKG[${PKG[short]}_gpg]}"; then
+	if $VERIFY_PGP_CMD &> ${TMP_PKG[${PKG[short]}_gpg]}; then
 		log::ok "${PKG[pretty]} PGP signed by: ${PKG[gpg_owner]}"
 
 		# get output into variable
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
-
 		# log::debug PGP output
 		log::debug "PGP success for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
-		for i in ${TMP_PKG[${PKG[short]}_gpg]}; do
+		for i in ${PGP_OUTPUT[@]}; do
 			log::debug "$i"
 		done
+
 	else
+		# get output into variable
+		local PGP_OUTPUT IFS=$'\n' i
+		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
 		# log::debug PGP output
 		log::debug "PGP failure for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
-		for i in ${TMP_PKG[${PKG[short]}_gpg]}; do
+		for i in ${PGP_OUTPUT[@]}; do
 			log::debug "$i"
 		done
+		map COMPROMISED[${PKG[short]}]=true
 		print::compromised::pgp
-		exit 1
 	fi
 }

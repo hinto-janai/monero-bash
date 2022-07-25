@@ -22,7 +22,7 @@
 
 # print help screen (command list)
 print::help() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
 		"USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"

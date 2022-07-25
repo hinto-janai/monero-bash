@@ -22,7 +22,7 @@
 
 # print package versions
 print::version() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	printf "${BWHITE}%s" \
 		"monero-bash | "

@@ -27,11 +27,13 @@ pkg::update() {
 		STD_LOG_DEBUG=true
 	fi
 
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	# CREATE TMP FILES AND LOCK
 	trap '{ pkg::tmp::remove; lock::free monero_bash_update; } &' EXIT
-	if ! lock::alloc "monero_bash_update"; then
+	if lock::alloc "monero_bash_update"; then
+		log::debug "created lock: ${STD_LOCK_FILE[monero_bash_update]}"
+	else
 		print::error "Could not get update lock!"
 		print::exit  "Is there another [monero-bash] update running?"
 	fi
@@ -39,37 +41,40 @@ pkg::update() {
 
 	# VARIABLE
 	map VER
-	local UPDATE_FOUND
+	local UPDATE_FOUND i
 	declare -a SCRATCH
+	unset -v JOB
+	declare -a JOB
 
 	# TITLE
 	print::update
 
 	# START METADATA THREADS
 	struct::pkg bash
-	pkg::update::multi &
+	pkg::update::multi & JOB[0]=$!
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
-		pkg::update::multi &
+		pkg::update::multi & JOB[1]=$!
 	fi
 	if [[ $P2POOL_VER ]]; then
 		struct::pkg p2pool
-		pkg::update::multi &
+		pkg::update::multi & JOB[2]=$!
 	fi
 	if [[ $XMRIG_VER ]]; then
 		struct::pkg xmrig
-		pkg::update::multi &
+		pkg::update::multi & JOB[3]=$!
 	fi
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	if ! wait -n; then
-		print::exit "Update failure - update threads failed"
-	fi
+	for i in ${JOB[@]}; do
+		wait -n $i || print::exit "Update failure - metadata process failed"
+	done
 
 	# FILTER RESULT AND PRINT
 	# always for [monero-bash]
 	struct::pkg bash
+	pkg::update::ver
 	pkg::update::result
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
@@ -121,11 +126,13 @@ pkg::update::multi() {
 # a template for filtering for the $VER from
 # the info file created by pkg::update::multi()
 pkg::update::ver() {
+	log::debug "starting: ${PKG[pretty]}"
 	# filter output
 	VER[${PKG[short]}]="$(grep -m 1 "tag_name" "${TMP_INFO[${PKG[short]}]}")"
-	VER[${PKG[short]}]="${VER[${PKG[short]}//*: }"
-	VER[${PKG[short]}]="${VER[${PKG[short]}//\"}"
-	VER[${PKG[short]}]="${VER[${PKG[short]}//,}"
+	VER[${PKG[short]}]="${VER[${PKG[short]}]//*: }"
+	VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
+	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
+	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
 }
 
 pkg::update::result() {
@@ -140,9 +147,11 @@ pkg::update::result() {
 
 	# print result and update state
 	if [[ ${PKG[current_version]} = "${VER[${PKG[short]}]}" ]]; then
+		log::debug "fetched version matches state, printing BGREEN"
 		printf "${BWHITE}%s${BGREEN}%s\n" \
 			"$UPDATE_NAME" "${PKG[current_version]}"
 	else
+		log::debug "fetched version different from state, updating state and printing BRED"
 		sed -i "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=true/" "$STATE"
 		UPDATE_FOUND=true
 		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \

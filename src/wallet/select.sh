@@ -22,7 +22,7 @@
 
 # wallet selection screen
 wallet::select() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	___BEGIN___ERROR___TRACE___
 
 	char WALLET_SELECTION

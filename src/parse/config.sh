@@ -22,7 +22,7 @@
 
 # parse [monero-bash.conf] safely
 parse::config() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	local i IFS=$'\n' CONFIG_ARRAY CONFIG_PATH || return 1
 
 	# check relative directory instead of $CONFIG

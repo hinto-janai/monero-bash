@@ -22,7 +22,7 @@
 
 # structures for packages
 struct::pkg() {
-	log::debug "defining struct::pkg() for: $1"
+	log::debug "defining: $1"
 	declare -Ag PKG
 
 	# pick package with $1
@@ -42,7 +42,7 @@ struct::pkg() {
 		PKG[hash]="hashes.txt"
 		PKG[sig]="${PKG[hash]}"
 		PKG[gpg_pub_key]="https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc"
-		PKG[gpg_fingerprint]="81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92"
+		PKG[fingerprint]="81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92"
 		PKG[current_version]="$MONERO_VER"
 		PKG[old]="$MONERO_OLD"
 		PKG[conf]="$CONFIG_MONEROD"
@@ -62,7 +62,7 @@ struct::pkg() {
 		PKG[hash]="SHA256SUM"
 		PKG[sig]="${PKG[hash]}"
 		PKG[gpg_pub_key]="https://github.com/hinto-janaiyo/monero-bash/blob/main/pgp/hinto-janaiyo.asc"
-		PKG[gpg_fingerprint]="21958EE945980282FCB849C8D7483F6CA27D1B1D"
+		PKG[fingerprint]="21958EE945980282FCB849C8D7483F6CA27D1B1D"
 		PKG[current_version]="$MONERO_BASH_VER"
 		PKG[old]="$MONERO_BASH_OLD"
 		PKG[conf]="$CONFIG_MONERO_BASH"
@@ -82,7 +82,7 @@ struct::pkg() {
 		PKG[hash]="sha256sums.txt.asc"
 		PKG[sig]="${PKG[hash]}"
 		PKG[gpg_pub_key]="https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc"
-		PKG[gpg_fingerprint]="1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF"
+		PKG[fingerprint]="1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF"
 		PKG[current_version]="$P2POOL_VER"
 		PKG[old]="$P2POOL_OLD"
 		PKG[conf]="$CONFIG_P2POOL"
@@ -93,7 +93,7 @@ struct::pkg() {
 		PKG[short]="xmrig"
 		PKG[pretty]="XMRig"
 		PKG[var]="XMRIG"
-		PKG[author]="XMRig"
+		PKG[author]="xmrig"
 		PKG[gpg_owner]="XMRig"
 		PKG[service]="monero-bash-xmrig.service"
 		PKG[process]="xmrig"
@@ -102,7 +102,7 @@ struct::pkg() {
 		PKG[hash]="SHA256SUMS"
 		PKG[sig]="${PKG[hash]}.sig"
 		PKG[gpg_pub_key]="https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc"
-		PKG[gpg_fingerprint]="9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409"
+		PKG[fingerprint]="9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409"
 		PKG[current_version]="$XMRIG_VER"
 		PKG[old]="$XMRIG_OLD"
 		PKG[conf]="$CONFIG_XMRIG"

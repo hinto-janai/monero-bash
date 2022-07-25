@@ -22,7 +22,7 @@
 
 # print the monero-bash title
 print::title() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	log::debug "seeding title rng"
 	local TITLE_RANDOM
 	TITLE_RANDOM=$RANDOM

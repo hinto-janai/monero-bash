@@ -23,21 +23,21 @@
 # Copy the new packages in tmp folders
 # into the [.monero-bash/packages] folder.
 pkg::copy() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
-	if [[ $MONERO_BASH_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *bash* ]]; then
 		struct::pkg bash
 		pkg::copy::cp
 	fi
-	if [[ $MONERO_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *monero* ]]; then
 		struct::pkg monero
 		pkg::copy::cp
 	fi
-	if [[ $P2POOL_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *p2p* ]]; then
 		struct::pkg p2pool
 		pkg::copy::cp
 	fi
-	if [[ $XMRIG_OLD = true ]]; then
+	if [[ $UPGRADE_LIST = *xmr* ]]; then
 		struct::pkg xmrig
 		pkg::copy::cp
 	fi
@@ -48,7 +48,7 @@ pkg::copy() {
 pkg::copy::cp() {
 		log::prog "${PKG[pretty]}"
 		mkdir -p "${PKG[directory]}"
-		cp -fr "${TMP_PKG[${PKG[short]}_folder]}/*" "${PKG[directory]}"
+		cp -fr "${TMP_PKG[${PKG[short]}_folder]}"/* "${PKG[directory]}"
 		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
 		log::ok "${PKG[pretty]}"
 }

@@ -60,7 +60,7 @@ print::changes() {
 		*\`\`\`*)
 			if [[ $SET_CODE_BLOCK != true ]]; then
 				SET_CODE_BLOCK=true
-				printf "\e[1;93m"
+				printf "${BYELLOW}"
 			else
 				SET_CODE_BLOCK=false
 				printf "${OFF}"

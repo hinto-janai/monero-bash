@@ -103,9 +103,9 @@ parse::options::systemd() {
 # parse user input
 parse::options() {
 log::debug "starting ${FUNCNAME}"
-log::debug "user input: $*"
 log::debug "unsetting OPTION variables"
 unset -v OPTION_BASH OPTION_MONERO OPTION_P2POOL OPTION_XMRIG OPTION_VERBOSE OPTION_FORCE
+log::debug "user input: $*"
 
 case "$1" in
 
@@ -140,7 +140,7 @@ case "$1" in
 	upgrade)
 		parse::options::pkg "$@"
 		___BEGIN___ERROR___TRACE___
-		pkg::prompt
+		pkg::prompt upgrade
 		___ENDOF___ERROR___TRACE___
 		;;
 

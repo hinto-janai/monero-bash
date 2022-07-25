@@ -22,7 +22,7 @@
 
 # check if running as root user
 safety::root() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	log::debug "running as: $EUID"
 	if [[ $EUID = 0 ]]; then
 		print::error "Running as root is not recommended"

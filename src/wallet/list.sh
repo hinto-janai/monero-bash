@@ -22,7 +22,7 @@
 
 # count and list wallet names
 wallet::list() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	# GET WALLETS
 	char WALLET_LIST_ALL

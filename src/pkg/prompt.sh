@@ -22,7 +22,7 @@
 
 # Package install/upgrade prompt. Creates the UPGRADE_LIST array.
 pkg::prompt() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	# CHANGE BEHAVIOR ON INSTALL
 	local PROMPT_VERB PROMPT_NOUN
@@ -43,39 +43,73 @@ pkg::prompt() {
 
 	# CREATE UPGRADE LIST
 	local UPGRADE_LIST
-	[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="[monero-bash]"
-	[[ $OPTION_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST [monero]"
-	[[ $OPTION_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST [p2pool]"
-	[[ $OPTION_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST [xmrig]"
+	[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="bash"
+	[[ $OPTION_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST monero"
+	[[ $OPTION_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST p2pool"
+	[[ $OPTION_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST xmrig"
 
-	# CHECK IF PACKAGE IS ALREADY UPGRADED
+	# CHECK IF PACKAGE IS ALREADY UP TO DATE
 	if [[ $OPTION_FORCE != true ]]; then
 		if [[ $OPTION_BASH = true && $MONERO_BASH_OLD != true ]]; then
 			printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[monero-bash\]}"
+			UPGRADE_LIST="${UPGRADE_LIST//bash}"
 		fi
 		if [[ $OPTION_MONERO = true && $MONERO_OLD != true ]]; then
-			printf "${OFF}%s\n" "[monero] ($MONERO_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[monero\]}"
+			printf "${OFF}%s\n" "[Monero] ($MONERO_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST//monero}"
 		fi
 		if [[ $OPTION_P2POOL = true && $P2POOL_OLD != true ]]; then
-			printf "${OFF}%s\n" "[p2pool] ($P2POOL_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[p2pool\]}"
+			printf "${OFF}%s\n" "[P2Pool] ($P2POOL_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST//p2pool}"
 		fi
 		if [[ $OPTION_XMRIG = true && $XMRIG_OLD != true ]]; then
-			printf "${OFF}%s\n" "[xmrig] ($XMRIG_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST/\[xmrig\]}"
+			printf "${OFF}%s\n" "[XMRig] ($XMRIG_VER) is up to date"
+			UPGRADE_LIST="${UPGRADE_LIST//xmrig}"
 		fi
-		if [[ $UPGRADE_LIST = " " || -z $UPGRADE_LIST ]]; then
+		if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
 			log::debug "UPGRADE_LIST is empty, exiting"
 			exit 1
 		fi
 	fi
 
+	# CHECK IF INSTALLED OR NOT (for upgrade)
+	if [[ $1 = upgrade ]]; then
+		if [[ $OPTION_BASH = true && -z $MONERO_BASH_VER ]]; then
+			printf "${OFF}%s\n" "[monero-bash] is not installed | skipping"
+			UPGRADE_LIST="${UPGRADE_LIST//bash}"
+		fi
+		if [[ $OPTION_MONERO = true && -z $MONERO_VER ]]; then
+			printf "${OFF}%s\n" "[Monero] is not installed | skipping"
+			UPGRADE_LIST="${UPGRADE_LIST//monero}"
+		fi
+		if [[ $OPTION_P2POOL = true && -z $P2POOL_VER ]]; then
+			printf "${OFF}%s\n" "[P2Pool] is not installed | skipping"
+			UPGRADE_LIST="${UPGRADE_LIST//p2pool}"
+		fi
+		if [[ $OPTION_XMRIG = true && -z $XMRIG_VER ]]; then
+			printf "${OFF}%s\n" "[XMRig] is not installed | skipping"
+			UPGRADE_LIST="${UPGRADE_LIST//xmrig}"
+		fi
+		if [[ $UPGRADE_LIST =~ [[:space:]] || -z $UPGRADE_LIST ]]; then
+			log::debug "UPGRADE_LIST is empty, exiting"
+			exit 1
+		fi
+	fi
+
+	local PROMPT_UPGRADE_LIST i
+	for i in $UPGRADE_LIST; do
+		case "$i" in
+			bash)   PROMPT_UPGRADE_LIST="$PROMPT_UPGRADE_LIST  [monero-bash]";;
+			monero) PROMPT_UPGRADE_LIST="$PROMPT_UPGRADE_LIST  [Monero]";;
+			p2pool) PROMPT_UPGRADE_LIST="$PROMPT_UPGRADE_LIST  [P2Pool]";;
+			xmrig) PROMPT_UPGRADE_LIST="$PROMPT_UPGRADE_LIST  [XMRig]";;
+		esac
+	done
+
 	# PROMPT
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s${OFF}" \
 		"Packages to $PROMPT_NOUN: " \
-		"$UPGRADE_LIST" \
+		"$PROMPT_UPGRADE_LIST" \
 		"Continue with ${PROMPT_NOUN}? (Y/n) "
 	if ! ask::yes; then
 		print::exit "Canceling $PROMPT_NOUN"
@@ -91,5 +125,5 @@ pkg::prompt() {
 	UPGRADE_LIST=("$UPGRADE_LIST")
 	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
 	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
-	pkg::upgrade
+	pkg::upgrade install
 }

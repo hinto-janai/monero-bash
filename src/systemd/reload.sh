@@ -22,6 +22,6 @@
 
 # reload systemd.
 systemd::reload() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	sudo systemctl daemon-reload || return 1
 }

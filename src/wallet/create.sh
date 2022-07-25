@@ -22,7 +22,7 @@
 
 # create a new wallet
 wallet::create() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 	char WALLET_TYPE WALLET_NAME
 
 	# WALLET TYPES

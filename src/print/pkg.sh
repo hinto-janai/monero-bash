@@ -24,49 +24,49 @@
 # package installation/upgrade/removal
 # assumes struct::pkg() has been called
 print::download() {
-	printf "${BCYAN}%s${OFF}\n" "#------------------# Downloading"
+	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# Downloading"
 }
 
 print::update() {
-	printf "${BBLUE}%s${OFF}\n" "#------------------# Updating"
+	printf "${BBLUE}%s${OFF}\n" "#--------------------------------------# Updating"
 }
 
 print::remove() {
-	printf "${BRED}%s${OFF}\n" "#------------------# Removing [${PKG[pretty]}]"
+	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removing [${PKG[pretty]}]"
 }
 
 print::verify() {
-	printf "${BYELLOW}%s${OFF}\n" "#------# Verifying"
+	printf "${BYELLOW}%s${OFF}\n" "#--------------------------------------# Verifying"
 }
 
 print::install() {
-	printf "${BRED}%s${OFF}\n" "#------# Installing"
+	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Installing"
 }
 
 print::upgrade() {
-	printf "${BRED}%s${OFF}\n" "#------# Upgrading"
+	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrading"
 }
 
 print::hook::pre() {
-	printf "${BPURPLE}%s${OFF}\n" "#------# Hooks::Pre"
+	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Pre-Hooks"
 }
 
 print::hook::post() {
-	printf "${BPURPLE}%s${OFF}\n" "#------# Hooks::Post"
+	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Post-Hooks"
 }
 
 print::installed() {
-	printf "${BGREEN}%s${OFF}\n" "#------------------# Install done"
+	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Install done"
 }
 
 print::upgraded() {
-	printf "${BGREEN}%s${OFF}\n" "#------------------# Upgrade done"
+	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Upgrade done"
 }
 
 print::removed() {
-	printf "${BRED}%s${OFF}\n" "#------------------# Removed [${PKG[pretty]}]"
+	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removed [${PKG[pretty]}]"
 }
 
 print::updated() {
-	printf "${BCYAN}%s${OFF}\n" "#------------------# All packages up-to-date"
+	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# All packages up-to-date"
 }

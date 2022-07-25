@@ -22,7 +22,7 @@
 
 # traps for the upgrade process
 pkg::trap::pkg_folders() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
 	"[monero-bash] " \
@@ -30,13 +30,13 @@ pkg::trap::pkg_folders() {
 	"| " \
 	"cleaning up temporary files"
 
-	tmp::remove
+	pkg::tmp::remove
 }
 
 # apply the old/current state variable to
 # the existing [monero-bash] state file
 pkg::trap::state::old() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	echo "${HOOK_BASH_STATE[@]}" > "$STATE"
 }
@@ -44,7 +44,7 @@ pkg::trap::state::old() {
 # trap for remove()
 # updates the state
 pkg::trap::remove() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
 	"[monero-bash] " \

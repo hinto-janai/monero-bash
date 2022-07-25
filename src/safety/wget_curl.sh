@@ -23,7 +23,7 @@
 # safety check for wget/curl
 # and set global variable
 safety::wget_curl() {
-	log::debug "starting ${FUNCNAME}()"
+	log::debug "starting"
 
 	char DOWNLOAD_CMD WGET CURL
 	if hash wget &>/dev/null; then
