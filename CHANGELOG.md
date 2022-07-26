@@ -1,3 +1,40 @@
+# v2.0.0
+## Updates
+**This is a major version update, not compatible with previous `v1.x.x` versions**  
+**To upgrade properly: `monero-bash uninstall` and reinstall this version**
+
+* **File changes**
+	- installed in `.monero-bash`
+	- 
+* **New commands**
+	- `changes`
+	- `config`
+	- `enable/disable`
+	- `refresh`
+	- `new`
+* **Package manager**
+	- pkg metadata multithreaded
+	- pkg download multithreaded
+	- pkg verification multithreaded
+	- pkg changelog parsed
+* **P2Pool**
+	- support all options via p2pool.conf
+* **Security**
+	- `monero-bash` user
+	- encrypted pass
+* **Wallet**
+	- all wallet types
+* **Other**
+	- UI revamp
+	- new docs
+	- Fedora issues fixed
+	- `status` contains new info
+	- less binaries used, more bash builtins
+	- `help` expanded
+	- `STD_LOG_DEBUG/--verbose` debug mode
+	- lock files created
+
+
 # v1.6.0 - RECOMMENDED UPDATE
 ## Updates
 * **v1 END OF LIFE**
@@ -12,6 +49,7 @@
 	- Fetch PGP key from [GitHub](https://github.com/monero-project/gitian.sigs/blob/master/gitian-pubkeys/SChernykh.asc) instead of [p2pool.io](https://p2pool.io/SChernykh.asc)
 * **Misc**
 	- Fix text coloring issues
+
 
 # v1.5.3
 ## Updates
