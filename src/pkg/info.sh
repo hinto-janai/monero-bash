@@ -33,65 +33,31 @@ pkg::info() {
 	# VARIABLE AND TMP
 	pkg::tmp::info info
 	map VER RELEASE BODY LINK_DOWN LINK_HASH LINK_SIG
-	local UPDATE_FOUND i
+	local UPDATE_FOUND i j
 	declare -a SCRATCH
 	unset -v JOB
-	declare -a JOB
+	declare -A JOB
 
 	# MULTI-THREAD PKG METADATA DOWNLOAD
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
-		pkg::update::multi & JOB[0]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::update::multi & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::update::multi & JOB[2]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::update::multi & JOB[3]=$!
-	fi
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
+		pkg::update::multi & JOB[${PKG[short]}]=$!
+	done
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - metadata process failed"
+	for j in ${JOB[@]}; do
+		wait -n $j || print::exit "Upgrade failure - metadata process failed"
 	done
 
 	# FILTER VERSION VARIABLE $VER[${PKG[short]}}
-	if [[ $UPGRADE_LIST = *bash* ]]; then
+	for i in ${UPGRADE_LIST[@]}; do
 		struct::pkg bash
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 		pkg::info::changes
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::update::ver
-		pkg::info::down
-		pkg::info::hash
-		pkg::info::changes
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::update::ver
-		pkg::info::down
-		pkg::info::hash
-		pkg::info::changes
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::update::ver
-		pkg::info::down
-		pkg::info::hash
-		pkg::info::sig
-		pkg::info::changes
-	fi
+	done
 }
 
 # filter for the package download link

@@ -30,55 +30,28 @@ pkg::download() {
 	log::debug "starting"
 
 	unset -v JOB
-	declare -a JOB
-	local i
+	declare -A JOB
+	local i j t
 
 	# start multi-threaded download per package
 	# into it's own ${TMP_PKG[main]} folder
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::tmp::download
-		pkg::download::multi & JOB[0]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::tmp::download
-		pkg::download::multi & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::tmp::download
-		pkg::download::multi & JOB[2]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::tmp::download
-		pkg::download::multi & JOB[3]=$!
-	fi
+		pkg::tmp::multi & JOB[${PKG[short]}]=$!
+	done
 
 	# WAIT FOR THREADS
 	log::debug "waiting for download threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - download process failed"
+	for j in ${JOB[@]}; do
+		wait -n $j || print::exit "Upgrade failure - download process failed"
 	done
 
 	# DEFINE TAR PATH VARIABLE
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	for t in ${UPGRADE_LIST[@]}; do
+		struct::pkg $t
 		pkg::download::tar
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::download::tar
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::download::tar
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::download::tar
-	fi
+	done
 
 	return 0
 }

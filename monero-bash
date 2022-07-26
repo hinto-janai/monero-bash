@@ -26,8 +26,8 @@
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 
-#git <monero-bash/1ef3422>
-#nix <1658844643>
+#git <monero-bash/2e48f34>
+#nix <1658847707>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -1522,22 +1522,11 @@ parse::state() {
 }
 pkg::copy() {
 	log::debug "starting"
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	local i
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::copy::cp
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::copy::cp
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::copy::cp
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::copy::cp
-	fi
+	done
 	return 0
 }
 pkg::copy::cp() {
@@ -1550,48 +1539,21 @@ pkg::copy::cp() {
 pkg::download() {
 	log::debug "starting"
 	unset -v JOB
-	declare -a JOB
-	local i
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	declare -A JOB
+	local i j t
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::tmp::download
-		pkg::download::multi & JOB[0]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::tmp::download
-		pkg::download::multi & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::tmp::download
-		pkg::download::multi & JOB[2]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::tmp::download
-		pkg::download::multi & JOB[3]=$!
-	fi
-	log::debug "waiting for download threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - download process failed"
+		pkg::tmp::multi & JOB[${PKG[short]}]=$!
 	done
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	log::debug "waiting for download threads to complete"
+	for j in ${JOB[@]}; do
+		wait -n $j || print::exit "Upgrade failure - download process failed"
+	done
+	for t in ${UPGRADE_LIST[@]}; do
+		struct::pkg $t
 		pkg::download::tar
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::download::tar
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::download::tar
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::download::tar
-	fi
+	done
 	return 0
 }
 pkg::download::multi() {
@@ -1616,44 +1578,20 @@ pkg::download::tar() {
 pkg::extract() {
 	log::debug "starting"
 	unset -v JOB
-	declare -a JOB
-	local i
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
-		pkg::extract::multi & JOB[0]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::extract::multi & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::extract::multi & JOB[2]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::extract::multi & JOB[3]=$!
-	fi
-	log::debug "waiting for extraction threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - extraction process failed"
+	declare -A JOB
+	local i j
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
+		pkg::extract::multi & JOB[${PKG[short]}]=$!
 	done
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	log::debug "waiting for extraction threads to complete"
+	for j in ${JOB[@]}; do
+		wait -n $j || print::exit "Upgrade failure - extraction process failed"
+	done
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::extract::folder
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::extract::folder
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::extract::folder
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::extract::folder
-	fi
+	done
 	return 0
 }
 pkg::extract::multi() {
@@ -1682,34 +1620,14 @@ pkg::hook::post() {
 	echo "${HOOK_BASH_STATE[@]}" > "$STATE"
 	log::ok "Recreated old state"
 	[[ $UPGRADE_LIST = *bash* ]] && pkg::hook::post::bash
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	local i
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::hook::post::state
 		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::hook::post::state
-		pkg::hook::post::changes
-		pkg::hook::post::config
-		pkg::hook::post::systemd
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::hook::post::state
-		pkg::hook::post::changes
-		pkg::hook::post::config
-		pkg::hook::post::systemd
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::hook::post::state
-		pkg::hook::post::changes
-		pkg::hook::post::config
-		pkg::hook::post::systemd
-	fi
+	done
 	case "$UPGRADE_LIST" in
 		*monero*|*xmr*|*p2p*)
 		log::prog "Reloading systemd..."
@@ -1830,59 +1748,25 @@ pkg::info() {
 	log::debug "starting"
 	pkg::tmp::info info
 	map VER RELEASE BODY LINK_DOWN LINK_HASH LINK_SIG
-	local UPDATE_FOUND i
+	local UPDATE_FOUND i j
 	declare -a SCRATCH
 	unset -v JOB
-	declare -a JOB
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
-		pkg::update::multi & JOB[0]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::update::multi & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::update::multi & JOB[2]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::update::multi & JOB[3]=$!
-	fi
-	log::debug "waiting for metadata threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - metadata process failed"
+	declare -A JOB
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
+		pkg::update::multi & JOB[${PKG[short]}]=$!
 	done
-	if [[ $UPGRADE_LIST = *bash* ]]; then
+	log::debug "waiting for metadata threads to complete"
+	for j in ${JOB[@]}; do
+		wait -n $j || print::exit "Upgrade failure - metadata process failed"
+	done
+	for i in ${UPGRADE_LIST[@]}; do
 		struct::pkg bash
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
 		pkg::info::changes
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::update::ver
-		pkg::info::down
-		pkg::info::hash
-		pkg::info::changes
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::update::ver
-		pkg::info::down
-		pkg::info::hash
-		pkg::info::changes
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::update::ver
-		pkg::info::down
-		pkg::info::hash
-		pkg::info::sig
-		pkg::info::changes
-	fi
+	done
 }
 pkg::info::down() {
 	log::debug "starting: ${PKG[pretty]}"
@@ -2316,54 +2200,29 @@ pkg::upgrade() {
 }
 pkg::verify() {
 	log::debug "starting"
-	local i
-	unset -v JOB
-	declare -a JOB
+	local i jh jk
+	unset -v JOB_HASH
+	declare -A JOB_KEY
 	map HASH
-	if [[ $UPGRADE_LIST = *bash* ]]; then
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		struct::pkg bash
-		pkg::verify::hash_calc & JOB[0]=$!
-		pkg::verify::check_key & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::verify::hash_calc & JOB[2]=$!
-		pkg::verify::check_key & JOB[3]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::verify::hash_calc & JOB[4]=$!
-		pkg::verify::check_key & JOB[5]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::verify::hash_calc & JOB[6]=$!
-		pkg::verify::check_key & JOB[7]=$!
-	fi
-	log::debug "waiting for hash_calc() & check_key() threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - Hash calculation or PGP key download failed"
+		pkg::verify::hash_calc & JOB_HASH[${PKG[short]}]=$!
+		pkg::verify::check_key & JOB_KEY[${PKG[short]}]=$!
 	done
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	log::debug "waiting for check_key() threads to complete"
+	for jk in ${JOB_KEY[@]}; do
+		wait -n $jk || print::exit "Upgrade failure - PGP key check failed"
+	done
+	log::debug "waiting for hash_calc() threads to complete"
+	for jh in ${JOB_HASH[@]}; do
+		wait -n $jk || print::exit "Upgrade failure - Hash calculation failed"
+	done
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::verify::hash
 		pkg::verify::pgp
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::verify::hash
-		pkg::verify::pgp
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::verify::hash
-		pkg::verify::pgp
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::verify::hash
-		pkg::verify::pgp
-	fi
+	done
 }
 pkg::verify::hash_calc() {
 	log::debug "starting: ${PKG[pretty]}"

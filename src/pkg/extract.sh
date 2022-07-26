@@ -27,52 +27,28 @@ pkg::extract() {
 	log::debug "starting"
 
 	unset -v JOB
-	declare -a JOB
-	local i
+	declare -A JOB
+	local i j
 
 	# start multi-threaded download per package
 	# into it's own ${TMP_PKG[pkg]} folder
 	# and remove tar.
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
-		pkg::extract::multi & JOB[0]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::extract::multi & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::extract::multi & JOB[2]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::extract::multi & JOB[3]=$!
-	fi
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
+		pkg::extract::multi & JOB[${PKG[short]}]=$!
+	done
 
 	# WAIT FOR THREADS
 	log::debug "waiting for extraction threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - extraction process failed"
+	for j in ${JOB[@]}; do
+		wait -n $j || print::exit "Upgrade failure - extraction process failed"
 	done
 
 	# get folder PKG variable
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::extract::folder
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::extract::folder
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::extract::folder
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::extract::folder
-	fi
+	done
 
 	return 0
 }

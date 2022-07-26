@@ -26,60 +26,35 @@ pkg::verify() {
 	log::debug "starting"
 
 	# VARIABLES
-	local i
-	unset -v JOB
-	declare -a JOB
+	local i jh jk
+	unset -v JOB_HASH
+	declare -A JOB_KEY
 	map HASH
 
 	# CALCULATE HASH AND CHECK FOR PGP KEY
-	if [[ $UPGRADE_LIST = *bash* ]]; then
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		struct::pkg bash
-		pkg::verify::hash_calc & JOB[0]=$!
-		pkg::verify::check_key & JOB[1]=$!
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::verify::hash_calc & JOB[2]=$!
-		pkg::verify::check_key & JOB[3]=$!
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::verify::hash_calc & JOB[4]=$!
-		pkg::verify::check_key & JOB[5]=$!
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::verify::hash_calc & JOB[6]=$!
-		pkg::verify::check_key & JOB[7]=$!
-	fi
+		pkg::verify::hash_calc & JOB_HASH[${PKG[short]}]=$!
+		pkg::verify::check_key & JOB_KEY[${PKG[short]}]=$!
+	done
 
 	# WAIT FOR THREADS
-	log::debug "waiting for hash_calc() & check_key() threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Upgrade failure - Hash calculation or PGP key download failed"
+	log::debug "waiting for check_key() threads to complete"
+	for jk in ${JOB_KEY[@]}; do
+		wait -n $jk || print::exit "Upgrade failure - PGP key check failed"
+	done
+	log::debug "waiting for hash_calc() threads to complete"
+	for jh in ${JOB_HASH[@]}; do
+		wait -n $jk || print::exit "Upgrade failure - Hash calculation failed"
 	done
 
 	# VERIFY HASH AND PGP
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::verify::hash
 		pkg::verify::pgp
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::verify::hash
-		pkg::verify::pgp
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::verify::hash
-		pkg::verify::pgp
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::verify::hash
-		pkg::verify::pgp
-	fi
+	done
 }
 
 # calculate hash of the downloaded tar.

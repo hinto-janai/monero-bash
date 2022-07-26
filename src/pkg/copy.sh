@@ -25,22 +25,11 @@
 pkg::copy() {
 	log::debug "starting"
 
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	local i
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::copy::cp
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::copy::cp
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::copy::cp
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::copy::cp
-	fi
+	done
 
 	return 0
 }

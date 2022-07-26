@@ -52,34 +52,14 @@ pkg::hook::post() {
 	[[ $UPGRADE_LIST = *bash* ]] && pkg::hook::post::bash
 
 	# state + changes + configs + system
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		struct::pkg bash
+	local i
+	for i in ${UPGRADE_LIST[@]}; do
+		struct::pkg $i
 		pkg::hook::post::state
 		pkg::hook::post::changes
 		pkg::hook::post::config
 		pkg::hook::post::systemd
-	fi
-	if [[ $UPGRADE_LIST = *monero* ]]; then
-		struct::pkg monero
-		pkg::hook::post::state
-		pkg::hook::post::changes
-		pkg::hook::post::config
-		pkg::hook::post::systemd
-	fi
-	if [[ $UPGRADE_LIST = *p2p* ]]; then
-		struct::pkg p2pool
-		pkg::hook::post::state
-		pkg::hook::post::changes
-		pkg::hook::post::config
-		pkg::hook::post::systemd
-	fi
-	if [[ $UPGRADE_LIST = *xmr* ]]; then
-		struct::pkg xmrig
-		pkg::hook::post::state
-		pkg::hook::post::changes
-		pkg::hook::post::config
-		pkg::hook::post::systemd
-	fi
+	done
 
 	# refresh systemd
 	case "$UPGRADE_LIST" in
