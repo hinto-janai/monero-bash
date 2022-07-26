@@ -44,7 +44,7 @@ pkg::upgrade() {
 	fi
 
 	# CREATE TMP FILES AND LOCK
-	trap '{ pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
+	trap '{ kill -s TERM $(jobs -p) &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
 	if lock::alloc monero_bash_upgrade; then
 		log::debug "created lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
 	else
@@ -82,7 +82,7 @@ pkg::upgrade() {
 	pkg::extract
 
 	# TRAP COPY POST HOOKS
-	trap '{ pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
+	trap '{ kill -s TERM $(jobs -p) &>/dev/null; pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
 
 	# COPY NEW PACKAGES INTO NEW
 	pkg::copy

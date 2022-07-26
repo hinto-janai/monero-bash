@@ -30,6 +30,10 @@ pkg::trap::pkg_folders() {
 	"| " \
 	"cleaning up temporary files"
 
+	# kill all jobs first
+	log::debug
+
+	# remove
 	pkg::tmp::remove
 }
 
