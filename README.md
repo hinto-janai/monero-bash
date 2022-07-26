@@ -232,19 +232,6 @@ $HOME/.monero-bash/packages
 </details>
 
 <details>
-<summary>Where are the wallets?</summary>
-
----
-
-```
-$HOME/.monero-bash/wallets
-```
-
----
-
-</details>
-
-<details>
 <summary>Where are the config files?</summary>
 
 ---
@@ -258,18 +245,13 @@ $HOME/.monero-bash/config
 </details>
 
 <details>
-<summary>Does monero-bash have dependencies?</summary>
+<summary>Where are the wallets?</summary>
 
 ---
 
-**No**
-
-If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you already have everything needed:
-
-* Bash
-* wget/curl
-* systemd
-* GNU coreutils
+```
+$HOME/.monero-bash/wallets
+```
 
 ---
 
@@ -310,6 +292,24 @@ monero-bash uses temporary folders until it's ready to swap binaries:
 If you cancel ***BEFORE*** the package is upgraded, monero-bash will swap back the old version, and clean up temporary files.
 
 If you cancel ***AFTER*** the package is upgraded, but before the upgrade process is over, monero-bash will force update it and clean up.
+
+---
+
+</details>
+
+<details>
+<summary>Does monero-bash have dependencies?</summary>
+
+---
+
+**No**
+
+If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you already have everything needed:
+
+* Bash
+* wget/curl
+* systemd
+* GNU coreutils
 
 ---
 

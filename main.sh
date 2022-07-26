@@ -94,4 +94,5 @@ wallet::select
 
 exit 0
 }
+
 main "$@"
