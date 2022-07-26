@@ -27,7 +27,7 @@ parse::state() {
 
 	# check relative directory instead of $STATE
 	# this is so first time installations can
-	# properly find the the state file.
+	# properly find the state file.
 	if [[ -e "$RELATIVE/txt/state" ]]; then
 		log::debug "state found, using: ${RELATIVE}/txt/state"
 		mapfile STATE_ARRAY < "${RELATIVE}/txt/state" || return 2
@@ -36,33 +36,32 @@ parse::state() {
 	fi
 
 	for i in ${STATE_ARRAY[@]}; do
-		[[ $i =~ ^FIRST_TIME=true*$ ]]      && declare -g FIRST_TIME=true
-		[[ $i =~ ^MONERO_BASH_VER=* ]]      && declare -g MONERO_BASH_VER="${i/*=/}"
-		[[ $i =~ ^MONERO_VER=* ]]           && declare -g MONERO_VER="${i/*=/}"
-		[[ $i =~ ^P2POOL_VER=* ]]           && declare -g P2POOL_VER="${i/*=/}"
-		[[ $i =~ ^XMRIG_VER=* ]]            && declare -g XMRIG_VER="${i/*=/}"
-		[[ $i =~ ^MONERO_BASH_OLD=true*$ ]] && declare -g MONERO_BASH_OLD=true
-		[[ $i =~ ^MONERO_OLD=true*$ ]]      && declare -g MONERO_OLD=true
-		[[ $i =~ ^P2POOL_OLD=true*$ ]]      && declare -g P2POOL_OLD=true
-		[[ $i =~ ^XMRIG_OLD=true*$ ]]       && declare -g XMRIG_OLD=true
+		[[ $i = FIRST_TIME=true* ]]      && declare -g FIRST_TIME=true
+		[[ $i = MONERO_BASH_VER=* ]]     && declare -g MONERO_BASH_VER="${i//*=}"
+		[[ $i = MONERO_VER=* ]]          && declare -g MONERO_VER="${i//*=}"
+		[[ $i = P2POOL_VER=* ]]          && declare -g P2POOL_VER="${i//*=}"
+		[[ $i = XMRIG_VER=* ]]           && declare -g XMRIG_VER="${i//*=}"
+		[[ $i = MONERO_BASH_OLD=true* ]] && declare -g MONERO_BASH_OLD=true
+		[[ $i = MONERO_OLD=true* ]]      && declare -g MONERO_OLD=true
+		[[ $i = P2POOL_OLD=true* ]]      && declare -g P2POOL_OLD=true
+		[[ $i = XMRIG_OLD=true* ]]       && declare -g XMRIG_OLD=true
 	done
 
 	# FALSE
-	[[ $FIRST_TIME != true ]]        && declare -g FIRST_TIME=
-	[[ $MONERO_BASH_OLD != true ]]   && declare -g MONERO_BASH_OLD=
-	[[ $MONERO_OLD != true ]]        && declare -g MONERO_OLD=
-	[[ $P2POOL_OLD != true ]]        && declare -g P2POOL_OLD=
-	[[ $XMRIG_OLD != true ]]         && declare -g XMRIG_OLD=
+	[[ $FIRST_TIME != true ]]        && declare -g FIRST_TIME=false
+	[[ $MONERO_BASH_OLD != true ]]   && unset -v MONERO_BASH_OLD
+	[[ $MONERO_OLD != true ]]        && unset -v MONERO_OLD
+	[[ $P2POOL_OLD != true ]]        && unset -v P2POOL_OLD
+	[[ $XMRIG_OLD != true ]]         && unset -v XMRIG_OLD
 
 	log::debug "--- state file ---"
-	log::debug "FIRST_TIME        | $FIRST_TIME"
-	log::debug "MINE_UNCONFIGURED | $MINE_UNCONFIGURED"
-	log::debug "MONERO_BASH_VER   | $MONERO_BASH_VER"
-	log::debug "MONERO_VER        | $MONERO_VER"
-	log::debug "P2POOL_VER        | $P2POOL_VER"
-	log::debug "XMRIG_VER         | $XMRIG_VER"
-	log::debug "MONERO_BASH_OLD   | $MONERO_BASH_OLD"
-	log::debug "MONERO_OLD        | $MONERO_OLD"
-	log::debug "P2POOL_OLD        | $P2POOL_OLD"
-	log::debug "XMRIG_OLD         | $XMRIG_OLD"
+	log::debug "FIRST_TIME      | $FIRST_TIME"
+	log::debug "MONERO_BASH_VER | $MONERO_BASH_VER"
+	log::debug "MONERO_VER      | $MONERO_VER"
+	log::debug "P2POOL_VER      | $P2POOL_VER"
+	log::debug "XMRIG_VER       | $XMRIG_VER"
+	log::debug "MONERO_BASH_OLD | $MONERO_BASH_OLD"
+	log::debug "MONERO_OLD      | $MONERO_OLD"
+	log::debug "P2POOL_OLD      | $P2POOL_OLD"
+	log::debug "XMRIG_OLD       | $XMRIG_OLD"
 }

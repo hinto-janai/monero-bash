@@ -56,5 +56,13 @@ print::version() {
 		printf "${BGREEN}%s\n" "$XMRIG_VER"
 	fi
 
-	printf "${OFF}%s"
+	# Copyright
+	printf "${OFF}%s\n" \
+	"" \
+	"[monero-bash] is distributed under the MIT software license." \
+	"See: <https://github.com/hinto-janaiyo/monero-bash/LICENSE>" \
+	"" \
+	"Parts of this project are originally:" \
+	"Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie" \
+	"Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero"
 }

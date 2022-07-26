@@ -20,18 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# traps for the upgrade process
+# clean pkg folders
 pkg::trap::pkg_folders() {
 	log::debug "starting"
+
+	printf "%s\n\n" ""
 
 	printf "${BRED}%s${BYELLOW}%s${OFF}%s${BWHITE}%s${OFF}\n" \
 	"[monero-bash] " \
 	"exit signal caught " \
 	"| " \
 	"cleaning up temporary files"
-
-	# kill all jobs first
-	log::debug
 
 	# remove
 	pkg::tmp::remove

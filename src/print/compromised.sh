@@ -22,7 +22,7 @@
 
 # message to print when [hash/gpg] is wrong
 print::compromised::hash() {
-	log::debug "package hash error has occurred for: ${PKG[name]}"
+	log::debug "package hash error has occurred for: ${PKG[pretty]}"
 
 	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
@@ -34,11 +34,11 @@ print::compromised::hash() {
 	printf "${BWHITE}%s${BRED}%s${OFF}\n" \
 		"INVALID HASH: " \
 		"${HASH[${PKG[short]}]}"
-	exit 1
+	declare -Ag COMP[${PKG[short]}]=true
 }
 
 print::compromised::pgp() {
-	log::debug "package pgp error has occurred for: ${PKG[name]}"
+	log::debug "package pgp error has occurred for: ${PKG[pretty]}"
 
 	printf "${BWHITE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
@@ -52,5 +52,5 @@ print::compromised::pgp() {
 		"${HASH[${PKG[short]}]}" \
 		"BAD SIGNATURE: " \
 		"$(cat ${TMP_PKG[${PKG[short]}_gpg]})"
-	exit 1
+	declare -Ag COMP[${PKG[short]}]=true
 }

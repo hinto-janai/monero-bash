@@ -20,60 +20,173 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# create the package list for
+# reading the changelogs
+print::changes::list() {
+	log::debug "$1 | starting"
+
+	local i CHANGE_LIST
+
+	[[ $OPTION_BASH = true ]]   && CHANGE_LIST="monero-bash"
+	[[ $OPTION_MONERO = true ]] && CHANGE_LIST="${CHANGE_LIST} monero"
+	[[ $OPTION_P2POOL = true ]] && CHANGE_LIST="${CHANGE_LIST} p2pool"
+	[[ $OPTION_XMRIG = true ]]  && CHANGE_LIST="${CHANGE_LIST} xmrig"
+
+	# CHECK FOR FILE
+	for i in $CHANGE_LIST; do
+		if [[ -e "$CHANGES/$i" ]]; then
+			log::debug "$CHANGES/$i found"
+		else
+			print::exit "$CHANGES/$i was not found!"
+		fi
+	done
+
+	# PRINT VS LESS
+	for i in $CHANGE_LIST; do
+		if [[ $OPTION_PRINT = true ]]; then
+			log::debug "$i | printing changelog"
+			print::changes "$i"
+		else
+			log::debug "$i | piping to: less -R -N"
+			print::changes "$i" | less -R -N
+		fi
+	done
+}
+
 # Parse a markdown file and
 # create syntax highlighting.
 print::changes() {
-	log::debug "starting ${FUNCNAME}() for: $1"
-
 	# TURN OFF GLOBBING
 	set -f
 
-	local LINE WORD IFS=$'\n' i w SET_CODE_BLOCK
+	local LINE WORD IFS=$'\n' i w CODE TITLE s FIRST SET_BOLD
 	mapfile LINE < "$CHANGES/$1"
+	FIRST=true
 
 	# PARSE PER LINE
 	for i in ${LINE[@]}; do
 		i="${i//$'\r'}"
 		unset -v WORD
+		s=''
 		IFS=' '
 		WORD=($i)
 
 		# PARSE PER WORD
 		for w in ${WORD[@]}; do
-		case "$w" in
 
-		# TITLES
-		\#*) printf "${BCYAN}%s" "$w";;
-		\*) printf "${BWHITE}•${OFF}%s" "${w/\*}";;
-		-) printf "${IWHITE}    •${OFF}%s" "${w/-}";;
-
-		# BOLD/ITALIC
-		\*\**) printf "${BWHITE}%s" " ${w//\*\*}";;
-		*\*\*) printf "%s${OFF}" " ${w//\*\*}";;
-
-		# LINKS
-		\[*\]\(*\)) printf "${BPURPLE}%s${OFF}" " $w";;
-		[*) printf "${BPURPLE}%s" " $w";;
-		*]\(*\)) printf "%s${OFF}" " $w";;
-
-		# CODE BLOCKS
-		*\`\`\`*)
-			if [[ $SET_CODE_BLOCK != true ]]; then
-				SET_CODE_BLOCK=true
-				printf "${BYELLOW}"
-			else
-				SET_CODE_BLOCK=false
-				printf "${OFF}"
-			fi
-			;;
-		\`*\`) printf " \e[1;91m%s${OFF}" "${w//\`}";;
-		\`*) printf " \e[1;91m%s" "${w//\`}";;
-		*\`) printf "\e[1;91m %s${OFF}" "${w//\`}";;
-
-		# EVERYTHING ELSE
-		*) printf "%s" " $w";;
-
+		# PER LINE
+		case "$i" in
+			# TITLES
+			\#*)
+				if [[ ${w//[[:blank:]]} = \#* ]]; then
+					if [[ $TITLE = true ]]; then
+						printf "${BCYAN}%s" "$w "
+					else
+						if [[ $FIRST = true ]]; then
+							printf "${BCYAN}%s" "$w "
+							FIRST=
+						else
+							printf "\n${BCYAN}%s" "$w "
+						fi
+					fi
+					TITLE=true
+					continue
+				fi
+				;;
+			# CODE BLOCKS
+			*\`\`\`*)
+				if [[ $CODE = true ]]; then
+					CODE=
+					printf "${OFF}"
+					break
+				else
+					CODE=true
+					break
+				fi
+				;;
+			# EVERYTHING ELSE
+			*)
+				if [[ $CODE = true ]]; then
+					printf "${BYELLOW}%s" "    $i"
+					break
+				elif [[ $TITLE = true ]]; then
+					printf "${OFF}"
+					TITLE=
+				fi
+				;;
 		esac
+
+		# PER WORD
+		case "${w//[[:blank:]]}" in
+			# LISTS
+			\*)
+				if [[ ${i//[[:blank:]]} = \** ]]; then
+					printf "${BWHITE}%s${OFF}" "${i//\**}  •"
+				else
+					printf "${OFF}%s" "${s}${w}"
+				fi
+				;;
+			-)
+				if [[ ${i//[[:blank:]]} = -* ]]; then
+					printf "${BWHITE}%s${OFF}" "${i//\-*}  -"
+				else
+					printf "${OFF}%s" "${s}${w}"
+				fi
+				;;
+
+			# BOLD/ITALIC
+			\**\*)
+				printf "${BWHITE}%s${OFF}" "${s}${w//\*}";;
+			\**)
+				printf "${BWHITE}%s" "${s}${w//\*}"
+				SET_BOLD=true
+				;;
+			*\`*\*)
+				w="${w//\`}"
+				printf "${BRED}%s${OFF}" "${s}${w//\*}"
+				SET_BOLD=
+				;;
+			*\*)
+				w="${w//\`}"
+				printf "${BWHITE}%s${OFF}" "${s}${w//\*}"
+				SET_BOLD=
+				;;
+
+			# LINKS
+			\[*\]\(*\)) printf "${BPURPLE}%s${OFF}" "${s}${w}";;
+			[*) printf "${BPURPLE}%s" "${s}${w}";;
+			*]\(*\)) printf "%s${OFF}" "${s}${w}";;
+
+			# SMALL CODE
+			\`*\`)
+				w="${w//\*}"
+				if [[ $SET_BOLD = true ]]; then
+					printf "${BRED} %s${BWHITE}" "${w//\`}"
+				else
+					printf "${BRED} %s${OFF}" "${w//\`}"
+				fi
+				;;
+			\`*)
+				w="${w//\*}"
+				if [[ $SET_BOLD = true ]]; then
+					printf "${BRED} %s${BWHITE}" "${w//\`}"
+				else
+					printf "${BRED} %s${OFF}" "${w//\`}"
+				fi
+				;;
+			*\`)
+				w="${w//\*}"
+				if [[ $SET_BOLD = true ]]; then
+					printf "${BRED} %s${BWHITE}" "${w//\`}"
+				else
+					printf "${BRED} %s${OFF}" "${w//\`}"
+				fi
+				;;
+
+			# EVERYTHING ELSE
+			*)	printf "%s" "${s}${w}"
+		esac
+		s=' '
 		done
 		printf "\n"
 	done

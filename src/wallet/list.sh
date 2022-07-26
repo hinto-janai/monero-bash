@@ -28,7 +28,7 @@ wallet::list() {
 	char WALLET_LIST_ALL
 	local WALLET_COUNT WALLET_LIST i
 	WALLET_LIST_ALL=("$(ls "$WALLETS" | grep -v ".keys")")
-	WALLET_COUNT="$(echo "${WALLET_LIST_ALL[@]}" | wc -l)"
+	WALLET_COUNT="$(echo "${WALLET_LIST_ALL[@]}" | wc -w)"
 
 	# MAKE WALLET LIST []
 	for i in ${WALLET_LIST_ALL[@]}; do

@@ -41,7 +41,7 @@ wallet::start() {
 	# Start monero-wallet-cli
 	"$PKG_MONERO/monero-wallet-cli" \
 		--wallet-file "$WALLETS/$WALLET_SELECTION" \
-		--config-file "$CONFIG_MONEROD" \
+		--config-file "$CONFIG_WALLET" \
 		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
 
 	# Auto-stop monerod

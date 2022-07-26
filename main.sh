@@ -37,18 +37,41 @@
 main() {
 #----------------------------------------- main() START
 log::debug "main() started"
-# allow for job control
-set -m
 
 #----------------------------------------- DEBUG
 [[ $1 = DEBUG ]] && DEBUG "$@"
 
 #----------------------------------------- SAFETY
 log::debug "starting safety checks"
+
+if set -m; then
+	log::debug "set -m | job control | OK"
+else
+	print::error "Job control could not be enabled | set -m | FAIL"
+	print::exit  "Exiting for safety..."
+fi
+
+# STDLIB SAFETY FUNCTIONS
 # check for gnu/linux
-safety::gnu_linux
+if safety::gnu_linux; then
+	log::debug "safety::gnu_linux | $OSTYPE | OK"
+else
+	log::debug "safety::gnu_linux | $OSTYPE | FAIL"
+	print::error "Non GNU/Linux OS detected!"
+	print::error "[monero-bash] only works on GNU/Linux"
+	print::exit  "Exiting for safety..."
+fi
 # check for bash v5+
-safety::bash
+if safety::bash; then
+	log::debug "safety::bash | ${BASH_VERSINFO[0]} | OK"
+else
+	log::debug "safety::bash | ${BASH_VERSINFO[0]} | FAIL"
+	print::error "Bash version is not v5+"
+	print::error "[monero-bash] only works with Bash v5+"
+	print::exit  "Exiting for safety..."
+fi
+
+# MONERO-BASH SAFETY FUNCTIONS
 # check for root
 safety::root
 # check for pipe

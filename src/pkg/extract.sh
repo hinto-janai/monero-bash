@@ -26,48 +26,66 @@
 pkg::extract() {
 	log::debug "starting"
 
-	unset -v JOB
-	declare -A JOB
-	local i j
+	local i
 
 	# start multi-threaded download per package
 	# into it's own ${TMP_PKG[pkg]} folder
 	# and remove tar.
-	for i in ${UPGRADE_LIST[@]}; do
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		pkg::extract::multi & JOB[${PKG[short]}]=$!
+		pkg::extract::multi & JOB[${i}_extract]=$!
 	done
 
 	# WAIT FOR THREADS
-	log::debug "waiting for extraction threads to complete"
-	for j in ${JOB[@]}; do
-		wait -n $j || print::exit "Upgrade failure - extraction process failed"
+	for i in $UPGRADE_LIST_SIZE; do
+		log::debug "${PKG[pretty]} | waiting for extraction thread to complete"
+		struct::pkg $i
+		log::prog "${PKG[pretty]}"
+		wait -f ${JOB[${i}_extract]} || exit 1
+		log::ok "${PKG[pretty]}"
 	done
 
-	# get folder PKG variable
-	for i in ${UPGRADE_LIST[@]}; do
+	# CHECK FAIL FILES
+	log::debug "checking for failure files"
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		pkg::extract::folder
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
+	done
+	log::debug "no failure files found"
+
+	# get folder PKG variable
+	for i in $UPGRADE_LIST; do
+		struct::pkg $i
+		pkg::extract::find_folder
 	done
 
 	return 0
 }
 
 pkg::extract::multi() {
-	log::debug "starting extraction thread for: ${PKG[pretty]}"
+	log::debug "${PKG[pretty]} | starting extraction thread"
 
 	# extract
-	tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}"
-	log::debug "extraction complete for: ${TMP_PKG[${PKG[short]}_tar]}"
+	if tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}" &>/dev/null; then
+		log::debug "${PKG[pretty]} | tar extract OK | ${TMP_PKG[${PKG[short]}_tar]}"
+	else
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_EXTRACT" &>/dev/null || exit 1
+		log::debug "${PKG[pretty]} | tar extract FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
+	fi
 
 	# remove tar
-	rm "${TMP_PKG[${PKG[short]}_tar]}"
-	log::debug "removed tar: ${TMP_PKG[${PKG[short]}_tar]}"
+	if rm "${TMP_PKG[${PKG[short]}_tar]}" &>/dev/null; then
+		log::debug "${PKG[pretty]} | tar rm OK | ${TMP_PKG[${PKG[short]}_tar]}"
+	else
+		touch "${TMP_PKG[${PKG[short]}_rm]}/FAIL_RM" &>/dev/null || exit 2
+		log::debug "${PKG[pretty]} | tar rm FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
+	fi
 }
 
-pkg::extract::folder() {
+pkg::extract::find_folder() {
 	# get folder name
 	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_folder]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_folder]}"
-	log::debug "extracted package folder: ${TMP_PKG[${PKG[short]}_folder]}"
+	log::debug "package folder: ${TMP_PKG[${PKG[short]}_folder]}"
 }

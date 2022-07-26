@@ -1,7 +1,8 @@
 # Original code taken from: https://github.com/jtgrassie/xmrpc
 # Modified slightly to work within [monero-bash]
 #
-# Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
+# Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 #
 # All rights reserved.
 #
@@ -61,20 +62,25 @@ rpc() {
 
 	# CURL/WGET
 	if [[ $CURL = true ]]; then
-		curl -sd "$payload" "$RPC_IP"
+		if curl -sd "$payload" "$RPC_IP"; then
+			echo
+		else
+			print::error "Curl has failed, is monerod online?"
+		fi
 	else
-		wget \
-		-qO- \
-		"$RPC_IP" \
-		--header='Content-Type:application/json' \
-		--post-data="$payload"
+		if wget -qO- "$RPC_IP" --header='Content-Type:application/json' --post-data="$payload"; then
+			echo
+		else
+			print::error "Wget has failed, is monerod online?"
+		fi
 	fi
-	echo
 
 	# log::debug
+	[[ $OPTION_VERBOSE = true ]] && STD_LOG_DEBUG=true
 	log::debug "--- RPC INFO ---"
 	log::debug "RPC_IP  | $RPC_IP"
 	log::debug "PAYLOAD | $payload"
+	[[ $OPTION_VERBOSE = true ]] && STD_LOG_DEBUG=
 	exit
 }
 

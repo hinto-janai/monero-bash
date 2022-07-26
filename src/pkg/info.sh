@@ -35,28 +35,46 @@ pkg::info() {
 	map VER RELEASE BODY LINK_DOWN LINK_HASH LINK_SIG
 	local UPDATE_FOUND i j
 	declare -a SCRATCH
-	unset -v JOB
-	declare -A JOB
 
 	# MULTI-THREAD PKG METADATA DOWNLOAD
-	for i in ${UPGRADE_LIST[@]}; do
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		pkg::update::multi & JOB[${PKG[short]}]=$!
+		pkg::update::multi & JOB[${i}_update]=$!
 	done
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	for j in ${JOB[@]}; do
-		wait -n $j || print::exit "Upgrade failure - metadata process failed"
+	wait -f ${JOB[@]}
+
+	# CHECK FAIL FILES
+	log::debug "checking for failure files"
+	for i in $UPGRADE_LIST; do
+		struct::pkg $i
+		if [[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_UPDATE ]]; then
+			print::error "Upgrade failure - ${PKG[pretty]} metadata fetch failed"
+			local UPDATE_FAILED=true
+		fi
 	done
+	if [[ $UPDATE_FAILED = true ]]; then
+		print::error "Upgrade failure for ${PKG[pretty]} | GitHub API connection failure"
+		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
+	fi
+	log::debug "no failure files found"
+
 
 	# FILTER VERSION VARIABLE $VER[${PKG[short]}}
-	for i in ${UPGRADE_LIST[@]}; do
-		struct::pkg bash
+	for i in $UPGRADE_LIST; do
+		struct::pkg $i
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
+		pkg::info::sig
 		pkg::info::changes
+		if [[ ${PKG[short]} = bash && ${VER[${PKG[short]}]} != v2* ]]; then
+			log::debug "${PKG[pretty]} | new version found != v2* | printing EOL message"
+			print::eol
+			UPGRADE_LIST="${UPGRADE_LIST//bash}"
+		fi
 	done
 }
 
@@ -110,7 +128,7 @@ pkg::info::changes() {
 	log::debug "starting: ${PKG[pretty]}"
 
 	# created_at (release time)
-	RELEASE[${PKG[short]}]="$(grep -m 1 "created_at" "${TMP_INFO[${PKG[short]}]}")"
+	RELEASE[${PKG[short]}]="$(grep -m 1 "\"created_at\":" "${TMP_INFO[${PKG[short]}]}")"
 	RELEASE[${PKG[short]}]="${RELEASE[${PKG[short]}]//*\"created_at\": }"
 	RELEASE[${PKG[short]}]="${RELEASE[${PKG[short]}]//\"}"
 	RELEASE[${PKG[short]}]="${RELEASE[${PKG[short]}]//,}"
@@ -119,7 +137,7 @@ pkg::info::changes() {
 	log::debug "${PKG[pretty]} RELEASE: ${RELEASE[${PKG[short]}]}"
 
 	# body (GitHub description, changelog)
-	BODY[${PKG[short]}]="$(grep -m 1 "body" "${TMP_INFO[${PKG[short]}]}")"
+	BODY[${PKG[short]}]="$(grep -m 1 "\"body\":" "${TMP_INFO[${PKG[short]}]}")"
 	BODY[${PKG[short]}]="${BODY[${PKG[short]}]//*\"body\": \"}"
 	BODY[${PKG[short]}]="${BODY[${PKG[short]}]:0:-2}"
 	BODY[${PKG[short]}]="${BODY[${PKG[short]}]//\\r\\n/$'\n'}"

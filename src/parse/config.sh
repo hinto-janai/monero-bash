@@ -25,35 +25,38 @@ parse::config() {
 	log::debug "starting"
 	local i IFS=$'\n' CONFIG_ARRAY CONFIG_PATH || return 1
 
+	if [[ -e $CONFIG_MONERO_BASH ]]; then
+		log::debug "config found, using: $CONFIG_MONERO_BASH"
+		mapfile CONFIG_ARRAY < "$CONFIG_MONERO_BASH" || return 2
 	# check relative directory instead of $CONFIG
 	# this is so first time installations can
 	# properly find the config file.
-	if [[ -e "${RELATIVE}/config/monero-bash.conf" ]]; then
+	elif [[ $FIRST_TIME = true && -e "${RELATIVE}/config/monero-bash.conf" ]]; then
 		log::debug "config found, using: ${RELATIVE}/config/monero-bash.conf"
-		mapfile CONFIG_ARRAY < "${RELATIVE}/config/monero-bash.conf" || return 2
+		mapfile CONFIG_ARRAY < "${RELATIVE}/config/monero-bash.conf" || return 3
 	else
 		print::exit "[monero-bash.conf] not found"
 	fi
 
 	for i in ${CONFIG_ARRAY[@]}; do
-		[[ $i =~ ^AUTO_START_MONEROD=true*$ ]]        && declare -g AUTO_START_MONEROD=true
-		[[ $i =~ ^AUTO_STOP_MONEROD=true*$ ]]         && declare -g AUTO_STOP_MONEROD=true
-		[[ $i =~ ^XMRIG_ROOT=true*$ ]]                && declare -g XMRIG_ROOT=true
-		[[ $i =~ ^AUTO_UPDATE=true*$ ]]               && declare -g AUTO_UPDATE=true
-		[[ $i =~ ^RPC_IP=* ]]                         && declare -g RPC_IP="${i/*=/}"
+		[[ $i = "AUTO_START_MONEROD=true" ]] && declare -g AUTO_START_MONEROD=true
+		[[ $i = "AUTO_STOP_MONEROD=true" ]]  && declare -g AUTO_STOP_MONEROD=true
+		[[ $i = "XMRIG_ROOT=true" ]]         && declare -g XMRIG_ROOT=true
+		[[ $i = "AUTO_UPDATE=true" ]]        && declare -g AUTO_UPDATE=true
+		[[ $i = RPC_IP=* ]]                && declare -g RPC_IP="${i/*=/}"
 	done
 
-	# DEFAULTS
-	[[ $AUTO_START_MONEROD != true ]]        && declare -g AUTO_START_MONEROD=false
-	[[ $AUTO_STOP_MONEROD != true ]]         && declare -g AUTO_STOP_MONEROD=false
-	[[ $XMRIG_ROOT != true ]]                && declare -g XMRIG_ROOT=false
-	[[ $AUTO_UPDATE != true ]]               && declare -g AUTO_UPDATE=false
-	[[ -z $RPC_IP ]]                         && declare -g RPC_IP="localhost:18081"
+	# DEFAULT
+	[[ $AUTO_START_MONEROD != true ]] && declare -g AUTO_START_MONEROD=false
+	[[ $AUTO_STOP_MONEROD != true ]]  && declare -g AUTO_STOP_MONEROD=false
+	[[ $AUTO_UPDATE != true ]]        && declare -g AUTO_UPDATE=false
+	[[ $XMRIG_ROOT != true ]]         && declare -g XMRIG_ROOT=false
+	[[ -z $RPC_IP ]]                  && declare -g RPC_IP="localhost:18081"
 
 	log::debug "--- monero-bash.conf settings ---"
-	log::debug "AUTO_START_MONEROD        | $AUTO_START_MONEROD"
-	log::debug "AUTO_STOP_MONEROD         | $AUTO_STOP_MONEROD"
-	log::debug "XMRIG_ROOT                | $XMRIG_ROOT"
-	log::debug "AUTO_UPDATE               | $AUTO_UPDATE"
-	log::debug "RPC_IP                    | $RPC_IP"
+	log::debug "AUTO_START_MONEROD | $AUTO_START_MONEROD"
+	log::debug "AUTO_STOP_MONEROD  | $AUTO_STOP_MONEROD"
+	log::debug "AUTO_UPDATE        | $AUTO_UPDATE"
+	log::debug "XMRIG_ROOT         | $XMRIG_ROOT"
+	log::debug "RPC_IP             | $RPC_IP"
 }

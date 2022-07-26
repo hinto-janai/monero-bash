@@ -1,0 +1,63 @@
+# PACKAGE | monero-bash
+# VERSION | v2.0.0
+# RELEASE | 2022
+#
+# v2.0.0
+## Updates
+**This is a major version update and is NOT COMPATIBLE with previous `v1.x.x` versions.**  
+**To upgrade properly: `monero-bash uninstall` and reinstall this version.**
+
+* **File changes**
+	***All `monero-bash` files are now installed in `$HOME/.monero-bash`***
+	```
+	$HOME/.monero-bash/
+	├─ changes
+	├─ config
+	├─ wallets
+	├─ packages
+	```
+* **New commands**
+	```
+	monero-bash new <wallet type>          | Enter wallet creation mode
+	monero-bash changes <packages>         | Read changelogs of packages
+	monero-bash config <packages>          | Enter interactive config mode for packages
+	monero-bash refresh <packages>         | Refresh your systemd file to match your config
+	monero-bash enable/disable <processes> | Enable/disable auto-start on computer boot for processes
+	```
+* **Package manager**
+	- ***Now multi-threaded, up to 4x faster. List of multi-threaded processes:***
+		- Package metadata fetch
+		- Download of hash file, signature file, and tar file
+		- Verification of tar hash & PGP signature
+	- ***Changelog creation***
+		- A changelog file is now installed during package install/upgrade and can viewed with: `monero-bash changes <packages>`
+	- ***Lock***
+		- Lock files are now created, prevents multiple instances of `monero-bash` updates/upgrades/installs
+* **P2Pool**
+	- `monero-bash` now installs a `p2pool.conf` along with `P2Pool`. It allows P2Pool behavior changes via config file.
+
+* **Security**
+	- `monero-bash` user is created during initial installation. Monero and P2Pool run as this user. XMRig defaults to ROOT, can be configured in `monero-bash.conf`
+	- Wallet passwords stored in memory are now encrypted with a one-time 4096-bit key using GPG (prevents core-dumps from leaking the raw password)
+* **Wallet**
+	- Creation of all Monero wallet types now supported:
+		```
+		--generate-new-wallet         | [new]
+		--generate-from-view-key      | [view]
+		--restore-from-seed           | [seed]
+		--generate-from-json          | [json]
+		--generate-from-spend-key     | [spend]
+		--generate-from-device        | [device]
+		--generate-from-keys          | [private]
+		--generate-from-multisig-keys | [multisig]
+		```
+* **Debug**
+	`monero-bash` now has a debug mode to view ALL the things it's doing in the background. To enable, export this variable before running `monero-bash`:
+	```
+	export STD_LOG_DEBUG=true
+	```
+	Or use the `--verbose` flag on package installs/upgrades.
+* **Other**
+	- Fedora Linux issues fixed
+	- Improved documentation
+	- Overall UI revamp

@@ -22,32 +22,34 @@
 
 # create temporary folders/files for pkg::download()
 pkg::tmp::download() {
-	log::debug "starting"
-	pkg::tmp::remove
-	log::debug "creating tmp package files/folders"
+	log::debug "starting: ${PKG[pretty]}"
 
 	# general package folders
 	declare -Ag TMP_PKG
 
-	TMP_PKG[${PKG[short]}_main]="$(mktemp -d /tmp/monero-bash.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_pkg]="$(mktemp -d ${TMP_PKG[${PKG[short]}_main]}/monero-bash-pkg.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_gpg]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-gpg.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_sig]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-sig.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_hash]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_changes]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-changes.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_key]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_key_output]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-key-output.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_hash_calc]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash-calc.XXXXXXXXXX)"
-	TMP_PKG[${PKG[short]}_folder]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/monero-bash-hash-folder.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_main]="$(mktemp -d /tmp/monero-bash-${PKG[short]}.XXXXXXXXXX)"
+	TMP_PKG[${PKG[short]}_pkg]="$(mktemp -d ${TMP_PKG[${PKG[short]}_main]}/pkg.XXX)"
+	TMP_PKG[${PKG[short]}_gpg]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/gpg.XXX)"
+	TMP_PKG[${PKG[short]}_sig]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/sig.XXX)"
+	TMP_PKG[${PKG[short]}_hash]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/hash.XXX)"
+	TMP_PKG[${PKG[short]}_changes]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/changes.XXX)"
+	TMP_PKG[${PKG[short]}_key]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/key.XXX)"
+	TMP_PKG[${PKG[short]}_key_output]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/output.XXX)"
+	TMP_PKG[${PKG[short]}_hash_calc]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/calc.XXX)"
+	TMP_PKG[${PKG[short]}_folder]="$(mktemp ${TMP_PKG[${PKG[short]}_main]}/folder.XXX)"
 
 	# log::debug
-	log::debug "--- tmp pkg folders ---"
-	log::debug "TMP_PKG[main]    | ${TMP_PKG[${PKG[short]}_main]}"
-	log::debug "TMP_PKG[pkg]     | ${TMP_PKG[${PKG[short]}_pkg]}"
-	log::debug "TMP_PKG[gpg]     | ${TMP_PKG[${PKG[short]}_gpg]}"
-	log::debug "TMP_PKG[sig]     | ${TMP_PKG[${PKG[short]}_sig]}"
-	log::debug "TMP_PKG[hash]    | ${TMP_PKG[${PKG[short]}_hash]}"
-	log::debug "TMP_PKG[changes] | ${TMP_PKG[${PKG[short]}_changes]}"
+	log::debug "--- tmp pkg folder for ${PKG[pretty]} ---"
+	log::debug "TMP_PKG[main]       | ${TMP_PKG[${PKG[short]}_main]}"
+	log::debug "TMP_PKG[pkg]        | ${TMP_PKG[${PKG[short]}_pkg]}"
+	log::debug "TMP_PKG[gpg]        | ${TMP_PKG[${PKG[short]}_gpg]}"
+	log::debug "TMP_PKG[sig]        | ${TMP_PKG[${PKG[short]}_sig]}"
+	log::debug "TMP_PKG[hash]       | ${TMP_PKG[${PKG[short]}_hash]}"
+	log::debug "TMP_PKG[changes]    | ${TMP_PKG[${PKG[short]}_changes]}"
+	log::debug "TMP_PKG[key]        | ${TMP_PKG[${PKG[short]}_key]}"
+	log::debug "TMP_PKG[key_output] | ${TMP_PKG[${PKG[short]}_key_output]}"
+	log::debug "TMP_PKG[hash_calc]  | ${TMP_PKG[${PKG[short]}_hash_calc]}"
+	log::debug "TMP_PKG[folder]     | ${TMP_PKG[${PKG[short]}_folder]}"
 }
 
 # create temporary files for pkg::update() and pkg::info()
@@ -59,28 +61,27 @@ pkg::tmp::download() {
 # usage: $1 = [update|info]
 # changes behavior on folder creation
 pkg::tmp::info() {
-	log::debug "starting ${FUNCNAME}() for: $1"
+	log::debug "starting for: $1"
 	pkg::tmp::remove
-	log::debug "creating tmp package info files"
 
 	map TMP_INFO TMP_INFO[main] TMP_INFO[bash] TMP_INFO[monero] TMP_INFO[p2pool] TMP_INFO[xmrig]
 
 	if [[ $1 = update ]]; then
 		TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
-		TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
-		[[ $MONERO_VER ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[main]}/monero-info.XXXXXXXXXX)"
-		[[ $P2POOL_VER ]] && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[main]}/p2pool-info.XXXXXXXXXX)"
-		[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[main]}/xmrig-info.XXXXXXXXXX)"
+		TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXX)"
+		[[ $MONERO_VER ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[main]}/monero-info.XXX)"
+		[[ $P2POOL_VER ]] && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[main]}/p2pool-info.XXX)"
+		[[ $XMRIG_VER ]]  && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[main]}/xmrig-info.XXX)"
 	elif [[ $1 = info ]]; then
 		TMP_INFO[main]="$(mktemp -d /tmp/monero-bash-info.XXXXXXXXXX)"
-		[[ $UPGRADE_LIST = *bash* ]]     && TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXXXXXXXXX)"
-		[[ $UPGRADE_LIST = *monero* ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[main]}/monero-info.XXXXXXXXXX)"
-		[[ $UPGRADE_LIST = *p2p* ]]      && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[main]}/p2pool-info.XXXXXXXXXX)"
-		[[ $UPGRADE_LIST = *xmr* ]]      && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[main]}/xmrig-info.XXXXXXXXXX)"
+		[[ $UPGRADE_LIST = *bash* ]]     && TMP_INFO[bash]="$(mktemp ${TMP_INFO[main]}/bash-info.XXX)"
+		[[ $UPGRADE_LIST = *monero* ]] && TMP_INFO[monero]="$(mktemp ${TMP_INFO[main]}/monero-info.XXX)"
+		[[ $UPGRADE_LIST = *p2p* ]]      && TMP_INFO[p2pool]="$(mktemp ${TMP_INFO[main]}/p2pool-info.XXX)"
+		[[ $UPGRADE_LIST = *xmr* ]]      && TMP_INFO[xmrig]="$(mktemp ${TMP_INFO[main]}/xmrig-info.XXX)"
 	fi
 
 	# log::debug
-	log::debug "--- tmp info folders ---"
+	log::debug "--- tmp info folder ---"
 	log::debug "TMP_INFO[main]   | ${TMP_INFO[main]}"
 	log::debug "TMP_INFO[bash]   | ${TMP_INFO[bash]}"
 	log::debug "TMP_INFO[monero] | ${TMP_INFO[monero]}"

@@ -41,61 +41,42 @@ pkg::prompt() {
 	fi
 	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB forcefully...!"
 
-	# CREATE UPGRADE LIST
-	local UPGRADE_LIST
-	[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="bash"
-	[[ $OPTION_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST monero"
-	[[ $OPTION_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST p2pool"
-	[[ $OPTION_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST xmrig"
-
-	# CHECK IF PACKAGE IS ALREADY UP TO DATE
-	if [[ $OPTION_FORCE != true ]]; then
-		if [[ $OPTION_BASH = true && $MONERO_BASH_OLD != true ]]; then
-			printf "${OFF}%s\n" "[monero-bash] ($MONERO_BASH_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST//bash}"
+	# CREATE UPGRADE LIST (install)
+	char UPGRADE_LIST
+	if [[ $1 = install ]]; then
+		[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="bash"
+		[[ $OPTION_MONERO = true ]] && UPGRADE_LIST="$UPGRADE_LIST monero"
+		[[ $OPTION_P2POOL = true ]] && UPGRADE_LIST="$UPGRADE_LIST p2pool"
+		[[ $OPTION_XMRIG = true ]]  && UPGRADE_LIST="$UPGRADE_LIST xmrig"
+		# check if already installed (if --force is not given)
+		if [[ $OPTION_FORCE != true ]]; then
+			for i in $UPGRADE_LIST; do
+				struct::pkg $i
+				pkg::prompt::check::install
+			done
 		fi
-		if [[ $OPTION_MONERO = true && $MONERO_OLD != true ]]; then
-			printf "${OFF}%s\n" "[Monero] ($MONERO_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST//monero}"
-		fi
-		if [[ $OPTION_P2POOL = true && $P2POOL_OLD != true ]]; then
-			printf "${OFF}%s\n" "[P2Pool] ($P2POOL_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST//p2pool}"
-		fi
-		if [[ $OPTION_XMRIG = true && $XMRIG_OLD != true ]]; then
-			printf "${OFF}%s\n" "[XMRig] ($XMRIG_VER) is up to date"
-			UPGRADE_LIST="${UPGRADE_LIST//xmrig}"
-		fi
-		if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
-			log::debug "UPGRADE_LIST is empty, exiting"
-			exit 1
+	# CREATE UPGRADE LIST (upgrade)
+	elif [[ $1 = upgrade ]]; then
+		[[ $MONERO_BASH_VER ]] && UPGRADE_LIST="bash"
+		[[ $MONERO_VER ]]      && UPGRADE_LIST="$UPGRADE_LIST monero"
+		[[ $P2POOL_VER ]]      && UPGRADE_LIST="$UPGRADE_LIST p2pool"
+		[[ $XMRIG_VER ]]       && UPGRADE_LIST="$UPGRADE_LIST xmrig"
+		# check if pkg is old (if --force is not given)
+		if [[ $OPTION_FORCE != true ]]; then
+			for i in $UPGRADE_LIST; do
+				struct::pkg $i
+				pkg::prompt::check::old
+			done
 		fi
 	fi
 
-	# CHECK IF INSTALLED OR NOT (for upgrade)
-	if [[ $1 = upgrade ]]; then
-		if [[ $OPTION_BASH = true && -z $MONERO_BASH_VER ]]; then
-			printf "${OFF}%s\n" "[monero-bash] is not installed | skipping"
-			UPGRADE_LIST="${UPGRADE_LIST//bash}"
-		fi
-		if [[ $OPTION_MONERO = true && -z $MONERO_VER ]]; then
-			printf "${OFF}%s\n" "[Monero] is not installed | skipping"
-			UPGRADE_LIST="${UPGRADE_LIST//monero}"
-		fi
-		if [[ $OPTION_P2POOL = true && -z $P2POOL_VER ]]; then
-			printf "${OFF}%s\n" "[P2Pool] is not installed | skipping"
-			UPGRADE_LIST="${UPGRADE_LIST//p2pool}"
-		fi
-		if [[ $OPTION_XMRIG = true && -z $XMRIG_VER ]]; then
-			printf "${OFF}%s\n" "[XMRig] is not installed | skipping"
-			UPGRADE_LIST="${UPGRADE_LIST//xmrig}"
-		fi
-		if [[ $UPGRADE_LIST =~ [[:space:]] || -z $UPGRADE_LIST ]]; then
-			log::debug "UPGRADE_LIST is empty, exiting"
-			exit 1
-		fi
+	# EXIT ON EMPTY LIST
+	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
+		log::debug "UPGRADE_LIST is empty, exiting"
+		exit 1
 	fi
 
+	# CREATE UI LIST
 	local PROMPT_UPGRADE_LIST i
 	for i in $UPGRADE_LIST; do
 		case "$i" in
@@ -122,8 +103,26 @@ pkg::prompt() {
 
 	# START UPGRADE
 	log::debug "starting $PROMPT_NOUN of packages: $UPGRADE_LIST"
-	UPGRADE_LIST=("$UPGRADE_LIST")
-	UPGRADE_LIST=("${UPGRADE_LIST[@]//[}")
-	UPGRADE_LIST=("${UPGRADE_LIST[@]//]}")
-	pkg::upgrade install
+	pkg::upgrade $1
+}
+
+# check if pkg is installed
+pkg::prompt::check::install() {
+	log::debug "starting | ${PKG[pretty]}"
+
+	# if pkg is installed
+	if [[ ${PKG[current_version]} ]]; then
+		printf "${OFF}%s\n" "[${PKG[pretty]}] (${PKG[current_version]}) is already installed | skipping"
+		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
+	fi
+}
+
+pkg::prompt::check::old() {
+	log::debug "starting | ${PKG[pretty]}"
+
+	# if pkg is old
+	if [[ ${PKG[old]} != true ]]; then
+		printf "${OFF}%s\n" "[${PKG[pretty]}] (${PKG[current_version]}) is up to date | skipping"
+		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
+	fi
 }

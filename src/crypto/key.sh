@@ -25,22 +25,23 @@
 # assumes trace() is already set.
 # called from: wallet/start.sh
 crypto::key::create() {
-	log::debug "creating one-time key with 4096 bits of entropy"
+	log::debug "starting"
 
 	# CREATE KEY FILE
+	local ENTROPY=512
 	char CRYPTO_KEY
 	CRYPTO_KEY=$(mktemp /tmp/monero-bash-crypto-key.XXXXXXXXXX)
 	chmod 600 "$CRYPTO_KEY"
 
-	# 4096 BITS / 512 BYTES OF ENTROPY
-	crypto::bytes 512 | base64 > "$CRYPTO_KEY"
+	# OVERWRITE KEY WITH ASCII ENTROPY
+	crypto::bytes $ENTROPY | base64 > "$CRYPTO_KEY"
 
-	log::debug "created one-time key: $CRYPTO_KEY"
+	log::debug "created key with $((ENTROPY*8)) bits of entropy: $CRYPTO_KEY"
 	return 0
 }
 
 crypto::key::remove() {
-	log::debug "deleting one-time key: $CRYPTO_KEY"
+	log::debug "deleting key: $CRYPTO_KEY"
 
 	# CHECK IF EXISTS
 	[[ -e $CRYPTO_KEY ]]

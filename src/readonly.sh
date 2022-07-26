@@ -34,7 +34,7 @@ readonly DOT="$HOME/.monero-bash"
 readonly CONFIG="$DOT/config"
 readonly WALLETS="$DOT/wallets"
 readonly PACKAGES="$DOT/packages"
-readonly CHANGES="$PACKAGES/changes"
+readonly CHANGES="$DOT/changes"
 
 # config files
 readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"

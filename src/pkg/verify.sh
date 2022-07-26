@@ -26,41 +26,54 @@ pkg::verify() {
 	log::debug "starting"
 
 	# VARIABLES
-	local i jh jk
+	local i
 	unset -v JOB_HASH
-	declare -A JOB_KEY
 	map HASH
+	char VERIFY_MSG
 
 	# CALCULATE HASH AND CHECK FOR PGP KEY
-	for i in ${UPGRADE_LIST[@]}; do
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		struct::pkg bash
-		pkg::verify::hash_calc & JOB_HASH[${PKG[short]}]=$!
-		pkg::verify::check_key & JOB_KEY[${PKG[short]}]=$!
+		pkg::verify::hash_calc & JOB[${PKG[short]}_hash]=$!
+		pkg::verify::check_key & JOB[${PKG[short]}_key]=$!
 	done
 
 	# WAIT FOR THREADS
-	log::debug "waiting for check_key() threads to complete"
-	for jk in ${JOB_KEY[@]}; do
-		wait -n $jk || print::exit "Upgrade failure - PGP key check failed"
+	log::debug "waiting for hash_calc() & check_key() threads to complete"
+	wait -f ${JOB[@]}
+
+	# CHECK FAIL FILES
+	log::debug "checking for failure files"
+	for i in $UPGRADE_LIST; do
+		struct::pkg $i
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
 	done
-	log::debug "waiting for hash_calc() threads to complete"
-	for jh in ${JOB_HASH[@]}; do
-		wait -n $jk || print::exit "Upgrade failure - Hash calculation failed"
-	done
+	log::debug "no failure files found"
+
 
 	# VERIFY HASH AND PGP
-	for i in ${UPGRADE_LIST[@]}; do
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
+		log::prog "${PKG[pretty]} | HASH ... | PGP Signed by..."
 		pkg::verify::hash
 		pkg::verify::pgp
+		log::ok "${PKG[pretty]} | ${VERIFY_MSG}"
 	done
+
+
 }
 
 # calculate hash of the downloaded tar.
 pkg::verify::hash_calc() {
 	log::debug "starting: ${PKG[pretty]}"
-	sha256sum "${TMP_PKG[${PKG[short]}_tar]}" > "${TMP_PKG[${PKG[short]}_hash_calc]}"
+	if sha256sum "${TMP_PKG[${PKG[short]}_tar]}" > "${TMP_PKG[${PKG[short]}_hash_calc]}"; then
+		log::debug "${PKG[pretty]} | hash calc OK"
+	else
+		echo > "${TMP_PKG[${PKG[short]}_main]}/FAIL_HASH_CALC"
+		log::debug "${PKG[pretty]} | hash calc FAIL"
+	fi
 }
 
 # check for ${PKG[gpg_owner]} keys
@@ -81,11 +94,21 @@ pkg::verify::check_key() {
 		log::debug "storing import output into: ${TMP_PKG[${PKG[short]}_key_output]}"
 
 		# start download thread for PGP key (found on github)
-		log::debug "starting PGP key download thread for: ${PKG[gpg_pub_key]}"
-		$DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_key]}" "${PKG[gpg_pub_key]}"
+		log::debug "${PKG[gpg_owner]} | starting PGP key download thread | ${PKG[gpg_pub_key]}"
+		if $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_key]}" "${PKG[gpg_pub_key]}"; then
+			log::debug "${PKG[gpg_owner]} | PGP key download OK"
+		else
+			log::debug "${PKG[gpg_owner]} | PGP key download FAIL"
+			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_KEY_DOWNLOAD" &>/dev/null || exit 1
+		fi
 
 		# import
-		gpg --import "${TMP_PKG[${PKG[short]}_key]}" &> "${TMP_PKG[${PKG[short]}_key_output]}"
+		if gpg --import "${TMP_PKG[${PKG[short]}_key]}" &> "${TMP_PKG[${PKG[short]}_key_output]}"; then
+			log::debug "${PKG[gpg_pub_key]} | PGP key import OK"
+		else
+			log::debug "${PKG[gpg_pub_key]} | PGP key import FAIL"
+			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_KEY_IMPORT" &>/dev/null || exit 2
+		fi
 
 		# log::debug for key import output
 		local IMPORT_KEY_OUTPUT i IFS=$'\n'
@@ -100,7 +123,6 @@ pkg::verify::check_key() {
 # look for a matching hash in the hash file.
 pkg::verify::hash() {
 	log::debug "starting: ${PKG[pretty]}"
-	log::prog "${PKG[pretty]} HASH..."
 
 	# tmp hash into variable
 	local VERIFY_HASH
@@ -111,9 +133,12 @@ pkg::verify::hash() {
 	# sanity check
 	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && print::exit "Upgrade failure | NULL Hash variable"
 
-	# grep for hash in hash file
-	if grep -o "${HASH[${PKG[short]}]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
-		log::debug "${PKG[pretty]} hash match found"
+	# P2Pool has it's hashes in full upper-case
+	# this causes an error because sha256sum outputs in
+	# lower case, so grep for lower-case, then upper, else error.
+	# grep for LOWER CASE hash in hash file
+	if grep -o "${HASH[${PKG[short]},,]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+		log::debug "${PKG[pretty]} | lower-case hash match found"
 
 		# calculate first and last 6 digits of hash
 		local HASH_START HASH_END HASH_DIGIT
@@ -121,19 +146,31 @@ pkg::verify::hash() {
 		HASH_START="${HASH[${PKG[short]}]:0:6}"
 		HASH_END="$((HASH_DIGIT-6))"
 		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		log::ok "${PKG[pretty]} HASH: ${HASH_START}...${HASH_END}"
+		VERIFY_MSG="HASH: ${HASH_START}...${HASH_END}"
 
-	# else exit on incorrect hash
+	# UPPER CASE
+	elif grep -o "${HASH[${PKG[short]}^^]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+		log::debug "${PKG[pretty]} | upper-case hash match found"
+
+		# calculate first and last 6 digits of hash
+		local HASH_START HASH_END HASH_DIGIT
+		HASH_DIGIT="${#HASH[${PKG[short]}]}"
+		HASH_START="${HASH[${PKG[short]}]:0:6}"
+		HASH_END="$((HASH_DIGIT-6))"
+		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
+		VERIFY_MSG="${PKG[pretty]} HASH: ${HASH_START}...${HASH_END}"
+
+	# else remove from UPGRADE_LIST on incorrect hash
 	else
 		print::compromised::hash
-		exit 1
+		log::debug "${PKG[pretty]} | HASH COMPROMISED | removing from UPGRADE_LIST"
+		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
 	fi
 }
 
 # verify pgp signature
 pkg::verify::pgp() {
 	log::debug "starting: ${PKG[pretty]}"
-	log::prog "${PKG[pretty]} PGP..."
 
 	# SPECIAL CASE FOR XMRIG
 	# ----------------------
@@ -149,7 +186,7 @@ pkg::verify::pgp() {
 
 	# verify and redirect output to tmp file
 	if $VERIFY_PGP_CMD &> ${TMP_PKG[${PKG[short]}_gpg]}; then
-		log::ok "${PKG[pretty]} PGP signed by: ${PKG[gpg_owner]}"
+		VERIFY_MSG="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
 
 		# get output into variable
 		local PGP_OUTPUT IFS=$'\n' i
@@ -169,7 +206,8 @@ pkg::verify::pgp() {
 		for i in ${PGP_OUTPUT[@]}; do
 			log::debug "$i"
 		done
-		map COMPROMISED[${PKG[short]}]=true
 		print::compromised::pgp
+		log::debug "${PKG[pretty]} | PGP COMPROMISED | removing from UPGRADE_LIST"
+		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
 	fi
 }

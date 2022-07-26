@@ -43,65 +43,85 @@ pkg::upgrade() {
 		log::debug "packages getting upgraded: $UPGRADE_LIST"
 	fi
 
+	# MULTI THREAD JOB ARRAY
+	map JOB
+
 	# CREATE TMP FILES AND LOCK
-	trap '{ kill -s TERM $(jobs -p) &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
 	if lock::alloc monero_bash_upgrade; then
+		trap 'pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
 		log::debug "created lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
 	else
-		log::debug "lock file already found: ${STD_LOCK_FILE[monero_bash_upgrade]}"
-		print::error "Could not get upgrade lock!"
-		print::exit  "Is there another [monero-bash] upgrade running?"
+		log::debug "lock file already found: $(find /tmp/std_lock_monero_bash* || :)"
+		print::error "Could not get lock!"
+		print::exit  "Is there another [monero-bash] install/upgrade running?"
 	fi
 
 	# PRINT TITLE
-	print::download
+	print::pkg::download
 
 	# FETCH PKG INFO
 	log::prog "Fetching metadata... "
 	pkg::info
+	log::ok "Fetched metadata"
+	# EXIT ON EMPTY LIST
+	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
+		print::pkg::upgrade_fail
+		log::debug "UPGRADE_LIST is empty, exiting"
+		exit 1
+	fi
 
 	# DOWNLOAD
+	trap 'pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
 	pkg::download
 
 	# VERIFY
-	print::verify
+	print::pkg::verify
 	pkg::verify
+	# EXIT ON EMPTY LIST
+	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
+		print::pkg::upgrade_fail
+		log::debug "UPGRADE_LIST is empty, exiting"
+		exit 1
+	fi
 
 	# PRE HOOKS
-	print::hook::pre
+	print::pkg::hook::pre
 	pkg::hook::pre
 
 	# INSTALLING/UPGRADING TITLE
 	if [[ $1 = install ]]; then
-		print::install
+		print::pkg::install
 	else
-		print::upgrade
+		print::pkg::upgrade
 	fi
 
 	# EXTRACT
 	pkg::extract
 
 	# TRAP COPY POST HOOKS
-	trap '{ kill -s TERM $(jobs -p) &>/dev/null; pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; } &' EXIT
-
+	trap 'pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
 	# COPY NEW PACKAGES INTO NEW
 	pkg::copy
+	trap 'pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
 
 	# POST HOOKS
-	print::hook::post
+	print::pkg::hook::post
 	pkg::hook::post
 
 	# FREE LOCK
 	log::debug "freeing lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
 	lock::free monero_bash_upgrade
+	trap 'pkg::trap::pkg_folders' EXIT
+	pkg::tmp::remove
+	trap - EXIT
 
 	# END
 	if [[ $1 = install ]]; then
-		print::installed
+		print::pkg::installed
 	else
-		print::upgraded
+		print::pkg::upgraded
 	fi
-	trap - EXIT
+
 	log::debug "pkg::upgrade() done"
 	exit 0
 }

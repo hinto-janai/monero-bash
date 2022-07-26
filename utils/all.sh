@@ -14,7 +14,7 @@ set -e
 hbc
 
 # HASH
-utils/create_hashlist.sh
+utils/hash.sh
 
 # PUSH
 git add .

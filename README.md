@@ -48,7 +48,7 @@ cd monero-bash
 This will start the interactive install process into `$HOME/.monero-bash`
 
 It is recommended to verify the hash and PGP signature before installation.  
-Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify:
+Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify the tar:
 ```
 sha256sum -c SHA256SUM
 gpg --import hinto-janaiyo.asc

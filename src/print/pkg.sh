@@ -23,50 +23,54 @@
 # collection of titles to print during
 # package installation/upgrade/removal
 # assumes struct::pkg() has been called
-print::download() {
+print::pkg::download() {
 	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# Downloading"
 }
 
-print::update() {
+print::pkg::update() {
 	printf "${BBLUE}%s${OFF}\n" "#--------------------------------------# Updating"
 }
 
-print::remove() {
+print::pkg::remove() {
 	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removing [${PKG[pretty]}]"
 }
 
-print::verify() {
+print::pkg::verify() {
 	printf "${BYELLOW}%s${OFF}\n" "#--------------------------------------# Verifying"
 }
 
-print::install() {
+print::pkg::install() {
 	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Installing"
 }
 
-print::upgrade() {
+print::pkg::upgrade() {
 	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrading"
 }
 
-print::hook::pre() {
+print::pkg::hook::pre() {
 	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Pre-Hooks"
 }
 
-print::hook::post() {
+print::pkg::hook::post() {
 	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Post-Hooks"
 }
 
-print::installed() {
+print::pkg::installed() {
 	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Install done"
 }
 
-print::upgraded() {
+print::pkg::upgraded() {
 	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Upgrade done"
 }
 
-print::removed() {
+print::pkg::upgrade_fail() {
+	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrade failed"
+}
+
+print::pkg::removed() {
 	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removed [${PKG[pretty]}]"
 }
 
-print::updated() {
+print::pkg::updated() {
 	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# All packages up-to-date"
 }

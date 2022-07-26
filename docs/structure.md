@@ -5,6 +5,7 @@ These are all the folders/files created by `monero-bash` after installation:
 ```
 $HOME/.monero-bash/
 ├─ wallets
+├─ changes
 ├─ config
 	├─ monero-bash.conf
 	├─ monerod.conf

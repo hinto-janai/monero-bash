@@ -26,7 +26,7 @@ pkg::copy() {
 	log::debug "starting"
 
 	local i
-	for i in ${UPGRADE_LIST[@]}; do
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
 		pkg::copy::cp
 	done

@@ -20,38 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# parse case for packages
-parse::options::pkg() {
-	[[ $# = 1 ]] && print::help::command "$1"
-	shift
-	case "$1" in
-		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
-		monero|Monero|MONERO) OPTION_MONERO=true;;
-		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
-		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
-		*)
-			print::error "Invalid option: $1"
-			print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
-			;;
-	esac
-	until [[ $# = 0 ]]; do
-	shift
-	case "$1" in
-		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
-		monero|Monero|MONERO) OPTION_MONERO=true;;
-		*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
-		*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
-		--verbose|-v)         OPTION_VERBOSE=true;;
-		--force|-f)           OPTION_FORCE=true;;
-		"")                   return 0;;
-		*)
-			print::error "Invalid option: $1"
-			print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
-			;;
-	esac
-	done
-}
-
 # parse case for processes including [monero-bash]
 parse::options::process() {
 	[[ $# = 1 ]] && print::help::command "$1"
@@ -110,35 +78,81 @@ log::debug "user input: $*"
 case "$1" in
 
 	# WALLET
-	new)  wallet::create;;
-	list) wallet::list;;
+	list) print::title; wallet::list;;
 	size) print::size;;
+	new)  shift; print::title; wallet::create "$@";;
 
 	# PACKAGE MANAGER
 	update)
-		case "$2" in
-			--verbose|-v) OPTION_VERBOSE=true;;
-			"")           :;;
-			*)            print::help::command update;;
-		esac
+		shift
+		until [[ $# = 0 ]]; do
+			case "$1" in
+				--verbose|-v) OPTION_VERBOSE=true;;
+				"")           :;;
+				*)            print::help::command update;;
+			esac
+			shift
+		done
 		___BEGIN___ERROR___TRACE___
 		pkg::update
 		___ENDOF___ERROR___TRACE___
 		;;
 	install)
-		parse::options::pkg "$@"
+		[[ $# = 1 ]] && print::help::command "$1"
+		shift
+		until [[ $# = 0 ]]; do
+			case "$1" in
+				*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+				monero|Monero|MONERO) OPTION_MONERO=true;;
+				*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+				*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+				--verbose|-v)         OPTION_VERBOSE=true;;
+				--force|-f)           OPTION_FORCE=true;;
+				*)
+					print::error "Invalid option: $1"
+					print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
+					;;
+			esac
+			shift
+		done
 		___BEGIN___ERROR___TRACE___
 		pkg::prompt install
 		___ENDOF___ERROR___TRACE___
 		;;
 	remove)
-		parse::options::pkg "$@"
+		[[ $# = 1 ]] && print::help::command "$1"
+		shift
+		until [[ $# = 0 ]]; do
+			case "$1" in
+				*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+				monero|Monero|MONERO) OPTION_MONERO=true;;
+				*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
+				*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+				--verbose|-v)         OPTION_VERBOSE=true;;
+				*)
+					print::error "Invalid option: $1"
+					print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
+					;;
+			esac
+			shift
+		done
 		___BEGIN___ERROR___TRACE___
-		remove::prompt
+		pkg::remove::prompt
 		___ENDOF___ERROR___TRACE___
 		;;
 	upgrade)
-		parse::options::pkg "$@"
+		shift
+		until [[ $# = 0 ]]; do
+			case "$1" in
+				--verbose|-v)         OPTION_VERBOSE=true;;
+				--force|-f)           OPTION_FORCE=true;;
+				"")                   break;;
+				*)
+					print::exit "Invalid option: $1"
+					;;
+			esac
+			shift
+		done
 		___BEGIN___ERROR___TRACE___
 		pkg::prompt upgrade
 		___ENDOF___ERROR___TRACE___
@@ -243,19 +257,35 @@ case "$1" in
 	rpc)
 		[[ $# = 1 ]] && print::help::command "$1"
 		shift
-		rpc "$@"
+		local i RPC_LIST
+		for i in $@; do
+			case "$i" in
+				-v | --verbose) OPTION_VERBOSE=true;;
+			esac
+		done
+		RPC_LIST=(${@//\-v})
+		RPC_LIST=(${@//\-\-verbose})
+		rpc "${RPC_LIST[@]}"
 		;;
 	changes)
+		[[ $# = 1 ]] && print::help::command "$1"
 		shift
-		[[ $# = 0 ]] && print::changelog && exit
 		until [[ $# = 0 ]]; do
-			if declare -fp print::changelog::"${1/v}" &>/dev/null; then
-				print::changelog::"${1/v}"
-			else
-				print::error "Version $1 does not exist/is not available"
-			fi
-			shift
+		case "$1" in
+			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
+			monero|Monero|MONERO) OPTION_MONERO=true;;
+			*p2p*|*P2P*|*P2p*)    OPTION_P2POOL=true;;
+			*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
+			-p | --print)         OPTION_PRINT=true;;
+			*)
+				print::error "Invalid option: $1"
+				print::exit  "Pick one package: [bash|monero|p2pool|xmrig]"
+				;;
+		esac
+		shift
 		done
+		print::changes::list
+		exit
 		;;
 	help)
 		shift

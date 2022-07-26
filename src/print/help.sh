@@ -36,7 +36,7 @@ print::help() {
 
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[--verbose]             " "Install one/multiple packages" \
+		"install " "<packages> " "[--verbose] [--force]   " "Install one/multiple packages" \
 		"remove  " "<packages> " "[--verbose]             " "Remove one/multiple packages"
 	printf "    ${OFF}%s${BPURPLE}%s${OFF}%s\n" \
 		"update  " "[--verbose]                        " "Check for package updates" \
@@ -67,9 +67,10 @@ print::help() {
 		"size                                       Print size of all packages and folders" \
 		"version                                    Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"changes " "<package> " "[--print]                " "View the latests changes for <package>" \
+		"rpc     " "<JSON-RPC method> " "[--verbose]      " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"rpc     " "<JSON-RPC method>                  " "Send a JSON-RPC call to monerod" \
-		"changes " "<package>                          " "Print the latests changes for <package>" \
 		"help    " "<command>                          " "Print help for a command, or all if none specified"
 }
 
@@ -80,7 +81,7 @@ print::help::command() {
 	case "$1" in
 
 		#WALLET
-		monero-bash)
+		monero-bash|mb)
 			printf "${BWHITE}%s${BRED}%s\n\n" "USAGE: " "monero-bash"
 			printf "${OFF}%s\n" \
 			"Open the interactive wallet menu." \
@@ -483,21 +484,22 @@ print::help::command() {
 			;;
 		# OTHER
 		rpc)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value] " "[--verbose]"
 			printf "${OFF}%s\n" \
 			"Send a JSON-RPC call to monerod." \
 			"" \
 			"This will send a JSON-RPC call to the monerod IP" \
 			"specified in [\$HOME/.monero-bash/config/monero-bash.conf]" \
-			"Setting RPC_VERBOSE to true will make [monero-bash] print" \
-			"the payload before sending." \
+			"Using the [--verbose] option will make [monero-bash] print" \
+			"the monerod IP and payload after the RPC call finishes." \
 			"" \
 			"The default IP is your own monerod: [127.0.0.1:18081]" \
 			"But any monerod IP is able to be used: [node.community.rino.io:18081]" \
 			"" \
-			"The code for this function is originally from: https://github.com/jtgrassie/xmrpc" \
-			"Copyright (c) 2014-2022, The Monero Project"
-
+			"The code for this command is originally from: https://github.com/jtgrassie/xmrpc" \
+			"# Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie" \
+			"# Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero" \
+			""
 			printf "\n${BWHITE}%s${OFF}\n" "EXAMPLE"
 			printf "    ${BRED}%s${OFF}%s${BYELLOW}%s\n" "monero-bash " "rpc " "get_block"
 			printf "    ${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s\n" "monero-bash " "rpc " "node.community.rino.io:18081 " "get_block"
@@ -532,14 +534,16 @@ print::help::command() {
 			"get_output_distribution"
 			;;
 		changes)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "changes " "<package>"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "changes " "<package> " "[--print]"
 			printf "${OFF}%s\n" \
-			"Print the changelog of <package>." \
+			"Read the changelog of <package>." \
 			"" \
 			"During package installations/upgrades, [monero-bash]" \
-			"will save a local changelog inside:" \
-			"[\$HOME/.monero-bash/packages/changes]" \
-			"This file is read and parsed for MARKDOWN syntax, then printed."
+			"will save a local changelog inside: [\$HOME/.monero-bash/changes]" \
+			"This file is read and parsed for MARKDOWN syntax, then printed." \
+			"" \
+			"If the [--print] option is given, the changelog will be printed" \
+			"normally to the terminal instead of being piped to [less]."
 			;;
 		help)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "help " "<command>"

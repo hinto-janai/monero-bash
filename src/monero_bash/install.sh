@@ -195,7 +195,7 @@ printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 	"[monero-bash] " \
 	"install? (Y/n) "
 if ! ask::yes; then
-	printf "$${OFF}%s\n" "Canceling [monero-bash] installation..."
+	printf "${OFF}%s\n" "Canceling [monero-bash] installation..."
 	exit 1
 fi
 
@@ -234,6 +234,7 @@ fi
 log::prog "creating [.monero-bash] folders"
 mkdir "$DOT"
 mkdir "$PACKAGES"
+mkdir "$CHANGES"
 mkdir "$PKG_MONERO_BASH"
 mkdir "$WALLETS"
 log::ok "created [.monero-bash] folders"
@@ -271,6 +272,12 @@ cp "$SRC_CONFIG/monerod.conf" "$CONFIG/"
 cp "$SRC_CONFIG/monero-wallet-cli.conf" "$CONFIG/"
 log::ok "created config folder"
 
+# CREATE CHANGELOG
+log::prog "creating changelog folder"
+mkdir -p "$CHANGES"
+cp "$TXT/changes" "$CHANGES/monero-bash"
+log::ok "created changelog folder"
+
 # ADD TO PATH
 log::prog "adding [monero-bash] to PATH"
 sudo ln -s "$MAIN" /usr/local/bin/monero-bash
@@ -288,7 +295,7 @@ log::ok "set Monero data path"
 
 # FIRST TIME
 log::debug "setting FIRST_TIME = false"
-sed -i "s/FIRST_TIME=.*/FIRST_TIME=\"false\"/g" "$STATE"
+sed -i "s/FIRST_TIME=.*/FIRST_TIME=false/g" "$STATE"
 log::debug "set FIRST_TIME = false"
 
 # PERMISSIONS

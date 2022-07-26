@@ -22,13 +22,12 @@
 
 # hooks to run pre-upgrade
 pkg::hook::pre() {
+	# STATE
 	log::debug "starting"
-
-	if [[ $UPGRADE_LIST = *bash* ]]; then
-		pkg::hook::pre::bash
-	else
-		log::ok "no hooks found"
-	fi
+	log::prog "Saving state..."
+	array HOOK_STATE
+	mapfile HOOK_STATE < "$STATE"
+	log::ok "State saved"
 }
 
 # hooks to run post-upgrade
@@ -45,7 +44,7 @@ pkg::hook::post() {
 
 	# state restore
 	log::prog "Recreating old state..."
-	echo "${HOOK_BASH_STATE[@]}" > "$STATE"
+	printf "%s" "${HOOK_STATE[@]}" > "$STATE"
 	log::ok "Recreated old state"
 
 	# individual package hooks
@@ -53,7 +52,7 @@ pkg::hook::post() {
 
 	# state + changes + configs + system
 	local i
-	for i in ${UPGRADE_LIST[@]}; do
+	for i in $UPGRADE_LIST; do
 		struct::pkg $i
 		pkg::hook::post::state
 		pkg::hook::post::changes
@@ -78,15 +77,16 @@ pkg::hook::post() {
 }
 
 pkg::hook::post::state() {
-	log::debug "starting: ${PKG[pretty]}"
+	log::debug "${PKG[pretty]} | starting"
 
 	log::prog "${PKG[pretty]} | ... | ..."
-	sed -i "s/${PKG[var]}_VER=.*/${PKG[var]}_VER=\"${VER[${PKG[short]}]}\"/g" "$STATE"
+	sed -i "s/${PKG[var]}_VER=.*/${PKG[var]}_VER=${VER[${PKG[short]}]}/g" "$STATE"
+	sed -i "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=/g" "$STATE"
 	log::ok "${PKG[pretty]} | ${VER[${PKG[short]}]} | ${RELEASE[${PKG[short]}]}"
 }
 
 pkg::hook::post::changes() {
-	log::debug "starting: ${PKG[pretty]}"
+	log::debug "${PKG[pretty]} | starting"
 
 	log::prog "Creating changelog for: ${PKG[pretty]}..."
 	mkdir -p "$CHANGES"
@@ -94,63 +94,51 @@ pkg::hook::post::changes() {
 	echo "# PACKAGE | ${PKG[pretty]}"            > "$CHANGES/${PKG[name]}"
 	echo "# VERSION | ${VER[${PKG[short]}]}"     >> "$CHANGES/${PKG[name]}"
 	echo "# RELEASE | ${RELEASE[${PKG[short]}]}" >> "$CHANGES/${PKG[name]}"
-	echo >> "$CHANGES/${PKG[name]}"
-	echo "${BODY[${PKG[short]}]}" > "$CHANGES/${PKG[name]}"
+	echo "#" >> "$CHANGES/${PKG[name]}"
+	echo "${BODY[${PKG[short]}]}" >> "$CHANGES/${PKG[name]}"
 
-	log::ok "${PKG[pretty]} | changelog created"
+	log::ok "${PKG[pretty]} | Changelog created"
 }
 
 
 # create config files for packages.
 pkg::hook::post::config() {
-	log::debug "starting: ${PKG[pretty]}"
+	log::debug "${PKG[pretty]} | starting"
 
-	log::prog "${PKG[pretty]} | config file check: ${PKG[conf_name]}..."
-	if [[ -e ${PKG[config]} ]]; then
-		log::ok "${PKG[pretty]} | config file found: ${PKG[conf_name]}"
+	log::prog "${PKG[pretty]} | Config check: ${PKG[conf_name]}..."
+	if [[ -e ${PKG[conf]} ]]; then
+		log::ok "${PKG[pretty]} | Config found: ${PKG[conf_name]}"
 	else
 		log::debug "no config found, copying $SRC_CONFIG/${PKG[conf_name]} to $CONFIG"
 		cp "$SRC_CONFIG/${PKG[conf_name]}" "$CONFIG"
-		log::ok "${PKG[pretty]} | config file installed: ${PKG[conf_name]}"
+		log::ok "${PKG[pretty]} | Config installed: ${PKG[conf_name]}"
 	fi
 
 	# special check for monero (two confs)
 	if [[ ${PKG[name]} = monero ]]; then
-		log::prog "${PKG[pretty]} | config file check: monero-wallet-cli.conf..."
+		log::prog "${PKG[pretty]} | Config found: monero-wallet-cli.conf..."
 		if [[ -e "$CONFIG/monero-wallet-cli.conf" ]]; then
-			log::ok "${PKG[pretty]} | config file found: monero-wallet-cli.conf"
+			log::ok "${PKG[pretty]} | Config found: monero-wallet-cli.conf"
 		else
 			log::debug "no config found, copying $SRC_CONFIG/monero-wallet-cli.conf to $CONFIG"
-			cp "$SRC_CONFIG/${PKG[conf_name]}" "$CONFIG"
-			log::ok "${PKG[pretty]} | config file installed: monero-wallet-cli.conf"
+			cp "$SRC_CONFIG/monero-wallet-cli.conf" "$CONFIG"
+			log::ok "${PKG[pretty]} | Config installed: monero-wallet-cli.conf"
 		fi
 	fi
 }
 
 # create systemd files for packages.
 pkg::hook::post::systemd() {
-	log::debug "starting: ${PKG[pretty]}"
+	log::debug "${PKG[pretty]} | starting"
 
-	log::prog "${PKG[pretty]} | systemd service check: ${PKG[service]}..."
+	log::prog "${PKG[pretty]} | systemd check: ${PKG[service]}..."
 	if [[ -e "$SYSTEMD/${PKG[service]}" ]]; then
-		log::ok "${PKG[pretty]} | systemd service found: ${PKG[service]}"
+		log::ok "${PKG[pretty]} | systemd found: ${PKG[service]}"
 	else
 		log::debug "no systemd service found, creating: $SYSTEMD/${PKG[service]}"
 		systemd::create
-		log::ok "${PKG[pretty]} | systemd service installed: ${PKG[service]}"
+		log::ok "${PKG[pretty]} | systemd installed: ${PKG[service]}"
 	fi
-}
-
-# pre-upgrade hook for [monero-bash].
-# save the state file.
-pkg::hook::pre::bash() {
-	log::debug "starting"
-	log::prog "monero-bash | saving state..."
-
-	map HOOK_BASH_STATE
-	mapfile HOOK_BASH_STATE < "$STATE"
-
-	log::ok "monero-bash | state saved"
 }
 
 # post-upgrade hook for [monero-bash].
@@ -210,7 +198,7 @@ pkg::hook::post::bash() {
 	log::prog "p2pool | diff for: p2pool.conf..."
 	if DIFF=$(diff --side-by-side --left-column "$CONFIG_P2POOL" "${TMP_PKG[bash_pkg]}/config/p2pool.conf"); then
 		# diff exits 0 for no diff
-		log::debug "p2pool | no diff: p2pool.conf"
+		log::ok "p2pool | no diff: p2pool.conf"
 	else
 		# diff exits 1 if diff found
 		log::debug "--- p2pool.conf diff ---"

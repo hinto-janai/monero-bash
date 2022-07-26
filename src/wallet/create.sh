@@ -25,6 +25,37 @@ wallet::create() {
 	log::debug "starting"
 	char WALLET_TYPE WALLET_NAME
 
+	# if an argument was given, skip to creation
+	if [[ $1 ]]; then
+		WALLET_TYPE="$1"
+		case "$WALLET_TYPE" in
+			--generate-new-wallet|*new*)           WALLET_TYPE=new;;
+			--generate-from-view-key|*view*)       WALLET_TYPE=view;;
+			--restore-from-seed|*seed*)            WALLET_TYPE=seed;;
+			--generate-from-json|*json*)           WALLET_TYPE=json;;
+			--generate-from-spend-key|*spend*)     WALLET_TYPE=spend;;
+			--generate-from-device|*device*)       WALLET_TYPE=device;;
+			--generate-from-keys|*private*)        WALLET_TYPE=private;;
+			--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;;
+			*) print::exit "Invalid wallet type!"
+		esac
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
+			"Create wallet type: " \
+			"[${WALLET_TYPE}]" \
+			"? (Y/n) "
+		if ask::yes; then
+			printf "${BWHITE}%s${OFF}" "Wallet name: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print::exit "Empty input";;
+				*" "*) print::exit "Wallet name cannot have spaces";;
+				*)     :;;
+			esac
+		else
+			exit 1
+		fi
+	else
+
 	# WALLET TYPES
 	while :; do
 		while :; do
@@ -39,7 +70,7 @@ wallet::create() {
 				"--generate-from-keys          " "| " "[private]" \
 				"--generate-from-multisig-keys " "| " "[multisig]" \
 				""
-			printf "${BYELLOW}%s${OFF}" "Select which method to use: "
+			printf "${BYELLOW}%s${OFF}" "Select which wallet type to create: "
 
 			read -r WALLET_TYPE
 			case "$WALLET_TYPE" in
@@ -51,7 +82,7 @@ wallet::create() {
 				--generate-from-device|*device*)       WALLET_TYPE=device;break;;
 				--generate-from-keys|*private*)        WALLET_TYPE=private;break;;
 				--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;break;;
-				*) print::error "Invalid method!"
+				*) print::error "Invalid wallet type!"
 			esac
 		done
 		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
@@ -63,15 +94,20 @@ wallet::create() {
 		fi
 	done
 
+	fi
+
 	# Wallet name
+	if [[ -z $WALLET_NAME ]]; then
 	while :; do
 		printf "${BWHITE}%s${OFF}" "Wallet name: "
 		read -r WALLET_NAME
 		case "$WALLET_NAME" in
-			"") print::error "Empty input";;
-			*)  break;;
+			"")    print::error "Empty input";;
+			*" "*) print::error "Wallet name cannot have spaces";;
+			*)     break;;
 		esac
 	done
+	fi
 
 	# log::debug
 	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
@@ -87,43 +123,43 @@ wallet::create() {
 	new)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	view)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-from-view-key "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	seed)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD" \
+			--config-file "$CONFIG_WALLET" \
 			--restore-from-seed
 			;;
 	json)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-from-json "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	spend)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-from-spend-key "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	device)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-from-device "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	private)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-from-keys "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	multisig)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-from-multisig-keys "$WALLETS/$WALLET_NAME" \
-			--config-file "$CONFIG_MONEROD"
+			--config-file "$CONFIG_WALLET"
 			;;
 	esac
 	return 0

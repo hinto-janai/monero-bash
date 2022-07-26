@@ -14,7 +14,7 @@ XMRIG_VER=
 # if package is not
 # installed, it is
 # set to false
-MONERO_BASH_OLD=false
+MONERO_BASH_OLD=
 MONERO_OLD=true
 P2POOL_OLD=true
 XMRIG_OLD=true

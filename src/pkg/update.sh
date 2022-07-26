@@ -21,6 +21,9 @@
 # SOFTWARE.
 
 # check for package version updates
+# this function is used by [monero-bash update]
+# but the functions below it are used more
+# widely by the install/upgrade process.
 pkg::update() {
 	# VERBOSE MODE
 	if [[ $OPTION_VERBOSE = true ]]; then
@@ -30,7 +33,7 @@ pkg::update() {
 	log::debug "starting"
 
 	# CREATE TMP FILES AND LOCK
-	trap '{ pkg::tmp::remove; lock::free monero_bash_update; } &' EXIT
+	trap 'pkg::tmp::remove; lock::free monero_bash_update; exit 1' EXIT
 	if lock::alloc "monero_bash_update"; then
 		log::debug "created lock: ${STD_LOCK_FILE[monero_bash_update]}"
 	else
@@ -41,35 +44,52 @@ pkg::update() {
 
 	# VARIABLE
 	map VER
-	local UPDATE_FOUND i
-	declare -a SCRATCH
-	unset -v JOB
-	declare -a JOB
+	[[ $JOB ]] || map JOB
+	local UPDATE_FOUND j
+	declare -a SCRATCH UPDATE_LIST
 
 	# TITLE
-	print::update
+	print::pkg::update
 
-	# START METADATA THREADS
+	# START METADATA THREADS AND CREATE UPDATE_LIST
 	struct::pkg bash
-	pkg::update::multi & JOB[0]=$!
+	UPDATE_LIST=(${PKG[short]})
+	pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
-		pkg::update::multi & JOB[1]=$!
+		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	if [[ $P2POOL_VER ]]; then
 		struct::pkg p2pool
-		pkg::update::multi & JOB[2]=$!
+		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	if [[ $XMRIG_VER ]]; then
 		struct::pkg xmrig
-		pkg::update::multi & JOB[3]=$!
+		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	for i in ${JOB[@]}; do
-		wait -n $i || print::exit "Update failure - metadata process failed"
+	wait -f ${JOB[@]}
+
+	# CHECK FAIL FILES
+	log::debug "checking for failure files"
+	for i in ${UPDATE_LIST[@]}; do
+		struct::pkg $i
+		if [[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_UPDATE ]]; then
+			print::error "Update failure - ${PKG[pretty]} metadata fetch failed"
+			local UPDATE_FAILED=true
+		fi
 	done
+	if [[ $UPDATE_FAILED = true ]]; then
+		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
+		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
+	fi
+	log::debug "no failure files found"
+
 
 	# FILTER RESULT AND PRINT
 	# always for [monero-bash]
@@ -100,7 +120,7 @@ pkg::update() {
 			"[monero-bash upgrade] " \
 			"to upgrade all packages"
 	else
-		print::updated
+		print::pkg::updated
 	fi
 
 	log::debug "update() done"
@@ -114,12 +134,11 @@ pkg::update::multi() {
 
 	# attempt metadata download
 	if $DOWNLOAD_OUT "${TMP_INFO[${PKG[short]}]}" "${PKG[link_api]}"; then
+		log::debug "${PKG[pretty]} | metadata download OK"
 		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
-		return 0
 	else
-		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
-		print::error "Are you using a VPN/TOR? GitHub API will often rate-limit them."
-		return 1
+		echo > "${TMP_PKG[${PKG[short]}_main]}/FAIL_UPDATE"
+		log::debug "${PKG[pretty]} update FAIL"
 	fi
 }
 
@@ -128,7 +147,7 @@ pkg::update::multi() {
 pkg::update::ver() {
 	log::debug "starting: ${PKG[pretty]}"
 	# filter output
-	VER[${PKG[short]}]="$(grep -m 1 "tag_name" "${TMP_INFO[${PKG[short]}]}")"
+	VER[${PKG[short]}]="$(grep -m 1 "\"tag_name\":" "${TMP_INFO[${PKG[short]}]}")"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//*: }"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
