@@ -5,6 +5,7 @@
 
 ## Contents
 * [About](#About)
+* [Distro Coverage](#Distro-Coverage)
 * [Features](#Features)
 * [Install](#Install)
 * [Usage](#Usage)
@@ -25,6 +26,22 @@ monero-bash automates these programs into interactive prompts and simple command
 https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7-bb4d-9a1669650e53.mp4
 
 [This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
+
+## Distro Coverage
+| Linux Distribution        | Version          | Status | Info |
+|---------------------------|------------------|--------|------|
+| Debian                    | 11, 10           | ✅     |
+| Ubuntu                    | LTS 22.04, 20.04 | ✅     |
+| Pop!\_OS                  | LTS 22.04, 20.04 | ✅     |
+| Linux Mint                | 20.03            | ✅     |
+| Fedora                    | Workstation 36   | ❌     | `wget/curl` must be installed, SELinux issues
+| Arch Linux                |                  | ⚠️     | `wget/curl` must be installed
+| Manjaro                   | 21.3.5           | ✅     |
+| Gentoo                    |                  | ❌     | `wget/curl` & `systemd` must be installed
+
+***✅ = Works out the box***  
+***⚠️ = Small issues***  
+***❌ = Big issues***  
 
 ## Features
 * 📦 **`PKG MANAGER`** Manage the download/verification/upgrading of packages
@@ -263,7 +280,7 @@ $HOME/.monero-bash/wallets
 ---
 
 ```
-monero-bash upgrade <package> --force
+monero-bash upgrade --force
 ```
 Will forcefully upgrade, even if up to date
 
@@ -304,13 +321,16 @@ If you cancel ***AFTER*** the package is upgraded, but before the upgrade proces
 
 **No**
 
-If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you already have everything needed:
+If you have a mainstream Linux distro you already have everything needed:
 
-* Bash
-* wget/curl
-* systemd
-* GNU coreutils
+* `bash v5+`
+* `wget/curl`
+* `systemd`
+* `GNU core utilities`
+* `Linux core utilities (util-linux)`
 
+See [Distro Coverage](#Distro-Coverage) for more info.
+ 
 ---
 
 </details>
