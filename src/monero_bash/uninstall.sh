@@ -35,27 +35,36 @@ printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s${OFF}\n" \
 print::size
 
 # PROMPT
+echo
 printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 	"Uninstall " \
 	"[monero-bash]" \
-	"?"
-if ! ask::yes; then
-	print::exit "Canceling [monero-bash] uninstall"
+	"? (y/N) "
+if ask::no; then
+	printf "%s\n" "Canceling [monero-bash] uninstall"
+	exit 1
 fi
 
 # WARN USER IF WALLETS FOUND
-local WALLET_COUNT
+local WALLET_COUNT WALLET_LIST i
 WALLET_COUNT=$(ls "$WALLETS" | wc -l) || exit 1
+WALLET_LIST=$(ls "$WALLETS" | grep -v ".keys" | sort)
 if [[ $WALLET_COUNT != 0 ]]; then
-	printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s\n${BRED}%s" \
+	printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		"@ " \
 		"         WARNING: WALLETS FOUND          " \
 		"@" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		"ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) "
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	for i in $WALLET_LIST; do
+		printf "${BWHITE}[%s]  " "$i"
+	done
+	printf "\n\n${BRED}%s${IWHITE}%s" "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) "
 	if ask::no; then
+		printf "${OFF}%s\n" "Canceling [monero-bash] uninstall"
 		exit 1
+	else
+		printf "${OFF}"
 	fi
 fi
 
@@ -92,24 +101,31 @@ fi
 # REMOVAL
 trap "" INT
 ___BEGIN___ERROR___TRACE___
-log::prog "Removing $DOT"
+log::prog "Removing ${DOT}..."
 rm -rf "$DOT"
 log::ok "Removed $DOT"
 
-log::prog "Removing from PATH"
+log::prog "Removing from PATH..."
 sudo rm /usr/local/bin/monero-bash
 [[ -e /usr/local/bin/mb ]] && sudo rm /usr/local/bin/monero-bash
 log::ok "Removed from PATH"
 
-log::prog "Removing systemd services"
+log::prog "Removing systemd services..."
 [[ -e "$SYSTEMD/monero-bash-monerod.service" ]] && sudo rm "$SYSTEMD/monero-bash-monerod.service"
 [[ -e "$SYSTEMD/monero-bash-p2pool.service" ]]  && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
 [[ -e "$SYSTEMD/monero-bash-xmrig.service" ]]   && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
 log::ok "Removed systemd services"
 ___ENDOF___ERROR___TRACE___
 
+log::prog "Removing [monero-bash] user..."
+sudo userdel monero-bash
+log::ok "Removed [monero-bash] user"
+
 # END
 echo
-log::ok "Successfully uninstalled [monero-bash]"
+printf "${BGREEN}%s${OFF}\n" \
+	"#----------------------------------------#" \
+	"# Successfully uninstalled [monero-bash] #" \
+	"#----------------------------------------#"
 exit 0
 }

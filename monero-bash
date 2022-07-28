@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/b0a8bc3>
-#nix <1659019360>
+#git <monero-bash/f894483>
+#nix <1659057828>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -960,7 +960,7 @@ if [[ $INSTALL_SYMLINK = true ]]; then
 fi
 echo
 printf "${BWHITE}%s${OFF}\n" \
-	"A no-login user called [monero-bash] will be created for process security" \
+	"A no-login user called [monero-bash] will be created for process security." \
 	"[Monero] and [P2Pool] will run as this user. [XMRig] by default, runs as ROOT." \
 	"This can be changed in [monero-bash.conf]: XMRIG_ROOT=false"
 echo
@@ -1064,10 +1064,19 @@ printf "${BWHITE}%s${BYELLOW}%s\n" \
 	"Package folders     | " "$PACKAGES" \
 	"Configuration files | " "$CONFIG"
 echo
-printf "${BWHITE}%s${BRED}%s${BWHITE}%s\n" \
-	"Type: " \
-	"[monero-bash help] " \
-	"to get started"
+if [[ $INSTALL_SYMLINK = true ]]; then
+	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		"Type: " \
+		"[monero-bash help] " \
+		"OR " \
+		"[mb help] " \
+		"to get started"
+else
+	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		"Type: " \
+		"[monero-bash help] " \
+		"to get started"
+fi
 exit 0
 }
 monero_bash::uninstall() {
@@ -1079,25 +1088,34 @@ printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s${OFF}\n" \
 	"@" \
 	"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 print::size
+echo
 printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
 	"Uninstall " \
 	"[monero-bash]" \
-	"?"
-if ! ask::yes; then
-	print::exit "Canceling [monero-bash] uninstall"
+	"? (y/N) "
+if ask::no; then
+	printf "%s\n" "Canceling [monero-bash] uninstall"
+	exit 1
 fi
-local WALLET_COUNT
+local WALLET_COUNT WALLET_LIST i
 WALLET_COUNT=$(ls "$WALLETS" | wc -l) || exit 1
+WALLET_LIST=$(ls "$WALLETS" | grep -v ".keys" | sort)
 if [[ $WALLET_COUNT != 0 ]]; then
-	printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s\n${BRED}%s" \
+	printf "${BWHITE}%s\n${BWHITE}%s${BRED}%s${BWHITE}%s\n${BWHITE}%s\n" \
 		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		"@ " \
 		"         WARNING: WALLETS FOUND          " \
 		"@" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		"ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) "
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	for i in $WALLET_LIST; do
+		printf "${BWHITE}[%s]  " "$i"
+	done
+	printf "\n\n${BRED}%s${IWHITE}%s" "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) "
 	if ask::no; then
+		printf "${OFF}%s\n" "Canceling [monero-bash] uninstall"
 		exit 1
+	else
+		printf "${OFF}"
 	fi
 fi
 if ! ask::sudo; then
@@ -1126,21 +1144,27 @@ if [[ $XMRIG_VER ]]; then
 fi
 trap "" INT
 ___BEGIN___ERROR___TRACE___
-log::prog "Removing $DOT"
+log::prog "Removing ${DOT}..."
 rm -rf "$DOT"
 log::ok "Removed $DOT"
-log::prog "Removing from PATH"
+log::prog "Removing from PATH..."
 sudo rm /usr/local/bin/monero-bash
 [[ -e /usr/local/bin/mb ]] && sudo rm /usr/local/bin/monero-bash
 log::ok "Removed from PATH"
-log::prog "Removing systemd services"
+log::prog "Removing systemd services..."
 [[ -e "$SYSTEMD/monero-bash-monerod.service" ]] && sudo rm "$SYSTEMD/monero-bash-monerod.service"
 [[ -e "$SYSTEMD/monero-bash-p2pool.service" ]]  && sudo rm "$SYSTEMD/monero-bash-p2pool.service"
 [[ -e "$SYSTEMD/monero-bash-xmrig.service" ]]   && sudo rm "$SYSTEMD/monero-bash-xmrig.service"
 log::ok "Removed systemd services"
 ___ENDOF___ERROR___TRACE___
+log::prog "Removing [monero-bash] user..."
+sudo userdel monero-bash
+log::ok "Removed [monero-bash] user"
 echo
-log::ok "Successfully uninstalled [monero-bash]"
+printf "${BGREEN}%s${OFF}\n" \
+	"#----------------------------------------#" \
+	"# Successfully uninstalled [monero-bash] #" \
+	"#----------------------------------------#"
 exit 0
 }
 parse::config() {
@@ -1595,19 +1619,19 @@ pkg::download() {
 	[[ $UPGRADE_LIST = *xmrig* ]]  && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE xmrig"
 	[[ $UPGRADE_LIST = *monero* ]] && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE monero"
 	for i in $UPGRADE_LIST_SIZE; do
-		log::debug "${PKG[pretty]} | waiting for download threads to complete"
 		struct::pkg $i
+		log::debug "${PKG[pretty]} | waiting for download threads to complete"
 		log::prog "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
-		wait -f ${JOB[${i}_download_hash]} ${JOB[${i}_download_pkg]}
-		[[ ${PKG[short]} = xmrig ]] && wait -f ${JOB[${i}_download_sig]}
+		[[ ${PKG[short]} = xmrig ]] && wait -f ${JOB[${i}_download_sig]} || :
+		wait -f ${JOB[${i}_download_hash]} ${JOB[${i}_download_pkg]} || :
 		log::ok "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
 	done
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_SIG ]]  && print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_HASH ]] && print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_PKG ]]  && print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_SIG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_HASH ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_PKG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
 		log::debug "${PKG[pretty]} | no failure files found"
 	done
 	for i in $UPGRADE_LIST; do
@@ -1670,14 +1694,14 @@ pkg::extract() {
 		log::debug "${PKG[pretty]} | waiting for extraction thread to complete"
 		struct::pkg $i
 		log::prog "${PKG[pretty]}"
-		wait -f ${JOB[${i}_extract]} || exit 1
+		wait -f ${JOB[${i}_extract]} || :
 		log::ok "${PKG[pretty]}"
 	done
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
 	done
 	log::debug "no failure files found"
 	for i in $UPGRADE_LIST; do
@@ -1848,17 +1872,18 @@ pkg::info() {
 		pkg::update::multi & JOB[${i}_update]=$!
 	done
 	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]}
+	wait -f ${JOB[@]} || :
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		if [[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_UPDATE ]]; then
-			print::error "Upgrade failure - ${PKG[pretty]} metadata fetch failed"
+		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
+			log::debug "${PKG[pretty]} | metadata fetch failed"
 			local UPDATE_FAILED=true
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
-		print::error "Upgrade failure for ${PKG[pretty]} | GitHub API connection failure"
+		echo
+		print::error "Upgrade failure | Metadata fetch from GitHub API failed"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
 	log::debug "no failure files found"
@@ -1883,7 +1908,7 @@ pkg::info::down() {
 		log::debug "package Monero detected, LINK_DOWN: ${LINK_DOWN[${PKG[short]}]}"
 		return 0
 	fi
-	LINK_DOWN[${PKG[short]}]="$(grep -o "https://github.com/${PKG[author]}/${PKG[name]}/releases/download/.*/${PKG[regex]}" "${TMP_INFO[${PKG[short]}]}")"
+	LINK_DOWN[${PKG[short]}]="$(grep -o "https://github.com/${PKG[author]}/${PKG[name]}/releases/download/${VER[${PKG[short]}]}/${PKG[regex]}" "${TMP_INFO[${PKG[short]}]}")"
 	LINK_DOWN[${PKG[short]}]="${LINK_DOWN[${PKG[short]}]//\"}"
 	log::debug "${PKG[pretty]} download link found: ${LINK_DOWN[${PKG[short]}]}"
 }
@@ -1929,9 +1954,10 @@ pkg::prompt() {
 	fi
 	if [[ $OPTION_VERBOSE = true ]]; then
 		STD_LOG_DEBUG=true
-		printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB verbosely...!"
+		printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
 	fi
-	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB forcefully...!"
+	[[ $OPTION_FORCE = true ]]   && printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
+	echo
 	char UPGRADE_LIST
 	if [[ $1 = install ]]; then
 		[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="bash"
@@ -1969,12 +1995,18 @@ pkg::prompt() {
 			xmrig) PROMPT_UPGRADE_LIST="$PROMPT_UPGRADE_LIST  [XMRig]";;
 		esac
 	done
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s${OFF}" \
+	printf "${BBLUE}%s${BWHITE}%s${OFF}%s\n${BBLUE}%s\n%s${BWHITE}%s${OFF}" \
+		"|| " \
 		"Packages to $PROMPT_NOUN: " \
 		"$PROMPT_UPGRADE_LIST" \
+		"|| " \
+		"|| " \
 		"Continue with ${PROMPT_NOUN}? (Y/n) "
 	if ! ask::yes; then
-		print::exit "Canceling $PROMPT_NOUN"
+		printf "${BRED}%s${BWHITE}%s${OFF}\n" \
+			"|| " \
+			"Canceling $PROMPT_NOUN"
+		exit 1
 	fi
 	if ! ask::sudo; then
 		print::exit "sudo is required"
@@ -1985,14 +2017,14 @@ pkg::prompt() {
 pkg::prompt::check::install() {
 	log::debug "starting | ${PKG[pretty]}"
 	if [[ ${PKG[current_version]} ]]; then
-		printf "${OFF}%s\n" "[${PKG[pretty]}] (${PKG[current_version]}) is already installed | skipping"
+		printf "${BYELLOW}%s${OFF}%s\n" "!! " "[${PKG[pretty]}] (${PKG[current_version]}) is already installed | skipping"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
 	fi
 }
 pkg::prompt::check::old() {
 	log::debug "starting | ${PKG[pretty]}"
 	if [[ ${PKG[old]} != true ]]; then
-		printf "${OFF}%s\n" "[${PKG[pretty]}] (${PKG[current_version]}) is up to date | skipping"
+		log::debug "[${PKG[pretty]}] (${PKG[current_version]}) is up to date | skipping"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
 	fi
 }
@@ -2000,8 +2032,10 @@ pkg::remove::prompt() {
 	log::debug "starting"
 	local REMOVE_LIST || return 1
 	if [[ $OPTION_BASH = true ]]; then
-		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
+		printf "${BYELLOW}%s${OFF}%s\n${BYELLOW}%s${OFF}%s${BCYAN}%s${OFF}%s\n" \
+			"!! " \
 			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
+			"!! " \
 			"Type: " \
 			"[monero-bash uninstall] " \
 			"to cleanly uninstall monero-bash from your system"
@@ -2034,12 +2068,14 @@ pkg::remove::prompt() {
 			xmrig) PROMPT_REMOVE_LIST="$PROMPT_REMOVE_LIST  [XMRig]";;
 		esac
 	done
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+	printf "${BRED}%s${BWHITE}%s${OFF}%s\n\n${BRED}%s${BWHITE}%s" \
+		"|| " \
 		"Packages to remove: " \
 		"$PROMPT_REMOVE_LIST" \
+		"|| " \
 		"Continue with removal? (y/N) "
 	if ask::no; then
-		print::exit "Canceling installation"
+		printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
 	fi
 	if ! ask::sudo; then
 		print::exit "sudo is required"
@@ -2197,16 +2233,17 @@ pkg::update() {
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]}
+	wait -f ${JOB[@]} || :
 	log::debug "checking for failure files"
 	for i in ${UPDATE_LIST[@]}; do
 		struct::pkg $i
-		if [[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_UPDATE ]]; then
+		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
 			print::error "Update failure - ${PKG[pretty]} metadata fetch failed"
 			local UPDATE_FAILED=true
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
+		echo
 		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
@@ -2247,16 +2284,21 @@ pkg::update::multi() {
 		log::debug "${PKG[pretty]} | metadata download OK"
 		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
 	else
-		echo > "${TMP_PKG[${PKG[short]}_main]}/FAIL_UPDATE"
 		log::debug "${PKG[pretty]} update FAIL"
+		touch "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" &>/dev/null || exit 1
 	fi
 }
 pkg::update::ver() {
 	log::debug "starting: ${PKG[pretty]}"
 	VER[${PKG[short]}]="$(grep -m 1 "\"tag_name\":" "${TMP_INFO[${PKG[short]}]}")"
+	log::debug "${PKG[pretty]} | initial \"tag_name\" filter | ${VER[${PKG[short]}]}"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//*: }"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
+	if [[ ${VER[${PKG[short]}]} != v* ]]; then
+		log::debug "${PKG[pretty]} weird version found | ${VER[${PKG[short]}]}"
+		print::exit "Upgrade failure | ${PKG[pretty]} version fetch error"
+	fi
 	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
 }
 pkg::update::result() {
@@ -2352,13 +2394,13 @@ pkg::verify() {
 		pkg::verify::check_key & JOB[${PKG[short]}_key]=$!
 	done
 	log::debug "waiting for hash_calc() & check_key() threads to complete"
-	wait -f ${JOB[@]}
+	wait -f ${JOB[@]} || log::debug "hash_calc() & check_key() wait failed"
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && echo && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
 	done
 	log::debug "no failure files found"
 	for i in $UPGRADE_LIST; do
@@ -2417,7 +2459,7 @@ pkg::verify::hash() {
 	mapfile VERIFY_HASH < "${TMP_PKG[${PKG[short]}_hash_calc]}"
 	HASH[${PKG[short]}]="${VERIFY_HASH// *}"
 	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
-	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && print::exit "Upgrade failure | NULL Hash variable"
+	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && echo && print::exit "Upgrade failure | NULL Hash variable"
 	if grep -o "${HASH[${PKG[short]},,]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | lower-case hash match found"
 		local HASH_START HASH_END HASH_DIGIT
@@ -3235,14 +3277,14 @@ print::size() {
 	log::debug "getting folder sizes"
 	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
 	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
-	SIZE_MONERO=$(du -h "$PKG_MONERO")
-	SIZE_P2POOL=$(du -h "$PKG_P2POOL")
-	SIZE_XMRIG=$(du -h "$PKG_XMRIG")
+	SIZE_MONERO=$(du -h "$PKG_MONERO") || SIZE_MONERO=
+	SIZE_P2POOL=$(du -h "$PKG_P2POOL") || SIZE_P2POOL=
+	SIZE_XMRIG=$(du -h "$PKG_XMRIG") || SIZE_XMRIG=
 	SIZE_DOT=$(du -h "$DOT")
-	if [[ -d "$HOME/.bitmonero" ]]; then
-		SIZE_BITMONERO=$(du -h "$HOME/.bitmonero")
+	if [[ -d "$DOT/.bitmonero" ]]; then
+		SIZE_BITMONERO=$(du -h "$DOT/.bitmonero")
 	else
-		SIZE_BITMONERO="not found"
+		SIZE_BITMONERO=
 	fi
 	log::debug "printing folder sizes"
 	printf "${BWHITE}%s${BYELLOW}%s\n" \
@@ -3626,7 +3668,7 @@ struct::pkg() {
 		PKG[service]="monero-bash-p2pool.service"
 		PKG[process]="p2pool"
 		PKG[directory]="$PACKAGES/p2pool"
-		PKG[regex]="p2pool.*linux-x64.*"
+		PKG[regex]="p2pool.*linux-x64.tar.*"
 		PKG[hash]="sha256sums.txt.asc"
 		PKG[sig]="${PKG[hash]}"
 		PKG[gpg_pub_key]="https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc"
@@ -3646,7 +3688,7 @@ struct::pkg() {
 		PKG[service]="monero-bash-xmrig.service"
 		PKG[process]="xmrig"
 		PKG[directory]="$PACKAGES/xmrig"
-		PKG[regex]="xmrig.*linux-static-x64.*"
+		PKG[regex]="xmrig.*linux-static-x64.tar.*"
 		PKG[hash]="SHA256SUMS"
 		PKG[sig]="${PKG[hash]}.sig"
 		PKG[gpg_pub_key]="https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc"
@@ -3668,17 +3710,17 @@ systemd::create() {
 		monero)
 			SYSTEMD_USER=monero-bash
 			SYSTEMD_ENV="$CONFIG_MONERO_BASH"
-			SYSTEMD_EXEC="monerod --config-file $CONFIG_MONEROD --non-interactive"
+			SYSTEMD_EXEC="${PKG[directory]}/monerod --config-file $CONFIG_MONEROD --non-interactive"
 			;;
 		p2pool)
 			SYSTEMD_USER=monero-bash
 			SYSTEMD_ENV="$CONFIG_P2POOL"
-			SYSTEMD_EXEC="$PKG_P2POOL/p2pool --wallet \$P2POOL_WALLET"
+			SYSTEMD_EXEC="${PKG[directory]}/p2pool --wallet \$P2POOL_WALLET"
 			;;
 		xmrig)
 			SYSTEMD_USER=root
 			SYSTEMD_ENV=""
-			SYSTEMD_EXEC="$PKG_XMRIG/xmrig --config $CONFIG_XMRIG --log-file=$PKG_XMRIG/xmrig.log"
+			SYSTEMD_EXEC="${PKG[directory]}/xmrig --config $CONFIG_XMRIG --log-file=$PKG_XMRIG/xmrig.log"
 			;;
 	esac
 cat << EOM >> "$TMP_SERVICE"
@@ -3697,6 +3739,7 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOM
+	sudo chown root:root "$TMP_SERVICE"
 	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
 }
 systemd::reload() {
@@ -3719,11 +3762,9 @@ wallet::create() {
 			--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;;
 			*) print::exit "Invalid wallet type!"
 		esac
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
-			"Create wallet type: " \
-			"[${WALLET_TYPE}]" \
-			"? (Y/n) "
-		if ask::yes; then
+		printf "${BWHITE}%s${BRED}%s${OFF}\n" \
+			"Creating wallet with type: " \
+			"[${WALLET_TYPE}]"
 			printf "${BWHITE}%s${OFF}" "Wallet name: "
 			read -r WALLET_NAME
 			case "$WALLET_NAME" in
@@ -3731,9 +3772,6 @@ wallet::create() {
 				*" "*) print::exit "Wallet name cannot have spaces";;
 				*)     :;;
 			esac
-		else
-			exit 1
-		fi
 	else
 	while :; do
 		while :; do
@@ -3785,7 +3823,8 @@ wallet::create() {
 	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
 	cd "$DOT"
 	safety::pkg monero
-	case "$WALLET_TYPE" in
+	printf "\n"
+	if case "$WALLET_TYPE" in
 	new)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
@@ -3827,14 +3866,19 @@ wallet::create() {
 			--generate-from-multisig-keys "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_WALLET"
 			;;
-	esac
-	return 0
+	esac; then
+		log::debug "monero-wallet-cli exit successfully"
+		exit 0
+	else
+		print::error "monero-wallet-cli error has occurred"
+		exit 1
+	fi
 }
 wallet::list() {
 	log::debug "starting"
 	char WALLET_LIST_ALL
 	local WALLET_COUNT WALLET_LIST i
-	WALLET_LIST_ALL=("$(ls "$WALLETS" | grep -v ".keys")")
+	WALLET_LIST_ALL=("$(ls "$WALLETS" | grep -v ".keys" | sort)")
 	WALLET_COUNT="$(echo "${WALLET_LIST_ALL[@]}" | wc -w)"
 	for i in ${WALLET_LIST_ALL[@]}; do
 		WALLET_LIST="[${i}]  $WALLET_LIST"
@@ -3923,6 +3967,7 @@ wallet::select() {
 			;;
 	esac
 	wallet::password
+	printf "\n\n"
 	wallet::start
 	___ENDOF___ERROR___TRACE___
 	exit 0
@@ -3935,15 +3980,22 @@ wallet::start() {
 		struct::pkg monero
 		process::start
 	fi
-	"$PKG_MONERO/monero-wallet-cli" \
+	___ENDOF___ERROR___TRACE___
+	if "$PKG_MONERO/monero-wallet-cli" \
 		--wallet-file "$WALLETS/$WALLET_SELECTION" \
 		--config-file "$CONFIG_WALLET" \
-		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
+		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"; then
+		log::debug "monero-wallet-cli exit successfully"
+	else
+		local WALLET_ERROR=true
+		print::error "monero-wallet-cli error has occurred"
+	fi
+	___BEGIN___ERROR___TRACE___
 	if [[ $AUTO_STOP_MONEROD = true ]]; then
 		struct::pkg monero
 		process::stop
 	fi
-	return 0
+	[[ $WALLET_ERROR = true ]] && exit 1 || exit 0
 }
 declare -frg crypto::key::create
 declare -frg crypto::key::remove

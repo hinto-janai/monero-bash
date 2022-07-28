@@ -44,19 +44,20 @@ pkg::info() {
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]}
+	wait -f ${JOB[@]} || :
 
 	# CHECK FAIL FILES
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		if [[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_UPDATE ]]; then
-			print::error "Upgrade failure - ${PKG[pretty]} metadata fetch failed"
+		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
+			log::debug "${PKG[pretty]} | metadata fetch failed"
 			local UPDATE_FAILED=true
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
-		print::error "Upgrade failure for ${PKG[pretty]} | GitHub API connection failure"
+		echo
+		print::error "Upgrade failure | Metadata fetch from GitHub API failed"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
 	log::debug "no failure files found"
@@ -89,7 +90,7 @@ pkg::info::down() {
 		return 0
 	fi
 
-	LINK_DOWN[${PKG[short]}]="$(grep -o "https://github.com/${PKG[author]}/${PKG[name]}/releases/download/.*/${PKG[regex]}" "${TMP_INFO[${PKG[short]}]}")"
+	LINK_DOWN[${PKG[short]}]="$(grep -o "https://github.com/${PKG[author]}/${PKG[name]}/releases/download/${VER[${PKG[short]}]}/${PKG[regex]}" "${TMP_INFO[${PKG[short]}]}")"
 	LINK_DOWN[${PKG[short]}]="${LINK_DOWN[${PKG[short]}]//\"}"
 	log::debug "${PKG[pretty]} download link found: ${LINK_DOWN[${PKG[short]}]}"
 }

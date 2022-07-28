@@ -184,7 +184,7 @@ if [[ $INSTALL_SYMLINK = true ]]; then
 fi
 echo
 printf "${BWHITE}%s${OFF}\n" \
-	"A no-login user called [monero-bash] will be created for process security" \
+	"A no-login user called [monero-bash] will be created for process security." \
 	"[Monero] and [P2Pool] will run as this user. [XMRig] by default, runs as ROOT." \
 	"This can be changed in [monero-bash.conf]: XMRIG_ROOT=false"
 echo
@@ -320,9 +320,18 @@ printf "${BWHITE}%s${BYELLOW}%s\n" \
 	"Package folders     | " "$PACKAGES" \
 	"Configuration files | " "$CONFIG"
 echo
-printf "${BWHITE}%s${BRED}%s${BWHITE}%s\n" \
-	"Type: " \
-	"[monero-bash help] " \
-	"to get started"
+if [[ $INSTALL_SYMLINK = true ]]; then
+	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		"Type: " \
+		"[monero-bash help] " \
+		"OR " \
+		"[mb help] " \
+		"to get started"
+else
+	printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		"Type: " \
+		"[monero-bash help] " \
+		"to get started"
+fi
 exit 0
 }

@@ -31,8 +31,10 @@ pkg::remove::prompt() {
 	# CREATE REMOVE LIST
 	local REMOVE_LIST || return 1
 	if [[ $OPTION_BASH = true ]]; then
-		printf "${OFF}%s\n%s${BYELLOW}%s${OFF}%s\n" \
+		printf "${BYELLOW}%s${OFF}%s\n${BYELLOW}%s${OFF}%s${BCYAN}%s${OFF}%s\n" \
+			"!! " \
 			"[monero-bash] ($MONERO_BASH_VER) cannot be removed normally" \
+			"!! " \
 			"Type: " \
 			"[monero-bash uninstall] " \
 			"to cleanly uninstall monero-bash from your system"
@@ -73,12 +75,14 @@ pkg::remove::prompt() {
 	done
 
 	# PROMPT
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s" \
+	printf "${BRED}%s${BWHITE}%s${OFF}%s\n\n${BRED}%s${BWHITE}%s" \
+		"|| " \
 		"Packages to remove: " \
 		"$PROMPT_REMOVE_LIST" \
+		"|| " \
 		"Continue with removal? (y/N) "
 	if ask::no; then
-		print::exit "Canceling installation"
+		printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
 	fi
 
 	# SUDO

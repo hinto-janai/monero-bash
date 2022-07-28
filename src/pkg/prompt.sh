@@ -37,9 +37,10 @@ pkg::prompt() {
 	# CHECK FOR VERBOSE/FORCE
 	if [[ $OPTION_VERBOSE = true ]]; then
 		STD_LOG_DEBUG=true
-		printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB verbosely...!"
+		printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
 	fi
-	[[ $OPTION_FORCE = true ]]   && printf "${BBLUE}%s${OFF}\n" "$PROMPT_VERB forcefully...!"
+	[[ $OPTION_FORCE = true ]]   && printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
+	echo
 
 	# CREATE UPGRADE LIST (install)
 	char UPGRADE_LIST
@@ -88,12 +89,18 @@ pkg::prompt() {
 	done
 
 	# PROMPT
-	printf "${BWHITE}%s${OFF}%s\n\n${BWHITE}%s${OFF}" \
+	printf "${BBLUE}%s${BWHITE}%s${OFF}%s\n${BBLUE}%s\n%s${BWHITE}%s${OFF}" \
+		"|| " \
 		"Packages to $PROMPT_NOUN: " \
 		"$PROMPT_UPGRADE_LIST" \
+		"|| " \
+		"|| " \
 		"Continue with ${PROMPT_NOUN}? (Y/n) "
 	if ! ask::yes; then
-		print::exit "Canceling $PROMPT_NOUN"
+		printf "${BRED}%s${BWHITE}%s${OFF}\n" \
+			"|| " \
+			"Canceling $PROMPT_NOUN"
+		exit 1
 	fi
 
 	# SUDO
@@ -112,7 +119,7 @@ pkg::prompt::check::install() {
 
 	# if pkg is installed
 	if [[ ${PKG[current_version]} ]]; then
-		printf "${OFF}%s\n" "[${PKG[pretty]}] (${PKG[current_version]}) is already installed | skipping"
+		printf "${BYELLOW}%s${OFF}%s\n" "!! " "[${PKG[pretty]}] (${PKG[current_version]}) is already installed | skipping"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
 	fi
 }
@@ -122,7 +129,7 @@ pkg::prompt::check::old() {
 
 	# if pkg is old
 	if [[ ${PKG[old]} != true ]]; then
-		printf "${OFF}%s\n" "[${PKG[pretty]}] (${PKG[current_version]}) is up to date | skipping"
+		log::debug "[${PKG[pretty]}] (${PKG[current_version]}) is up to date | skipping"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
 	fi
 }

@@ -39,11 +39,9 @@ wallet::create() {
 			--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;;
 			*) print::exit "Invalid wallet type!"
 		esac
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
-			"Create wallet type: " \
-			"[${WALLET_TYPE}]" \
-			"? (Y/n) "
-		if ask::yes; then
+		printf "${BWHITE}%s${BRED}%s${OFF}\n" \
+			"Creating wallet with type: " \
+			"[${WALLET_TYPE}]"
 			printf "${BWHITE}%s${OFF}" "Wallet name: "
 			read -r WALLET_NAME
 			case "$WALLET_NAME" in
@@ -51,9 +49,6 @@ wallet::create() {
 				*" "*) print::exit "Wallet name cannot have spaces";;
 				*)     :;;
 			esac
-		else
-			exit 1
-		fi
 	else
 
 	# WALLET TYPES
@@ -118,8 +113,11 @@ wallet::create() {
 	# CHECK FOR MONERO
 	safety::pkg monero
 
+	# Spacing
+	printf "\n"
+
 	# Case wallet type
-	case "$WALLET_TYPE" in
+	if case "$WALLET_TYPE" in
 	new)
 			"$PKG_MONERO/monero-wallet-cli" \
 			--generate-new-wallet "$WALLETS/$WALLET_NAME" \
@@ -161,6 +159,11 @@ wallet::create() {
 			--generate-from-multisig-keys "$WALLETS/$WALLET_NAME" \
 			--config-file "$CONFIG_WALLET"
 			;;
-	esac
-	return 0
+	esac; then
+		log::debug "monero-wallet-cli exit successfully"
+		exit 0
+	else
+		print::error "monero-wallet-cli error has occurred"
+		exit 1
+	fi
 }

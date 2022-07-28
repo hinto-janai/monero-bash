@@ -93,6 +93,7 @@ wallet::select() {
 
 	# WALLET PASS
 	wallet::password
+	printf "\n\n"
 
 	# START WALLET
 	wallet::start

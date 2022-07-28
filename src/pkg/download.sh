@@ -51,11 +51,11 @@ pkg::download() {
 	[[ $UPGRADE_LIST = *xmrig* ]]  && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE xmrig"
 	[[ $UPGRADE_LIST = *monero* ]] && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE monero"
 	for i in $UPGRADE_LIST_SIZE; do
-		log::debug "${PKG[pretty]} | waiting for download threads to complete"
 		struct::pkg $i
+		log::debug "${PKG[pretty]} | waiting for download threads to complete"
 		log::prog "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
-		wait -f ${JOB[${i}_download_hash]} ${JOB[${i}_download_pkg]}
-		[[ ${PKG[short]} = xmrig ]] && wait -f ${JOB[${i}_download_sig]}
+		[[ ${PKG[short]} = xmrig ]] && wait -f ${JOB[${i}_download_sig]} || :
+		wait -f ${JOB[${i}_download_hash]} ${JOB[${i}_download_pkg]} || :
 		log::ok "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
 	done
 
@@ -63,9 +63,9 @@ pkg::download() {
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_SIG ]]  && print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_HASH ]] && print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_PKG ]]  && print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_SIG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_HASH ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_PKG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
 		log::debug "${PKG[pretty]} | no failure files found"
 	done
 

@@ -35,17 +35,17 @@ systemd::create() {
 		monero)
 			SYSTEMD_USER=monero-bash
 			SYSTEMD_ENV="$CONFIG_MONERO_BASH"
-			SYSTEMD_EXEC="monerod --config-file $CONFIG_MONEROD --non-interactive"
+			SYSTEMD_EXEC="${PKG[directory]}/monerod --config-file $CONFIG_MONEROD --non-interactive"
 			;;
 		p2pool)
 			SYSTEMD_USER=monero-bash
 			SYSTEMD_ENV="$CONFIG_P2POOL"
-			SYSTEMD_EXEC="$PKG_P2POOL/p2pool --wallet \$P2POOL_WALLET"
+			SYSTEMD_EXEC="${PKG[directory]}/p2pool --wallet \$P2POOL_WALLET"
 			;;
 		xmrig)
 			SYSTEMD_USER=root
 			SYSTEMD_ENV=""
-			SYSTEMD_EXEC="$PKG_XMRIG/xmrig --config $CONFIG_XMRIG --log-file=$PKG_XMRIG/xmrig.log"
+			SYSTEMD_EXEC="${PKG[directory]}/xmrig --config $CONFIG_XMRIG --log-file=$PKG_XMRIG/xmrig.log"
 			;;
 	esac
 
@@ -70,5 +70,6 @@ WantedBy=multi-user.target
 EOM
 
 	# MOVE TO SYSTEMD DIRECTORY
+	sudo chown root:root "$TMP_SERVICE"
 	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
 }

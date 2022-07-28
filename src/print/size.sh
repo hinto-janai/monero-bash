@@ -27,14 +27,14 @@ print::size() {
 
 	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
 	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
-	SIZE_MONERO=$(du -h "$PKG_MONERO")
-	SIZE_P2POOL=$(du -h "$PKG_P2POOL")
-	SIZE_XMRIG=$(du -h "$PKG_XMRIG")
+	SIZE_MONERO=$(du -h "$PKG_MONERO") || SIZE_MONERO=
+	SIZE_P2POOL=$(du -h "$PKG_P2POOL") || SIZE_P2POOL=
+	SIZE_XMRIG=$(du -h "$PKG_XMRIG") || SIZE_XMRIG=
 	SIZE_DOT=$(du -h "$DOT")
-	if [[ -d "$HOME/.bitmonero" ]]; then
-		SIZE_BITMONERO=$(du -h "$HOME/.bitmonero")
+	if [[ -d "$DOT/.bitmonero" ]]; then
+		SIZE_BITMONERO=$(du -h "$DOT/.bitmonero")
 	else
-		SIZE_BITMONERO="not found"
+		SIZE_BITMONERO=
 	fi
 
 	log::debug "printing folder sizes"

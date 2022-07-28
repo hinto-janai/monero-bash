@@ -73,18 +73,19 @@ pkg::update() {
 
 	# WAIT FOR THREADS
 	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]}
+	wait -f ${JOB[@]} || :
 
 	# CHECK FAIL FILES
 	log::debug "checking for failure files"
 	for i in ${UPDATE_LIST[@]}; do
 		struct::pkg $i
-		if [[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_UPDATE ]]; then
+		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
 			print::error "Update failure - ${PKG[pretty]} metadata fetch failed"
 			local UPDATE_FAILED=true
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
+		echo
 		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
@@ -137,8 +138,8 @@ pkg::update::multi() {
 		log::debug "${PKG[pretty]} | metadata download OK"
 		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
 	else
-		echo > "${TMP_PKG[${PKG[short]}_main]}/FAIL_UPDATE"
 		log::debug "${PKG[pretty]} update FAIL"
+		touch "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" &>/dev/null || exit 1
 	fi
 }
 
@@ -148,9 +149,18 @@ pkg::update::ver() {
 	log::debug "starting: ${PKG[pretty]}"
 	# filter output
 	VER[${PKG[short]}]="$(grep -m 1 "\"tag_name\":" "${TMP_INFO[${PKG[short]}]}")"
+	log::debug "${PKG[pretty]} | initial \"tag_name\" filter | ${VER[${PKG[short]}]}"
+
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//*: }"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
+
+	# sanity check for "v*"
+	if [[ ${VER[${PKG[short]}]} != v* ]]; then
+		log::debug "${PKG[pretty]} weird version found | ${VER[${PKG[short]}]}"
+		print::exit "Upgrade failure | ${PKG[pretty]} version fetch error"
+	fi
+
 	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
 }
 

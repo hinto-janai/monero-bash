@@ -34,7 +34,7 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 | Ubuntu                    | LTS 22.04, 20.04 | ✅     |
 | Pop!\_OS                  | LTS 22.04, 20.04 | ✅     |
 | Linux Mint                | 20.03            | ✅     |
-| Fedora                    | Workstation 36   | ❌     | `wget/curl` must be installed, SELinux issues
+| Fedora                    | Workstation 36   | ✅     |
 | Arch Linux                |                  | ⚠️     | `wget/curl` must be installed
 | Manjaro                   | 21.3.5           | ✅     |
 | Gentoo                    |                  | ❌     | `wget/curl` & `systemd` must be installed

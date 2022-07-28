@@ -38,17 +38,24 @@ wallet::start() {
 		process::start
 	fi
 
+	___ENDOF___ERROR___TRACE___
 	# Start monero-wallet-cli
-	"$PKG_MONERO/monero-wallet-cli" \
+	if "$PKG_MONERO/monero-wallet-cli" \
 		--wallet-file "$WALLETS/$WALLET_SELECTION" \
 		--config-file "$CONFIG_WALLET" \
-		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
+		--password "$(crypto::decrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"; then
+		log::debug "monero-wallet-cli exit successfully"
+	else
+		local WALLET_ERROR=true
+		print::error "monero-wallet-cli error has occurred"
+	fi
 
+	___BEGIN___ERROR___TRACE___
 	# Auto-stop monerod
 	if [[ $AUTO_STOP_MONEROD = true ]]; then
 		struct::pkg monero
 		process::stop
 	fi
 
-	return 0
+	[[ $WALLET_ERROR = true ]] && exit 1 || exit 0
 }

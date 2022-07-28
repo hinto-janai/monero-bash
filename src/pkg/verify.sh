@@ -40,15 +40,15 @@ pkg::verify() {
 
 	# WAIT FOR THREADS
 	log::debug "waiting for hash_calc() & check_key() threads to complete"
-	wait -f ${JOB[@]}
+	wait -f ${JOB[@]} || log::debug "hash_calc() & check_key() wait failed"
 
 	# CHECK FAIL FILES
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && echo && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
 	done
 	log::debug "no failure files found"
 
@@ -131,7 +131,7 @@ pkg::verify::hash() {
 	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
 
 	# sanity check
-	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && print::exit "Upgrade failure | NULL Hash variable"
+	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && echo && print::exit "Upgrade failure | NULL Hash variable"
 
 	# P2Pool has it's hashes in full upper-case
 	# this causes an error because sha256sum outputs in

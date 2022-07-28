@@ -41,7 +41,7 @@ pkg::extract() {
 		log::debug "${PKG[pretty]} | waiting for extraction thread to complete"
 		struct::pkg $i
 		log::prog "${PKG[pretty]}"
-		wait -f ${JOB[${i}_extract]} || exit 1
+		wait -f ${JOB[${i}_extract]} || :
 		log::ok "${PKG[pretty]}"
 	done
 
@@ -49,8 +49,8 @@ pkg::extract() {
 	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
 	done
 	log::debug "no failure files found"
 
