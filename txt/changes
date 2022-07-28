@@ -11,10 +11,10 @@
 	***All `monero-bash` files are now installed in `$HOME/.monero-bash`***
 	```
 	$HOME/.monero-bash/
-	├─ changes
-	├─ config
-	├─ wallets
-	├─ packages
+	  ├─ changes
+	  ├─ config
+	  ├─ wallets
+	  ├─ packages
 	```
 * **New commands**
 	```

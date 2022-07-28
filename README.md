@@ -39,7 +39,7 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 
 ---
 
-[To install monero-bash, download the latest release here, extract and run the main script:](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
+[To install: download the latest release here, extract and run monero-bash](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
 tar -xf monero-bash-v2.0.0.tar
 cd monero-bash
@@ -91,7 +91,7 @@ WALLET
     new     <wallet type>                      Enter wallet creation mode
 
 PACKAGE
-    install <packages> [--verbose]             Install one/multiple packages
+    install <packages> [--verbose] [--force]   Install one/multiple packages
     remove  <packages> [--verbose]             Remove one/multiple packages
     update  [--verbose]                        Check for package updates
     upgrade [--verbose] [--force]              Upgrade all out-of-date packages
@@ -118,8 +118,8 @@ STATS
     version                                    Print current package versions
 
 OTHER
-    rpc     <JSON-RPC method>                  Send a JSON-RPC call to monerod
-    changes <package>                          Print the latests changes for <package>
+    changes <package> [--print]                View the latests changes for <package>
+    rpc     <JSON-RPC method> [--verbose]      Send a JSON-RPC call to monerod
     help    <command>                          Print help for a command, or all if none specified
 ```
 

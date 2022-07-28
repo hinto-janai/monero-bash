@@ -19,44 +19,44 @@ Remember, you are using your own node to mine. The blockchain has to be fully sy
 
 ## Commands
 ```
-monero-bash usage: monero-bash <option> <more options>
+USAGE: monero-bash [command] <argument> [--option]
 
-monero-bash                              open wallet menu
-uninstall                                uninstall ALL OF monero-bash
-rpc                                      send a JSON RPC call to monerod
+WALLET
+    monero-bash                                Open interactive wallet menu
+    list                                       List wallets
+    new     <wallet type>                      Enter wallet creation mode
 
-install <all/pkg>                        install <all> or a specific package
-install <all/pkg> verbose                print detailed download information
-remove  <all/pkg>                        remove <all> or a specific package
+PACKAGE
+    install <packages> [--verbose] [--force]   Install one/multiple packages
+    remove  <packages> [--verbose]             Remove one/multiple packages
+    update  [--verbose]                        Check for package updates
+    upgrade [--verbose] [--force]              Upgrade all out-of-date packages
 
-update                                   CHECK for updates
-upgrade                                  upgrade all packages
-upgrade <pkg>                            upgrade a specific package
-upgrade <all/pkg> force                  forcefully upgrade packages
-upgrade <all/pkg> verbose                print detailed download information
-version                                  print installed package versions
+PROCESS
+    full    <process>                          Start <process> fully attached in foreground
+    config  <processes>                        Enter interactive configuration for <process>
+    default <processes> [--config] [--systemd] Reset your config/systemd file to the default
 
-config                                   configure MINING settings
-start   <all/daemon/xmrig/p2pool>        start process detached (background)
-stop    <all/daemon/xmrig/p2pool>        gracefully stop the process
-kill    <all/daemon/xmrig/p2pool>        forcefully kill the process
-restart <all/daemon/xmrig/p2pool>        restart the process
-full    <daemon/xmrig/p2pool>            start the process attached (foreground)
-watch   <daemon/xmrig/p2pool>            watch live output of process
-edit    <daemon/xmrig/p2pool>            edit systemd service file
-reset   <bash/daemon/xmrig/p2pool>       reset your configs/systemd to default
+SYSTEMD
+    start   <processes>                        Start process as systemd background process
+    stop    <processes>                        Gracefully stop systemd background process
+    kill    <processes>                        Forcefully kill systemd background process
+    restart <processes>                        Restart systemd background process
+    enable  <processes>                        Enable <process> to auto-start on computer boot
+    disable <processes>                        Disable <process> from auto-starting on computer boot
+    edit    <processes>                        Edit systemd service file
+    refresh <processes>                        Refresh your systemd service file to match your config
+    watch   <processes>                        Watch live output of systemd background process
 
-backup                                   encrypt and backup your /wallets/
-decrypt                                  decrypt backup.tar.gpg
+STATS
+    status                                     Print status of all running processes
+    size                                       Print size of all packages and folders
+    version                                    Print current package versions
 
-status                                   print status of all running processes
-seed                                     generate random 25-word Monero seed
-list                                     list wallets
-size                                     show size of monero-bash folders
-price                                    fetch price data from cryptocompare.com API
-integrity                                check hash integrity of monero-bash
-
-help                                     show this help message
+OTHER
+    changes <package> [--print]                View the latests changes for <package>
+    rpc     <JSON-RPC method> [--verbose]      Send a JSON-RPC call to monerod
+    help    <command>                          Print help for a command, or all if none specified
 ```
 
 ## Config
@@ -77,21 +77,16 @@ AUTO_STOP_MONEROD=true
 # usage: [true|false]
 AUTO_UPDATE=false
 
+#---------------------------------------------------------------------------------------------------# xmrig
+# by default, monero-bash runs xmrig as root for hugepages.
+# to disable this and run xmrig as the
+# no-privilege/no-login "monero-bash" user, set to false:
+# usage: [true|false]
+XMRIG_ROOT=true
+
 #---------------------------------------------------------------------------------------------------# monerod rpc
 # monerod ip to contact when using "monero-bash rpc"
 # usage: [IP:PORT]
-RPC_IP=127.0.0.1:18081
-
-# show verbose messages when using rpc
-# usage: [true|false]
-RPC_VERBOSE=false
-
-#---------------------------------------------------------------------------------------------------# debug
-# print debug messages for all monero-bash operations
-# usage: [true|false]
-MONERO_BASH_DEBUG=false
-
-# print even more verbose debug info (command line number, function calls)
-MONERO_BASH_DEBUG_VERBOSE=false
+RPC_IP=localhost:18081
 ```
 

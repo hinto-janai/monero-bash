@@ -9,8 +9,8 @@
 	$HOME/.monero-bash/
 	  ├─ changes
 	  ├─ config
-	  ├─ wallets
-	  ├─ packages
+	├─ wallets
+	├─ packages
 	```
 * **New commands**
 	```
