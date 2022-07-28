@@ -18,5 +18,9 @@ utils/hash.sh
 
 # PUSH
 git add .
-git commit -m "hbc"
+if [[ $1 ]]; then
+	git commit -m "$1"
+else
+	git commit -m "hbc"
+fi
 git push
