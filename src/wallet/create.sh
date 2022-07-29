@@ -42,13 +42,22 @@ wallet::create() {
 		printf "${BWHITE}%s${BRED}%s${OFF}\n" \
 			"Creating wallet with type: " \
 			"[${WALLET_TYPE}]"
-			printf "${BWHITE}%s${OFF}" "Wallet name: "
-			read -r WALLET_NAME
-			case "$WALLET_NAME" in
-				"")    print::exit "Empty input";;
-				*" "*) print::exit "Wallet name cannot have spaces";;
-				*)     :;;
-			esac
+			if [[ $WALLET_TYPE = json ]]; then
+				printf "${BWHITE}%s${OFF}" "JSON file path: "
+				read -r WALLET_NAME
+				case "$WALLET_NAME" in
+					"")    print::exit "Empty input";;
+					*)     :;;
+				esac
+			else
+				printf "${BWHITE}%s${OFF}" "Wallet name: "
+				read -r WALLET_NAME
+				case "$WALLET_NAME" in
+					"")    print::exit "Empty input";;
+					*" "*) print::exit "Wallet name cannot have spaces";;
+					*)     :;;
+				esac
+			fi
 	else
 
 	# WALLET TYPES
@@ -94,21 +103,31 @@ wallet::create() {
 	# Wallet name
 	if [[ -z $WALLET_NAME ]]; then
 	while :; do
-		printf "${BWHITE}%s${OFF}" "Wallet name: "
-		read -r WALLET_NAME
-		case "$WALLET_NAME" in
-			"")    print::error "Empty input";;
-			*" "*) print::error "Wallet name cannot have spaces";;
-			*)     break;;
-		esac
+		if [[ $WALLET_TYPE = json ]]; then
+			printf "${BWHITE}%s${OFF}" "JSON file path: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print::error "Empty input";;
+				*)     break;;
+			esac
+		else
+			printf "${BWHITE}%s${OFF}" "Wallet name: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print::error "Empty input";;
+				*" "*) print::error "Wallet name cannot have spaces";;
+				*)     break;;
+			esac
+		fi
 	done
 	fi
 
 	# log::debug
-	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
+	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE] inside $WALLETS"
+	log::debug "cd'ing to $EXPORT_IMPORT for wallet files"
 
-	# Create files within /.monero-bash/
-	cd "$DOT"
+	# Create files within /.monero-bash/export_import
+	cd "$EXPORT_IMPORT"
 
 	# CHECK FOR MONERO
 	safety::pkg monero
@@ -136,7 +155,7 @@ wallet::create() {
 			;;
 	json)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-json "$WALLETS/$WALLET_NAME" \
+			--generate-from-json "$WALLET_NAME" \
 			--config-file "$CONFIG_WALLET"
 			;;
 	spend)

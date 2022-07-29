@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/f894483>
-#nix <1659057828>
+#git <monero-bash/8842d62>
+#nix <1659113984>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -997,10 +997,11 @@ else
 fi
 log::prog "creating [.monero-bash] folders"
 mkdir "$DOT"
+mkdir "$WALLETS"
 mkdir "$PACKAGES"
 mkdir "$CHANGES"
+mkdir "$EXPORT_IMPORT"
 mkdir "$PKG_MONERO_BASH"
-mkdir "$WALLETS"
 log::ok "created [.monero-bash] folders"
 log::prog "cleaning git files"
 [[ -e docs ]]         && rm -rf doc
@@ -1029,10 +1030,9 @@ cp "$SRC_CONFIG/monero-bash.conf" "$CONFIG/"
 cp "$SRC_CONFIG/monerod.conf" "$CONFIG/"
 cp "$SRC_CONFIG/monero-wallet-cli.conf" "$CONFIG/"
 log::ok "created config folder"
-log::prog "creating changelog folder"
-mkdir -p "$CHANGES"
+log::prog "creating changelog"
 cp "$TXT/changes" "$CHANGES/monero-bash"
-log::ok "created changelog folder"
+log::ok "created changelog"
 log::prog "adding [monero-bash] to PATH"
 sudo ln -s "$MAIN" /usr/local/bin/monero-bash
 log::ok "added [monero-bash] to PATH"
@@ -1199,7 +1199,7 @@ parse::config() {
 	log::debug "RPC_IP             | $RPC_IP"
 }
 parse::options::process() {
-	[[ $# = 1 ]] && print::help::command "$1"
+	[[ $# = 1 ]] && print::help::command "$1" && exit 1
 	shift
 	case "$1" in
 		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
@@ -1227,7 +1227,7 @@ parse::options::process() {
 	done
 }
 parse::options::systemd() {
-	[[ $# = 1 ]] && print::help::command "$1"
+	[[ $# = 1 ]] && print::help::command "$1" && exit 1
 	until [[ $# = 0 ]]; do
 	shift
 	case "$1" in
@@ -1255,9 +1255,9 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 			case "$1" in
-				--verbose|-v) OPTION_VERBOSE=true;;
-				"")           :;;
-				*)            print::help::command update;;
+				-v | --verbose) OPTION_VERBOSE=true;;
+				"")             :;;
+				*)              print::help::command update;exit 1;;
 			esac
 			shift
 		done
@@ -1266,7 +1266,7 @@ case "$1" in
 		___ENDOF___ERROR___TRACE___
 		;;
 	install)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		until [[ $# = 0 ]]; do
 			case "$1" in
@@ -1288,7 +1288,7 @@ case "$1" in
 		___ENDOF___ERROR___TRACE___
 		;;
 	remove)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		until [[ $# = 0 ]]; do
 			case "$1" in
@@ -1326,7 +1326,7 @@ case "$1" in
 		___ENDOF___ERROR___TRACE___
 		;;
 	full)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		[[ $# -gt 1 ]] && print::exit "Pick one process: [monero|p2pool|xmrig]"
 		case "$1" in
@@ -1346,7 +1346,7 @@ case "$1" in
 		process::config
 		;;
 	default)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		case "$1" in
 			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
@@ -1415,7 +1415,7 @@ case "$1" in
 	version) print::version;;
 	uninstall) monero_bash::uninstall;;
 	rpc)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		local i RPC_LIST
 		for i in $@; do
@@ -1428,7 +1428,7 @@ case "$1" in
 		rpc "${RPC_LIST[@]}"
 		;;
 	changes)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
@@ -1451,9 +1451,9 @@ case "$1" in
 		shift
 		___BEGIN___ERROR___TRACE___
 		if [[ $1 ]]; then
-			print::help::command "$@"
+			print::help::command "$@" && exit || exit 1
 		else
-			print::help
+			print::help && exit || exit 1
 		fi
 		___ENDOF___ERROR___TRACE___
 		;;
@@ -1892,7 +1892,7 @@ pkg::info() {
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
-		pkg::info::sig
+		[[ ${PKG[short]} = xmrig ]] && pkg::info::sig
 		pkg::info::changes
 		if [[ ${PKG[short]} = bash && ${VER[${PKG[short]}]} != v2* ]]; then
 			log::debug "${PKG[pretty]} | new version found != v2* | printing EOL message"
@@ -1952,12 +1952,6 @@ pkg::prompt() {
 		PROMPT_VERB="Upgrading"
 		PROMPT_NOUN="upgrade"
 	fi
-	if [[ $OPTION_VERBOSE = true ]]; then
-		STD_LOG_DEBUG=true
-		printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
-	fi
-	[[ $OPTION_FORCE = true ]]   && printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
-	echo
 	char UPGRADE_LIST
 	if [[ $1 = install ]]; then
 		[[ $OPTION_BASH = true ]]   && UPGRADE_LIST="bash"
@@ -1984,8 +1978,17 @@ pkg::prompt() {
 	fi
 	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
 		log::debug "UPGRADE_LIST is empty, exiting"
-		exit 1
+		case "$1" in
+			install) print::exit "No valid packages specified";;
+			upgrade) printf "${BGREEN}%s${BWHITE}%s${OFF}\n" "|| " "All packages up to date"; exit 1;;
+		esac
 	fi
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
+	fi
+	[[ $OPTION_FORCE = true ]] && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
+	echo
 	local PROMPT_UPGRADE_LIST i
 	for i in $UPGRADE_LIST; do
 		case "$i" in
@@ -2068,10 +2071,11 @@ pkg::remove::prompt() {
 			xmrig) PROMPT_REMOVE_LIST="$PROMPT_REMOVE_LIST  [XMRig]";;
 		esac
 	done
-	printf "${BRED}%s${BWHITE}%s${OFF}%s\n\n${BRED}%s${BWHITE}%s" \
+	printf "${BRED}%s${BWHITE}%s${OFF}%s\n${BRED}%s\n${BRED}%s${BWHITE}%s" \
 		"|| " \
 		"Packages to remove: " \
 		"$PROMPT_REMOVE_LIST" \
+		"|| " \
 		"|| " \
 		"Continue with removal? (y/N) "
 	if ask::no; then
@@ -2297,6 +2301,7 @@ pkg::update::ver() {
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
 	if [[ ${VER[${PKG[short]}]} != v* ]]; then
 		log::debug "${PKG[pretty]} weird version found | ${VER[${PKG[short]}]}"
+		echo
 		print::exit "Upgrade failure | ${PKG[pretty]} version fetch error"
 	fi
 	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
@@ -2339,9 +2344,9 @@ pkg::upgrade() {
 		print::exit  "Is there another [monero-bash] install/upgrade running?"
 	fi
 	print::pkg::download
-	log::prog "Fetching metadata... "
+	log::prog "Fetching package metadata... "
 	pkg::info
-	log::ok "Fetched metadata"
+	log::ok "Fetched package metadata"
 	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
 		print::pkg::upgrade_fail
 		log::debug "UPGRADE_LIST is empty, exiting"
@@ -2405,10 +2410,11 @@ pkg::verify() {
 	log::debug "no failure files found"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		log::prog "${PKG[pretty]} | HASH ... | PGP Signed by..."
-		pkg::verify::hash
-		pkg::verify::pgp
-		log::ok "${PKG[pretty]} | ${VERIFY_MSG}"
+		log::prog "${PKG[pretty]} | HASH ... | PGP Signed by ..."
+		pkg::verify::hash &&
+		pkg::verify::pgp  &&
+		log::ok "${PKG[pretty]} | ${VERIFY_MSG[${PKG[short]}]}" ||
+		log::fail "${PKG[pretty]} | ${VERIFY_MSG[${PKG[short]}]}"
 	done
 }
 pkg::verify::hash_calc() {
@@ -2455,31 +2461,38 @@ pkg::verify::check_key() {
 }
 pkg::verify::hash() {
 	log::debug "starting: ${PKG[pretty]}"
+	map VERIFY_MSG[${PKG[short]}]
 	local VERIFY_HASH
 	mapfile VERIFY_HASH < "${TMP_PKG[${PKG[short]}_hash_calc]}"
 	HASH[${PKG[short]}]="${VERIFY_HASH// *}"
 	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
-	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && echo && print::exit "Upgrade failure | NULL Hash variable"
-	if grep -o "${HASH[${PKG[short]},,]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+	if [[ -z ${HASH[${PKG[short]}]} ||${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]]; then
+		echo
+		print::exit "Upgrade failure | NULL Hash variable"
+	fi
+	if grep -o "${HASH[${PKG[short]}],,}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | lower-case hash match found"
 		local HASH_START HASH_END HASH_DIGIT
 		HASH_DIGIT="${#HASH[${PKG[short]}]}"
 		HASH_START="${HASH[${PKG[short]}]:0:6}"
 		HASH_END="$((HASH_DIGIT-6))"
 		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		VERIFY_MSG="HASH: ${HASH_START}...${HASH_END}"
-	elif grep -o "${HASH[${PKG[short]}^^]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+		VERIFY_MSG[${PKG[short]}]="HASH: ${HASH_START}...${HASH_END}"
+	elif grep -o "${HASH[${PKG[short]}]^^}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | upper-case hash match found"
 		local HASH_START HASH_END HASH_DIGIT
 		HASH_DIGIT="${#HASH[${PKG[short]}]}"
 		HASH_START="${HASH[${PKG[short]}]:0:6}"
 		HASH_END="$((HASH_DIGIT-6))"
 		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		VERIFY_MSG="${PKG[pretty]} HASH: ${HASH_START}...${HASH_END}"
+		VERIFY_MSG[${PKG[short]}]="HASH: ${HASH_START}...${HASH_END}"
 	else
+		printf "\r\e[2K"
 		print::compromised::hash
 		log::debug "${PKG[pretty]} | HASH COMPROMISED | removing from UPGRADE_LIST"
+		VERIFY_MSG[${PKG[short]}]="HASH FAIL"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
+		return 1
 	fi
 }
 pkg::verify::pgp() {
@@ -2490,7 +2503,7 @@ pkg::verify::pgp() {
 		local VERIFY_PGP_CMD="gpg --verify ${TMP_PKG[${PKG[short]}_hash]}"
 	fi
 	if $VERIFY_PGP_CMD &> ${TMP_PKG[${PKG[short]}_gpg]}; then
-		VERIFY_MSG="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
 		log::debug "PGP success for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
@@ -2498,15 +2511,18 @@ pkg::verify::pgp() {
 			log::debug "$i"
 		done
 	else
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP FAIL: ${PKG[gpg_owner]}"
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
 		log::debug "PGP failure for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
 		for i in ${PGP_OUTPUT[@]}; do
 			log::debug "$i"
 		done
+		printf "\r\e[2K"
 		print::compromised::pgp
 		log::debug "${PKG[pretty]} | PGP COMPROMISED | removing from UPGRADE_LIST"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
+		return 1
 	fi
 }
 print::changes::list() {
@@ -2650,12 +2666,12 @@ print::changes() {
 print::compromised::hash() {
 	log::debug "package hash error has occurred for: ${PKG[pretty]}"
 	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s\n" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: HASH ERROR!                       " \
 		" [${PKG[pretty]}] hash did not match!       " \
 		" [${PKG[author]}] might be compromised!     " \
 		" (or more likely, there was an error)       " \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	printf "${BWHITE}%s${BRED}%s${OFF}\n" \
 		"INVALID HASH: " \
 		"${HASH[${PKG[short]}]}"
@@ -2664,16 +2680,16 @@ print::compromised::hash() {
 print::compromised::pgp() {
 	log::debug "package pgp error has occurred for: ${PKG[pretty]}"
 	printf "${BWHITE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BWHITE}%s\n" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: PGP ERROR!                       " \
 		" [${PKG[pretty]}] PGP signature failed!     " \
 		" [${PKG[gpg_owner]}] might be compromised!  " \
 		" (or more likely, there was an error)       " \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	printf "${BWHITE}%s${BRED}%s\n${BWHITE}%s\n${OFF}%s\n" \
 		"TAR FILE HASH: " \
 		"${HASH[${PKG[short]}]}" \
-		"BAD SIGNATURE: " \
+		"--------------- BAD SIGNATURE ---------------" \
 		"$(cat ${TMP_PKG[${PKG[short]}_gpg]})"
 	declare -Ag COMP[${PKG[short]}]=true
 }
@@ -2756,7 +2772,7 @@ print::help() {
 		"version                                    Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"changes " "<package> " "[--print]                " "View the latests changes for <package>" \
+		"changes " "<packages> " "[--print]               " "View the latests changes for <package>" \
 		"rpc     " "<JSON-RPC method> " "[--verbose]      " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"help    " "<command>                          " "Print help for a command, or all if none specified"
@@ -2834,7 +2850,7 @@ print::help::command() {
 			"--generate-from-multisig-keys | [multisig]"
 			;;
 		install)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[-v|--verbose] [-f|--force]"
 			printf "${OFF}%s\n" \
 			"Start the installation process of packages." \
 			"" \
@@ -2856,11 +2872,13 @@ print::help::command() {
 			"[p2pool]" \
 			"[xmrig]" \
 			"" \
-			"If the [--verbose] option is given, detailed" \
-			"debug information will be printed during the install."
+			"If the [-v|--verbose] option is given, detailed" \
+			"debug information will be printed during the install." \
+			"If the [-f|--force] option is given, the package will" \
+			"be installed even if it is already installed."
 			;;
 		remove)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[-v|--verbose]"
 			printf "${OFF}%s\n" \
 			"Start the removal process of packages." \
 			"" \
@@ -2874,11 +2892,11 @@ print::help::command() {
 			"[p2pool]" \
 			"[xmrig]" \
 			"" \
-			"If the [--verbose] option is given, detailed" \
+			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the removal."
 			;;
 		update)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[-v|--verbose]"
 			printf "${OFF}%s\n" \
 			"Check for new versions of installed packages." \
 			"" \
@@ -2889,11 +2907,11 @@ print::help::command() {
 			"printed in [RED] instead of [GREEN] until it" \
 			"is upgraded with [monero-bash upgrade]." \
 			"" \
-			"If the [--verbose] option is given, detailed" \
+			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the update."
 			;;
 		upgrade)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[-v|--verbose] [-f|--force]"
 			printf "${OFF}%s\n" \
 			"Upgrade all installed packages that are out-of-date." \
 			"" \
@@ -2911,8 +2929,10 @@ print::help::command() {
 			"[p2pool]" \
 			"[xmrig]" \
 			"" \
-			"If the [--verbose] option is given, detailed" \
-			"debug information will be printed during the upgrade."
+			"If the [-v|--verbose] option is given, detailed" \
+			"debug information will be printed during the upgrade." \
+			"If the [-f|--force] option is given, all installed" \
+			"packages will be upgraded even if they are up-to-date."
 			;;
 		full)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "full " "<process>"
@@ -2960,7 +2980,7 @@ print::help::command() {
 			"This can also manually be done with: [monero-bash refresh <processes>]"
 			;;
 		default)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "default " "<processes> " "[--config] [--systemd]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "default " "<processes> " "[-c|--config] [-s|--systemd]"
 			printf "${OFF}%s\n" \
 			"Reset config files/systemd services to the default." \
 			"" \
@@ -2978,6 +2998,8 @@ print::help::command() {
 			"# XMRig       | xmrig.json                            | monero-bash-xmrig.service   #" \
 			"#-----------------------------------------------------------------------------------#" \
 			"" \
+			"If the [-c|--config] option is given, only the config is reset." \
+			"If the [-s|--systemd] option is given, only the systemd service is reset." \
 			"If no options are supplied, both the config file and systemd file are reset."
 			;;
 		start)
@@ -3159,13 +3181,13 @@ print::help::command() {
 			"in [BOLD GREEN]."
 			;;
 		rpc)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value] " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value] " "[-v|--verbose]"
 			printf "${OFF}%s\n" \
 			"Send a JSON-RPC call to monerod." \
 			"" \
 			"This will send a JSON-RPC call to the monerod IP" \
 			"specified in [\$HOME/.monero-bash/config/monero-bash.conf]" \
-			"Using the [--verbose] option will make [monero-bash] print" \
+			"Using the [-v|--verbose] option will make [monero-bash] print" \
 			"the monerod IP and payload after the RPC call finishes." \
 			"" \
 			"The default IP is your own monerod: [127.0.0.1:18081]" \
@@ -3208,15 +3230,15 @@ print::help::command() {
 			"get_output_distribution"
 			;;
 		changes)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "changes " "<package> " "[--print]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "changes " "<packages> " "[-p|--print]"
 			printf "${OFF}%s\n" \
-			"Read the changelog of <package>." \
+			"Read the changelog of <packages>." \
 			"" \
 			"During package installations/upgrades, [monero-bash]" \
 			"will save a local changelog inside: [\$HOME/.monero-bash/changes]" \
 			"This file is read and parsed for MARKDOWN syntax, then printed." \
 			"" \
-			"If the [--print] option is given, the changelog will be printed" \
+			"If the [-p|--print] option is given, the changelog will be printed" \
 			"normally to the terminal instead of being piped to [less]."
 			;;
 		help)
@@ -3227,74 +3249,68 @@ print::help::command() {
 			"If no command is given, the general help" \
 			"menu will be printed for all commands."
 			;;
-		*) print::error "Invalid option: $1 command does not exist";;
+		*) print::error "Invalid option: $1 command does not exist";return 1;;
 	esac
 	shift
 	done
-	exit
+	return
 }
 print::pkg::download() {
-	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# Downloading"
+	printf "${BCYAN}%s${OFF}\n" "#---------------------------------------# Downloading"
 }
 print::pkg::update() {
-	printf "${BBLUE}%s${OFF}\n" "#--------------------------------------# Updating"
+	printf "${BBLUE}%s${OFF}\n" "#---------------------------------------# Updating"
 }
 print::pkg::remove() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removing [${PKG[pretty]}]"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Removing [${PKG[pretty]}]"
 }
 print::pkg::verify() {
-	printf "${BYELLOW}%s${OFF}\n" "#--------------------------------------# Verifying"
+	printf "${BYELLOW}%s${OFF}\n" "#---------------------------------------# Verifying"
 }
 print::pkg::install() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Installing"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Installing"
 }
 print::pkg::upgrade() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrading"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Upgrading"
 }
 print::pkg::hook::pre() {
-	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Pre-Hooks"
+	printf "${BPURPLE}%s${OFF}\n" "#---------------------------------------# Pre-Hooks"
 }
 print::pkg::hook::post() {
-	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Post-Hooks"
+	printf "${BPURPLE}%s${OFF}\n" "#---------------------------------------# Post-Hooks"
 }
 print::pkg::installed() {
-	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Install done"
+	printf "${BGREEN}%s${OFF}\n" "#---------------------------------------# Install done"
 }
 print::pkg::upgraded() {
-	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Upgrade done"
+	printf "${BGREEN}%s${OFF}\n" "#---------------------------------------# Upgrade done"
 }
 print::pkg::upgrade_fail() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrade failed"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Upgrade failed"
 }
 print::pkg::removed() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removed [${PKG[pretty]}]"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Removed [${PKG[pretty]}]"
 }
 print::pkg::updated() {
-	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# All packages up-to-date"
+	printf "${BCYAN}%s${OFF}\n" "#---------------------------------------# All packages up-to-date"
 }
 print::size() {
 	log::debug "starting"
 	log::debug "getting folder sizes"
 	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
 	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
-	SIZE_MONERO=$(du -h "$PKG_MONERO") || SIZE_MONERO=
-	SIZE_P2POOL=$(du -h "$PKG_P2POOL") || SIZE_P2POOL=
-	SIZE_XMRIG=$(du -h "$PKG_XMRIG") || SIZE_XMRIG=
+	[[ $MONERO_VER ]] && SIZE_MONERO=$(du -h "$PKG_MONERO") || SIZE_MONERO=
+	[[ $P2POOL_VER ]] && SIZE_P2POOL=$(du -h "$PKG_P2POOL") || SIZE_P2POOL=
+	[[ $XMRIG_VER ]]  && SIZE_XMRIG=$(du -h "$PKG_XMRIG") || SIZE_XMRIG=
 	SIZE_DOT=$(du -h "$DOT")
-	if [[ -d "$DOT/.bitmonero" ]]; then
-		SIZE_BITMONERO=$(du -h "$DOT/.bitmonero")
-	else
-		SIZE_BITMONERO=
-	fi
+	[[ -d "$DOT/.bitmonero" ]] && SIZE_BITMONERO=$(du -h "$DOT/.bitmonero") || SIZE_BITMONERO=
 	log::debug "printing folder sizes"
-	printf "${BWHITE}%s${BYELLOW}%s\n" \
-		"monero-bash    | " "${SIZE_MONERO_BASH/$'\t'*}" \
-		"Monero         | " "${SIZE_MONERO/$'\t'*}" \
-		"P2Pool         | " "${SIZE_P2POOL/$'\t'*}" \
-		"XMRig          | " "${SIZE_XMRIG/$'\t'*}" \
-		"/.bitmonero/   | " "${SIZE_BITMONERO/$'\t'*}" \
-		"/.monero-bash/ | " "${SIZE_DOT/$'\t'*}"
-	return 0
+	printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "monero-bash    | " "${SIZE_MONERO_BASH/$'\t'*}"
+	[[ $SIZE_MONERO ]]    && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "Monero         | " "${SIZE_MONERO/$'\t'*}"
+	[[ $SIZE_P2POOL ]]    && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "P2Pool         | " "${SIZE_P2POOL/$'\t'*}"
+	[[ $SIZE_XMRIG ]]     && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "XMRig          | " "${SIZE_XMRIG/$'\t'*}"
+	[[ $SIZE_BITMONERO ]] && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "/.bitmonero/   | " "${SIZE_BITMONERO/$'\t'*}"
+	printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "/.monero-bash/ | " "${SIZE_DOT/$'\t'*}"
 }
 print::title() {
 	log::debug "starting"
@@ -3431,6 +3447,7 @@ readonly CONFIG="$DOT/config"
 readonly WALLETS="$DOT/wallets"
 readonly PACKAGES="$DOT/packages"
 readonly CHANGES="$DOT/changes"
+readonly EXPORT_IMPORT="$DOT/export_import"
 readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
 readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
 readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
@@ -3765,13 +3782,22 @@ wallet::create() {
 		printf "${BWHITE}%s${BRED}%s${OFF}\n" \
 			"Creating wallet with type: " \
 			"[${WALLET_TYPE}]"
-			printf "${BWHITE}%s${OFF}" "Wallet name: "
-			read -r WALLET_NAME
-			case "$WALLET_NAME" in
-				"")    print::exit "Empty input";;
-				*" "*) print::exit "Wallet name cannot have spaces";;
-				*)     :;;
-			esac
+			if [[ $WALLET_TYPE = json ]]; then
+				printf "${BWHITE}%s${OFF}" "JSON file path: "
+				read -r WALLET_NAME
+				case "$WALLET_NAME" in
+					"")    print::exit "Empty input";;
+					*)     :;;
+				esac
+			else
+				printf "${BWHITE}%s${OFF}" "Wallet name: "
+				read -r WALLET_NAME
+				case "$WALLET_NAME" in
+					"")    print::exit "Empty input";;
+					*" "*) print::exit "Wallet name cannot have spaces";;
+					*)     :;;
+				esac
+			fi
 	else
 	while :; do
 		while :; do
@@ -3811,17 +3837,27 @@ wallet::create() {
 	fi
 	if [[ -z $WALLET_NAME ]]; then
 	while :; do
-		printf "${BWHITE}%s${OFF}" "Wallet name: "
-		read -r WALLET_NAME
-		case "$WALLET_NAME" in
-			"")    print::error "Empty input";;
-			*" "*) print::error "Wallet name cannot have spaces";;
-			*)     break;;
-		esac
+		if [[ $WALLET_TYPE = json ]]; then
+			printf "${BWHITE}%s${OFF}" "JSON file path: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print::error "Empty input";;
+				*)     break;;
+			esac
+		else
+			printf "${BWHITE}%s${OFF}" "Wallet name: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print::error "Empty input";;
+				*" "*) print::error "Wallet name cannot have spaces";;
+				*)     break;;
+			esac
+		fi
 	done
 	fi
-	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE]"
-	cd "$DOT"
+	log::debug "creating wallet [$WALLET_NAME] with type [$WALLET_TYPE] inside $WALLETS"
+	log::debug "cd'ing to $EXPORT_IMPORT for wallet files"
+	cd "$EXPORT_IMPORT"
 	safety::pkg monero
 	printf "\n"
 	if case "$WALLET_TYPE" in
@@ -3843,7 +3879,7 @@ wallet::create() {
 			;;
 	json)
 			"$PKG_MONERO/monero-wallet-cli" \
-			--generate-from-json "$WALLETS/$WALLET_NAME" \
+			--generate-from-json "$WALLET_NAME" \
 			--config-file "$CONFIG_WALLET"
 			;;
 	spend)
@@ -3941,6 +3977,7 @@ wallet::select() {
 				"Selecting " \
 				"[$WALLET_SELECTION]"
 				wallet::password
+				printf "\n\n"
 				wallet::start
 				exit
 				;;
@@ -3973,9 +4010,10 @@ wallet::select() {
 	exit 0
 }
 wallet::start() {
-	log::debug "starting wallet: $WALLET_SELECTION"
+	log::debug "starting wallet: $WALLETS/$WALLET_SELECTION"
 	safety::pkg monero
-	cd "$DOT"
+	log::debug "cd'ing to $EXPORT_IMPORT for wallet files"
+	cd "$EXPORT_IMPORT"
 	if [[ $AUTO_START_MONEROD = true ]]; then
 		struct::pkg monero
 		process::start

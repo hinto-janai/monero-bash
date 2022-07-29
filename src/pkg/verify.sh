@@ -56,10 +56,11 @@ pkg::verify() {
 	# VERIFY HASH AND PGP
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		log::prog "${PKG[pretty]} | HASH ... | PGP Signed by..."
-		pkg::verify::hash
-		pkg::verify::pgp
-		log::ok "${PKG[pretty]} | ${VERIFY_MSG}"
+		log::prog "${PKG[pretty]} | HASH ... | PGP Signed by ..."
+		pkg::verify::hash &&
+		pkg::verify::pgp  &&
+		log::ok "${PKG[pretty]} | ${VERIFY_MSG[${PKG[short]}]}" ||
+		log::fail "${PKG[pretty]} | ${VERIFY_MSG[${PKG[short]}]}"
 	done
 
 
@@ -125,19 +126,23 @@ pkg::verify::hash() {
 	log::debug "starting: ${PKG[pretty]}"
 
 	# tmp hash into variable
+	map VERIFY_MSG[${PKG[short]}]
 	local VERIFY_HASH
 	mapfile VERIFY_HASH < "${TMP_PKG[${PKG[short]}_hash_calc]}"
 	HASH[${PKG[short]}]="${VERIFY_HASH// *}"
 	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
 
-	# sanity check
-	[[ ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]] && echo && print::exit "Upgrade failure | NULL Hash variable"
+	# null hash sanity check
+	if [[ -z ${HASH[${PKG[short]}]} ||${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]]; then
+		echo
+		print::exit "Upgrade failure | NULL Hash variable"
+	fi
 
 	# P2Pool has it's hashes in full upper-case
 	# this causes an error because sha256sum outputs in
 	# lower case, so grep for lower-case, then upper, else error.
 	# grep for LOWER CASE hash in hash file
-	if grep -o "${HASH[${PKG[short]},,]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+	if grep -o "${HASH[${PKG[short]}],,}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | lower-case hash match found"
 
 		# calculate first and last 6 digits of hash
@@ -146,10 +151,10 @@ pkg::verify::hash() {
 		HASH_START="${HASH[${PKG[short]}]:0:6}"
 		HASH_END="$((HASH_DIGIT-6))"
 		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		VERIFY_MSG="HASH: ${HASH_START}...${HASH_END}"
+		VERIFY_MSG[${PKG[short]}]="HASH: ${HASH_START}...${HASH_END}"
 
 	# UPPER CASE
-	elif grep -o "${HASH[${PKG[short]}^^]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+	elif grep -o "${HASH[${PKG[short]}]^^}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | upper-case hash match found"
 
 		# calculate first and last 6 digits of hash
@@ -158,13 +163,16 @@ pkg::verify::hash() {
 		HASH_START="${HASH[${PKG[short]}]:0:6}"
 		HASH_END="$((HASH_DIGIT-6))"
 		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		VERIFY_MSG="${PKG[pretty]} HASH: ${HASH_START}...${HASH_END}"
+		VERIFY_MSG[${PKG[short]}]="HASH: ${HASH_START}...${HASH_END}"
 
 	# else remove from UPGRADE_LIST on incorrect hash
 	else
+		printf "\r\e[2K"
 		print::compromised::hash
 		log::debug "${PKG[pretty]} | HASH COMPROMISED | removing from UPGRADE_LIST"
+		VERIFY_MSG[${PKG[short]}]="HASH FAIL"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
+		return 1
 	fi
 }
 
@@ -186,7 +194,7 @@ pkg::verify::pgp() {
 
 	# verify and redirect output to tmp file
 	if $VERIFY_PGP_CMD &> ${TMP_PKG[${PKG[short]}_gpg]}; then
-		VERIFY_MSG="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
 
 		# get output into variable
 		local PGP_OUTPUT IFS=$'\n' i
@@ -198,6 +206,7 @@ pkg::verify::pgp() {
 		done
 
 	else
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP FAIL: ${PKG[gpg_owner]}"
 		# get output into variable
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
@@ -206,8 +215,10 @@ pkg::verify::pgp() {
 		for i in ${PGP_OUTPUT[@]}; do
 			log::debug "$i"
 		done
+		printf "\r\e[2K"
 		print::compromised::pgp
 		log::debug "${PKG[pretty]} | PGP COMPROMISED | removing from UPGRADE_LIST"
 		UPGRADE_LIST="${UPGRADE_LIST//${PKG[short]}}"
+		return 1
 	fi
 }

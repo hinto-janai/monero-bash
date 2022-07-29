@@ -69,7 +69,7 @@ pkg::info() {
 		pkg::update::ver
 		pkg::info::down
 		pkg::info::hash
-		pkg::info::sig
+		[[ ${PKG[short]} = xmrig ]] && pkg::info::sig
 		pkg::info::changes
 		if [[ ${PKG[short]} = bash && ${VER[${PKG[short]}]} != v2* ]]; then
 			log::debug "${PKG[pretty]} | new version found != v2* | printing EOL message"

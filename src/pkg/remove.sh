@@ -75,10 +75,11 @@ pkg::remove::prompt() {
 	done
 
 	# PROMPT
-	printf "${BRED}%s${BWHITE}%s${OFF}%s\n\n${BRED}%s${BWHITE}%s" \
+	printf "${BRED}%s${BWHITE}%s${OFF}%s\n${BRED}%s\n${BRED}%s${BWHITE}%s" \
 		"|| " \
 		"Packages to remove: " \
 		"$PROMPT_REMOVE_LIST" \
+		"|| " \
 		"|| " \
 		"Continue with removal? (y/N) "
 	if ask::no; then

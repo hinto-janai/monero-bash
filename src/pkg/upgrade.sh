@@ -60,9 +60,9 @@ pkg::upgrade() {
 	print::pkg::download
 
 	# FETCH PKG INFO
-	log::prog "Fetching metadata... "
+	log::prog "Fetching package metadata... "
 	pkg::info
-	log::ok "Fetched metadata"
+	log::ok "Fetched package metadata"
 	# EXIT ON EMPTY LIST
 	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
 		print::pkg::upgrade_fail

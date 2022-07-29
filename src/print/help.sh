@@ -68,7 +68,7 @@ print::help() {
 		"version                                    Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"changes " "<package> " "[--print]                " "View the latests changes for <package>" \
+		"changes " "<packages> " "[--print]               " "View the latests changes for <package>" \
 		"rpc     " "<JSON-RPC method> " "[--verbose]      " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"help    " "<command>                          " "Print help for a command, or all if none specified"
@@ -152,7 +152,7 @@ print::help::command() {
 
 		# PACKAGE
 		install)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[-v|--verbose] [-f|--force]"
 			printf "${OFF}%s\n" \
 			"Start the installation process of packages." \
 			"" \
@@ -174,11 +174,13 @@ print::help::command() {
 			"[p2pool]" \
 			"[xmrig]" \
 			"" \
-			"If the [--verbose] option is given, detailed" \
-			"debug information will be printed during the install."
+			"If the [-v|--verbose] option is given, detailed" \
+			"debug information will be printed during the install." \
+			"If the [-f|--force] option is given, the package will" \
+			"be installed even if it is already installed."
 			;;
 		remove)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[-v|--verbose]"
 			printf "${OFF}%s\n" \
 			"Start the removal process of packages." \
 			"" \
@@ -192,11 +194,11 @@ print::help::command() {
 			"[p2pool]" \
 			"[xmrig]" \
 			"" \
-			"If the [--verbose] option is given, detailed" \
+			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the removal."
 			;;
 		update)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[-v|--verbose]"
 			printf "${OFF}%s\n" \
 			"Check for new versions of installed packages." \
 			"" \
@@ -207,11 +209,11 @@ print::help::command() {
 			"printed in [RED] instead of [GREEN] until it" \
 			"is upgraded with [monero-bash upgrade]." \
 			"" \
-			"If the [--verbose] option is given, detailed" \
+			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the update."
 			;;
 		upgrade)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[-v|--verbose] [-f|--force]"
 			printf "${OFF}%s\n" \
 			"Upgrade all installed packages that are out-of-date." \
 			"" \
@@ -229,8 +231,10 @@ print::help::command() {
 			"[p2pool]" \
 			"[xmrig]" \
 			"" \
-			"If the [--verbose] option is given, detailed" \
-			"debug information will be printed during the upgrade."
+			"If the [-v|--verbose] option is given, detailed" \
+			"debug information will be printed during the upgrade." \
+			"If the [-f|--force] option is given, all installed" \
+			"packages will be upgraded even if they are up-to-date."
 			;;
 
 		# PROCESS
@@ -280,7 +284,7 @@ print::help::command() {
 			"This can also manually be done with: [monero-bash refresh <processes>]"
 			;;
 		default)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "default " "<processes> " "[--config] [--systemd]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "default " "<processes> " "[-c|--config] [-s|--systemd]"
 			printf "${OFF}%s\n" \
 			"Reset config files/systemd services to the default." \
 			"" \
@@ -298,6 +302,8 @@ print::help::command() {
 			"# XMRig       | xmrig.json                            | monero-bash-xmrig.service   #" \
 			"#-----------------------------------------------------------------------------------#" \
 			"" \
+			"If the [-c|--config] option is given, only the config is reset." \
+			"If the [-s|--systemd] option is given, only the systemd service is reset." \
 			"If no options are supplied, both the config file and systemd file are reset."
 			;;
 
@@ -484,13 +490,13 @@ print::help::command() {
 			;;
 		# OTHER
 		rpc)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value] " "[--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BBLUE}%s${BYELLOW}%s${BGREEN}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "rpc " "[host:port] " "<JSON-RPC method> " "[name:value] " "[-v|--verbose]"
 			printf "${OFF}%s\n" \
 			"Send a JSON-RPC call to monerod." \
 			"" \
 			"This will send a JSON-RPC call to the monerod IP" \
 			"specified in [\$HOME/.monero-bash/config/monero-bash.conf]" \
-			"Using the [--verbose] option will make [monero-bash] print" \
+			"Using the [-v|--verbose] option will make [monero-bash] print" \
 			"the monerod IP and payload after the RPC call finishes." \
 			"" \
 			"The default IP is your own monerod: [127.0.0.1:18081]" \
@@ -534,15 +540,15 @@ print::help::command() {
 			"get_output_distribution"
 			;;
 		changes)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "changes " "<package> " "[--print]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "changes " "<packages> " "[-p|--print]"
 			printf "${OFF}%s\n" \
-			"Read the changelog of <package>." \
+			"Read the changelog of <packages>." \
 			"" \
 			"During package installations/upgrades, [monero-bash]" \
 			"will save a local changelog inside: [\$HOME/.monero-bash/changes]" \
 			"This file is read and parsed for MARKDOWN syntax, then printed." \
 			"" \
-			"If the [--print] option is given, the changelog will be printed" \
+			"If the [-p|--print] option is given, the changelog will be printed" \
 			"normally to the terminal instead of being piped to [less]."
 			;;
 		help)
@@ -553,10 +559,9 @@ print::help::command() {
 			"If no command is given, the general help" \
 			"menu will be printed for all commands."
 			;;
-		*) print::error "Invalid option: $1 command does not exist";;
+		*) print::error "Invalid option: $1 command does not exist";return 1;;
 	esac
 	shift
 	done
-
-	exit
+	return
 }

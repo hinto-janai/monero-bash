@@ -24,53 +24,53 @@
 # package installation/upgrade/removal
 # assumes struct::pkg() has been called
 print::pkg::download() {
-	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# Downloading"
+	printf "${BCYAN}%s${OFF}\n" "#---------------------------------------# Downloading"
 }
 
 print::pkg::update() {
-	printf "${BBLUE}%s${OFF}\n" "#--------------------------------------# Updating"
+	printf "${BBLUE}%s${OFF}\n" "#---------------------------------------# Updating"
 }
 
 print::pkg::remove() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removing [${PKG[pretty]}]"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Removing [${PKG[pretty]}]"
 }
 
 print::pkg::verify() {
-	printf "${BYELLOW}%s${OFF}\n" "#--------------------------------------# Verifying"
+	printf "${BYELLOW}%s${OFF}\n" "#---------------------------------------# Verifying"
 }
 
 print::pkg::install() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Installing"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Installing"
 }
 
 print::pkg::upgrade() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrading"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Upgrading"
 }
 
 print::pkg::hook::pre() {
-	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Pre-Hooks"
+	printf "${BPURPLE}%s${OFF}\n" "#---------------------------------------# Pre-Hooks"
 }
 
 print::pkg::hook::post() {
-	printf "${BPURPLE}%s${OFF}\n" "#--------------------------------------# Post-Hooks"
+	printf "${BPURPLE}%s${OFF}\n" "#---------------------------------------# Post-Hooks"
 }
 
 print::pkg::installed() {
-	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Install done"
+	printf "${BGREEN}%s${OFF}\n" "#---------------------------------------# Install done"
 }
 
 print::pkg::upgraded() {
-	printf "${BGREEN}%s${OFF}\n" "#--------------------------------------# Upgrade done"
+	printf "${BGREEN}%s${OFF}\n" "#---------------------------------------# Upgrade done"
 }
 
 print::pkg::upgrade_fail() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Upgrade failed"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Upgrade failed"
 }
 
 print::pkg::removed() {
-	printf "${BRED}%s${OFF}\n" "#--------------------------------------# Removed [${PKG[pretty]}]"
+	printf "${BRED}%s${OFF}\n" "#---------------------------------------# Removed [${PKG[pretty]}]"
 }
 
 print::pkg::updated() {
-	printf "${BCYAN}%s${OFF}\n" "#--------------------------------------# All packages up-to-date"
+	printf "${BCYAN}%s${OFF}\n" "#---------------------------------------# All packages up-to-date"
 }

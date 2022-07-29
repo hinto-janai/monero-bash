@@ -158,6 +158,7 @@ pkg::update::ver() {
 	# sanity check for "v*"
 	if [[ ${VER[${PKG[short]}]} != v* ]]; then
 		log::debug "${PKG[pretty]} weird version found | ${VER[${PKG[short]}]}"
+		echo
 		print::exit "Upgrade failure | ${PKG[pretty]} version fetch error"
 	fi
 

@@ -63,6 +63,7 @@ wallet::select() {
 				"Selecting " \
 				"[$WALLET_SELECTION]"
 				wallet::password
+				printf "\n\n"
 				wallet::start
 				exit
 				;;

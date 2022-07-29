@@ -25,12 +25,12 @@ print::compromised::hash() {
 	log::debug "package hash error has occurred for: ${PKG[pretty]}"
 
 	printf "${BWHITE}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BRED}%s\n${BWHITE}%s\n" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: HASH ERROR!                       " \
 		" [${PKG[pretty]}] hash did not match!       " \
 		" [${PKG[author]}] might be compromised!     " \
 		" (or more likely, there was an error)       " \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	printf "${BWHITE}%s${BRED}%s${OFF}\n" \
 		"INVALID HASH: " \
 		"${HASH[${PKG[short]}]}"
@@ -41,16 +41,16 @@ print::compromised::pgp() {
 	log::debug "package pgp error has occurred for: ${PKG[pretty]}"
 
 	printf "${BWHITE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BBLUE}%s\n${BWHITE}%s\n" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
 		" WARNING: PGP ERROR!                       " \
 		" [${PKG[pretty]}] PGP signature failed!     " \
 		" [${PKG[gpg_owner]}] might be compromised!  " \
 		" (or more likely, there was an error)       " \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	printf "${BWHITE}%s${BRED}%s\n${BWHITE}%s\n${OFF}%s\n" \
 		"TAR FILE HASH: " \
 		"${HASH[${PKG[short]}]}" \
-		"BAD SIGNATURE: " \
+		"--------------- BAD SIGNATURE ---------------" \
 		"$(cat ${TMP_PKG[${PKG[short]}_gpg]})"
 	declare -Ag COMP[${PKG[short]}]=true
 }

@@ -2,15 +2,13 @@
 * [Mining](#mining)
 * [Commands](#Commands)
 * [Config](#config)
-* [File Structure](#file-structure)
-* [systemd](#systemd)
 
 ## Mining
 To quickly start mining on P2Pool, make sure you have all the packages:
 * `monero-bash install monero p2pool xmrig`
 
 Configure basic mining settings:
-* `monero-bash config`
+* `monero-bash config p2pool xmrig --quick`
 
 You can then:
 * `monero-bash start monero p2pool xmrig`
@@ -60,7 +58,7 @@ OTHER
 ```
 
 ## Config
-monero-bash's config files live in `$HOME/.monero-bash/config`
+To edit `monero-bash` behavior, edit its config file: `$HOME/.monero-bash/config/monero-bash.conf`
 
 ```
 ######################

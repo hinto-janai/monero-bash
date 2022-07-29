@@ -20,6 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# This is the main() function, it will not run on its own.
+# It must be built with [hbc] combined with the [lib] & [src]
+# folders to create the final output script: [monero-bash]
+# The includes below indicate which libarary code is used.
+
 #include <stdlib/src/ask.sh>
 #include <stdlib/src/crypto.sh>
 #include <stdlib/src/const.sh>

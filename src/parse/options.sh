@@ -22,7 +22,7 @@
 
 # parse case for processes including [monero-bash]
 parse::options::process() {
-	[[ $# = 1 ]] && print::help::command "$1"
+	[[ $# = 1 ]] && print::help::command "$1" && exit 1
 	shift
 	case "$1" in
 		*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
@@ -52,7 +52,7 @@ parse::options::process() {
 
 # parse case for systemd
 parse::options::systemd() {
-	[[ $# = 1 ]] && print::help::command "$1"
+	[[ $# = 1 ]] && print::help::command "$1" && exit 1
 	until [[ $# = 0 ]]; do
 	shift
 	case "$1" in
@@ -87,9 +87,9 @@ case "$1" in
 		shift
 		until [[ $# = 0 ]]; do
 			case "$1" in
-				--verbose|-v) OPTION_VERBOSE=true;;
-				"")           :;;
-				*)            print::help::command update;;
+				-v | --verbose) OPTION_VERBOSE=true;;
+				"")             :;;
+				*)              print::help::command update;exit 1;;
 			esac
 			shift
 		done
@@ -98,7 +98,7 @@ case "$1" in
 		___ENDOF___ERROR___TRACE___
 		;;
 	install)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		until [[ $# = 0 ]]; do
 			case "$1" in
@@ -120,7 +120,7 @@ case "$1" in
 		___ENDOF___ERROR___TRACE___
 		;;
 	remove)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		until [[ $# = 0 ]]; do
 			case "$1" in
@@ -160,7 +160,7 @@ case "$1" in
 
 	# PROCESS
 	full)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		[[ $# -gt 1 ]] && print::exit "Pick one process: [monero|p2pool|xmrig]"
 		case "$1" in
@@ -180,7 +180,7 @@ case "$1" in
 		process::config
 		;;
 	default)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		case "$1" in
 			*bash*|*Bash*|*BASH*) OPTION_BASH=true;;
@@ -255,7 +255,7 @@ case "$1" in
 	# OTHER
 	uninstall) monero_bash::uninstall;;
 	rpc)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		local i RPC_LIST
 		for i in $@; do
@@ -268,7 +268,7 @@ case "$1" in
 		rpc "${RPC_LIST[@]}"
 		;;
 	changes)
-		[[ $# = 1 ]] && print::help::command "$1"
+		[[ $# = 1 ]] && print::help::command "$1" && exit 1
 		shift
 		until [[ $# = 0 ]]; do
 		case "$1" in
@@ -291,9 +291,9 @@ case "$1" in
 		shift
 		___BEGIN___ERROR___TRACE___
 		if [[ $1 ]]; then
-			print::help::command "$@"
+			print::help::command "$@" && exit || exit 1
 		else
-			print::help
+			print::help && exit || exit 1
 		fi
 		___ENDOF___ERROR___TRACE___
 		;;

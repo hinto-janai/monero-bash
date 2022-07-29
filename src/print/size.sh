@@ -27,23 +27,17 @@ print::size() {
 
 	local SIZE_MONERO_BASH SIZE_MONERO SIZE_P2POOL SIZE_XMRIG SIZE_BITMONERO SIZE_DOT || return 1
 	SIZE_MONERO_BASH=$(du -h "$PKG_MONERO_BASH")
-	SIZE_MONERO=$(du -h "$PKG_MONERO") || SIZE_MONERO=
-	SIZE_P2POOL=$(du -h "$PKG_P2POOL") || SIZE_P2POOL=
-	SIZE_XMRIG=$(du -h "$PKG_XMRIG") || SIZE_XMRIG=
+	[[ $MONERO_VER ]] && SIZE_MONERO=$(du -h "$PKG_MONERO") || SIZE_MONERO=
+	[[ $P2POOL_VER ]] && SIZE_P2POOL=$(du -h "$PKG_P2POOL") || SIZE_P2POOL=
+	[[ $XMRIG_VER ]]  && SIZE_XMRIG=$(du -h "$PKG_XMRIG") || SIZE_XMRIG=
 	SIZE_DOT=$(du -h "$DOT")
-	if [[ -d "$DOT/.bitmonero" ]]; then
-		SIZE_BITMONERO=$(du -h "$DOT/.bitmonero")
-	else
-		SIZE_BITMONERO=
-	fi
+	[[ -d "$DOT/.bitmonero" ]] && SIZE_BITMONERO=$(du -h "$DOT/.bitmonero") || SIZE_BITMONERO=
 
 	log::debug "printing folder sizes"
-	printf "${BWHITE}%s${BYELLOW}%s\n" \
-		"monero-bash    | " "${SIZE_MONERO_BASH/$'\t'*}" \
-		"Monero         | " "${SIZE_MONERO/$'\t'*}" \
-		"P2Pool         | " "${SIZE_P2POOL/$'\t'*}" \
-		"XMRig          | " "${SIZE_XMRIG/$'\t'*}" \
-		"/.bitmonero/   | " "${SIZE_BITMONERO/$'\t'*}" \
-		"/.monero-bash/ | " "${SIZE_DOT/$'\t'*}"
-	return 0
+	printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "monero-bash    | " "${SIZE_MONERO_BASH/$'\t'*}"
+	[[ $SIZE_MONERO ]]    && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "Monero         | " "${SIZE_MONERO/$'\t'*}"
+	[[ $SIZE_P2POOL ]]    && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "P2Pool         | " "${SIZE_P2POOL/$'\t'*}"
+	[[ $SIZE_XMRIG ]]     && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "XMRig          | " "${SIZE_XMRIG/$'\t'*}"
+	[[ $SIZE_BITMONERO ]] && printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "/.bitmonero/   | " "${SIZE_BITMONERO/$'\t'*}"
+	printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "/.monero-bash/ | " "${SIZE_DOT/$'\t'*}"
 }

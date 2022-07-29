@@ -24,13 +24,14 @@
 # called by: wallet::create()
 #            wallet::select()
 wallet::start() {
-	log::debug "starting wallet: $WALLET_SELECTION"
+	log::debug "starting wallet: $WALLETS/$WALLET_SELECTION"
 
 	# Check for Monero
 	safety::pkg monero
 
-	# Create files within /.monero-bash/
-	cd "$DOT"
+	# Create files within /.monero-bash/export_import
+	log::debug "cd'ing to $EXPORT_IMPORT for wallet files"
+	cd "$EXPORT_IMPORT"
 
 	# Auto-start monerod
 	if [[ $AUTO_START_MONEROD = true ]]; then

@@ -34,14 +34,6 @@ pkg::prompt() {
 		PROMPT_NOUN="upgrade"
 	fi
 
-	# CHECK FOR VERBOSE/FORCE
-	if [[ $OPTION_VERBOSE = true ]]; then
-		STD_LOG_DEBUG=true
-		printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
-	fi
-	[[ $OPTION_FORCE = true ]]   && printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
-	echo
-
 	# CREATE UPGRADE LIST (install)
 	char UPGRADE_LIST
 	if [[ $1 = install ]]; then
@@ -74,8 +66,19 @@ pkg::prompt() {
 	# EXIT ON EMPTY LIST
 	if [[ $UPGRADE_LIST =~ ^[[:space:]]+$ || -z $UPGRADE_LIST ]]; then
 		log::debug "UPGRADE_LIST is empty, exiting"
-		exit 1
+		case "$1" in
+			install) print::exit "No valid packages specified";;
+			upgrade) printf "${BGREEN}%s${BWHITE}%s${OFF}\n" "|| " "All packages up to date"; exit 1;;
+		esac
 	fi
+
+	# CHECK FOR VERBOSE/FORCE
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
+	fi
+	[[ $OPTION_FORCE = true ]] && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
+	echo
 
 	# CREATE UI LIST
 	local PROMPT_UPGRADE_LIST i

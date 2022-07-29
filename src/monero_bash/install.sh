@@ -233,10 +233,11 @@ fi
 # FOLDER CREATION
 log::prog "creating [.monero-bash] folders"
 mkdir "$DOT"
+mkdir "$WALLETS"
 mkdir "$PACKAGES"
 mkdir "$CHANGES"
+mkdir "$EXPORT_IMPORT"
 mkdir "$PKG_MONERO_BASH"
-mkdir "$WALLETS"
 log::ok "created [.monero-bash] folders"
 
 # CLEAN GIT FILES
@@ -273,10 +274,9 @@ cp "$SRC_CONFIG/monero-wallet-cli.conf" "$CONFIG/"
 log::ok "created config folder"
 
 # CREATE CHANGELOG
-log::prog "creating changelog folder"
-mkdir -p "$CHANGES"
+log::prog "creating changelog"
 cp "$TXT/changes" "$CHANGES/monero-bash"
-log::ok "created changelog folder"
+log::ok "created changelog"
 
 # ADD TO PATH
 log::prog "adding [monero-bash] to PATH"

@@ -4,10 +4,11 @@ These are all the folders/files created by `monero-bash` after installation:
 **INSTALLATION**
 ```
 $HOME/.monero-bash/
-  ├─ wallets
-  ├─ changes
-  ├─ config
-  ├─ packages
+  ├─ wallets              Wallet folder
+  ├─ changes              Changelog folder
+  ├─ config               Config folder for all packages
+  ├─ export_import        Where monero-wallet-cli exports/imports files from
+  ├─ packages             Package folder
 ```
 
 **PATH**
