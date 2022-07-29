@@ -95,16 +95,11 @@ pkg::upgrade() {
 		print::pkg::upgrade
 	fi
 
-	# EXTRACT
+	# EXTRACT & COPY
 	pkg::extract
 
-	# TRAP COPY POST HOOKS
-	trap 'pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
-	# COPY NEW PACKAGES INTO NEW
-	pkg::copy
-	trap 'pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
-
 	# POST HOOKS
+	trap 'pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
 	print::pkg::hook::post
 	pkg::hook::post
 

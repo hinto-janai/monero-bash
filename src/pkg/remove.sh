@@ -84,6 +84,7 @@ pkg::remove::prompt() {
 		"Continue with removal? (y/N) "
 	if ask::no; then
 		printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
+		exit 1
 	fi
 
 	# SUDO

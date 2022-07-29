@@ -23,6 +23,8 @@
 # multi-threaded extraction of the
 # tar files created by: pkg::download()
 # inside of the tmp folders.
+# ALSO copies extracted folder contents
+# into the packages folder.
 pkg::extract() {
 	log::debug "starting"
 
@@ -38,28 +40,19 @@ pkg::extract() {
 
 	# WAIT FOR THREADS
 	for i in $UPGRADE_LIST_SIZE; do
-		log::debug "${PKG[pretty]} | waiting for extraction thread to complete"
+		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		struct::pkg $i
 		log::prog "${PKG[pretty]}"
 		wait -f ${JOB[${i}_extract]} || :
-		log::ok "${PKG[pretty]}"
-	done
-
-	# CHECK FAIL FILES
-	log::debug "checking for failure files"
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
+		# CHECK FAIL FILES
+		log::debug "${PKG[pretty]} | checking for failure files"
 		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
 		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_LS ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} NULL folder variable"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_CP ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} copy failed"
+		log::ok "${PKG[pretty]}"
+		log::debug "${PKG[pretty]} | no failure files found"
 	done
-	log::debug "no failure files found"
-
-	# get folder PKG variable
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
-		pkg::extract::find_folder
-	done
-
 	return 0
 }
 
@@ -78,14 +71,27 @@ pkg::extract::multi() {
 	if rm "${TMP_PKG[${PKG[short]}_tar]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | tar rm OK | ${TMP_PKG[${PKG[short]}_tar]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_rm]}/FAIL_RM" &>/dev/null || exit 2
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_RM" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | tar rm FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
 	fi
-}
 
-pkg::extract::find_folder() {
 	# get folder name
 	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_folder]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_folder]}"
 	log::debug "package folder: ${TMP_PKG[${PKG[short]}_folder]}"
+
+	# NULL folder name sanity check
+	if [[ -z ${TMP_PKG[${PKG[short]}_folder]} || ${TMP_PKG[${PKG[short]}_folder]} =~ ^[[:space:]]+$ ]]; then
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_LS" &>/dev/null || exit 2
+		log::debug "${PKG[pretty]} | NULL folder variable"
+	fi
+
+	# copy to folder
+	mkdir -p "${PKG[directory]}"
+	if cp -fr "${TMP_PKG[${PKG[short]}_folder]}"/* "${PKG[directory]}"; then
+		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
+	else
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_CP" &>/dev/null || exit 2
+		log::debug "${PKG[pretty]} | cp folder FAIL"
+	fi
 }

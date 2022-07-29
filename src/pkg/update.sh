@@ -45,52 +45,52 @@ pkg::update() {
 	# VARIABLE
 	map VER
 	[[ $JOB ]] || map JOB
-	local UPDATE_FOUND j
-	declare -a SCRATCH UPDATE_LIST
+	local UPDATE_LIST UPDATE_FOUND j
+	declare -a SCRATCH
 
 	# TITLE
 	print::pkg::update
 
 	# START METADATA THREADS AND CREATE UPDATE_LIST
+	log::prog "Fetching package metadata..."
 	struct::pkg bash
-	UPDATE_LIST=(${PKG[short]})
+	UPDATE_LIST="${PKG[short]}"
 	pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
-		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	if [[ $P2POOL_VER ]]; then
 		struct::pkg p2pool
-		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	if [[ $XMRIG_VER ]]; then
 		struct::pkg xmrig
-		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 
-	# WAIT FOR THREADS
-	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]} || :
-
-	# CHECK FAIL FILES
+	# WAIT FOR THREADS & CHECK FAIL FILES
 	log::debug "checking for failure files"
-	for i in ${UPDATE_LIST[@]}; do
+	for i in $UPDATE_LIST; do
 		struct::pkg $i
+		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
+		wait -f ${JOB[${PKG[short]}_update]} || :
 		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
-			print::error "Update failure - ${PKG[pretty]} metadata fetch failed"
+			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
+		else
+			log::ok "${PKG[pretty]}"
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
-		echo
 		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
 	log::debug "no failure files found"
-
+	echo
 
 	# FILTER RESULT AND PRINT
 	# always for [monero-bash]
@@ -115,8 +115,10 @@ pkg::update() {
 
 	# END
 	if [[ $UPDATE_FOUND ]]; then
-		echo
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		trap 'pkg::tmp::remove; lock::free monero_bash_update; exit' EXIT
+		printf "${BBLUE}%s\n%s${BWHITE}%s${BCYAN}%s${BWHITE}%s${OFF}\n" \
+			"|| " \
+			"|| " \
 			"Updates found, type: " \
 			"[monero-bash upgrade] " \
 			"to upgrade all packages"
@@ -178,14 +180,14 @@ pkg::update::result() {
 	# print result and update state
 	if [[ ${PKG[current_version]} = "${VER[${PKG[short]}]}" ]]; then
 		log::debug "fetched version matches state, printing BGREEN"
-		printf "${BWHITE}%s${BGREEN}%s\n" \
-			"$UPDATE_NAME" "${PKG[current_version]}"
+		printf "${BBLUE}%s${BWHITE}%s${BGREEN}%s\n" \
+			"|| " "$UPDATE_NAME" "${PKG[current_version]}"
 	else
 		log::debug "fetched version different from state, updating state and printing BRED"
 		sed -i "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=true/" "$STATE"
 		UPDATE_FOUND=true
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-			"$UPDATE_NAME" "${PKG[current_version]} " "-> " "${VER[${PKG[short]}]}"
+		printf "${BRED}%s${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
+			"|| " "$UPDATE_NAME" "${PKG[current_version]} " "-> " "${VER[${PKG[short]}]}"
 	fi
 	return 0
 }

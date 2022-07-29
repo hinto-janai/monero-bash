@@ -95,7 +95,12 @@ pkg::tmp::remove() {
 	log::debug "starting"
 	if find /tmp/monero-bash* &>/dev/null; then
 		log::debug "old tmp folders found, removing"
-		rm -rf /tmp/monero-bash*
+		if rm -rf /tmp/monero-bash*; then
+			log::debug "rm tmp folder OK"
+		else
+			log::debug "rm tmp folder FAIL"
+			return 1
+		fi
 	else
 		log::debug "no old tmp folders found, skipping"
 	fi

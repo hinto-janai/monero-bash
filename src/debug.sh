@@ -24,25 +24,41 @@
 # this skips safety checks and option parsing
 # use carefully!
 DEBUG() {
-	log::debug "starting ${FUNCNAME}()"
-	log::debug "entering debug function mode"
-
-	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BGREEN}%s${OFF}\n" \
-		"====    MONERO-BASH DEBUG MODE   ===="
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		"@ you are executing a monero-bash   @" \
-		"@ function directly, use carefully! @" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		"function(): "
-
+	log::debug "STARTING DEBUG MODE"
 	local DEBUG_FUNCTION || return 1
-	read -r DEBUG_FUNCTION || return 2
+
+	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n" \
+		"   ===> MONERO-BASH DEBUG MODE <===   " \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@ you are executing a monero-bash    @" \
+		"@ function directly, use carefully!  @" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+
+	# if #2 exists, re-confirm
+	if [[ $2 ]]; then
+		printf "${BGREEN}%s${BWHITE}%s\n${OFF}%s" \
+			"function(): " \
+			"$2" \
+			"Execute this function? (y/N) "
+		if ask::no; then
+			printf "%s\n" "Exiting..."
+			exit 1
+		fi
+		DEBUG_FUNCTION="$2" || return 2
+	else
+		# else ask for function name
+		printf "${BGREEN}%s${OFF}" "function(): "
+		read -r DEBUG_FUNCTION || return 3
+	fi
+
+	# check if function exists
 	if ! declare -fp "$DEBUG_FUNCTION" &>/dev/null; then
 		log::fail "$DEBUG_FUNCTION not found"
 		exit 1
 	fi
 
-	log::debug "executing debug function: $DEBUG_FUNCTION"
+	# execute function
+	printf "%s\n" "EXECUTING FUNCTION: $DEBUG_FUNCTION"
 	$DEBUG_FUNCTION
 	exit
 }

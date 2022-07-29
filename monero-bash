@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/8842d62>
-#nix <1659113984>
+#git <monero-bash/546a3e5>
+#nix <1659130824>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -50,7 +50,6 @@
 #src <parse/options.sh>
 #src <parse/p2pool.sh>
 #src <parse/state.sh>
-#src <pkg/copy.sh>
 #src <pkg/download.sh>
 #src <pkg/extract.sh>
 #src <pkg/hook.sh>
@@ -808,22 +807,33 @@ crypto::key::remove() {
 	free CRYPTO_KEY
 }
 DEBUG() {
-	log::debug "starting ${FUNCNAME}()"
-	log::debug "entering debug function mode"
-	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BGREEN}%s${OFF}\n" \
-		"====    MONERO-BASH DEBUG MODE   ===="
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		"@ you are executing a monero-bash   @" \
-		"@ function directly, use carefully! @" \
-		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
-		"function(): "
+	log::debug "STARTING DEBUG MODE"
 	local DEBUG_FUNCTION || return 1
-	read -r DEBUG_FUNCTION || return 2
+	printf "${BRED}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n${BWHITE}%s\n" \
+		"   ===> MONERO-BASH DEBUG MODE <===   " \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@" \
+		"@ you are executing a monero-bash    @" \
+		"@ function directly, use carefully!  @" \
+		"@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	if [[ $2 ]]; then
+		printf "${BGREEN}%s${BWHITE}%s\n${OFF}%s" \
+			"function(): " \
+			"$2" \
+			"Execute this function? (y/N) "
+		if ask::no; then
+			printf "%s\n" "Exiting..."
+			exit 1
+		fi
+		DEBUG_FUNCTION="$2" || return 2
+	else
+		printf "${BGREEN}%s${OFF}" "function(): "
+		read -r DEBUG_FUNCTION || return 3
+	fi
 	if ! declare -fp "$DEBUG_FUNCTION" &>/dev/null; then
 		log::fail "$DEBUG_FUNCTION not found"
 		exit 1
 	fi
-	log::debug "executing debug function: $DEBUG_FUNCTION"
+	printf "%s\n" "EXECUTING FUNCTION: $DEBUG_FUNCTION"
 	$DEBUG_FUNCTION
 	exit
 }
@@ -1585,22 +1595,6 @@ parse::state() {
 	log::debug "P2POOL_OLD      | $P2POOL_OLD"
 	log::debug "XMRIG_OLD       | $XMRIG_OLD"
 }
-pkg::copy() {
-	log::debug "starting"
-	local i
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
-		pkg::copy::cp
-	done
-	return 0
-}
-pkg::copy::cp() {
-		log::prog "${PKG[pretty]}"
-		mkdir -p "${PKG[directory]}"
-		cp -fr "${TMP_PKG[${PKG[short]}_folder]}"/* "${PKG[directory]}"
-		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
-		log::ok "${PKG[pretty]}"
-}
 pkg::download() {
 	log::debug "starting"
 	local i
@@ -1691,22 +1685,17 @@ pkg::extract() {
 		pkg::extract::multi & JOB[${i}_extract]=$!
 	done
 	for i in $UPGRADE_LIST_SIZE; do
-		log::debug "${PKG[pretty]} | waiting for extraction thread to complete"
+		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		struct::pkg $i
 		log::prog "${PKG[pretty]}"
 		wait -f ${JOB[${i}_extract]} || :
-		log::ok "${PKG[pretty]}"
-	done
-	log::debug "checking for failure files"
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
+		log::debug "${PKG[pretty]} | checking for failure files"
 		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
 		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
-	done
-	log::debug "no failure files found"
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
-		pkg::extract::find_folder
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_LS ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} NULL folder variable"
+		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_CP ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} copy failed"
+		log::ok "${PKG[pretty]}"
+		log::debug "${PKG[pretty]} | no failure files found"
 	done
 	return 0
 }
@@ -1721,14 +1710,23 @@ pkg::extract::multi() {
 	if rm "${TMP_PKG[${PKG[short]}_tar]}" &>/dev/null; then
 		log::debug "${PKG[pretty]} | tar rm OK | ${TMP_PKG[${PKG[short]}_tar]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_rm]}/FAIL_RM" &>/dev/null || exit 2
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_RM" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | tar rm FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
 	fi
-}
-pkg::extract::find_folder() {
 	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_folder]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_folder]}"
 	log::debug "package folder: ${TMP_PKG[${PKG[short]}_folder]}"
+	if [[ -z ${TMP_PKG[${PKG[short]}_folder]} || ${TMP_PKG[${PKG[short]}_folder]} =~ ^[[:space:]]+$ ]]; then
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_LS" &>/dev/null || exit 2
+		log::debug "${PKG[pretty]} | NULL folder variable"
+	fi
+	mkdir -p "${PKG[directory]}"
+	if cp -fr "${TMP_PKG[${PKG[short]}_folder]}"/* "${PKG[directory]}"; then
+		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
+	else
+		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_CP" &>/dev/null || exit 2
+		log::debug "${PKG[pretty]} | cp folder FAIL"
+	fi
 }
 pkg::hook::pre() {
 	log::debug "starting"
@@ -2080,6 +2078,7 @@ pkg::remove::prompt() {
 		"Continue with removal? (y/N) "
 	if ask::no; then
 		printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
+		exit 1
 	fi
 	if ! ask::sudo; then
 		print::exit "sudo is required"
@@ -2170,7 +2169,12 @@ pkg::tmp::remove() {
 	log::debug "starting"
 	if find /tmp/monero-bash* &>/dev/null; then
 		log::debug "old tmp folders found, removing"
-		rm -rf /tmp/monero-bash*
+		if rm -rf /tmp/monero-bash*; then
+			log::debug "rm tmp folder OK"
+		else
+			log::debug "rm tmp folder FAIL"
+			return 1
+		fi
 	else
 		log::debug "no old tmp folders found, skipping"
 	fi
@@ -2215,43 +2219,46 @@ pkg::update() {
 	pkg::tmp::info update
 	map VER
 	[[ $JOB ]] || map JOB
-	local UPDATE_FOUND j
-	declare -a SCRATCH UPDATE_LIST
+	local UPDATE_LIST UPDATE_FOUND j
+	declare -a SCRATCH
 	print::pkg::update
+	log::prog "Fetching package metadata..."
 	struct::pkg bash
-	UPDATE_LIST=(${PKG[short]})
+	UPDATE_LIST="${PKG[short]}"
 	pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	if [[ $MONERO_VER ]]; then
 		struct::pkg monero
-		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	if [[ $P2POOL_VER ]]; then
 		struct::pkg p2pool
-		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 	if [[ $XMRIG_VER ]]; then
 		struct::pkg xmrig
-		UPDATE_LIST=($UPDATE_LIST ${PKG[short]})
+		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
-	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]} || :
 	log::debug "checking for failure files"
-	for i in ${UPDATE_LIST[@]}; do
+	for i in $UPDATE_LIST; do
 		struct::pkg $i
+		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
+		wait -f ${JOB[${PKG[short]}_update]} || :
 		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
-			print::error "Update failure - ${PKG[pretty]} metadata fetch failed"
+			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
+		else
+			log::ok "${PKG[pretty]}"
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
-		echo
 		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
 	log::debug "no failure files found"
+	echo
 	struct::pkg bash
 	pkg::update::ver
 	pkg::update::result
@@ -2271,8 +2278,10 @@ pkg::update() {
 		pkg::update::result
 	fi
 	if [[ $UPDATE_FOUND ]]; then
-		echo
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}\n" \
+		trap 'pkg::tmp::remove; lock::free monero_bash_update; exit' EXIT
+		printf "${BBLUE}%s\n%s${BWHITE}%s${BCYAN}%s${BWHITE}%s${OFF}\n" \
+			"|| " \
+			"|| " \
 			"Updates found, type: " \
 			"[monero-bash upgrade] " \
 			"to upgrade all packages"
@@ -2316,14 +2325,14 @@ pkg::update::result() {
 	esac
 	if [[ ${PKG[current_version]} = "${VER[${PKG[short]}]}" ]]; then
 		log::debug "fetched version matches state, printing BGREEN"
-		printf "${BWHITE}%s${BGREEN}%s\n" \
-			"$UPDATE_NAME" "${PKG[current_version]}"
+		printf "${BBLUE}%s${BWHITE}%s${BGREEN}%s\n" \
+			"|| " "$UPDATE_NAME" "${PKG[current_version]}"
 	else
 		log::debug "fetched version different from state, updating state and printing BRED"
 		sed -i "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=true/" "$STATE"
 		UPDATE_FOUND=true
-		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
-			"$UPDATE_NAME" "${PKG[current_version]} " "-> " "${VER[${PKG[short]}]}"
+		printf "${BRED}%s${BWHITE}%s${BRED}%s${BWHITE}%s${BGREEN}%s\n" \
+			"|| " "$UPDATE_NAME" "${PKG[current_version]} " "-> " "${VER[${PKG[short]}]}"
 	fi
 	return 0
 }
@@ -2369,9 +2378,7 @@ pkg::upgrade() {
 		print::pkg::upgrade
 	fi
 	pkg::extract
-	trap 'pkg::copy &>/dev/null; pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
-	pkg::copy
-	trap 'pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
+	trap 'pkg::hooks::post &>/dev/null; pkg::trap::pkg_folders; lock::free monero_bash_upgrade; kill -s KILL 0; exit 1' EXIT
 	print::pkg::hook::post
 	pkg::hook::post
 	log::debug "freeing lock file: ${STD_LOCK_FILE[monero_bash_upgrade]}"
@@ -2466,7 +2473,7 @@ pkg::verify::hash() {
 	mapfile VERIFY_HASH < "${TMP_PKG[${PKG[short]}_hash_calc]}"
 	HASH[${PKG[short]}]="${VERIFY_HASH// *}"
 	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
-	if [[ -z ${HASH[${PKG[short]}]} ||${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]]; then
+	if [[ -z ${HASH[${PKG[short]}]} || ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]]; then
 		echo
 		print::exit "Upgrade failure | NULL Hash variable"
 	fi
@@ -2503,7 +2510,7 @@ pkg::verify::pgp() {
 		local VERIFY_PGP_CMD="gpg --verify ${TMP_PKG[${PKG[short]}_hash]}"
 	fi
 	if $VERIFY_PGP_CMD &> ${TMP_PKG[${PKG[short]}_gpg]}; then
-		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG[${PKG[short]}]} | PGP signed by: ${PKG[gpg_owner]}"
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
 		log::debug "PGP success for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
@@ -2511,7 +2518,7 @@ pkg::verify::pgp() {
 			log::debug "$i"
 		done
 	else
-		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP FAIL: ${PKG[gpg_owner]}"
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG[${PKG[short]}]} | PGP FAIL: ${PKG[gpg_owner]}"
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
 		log::debug "PGP failure for ${PKG[gpg_owner]}: ${TMP_PKG[${PKG[short]}_hash]}"
@@ -4048,8 +4055,6 @@ declare -frg parse::options::systemd
 declare -frg parse::options
 declare -frg parse::p2pool
 declare -frg parse::state
-declare -frg pkg::copy
-declare -frg pkg::copy::cp
 declare -frg pkg::download
 declare -frg pkg::download::sig
 declare -frg pkg::download::hash
@@ -4057,7 +4062,6 @@ declare -frg pkg::download::pkg
 declare -frg pkg::download::find_tar
 declare -frg pkg::extract
 declare -frg pkg::extract::multi
-declare -frg pkg::extract::find_folder
 declare -frg pkg::hook::pre
 declare -frg pkg::hook::post
 declare -frg pkg::hook::post::state
@@ -4141,7 +4145,13 @@ set +eo pipefail || exit 118
 #-------------------------------------------------------------------------------- BEGIN MAIN
 main() {
 log::debug "main() started"
-[[ $1 = DEBUG ]] && DEBUG "$@"
+if [[ $1 = DEBUG ]]; then
+	log::debug "starting DEBUG mode"
+	safety::wget_curl
+	parse::state
+	parse::config
+	DEBUG "$@"
+fi
 log::debug "starting safety checks"
 if set -m; then
 	log::debug "set -m | job control | OK"

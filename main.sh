@@ -44,7 +44,13 @@ main() {
 log::debug "main() started"
 
 #----------------------------------------- DEBUG
-[[ $1 = DEBUG ]] && DEBUG "$@"
+if [[ $1 = DEBUG ]]; then
+	log::debug "starting DEBUG mode"
+	safety::wget_curl
+	parse::state
+	parse::config
+	DEBUG "$@"
+fi
 
 #----------------------------------------- SAFETY
 log::debug "starting safety checks"

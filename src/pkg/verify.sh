@@ -133,7 +133,7 @@ pkg::verify::hash() {
 	log::debug "${PKG[pretty]} HASH | ${HASH[${PKG[short]}]}"
 
 	# null hash sanity check
-	if [[ -z ${HASH[${PKG[short]}]} ||${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]]; then
+	if [[ -z ${HASH[${PKG[short]}]} || ${HASH[${PKG[short]}]} =~ ^[[:space:]]+$ ]]; then
 		echo
 		print::exit "Upgrade failure | NULL Hash variable"
 	fi
@@ -194,7 +194,7 @@ pkg::verify::pgp() {
 
 	# verify and redirect output to tmp file
 	if $VERIFY_PGP_CMD &> ${TMP_PKG[${PKG[short]}_gpg]}; then
-		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP signed by: ${PKG[gpg_owner]}"
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG[${PKG[short]}]} | PGP signed by: ${PKG[gpg_owner]}"
 
 		# get output into variable
 		local PGP_OUTPUT IFS=$'\n' i
@@ -206,7 +206,7 @@ pkg::verify::pgp() {
 		done
 
 	else
-		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG} | PGP FAIL: ${PKG[gpg_owner]}"
+		VERIFY_MSG[${PKG[short]}]="${VERIFY_MSG[${PKG[short]}]} | PGP FAIL: ${PKG[gpg_owner]}"
 		# get output into variable
 		local PGP_OUTPUT IFS=$'\n' i
 		mapfile PGP_OUTPUT < "${TMP_PKG[${PKG[short]}_gpg]}"
