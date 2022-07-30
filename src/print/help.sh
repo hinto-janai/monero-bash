@@ -25,29 +25,31 @@ print::help() {
 	log::debug "starting"
 
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
-		"USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
+		"USAGE: " "monero-bash " "command " "<argument> " "[-o|--option]"
 
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
 		"monero-bash                                Open interactive wallet menu" \
 		"list                                       List wallets"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"open    " "<wallet> " "[-p|--password <pass>]    " "Open a wallet directly"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"new     " "<wallet type>                      " "Enter wallet creation mode"
 
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[--verbose] [--force]   " "Install one/multiple packages" \
-		"remove  " "<packages> " "[--verbose]             " "Remove one/multiple packages"
+		"install " "<packages> " "[-v|--verbose] [-f|--force]   " "Install one/multiple packages" \
+		"remove  " "<packages> " "[-v|--verbose]             " "Remove one/multiple packages"
 	printf "    ${OFF}%s${BPURPLE}%s${OFF}%s\n" \
-		"update  " "[--verbose]                        " "Check for package updates" \
-		"upgrade " "[--verbose] [--force]              " "Upgrade all out-of-date packages"
+		"update  " "[-v|--verbose]                        " "Check for package updates" \
+		"upgrade " "[-v|--verbose] [-f|--force]              " "Upgrade all out-of-date packages"
 
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"full    " "<process>                          " "Start <process> fully attached in foreground" \
 		"config  " "<processes>                        " "Enter interactive configuration for <process>"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"default " "<processes> " "[--config] [--systemd] " "Reset your config/systemd file to the default"
+		"default " "<processes> " "[-c|--config] [-s|--systemd] " "Reset your config/systemd file to the default"
 
 	printf "\n${BWHITE}%s${OFF}\n" "SYSTEMD"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
@@ -68,8 +70,8 @@ print::help() {
 		"version                                    Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"changes " "<packages> " "[--print]               " "View the latests changes for <package>" \
-		"rpc     " "<JSON-RPC method> " "[--verbose]      " "Send a JSON-RPC call to monerod"
+		"changes " "<packages> " "[-p|--print]               " "View the latests changes for <package>" \
+		"rpc     " "<JSON-RPC method> " "[-v|--verbose]      " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"help    " "<command>                          " "Print help for a command, or all if none specified"
 }
@@ -128,6 +130,17 @@ print::help::command() {
 			"PURPLE : | ultra     | 9%" \
 			"GOLDEN / | legendary | 0.99%" \
 			"GREEN  # | lottery   | 0.0030519%"
+			;;
+		open)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "open " "<wallet> " "[-p|--password <pass>]"
+			printf "${OFF}%s\n" \
+			"Open a specific wallet directly, skipping the interactive menu." \
+			"" \
+			"This skips the interactive selection menu, and opens the wallet directly." \
+			"" \
+			"If the [-p|--password] option is NOT given, a password prompt will appear."\
+			"If the [-p|--password] option is given, the next argument will be used" \
+			"as the password, if no password given, an empty password is used."
 			;;
 		new)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "new " "<wallet type>"

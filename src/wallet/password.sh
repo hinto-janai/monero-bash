@@ -30,9 +30,14 @@ wallet::password() {
 	# create one-time key file
 	crypto::key::create
 
-	# password input
-	printf "${BWHITE}%s${OFF}" "Password: "
-	read -s -r WALLET_PASSWORD
+	# if $1 exists, use it as the password
+	if [[ $1 ]]; then
+		WALLET_PASSWORD="$1"
+	else
+		# password input
+		printf "${BWHITE}%s${OFF}" "Password: "
+		read -s -r WALLET_PASSWORD
+	fi
 
 	# encrypt input with key file
 	WALLET_PASSWORD="$(crypto::encrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"

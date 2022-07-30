@@ -81,6 +81,20 @@ case "$1" in
 	list) print::title; wallet::list;;
 	size) print::size;;
 	new)  shift; print::title; wallet::create "$@";;
+	open)
+		[[ $# = 1 ]] && print::help::command $1 && exit 1
+		shift
+		if [[ $2 ]]; then
+			case "$2" in
+				-p | --password) :;;
+				*)
+					print::error "Invalid option: $1"
+					print::exit  "Did you mean: [-p|--password <pass>]?"
+					;;
+			esac
+		fi
+		wallet::open "$@"
+		;;
 
 	# PACKAGE MANAGER
 	update)

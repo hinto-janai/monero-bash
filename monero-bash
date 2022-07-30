@@ -26,22 +26,23 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/3034555>
-#nix <1659147193>
+#git <monero-bash/32fa8ea>
+#nix <1659238196>
 #hbc <e35ca7a>
-#lib <stdlib/ask.sh/1eaba1f>
-#lib <stdlib/const.sh/1eaba1f>
-#lib <stdlib/crypto.sh/1eaba1f>
-#lib <stdlib/date.sh/1eaba1f>
-#lib <stdlib/debug.sh/1eaba1f>
-#lib <stdlib/is.sh/1eaba1f>
-#lib <stdlib/lock.sh/1eaba1f>
-#lib <stdlib/log.sh/1eaba1f>
-#lib <stdlib/panic.sh/1eaba1f>
-#lib <stdlib/readonly.sh/1eaba1f>
-#lib <stdlib/safety.sh/1eaba1f>
-#lib <stdlib/trace.sh/1eaba1f>
-#lib <stdlib/type.sh/1eaba1f>
+#lib <stdlib/ask.sh/9a1b93f>
+#lib <stdlib/const.sh/9a1b93f>
+#lib <stdlib/crypto.sh/9a1b93f>
+#lib <stdlib/date.sh/9a1b93f>
+#lib <stdlib/debug.sh/9a1b93f>
+#lib <stdlib/is.sh/9a1b93f>
+#lib <stdlib/lock.sh/9a1b93f>
+#lib <stdlib/log.sh/9a1b93f>
+#lib <stdlib/math.sh/9a1b93f>
+#lib <stdlib/panic.sh/9a1b93f>
+#lib <stdlib/readonly.sh/9a1b93f>
+#lib <stdlib/safety.sh/9a1b93f>
+#lib <stdlib/trace.sh/9a1b93f>
+#lib <stdlib/type.sh/9a1b93f>
 #src <crypto/key.sh>
 #src <debug.sh>
 #src <monero_bash/install.sh>
@@ -87,6 +88,7 @@
 #src <systemd/reload.sh>
 #src <wallet/create.sh>
 #src <wallet/list.sh>
+#src <wallet/open.sh>
 #src <wallet/password.sh>
 #src <wallet/select.sh>
 #src <wallet/start.sh>
@@ -451,6 +453,21 @@ log::debug() {
 	fi
 	printf "\e[0m\n"
 }
+short::sum() { builtin echo "$1" | awk -M -v PREC=200 '{SUM+=$1}END{printf "%.3f\n", SUM }'; }
+float::sum() { builtin echo "$1" | awk -M -v PREC=200 '{SUM+=$1}END{printf "%.7f\n", SUM }'; }
+double::sum() { builtin echo "$1" | awk -M -v PREC=200 '{SUM+=$1}END{printf "%.15f\n", SUM }'; }
+short::add() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.3f\n", $1 + $2 }'; }
+float::add() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.7f\n", $1 + $2 }'; }
+double::add() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.15f\n", $1 + $2 }'; }
+short::sub() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.3f\n", $1 - $2 }'; }
+float::sub() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.7f\n", $1 - $2 }'; }
+double::sub() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.15f\n", $1 - $2 }'; }
+short::mul() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.3f\n", $1 * $2 }'; }
+float::mul() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.7f\n", $1 * $2 }'; }
+double::mul() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.15f\n", $1 * $2 }'; }
+short::div() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.3f\n", $1 / $2 }'; }
+float::div() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }'; }
+double::div() { builtin echo "$1" "$2" | awk -M -v PREC=200 '{printf "%.15f\n", $1 / $2 }'; }
 panic() {
 	local STD_PANIC_CODE="$?" STD_TRACE_FUNC=("${BASH_LINENO[@]}") STD_TRACE_CMD_NUM=${BASH_LINENO[0]}|| exit 98
 	POSIXLY_CORRECT= || exit 11
@@ -769,6 +786,21 @@ declare -frg log::danger
 declare -frg log::tab
 declare -frg log::prog
 declare -frg log::debug
+declare -frg short::sum
+declare -frg float::sum
+declare -frg double::sum
+declare -frg short::add
+declare -frg float::add
+declare -frg double::add
+declare -frg short::sub
+declare -frg float::sub
+declare -frg double::sub
+declare -frg short::mul
+declare -frg float::mul
+declare -frg double::mul
+declare -frg short::div
+declare -frg float::div
+declare -frg double::div
 declare -frg panic
 declare -frg safety::builtin
 declare -frg safety::bash
@@ -1257,6 +1289,20 @@ case "$1" in
 	list) print::title; wallet::list;;
 	size) print::size;;
 	new)  shift; print::title; wallet::create "$@";;
+	open)
+		[[ $# = 1 ]] && print::help::command $1 && exit 1
+		shift
+		if [[ $2 ]]; then
+			case "$2" in
+				-p | --password) :;;
+				*)
+					print::error "Invalid option: $1"
+					print::exit  "Did you mean: [-p|--password <pass>]?"
+					;;
+			esac
+		fi
+		wallet::open "$@"
+		;;
 	update)
 		shift
 		until [[ $# = 0 ]]; do
@@ -2744,26 +2790,28 @@ print::exit() {
 print::help() {
 	log::debug "starting"
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
-		"USAGE: " "monero-bash " "[command] " "<argument> " "[--option]"
+		"USAGE: " "monero-bash " "command " "<argument> " "[-o|--option]"
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
 		"monero-bash                                Open interactive wallet menu" \
 		"list                                       List wallets"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"open    " "<wallet> " "[-p|--password <pass>]    " "Open a wallet directly"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"new     " "<wallet type>                      " "Enter wallet creation mode"
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[--verbose] [--force]   " "Install one/multiple packages" \
-		"remove  " "<packages> " "[--verbose]             " "Remove one/multiple packages"
+		"install " "<packages> " "[-v|--verbose] [-f|--force]   " "Install one/multiple packages" \
+		"remove  " "<packages> " "[-v|--verbose]             " "Remove one/multiple packages"
 	printf "    ${OFF}%s${BPURPLE}%s${OFF}%s\n" \
-		"update  " "[--verbose]                        " "Check for package updates" \
-		"upgrade " "[--verbose] [--force]              " "Upgrade all out-of-date packages"
+		"update  " "[-v|--verbose]                        " "Check for package updates" \
+		"upgrade " "[-v|--verbose] [-f|--force]              " "Upgrade all out-of-date packages"
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"full    " "<process>                          " "Start <process> fully attached in foreground" \
 		"config  " "<processes>                        " "Enter interactive configuration for <process>"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"default " "<processes> " "[--config] [--systemd] " "Reset your config/systemd file to the default"
+		"default " "<processes> " "[-c|--config] [-s|--systemd] " "Reset your config/systemd file to the default"
 	printf "\n${BWHITE}%s${OFF}\n" "SYSTEMD"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"start   " "<processes>                        " "Start process as systemd background process" \
@@ -2782,8 +2830,8 @@ print::help() {
 		"version                                    Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"changes " "<packages> " "[--print]               " "View the latests changes for <package>" \
-		"rpc     " "<JSON-RPC method> " "[--verbose]      " "Send a JSON-RPC call to monerod"
+		"changes " "<packages> " "[-p|--print]               " "View the latests changes for <package>" \
+		"rpc     " "<JSON-RPC method> " "[-v|--verbose]      " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
 		"help    " "<command>                          " "Print help for a command, or all if none specified"
 }
@@ -2838,6 +2886,17 @@ print::help::command() {
 			"PURPLE : | ultra     | 9%" \
 			"GOLDEN / | legendary | 0.99%" \
 			"GREEN  # | lottery   | 0.0030519%"
+			;;
+		open)
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "open " "<wallet> " "[-p|--password <pass>]"
+			printf "${OFF}%s\n" \
+			"Open a specific wallet directly, skipping the interactive menu." \
+			"" \
+			"This skips the interactive selection menu, and opens the wallet directly." \
+			"" \
+			"If the [-p|--password] option is NOT given, a password prompt will appear."\
+			"If the [-p|--password] option is given, the next argument will be used" \
+			"as the password, if no password given, an empty password is used."
 			;;
 		new)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "new " "<wallet type>"
@@ -3630,6 +3689,11 @@ safety::wget_curl() {
 		return 0
 	fi
 }
+status::p2pool() {
+	TOTAL_PAYOUT=$(grep -o "You received a payout of .* XMR" p2pool.log)
+	TOTAL_PAYOUT="${a//[A-Za-z[:blank:]]}"
+	double::sum "$TOTAL_PAYOUT"
+}
 status::table() {
 	log::debug "creating status table"
 	printf "${OFF}%s\n" \
@@ -3942,12 +4006,31 @@ wallet::list() {
 	fi
 	return 0
 }
+wallet::open() {
+	log::debug "starting"
+	if [[ -e "$WALLETS/$1" ]]; then
+		printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "Opening wallet: " "[$1]"
+	else
+		print::exit "Wallet [$1] not found!"
+	fi
+	if [[ $2 = "-v" || $2 = "--verbose" ]]; then
+		wallet::password "$3"
+	else
+		wallet::password
+	fi
+	printf "\n\n"
+	wallet::start
+}
 wallet::password() {
 	log::debug "starting"
 	trap 'crypto::key::remove' EXIT
 	crypto::key::create
-	printf "${BWHITE}%s${OFF}" "Password: "
-	read -s -r WALLET_PASSWORD
+	if [[ $1 ]]; then
+		WALLET_PASSWORD="$1"
+	else
+		printf "${BWHITE}%s${OFF}" "Password: "
+		read -s -r WALLET_PASSWORD
+	fi
 	WALLET_PASSWORD="$(crypto::encrypt "$WALLET_PASSWORD" "$(cat $CRYPTO_KEY)")"
 }
 wallet::select() {
@@ -4133,12 +4216,14 @@ declare -frg safety::pipe
 declare -frg safety::pkg
 declare -frg safety::root
 declare -frg safety::wget_curl
+declare -frg status::p2pool
 declare -frg status::table
 declare -frg struct::pkg
 declare -frg systemd::create
 declare -frg systemd::reload
 declare -frg wallet::create
 declare -frg wallet::list
+declare -frg wallet::open
 declare -frg wallet::password
 declare -frg wallet::select
 declare -frg wallet::start

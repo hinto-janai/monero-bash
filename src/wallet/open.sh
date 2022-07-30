@@ -20,21 +20,26 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# parse info for p2pool status
-status::p2pool() {
+# parse [monero-bash open <wallet>] command
+wallet::open() {
+	log::debug "starting"
 
-	# // todo, finish stats
-	# // FRAMEWORK FOR TOTAL PAYOUT
+	# check if wallet exists
+	if [[ -e "$WALLETS/$1" ]]; then
+		printf "${BWHITE}%s${BYELLOW}%s${OFF}\n" "Opening wallet: " "[$1]"
+	else
+		print::exit "Wallet [$1] not found!"
+	fi
 
-	# grep for payout
-	TOTAL_PAYOUT=$(grep -o "You received a payout of .* XMR" p2pool.log)
+	# check for password option
+	if [[ $2 = "-v" || $2 = "--verbose" ]]; then
+		wallet::password "$3"
+	else
+		# prompt for pass
+		wallet::password
+	fi
 
-	# remove letters/space
-	TOTAL_PAYOUT="${a//[A-Za-z[:blank:]]}"
-
-	# calculate
-	double::sum "$TOTAL_PAYOUT"
-#	^
-#   |______ this will combine the column of
-#           floating point numbers that grep found
+	# START WALLET
+	printf "\n\n"
+	wallet::start
 }

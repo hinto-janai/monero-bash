@@ -33,6 +33,7 @@
 #include <stdlib/src/is.sh>
 #include <stdlib/src/lock.sh>
 #include <stdlib/src/log.sh>
+#include <stdlib/src/math.sh>
 #include <stdlib/src/panic.sh>
 #include <stdlib/src/readonly.sh>
 #include <stdlib/src/safety.sh>
