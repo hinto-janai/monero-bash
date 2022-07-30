@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/546a3e5>
-#nix <1659130824>
+#git <monero-bash/3034555>
+#nix <1659147193>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/1eaba1f>
 #lib <stdlib/const.sh/1eaba1f>
@@ -578,10 +578,6 @@ ___ENDOF___ERROR___TRACE___() {
 	unset -v POSIXLY_CORRECT || exit 18
 	unset -f : || exit 1
 	if [[ -z $STD_TRACE_PIPE ]]; then
-		POSIXLY_CORRECT= || exit 19
-		\unset -f trap set return exit return || exit 20
-		\unalias -a || exit 21
-		unset POSIXLY_CORRECT || exit 22
 		unset -v STD_TRACE_CMD STD_TRACE_FUNC_NUM STD_TRACE_CMD_NUM STD_TRACE_PIPE || exit 23
 		set +E +eo pipefail || exit 24
 		trap - ERR || exit 25
@@ -1616,31 +1612,33 @@ pkg::download() {
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for download threads to complete"
 		log::prog "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
-		[[ ${PKG[short]} = xmrig ]] && wait -f ${JOB[${i}_download_sig]} || :
-		wait -f ${JOB[${i}_download_hash]} ${JOB[${i}_download_pkg]} || :
-		log::ok "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
-	done
-	log::debug "checking for failure files"
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_SIG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_HASH ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_PKG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
-		log::debug "${PKG[pretty]} | no failure files found"
-	done
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
+		if [[ ${PKG[short]} = xmrig ]]; then
+			if ! wait -f ${JOB[${i}_download_sig]}; then
+				printf "\n"
+				print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
+			fi
+		fi
+		if ! wait -f ${JOB[${i}_download_hash]}; then
+			printf "\n"
+			print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
+		fi
+		if ! wait -f ${JOB[${i}_download_pkg]}; then
+			printf "\n"
+			print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
+		fi
 		pkg::download::find_tar
+		log::ok "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
 	done
 	return 0
 }
 pkg::download::sig() {
 	log::debug "${PKG[pretty]} | starting sig download thread"
+	[[ ${PKG[short]} != xmrig ]] && log::debug "${PKG[pretty]} sig file is not seperate, returning 0" && return 0
 	if $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "${LINK_SIG[${PKG[short]}]}"; then
 		log::debug "${PKG[pretty]} | sig download OK"
 	else
 		log::debug "${PKG[pretty]} | sig download FAIL"
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_SIG" &>/dev/null || exit 1
+		return 1
 	fi
 }
 pkg::download::hash() {
@@ -1649,7 +1647,7 @@ pkg::download::hash() {
 		log::debug "${PKG[pretty]} | hash download OK"
 	else
 		log::debug "${PKG[pretty]} | hash download FAIL"
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_HASH" &>/dev/null || exit 2
+		return 1
 	fi
 }
 pkg::download::pkg() {
@@ -1659,14 +1657,14 @@ pkg::download::pkg() {
 			log::debug "${PKG[pretty]} | pkg download OK"
 		else
 			log::debug "${PKG[pretty]} | pkg download FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_PKG" &>/dev/null || exit 3
+			return 1
 		fi
 	else
 		if $DOWNLOAD_DIR "${TMP_PKG[${PKG[short]}_pkg]}" "${LINK_DOWN[${PKG[short]}]}"; then
 			log::debug "${PKG[pretty]} | pkg download OK"
 		else
 			log::debug "${PKG[pretty]} | pkg download FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_PKG" &>/dev/null || exit 4
+			return 1
 		fi
 	fi
 }
@@ -1685,47 +1683,44 @@ pkg::extract() {
 		pkg::extract::multi & JOB[${i}_extract]=$!
 	done
 	for i in $UPGRADE_LIST_SIZE; do
-		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		struct::pkg $i
+		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		log::prog "${PKG[pretty]}"
-		wait -f ${JOB[${i}_extract]} || :
-		log::debug "${PKG[pretty]} | checking for failure files"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_LS ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} NULL folder variable"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_CP ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} copy failed"
+		if ! wait -f ${JOB[${i}_extract]}; then
+			printf "\n"
+			print::exit "Upgrade failure | ${PKG[pretty]} installation failure"
+		fi
 		log::ok "${PKG[pretty]}"
-		log::debug "${PKG[pretty]} | no failure files found"
 	done
 	return 0
 }
 pkg::extract::multi() {
 	log::debug "${PKG[pretty]} | starting extraction thread"
-	if tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}" &>/dev/null; then
+	if tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}"; then
 		log::debug "${PKG[pretty]} | tar extract OK | ${TMP_PKG[${PKG[short]}_tar]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_EXTRACT" &>/dev/null || exit 1
 		log::debug "${PKG[pretty]} | tar extract FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
+		return 1
 	fi
-	if rm "${TMP_PKG[${PKG[short]}_tar]}" &>/dev/null; then
+	if rm "${TMP_PKG[${PKG[short]}_tar]}"; then
 		log::debug "${PKG[pretty]} | tar rm OK | ${TMP_PKG[${PKG[short]}_tar]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_RM" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | tar rm FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
+		return 2
 	fi
 	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_folder]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_folder]}"
 	log::debug "package folder: ${TMP_PKG[${PKG[short]}_folder]}"
 	if [[ -z ${TMP_PKG[${PKG[short]}_folder]} || ${TMP_PKG[${PKG[short]}_folder]} =~ ^[[:space:]]+$ ]]; then
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_LS" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | NULL folder variable"
+		return 3
 	fi
 	mkdir -p "${PKG[directory]}"
 	if cp -fr "${TMP_PKG[${PKG[short]}_folder]}"/* "${PKG[directory]}"; then
 		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_CP" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | cp folder FAIL"
+		return 4
 	fi
 }
 pkg::hook::pre() {
@@ -1869,13 +1864,11 @@ pkg::info() {
 		struct::pkg $i
 		pkg::update::multi & JOB[${i}_update]=$!
 	done
-	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]} || :
-	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
-			log::debug "${PKG[pretty]} | metadata fetch failed"
+		log::debug "waiting for metadata threads to complete"
+		if ! wait -f ${JOB[${i}_update]}; then
+			log::fail "${PKG[pretty]} | metadata fetch"
 			local UPDATE_FAILED=true
 		fi
 	done
@@ -1884,7 +1877,6 @@ pkg::info() {
 		print::error "Upgrade failure | Metadata fetch from GitHub API failed"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
-	log::debug "no failure files found"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
 		pkg::update::ver
@@ -2245,19 +2237,17 @@ pkg::update() {
 	for i in $UPDATE_LIST; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
-		wait -f ${JOB[${PKG[short]}_update]} || :
-		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
+		if wait -f ${JOB[${PKG[short]}_update]}; then
+			log::ok "${PKG[pretty]}"
+		else
 			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
-		else
-			log::ok "${PKG[pretty]}"
 		fi
 	done
 	if [[ $UPDATE_FAILED = true ]]; then
-		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
+		print::error "Update failure | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
-	log::debug "no failure files found"
 	echo
 	struct::pkg bash
 	pkg::update::ver
@@ -2297,8 +2287,8 @@ pkg::update::multi() {
 		log::debug "${PKG[pretty]} | metadata download OK"
 		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
 	else
-		log::debug "${PKG[pretty]} update FAIL"
-		touch "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" &>/dev/null || exit 1
+		log::debug "${PKG[pretty]} metadata download FAIL"
+		return 1
 	fi
 }
 pkg::update::ver() {
@@ -2310,8 +2300,21 @@ pkg::update::ver() {
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
 	if [[ ${VER[${PKG[short]}]} != v* ]]; then
 		log::debug "${PKG[pretty]} weird version found | ${VER[${PKG[short]}]}"
-		echo
-		print::exit "Upgrade failure | ${PKG[pretty]} version fetch error"
+		log::debug "${PKG[pretty]} restarting metadata download"
+		pkg::update::multi || print::error "Update failure | GitHub API returned funky data"
+		VER[${PKG[short]}]="$(grep -m 1 "\"tag_name\":" "${TMP_INFO[${PKG[short]}]}")"
+		log::debug "${PKG[pretty]} | initial \"tag_name\" filter | ${VER[${PKG[short]}]}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}]//*: }"
+		VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
+		if [[ ${VER[${PKG[short]}]} != v* ]]; then
+			echo
+			print::error "Upgrade failure | ${PKG[pretty]} version fetch error"
+			print::error "Congratulations! You've encountered an error I have no idea how to fix!"
+			print::error "For some reason, ${PKG[pretty]}'s version did not get filtered properly..."
+			print::error "BUT ONLY SOMETIMES, SO IT'S IMPOSSIBLE TO DEBUG :D"
+			print::exit  "You can retry your update/install/upgrade and it will most likely work."
+		fi
 	fi
 	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
 }
@@ -2405,16 +2408,16 @@ pkg::verify() {
 		pkg::verify::hash_calc & JOB[${PKG[short]}_hash]=$!
 		pkg::verify::check_key & JOB[${PKG[short]}_key]=$!
 	done
-	log::debug "waiting for hash_calc() & check_key() threads to complete"
-	wait -f ${JOB[@]} || log::debug "hash_calc() & check_key() wait failed"
-	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && echo && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
+		log::debug "waiting for hash_calc() & check_key() threads to complete"
+		if ! wait -f ${JOB[${PKG[short]}_hash]}; then
+			print::exit "${PKG[pretty]} | hash calculation failed"
+		fi
+		if ! wait -f ${JOB[${PKG[short]}_key]}; then
+			print::exit "${PKG[pretty]} | ${PKG[gpg_owner]} PGP key download/import failed"
+		fi
 	done
-	log::debug "no failure files found"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
 		log::prog "${PKG[pretty]} | HASH ... | PGP Signed by ..."
@@ -2427,10 +2430,10 @@ pkg::verify() {
 pkg::verify::hash_calc() {
 	log::debug "starting: ${PKG[pretty]}"
 	if sha256sum "${TMP_PKG[${PKG[short]}_tar]}" > "${TMP_PKG[${PKG[short]}_hash_calc]}"; then
-		log::debug "${PKG[pretty]} | hash calc OK"
+		log::debug "${PKG[pretty]} | hash_calc OK"
 	else
-		echo > "${TMP_PKG[${PKG[short]}_main]}/FAIL_HASH_CALC"
-		log::debug "${PKG[pretty]} | hash calc FAIL"
+		log::debug "${PKG[pretty]} | hash_calc FAIL"
+		return 1
 	fi
 }
 pkg::verify::check_key() {
@@ -2450,13 +2453,13 @@ pkg::verify::check_key() {
 			log::debug "${PKG[gpg_owner]} | PGP key download OK"
 		else
 			log::debug "${PKG[gpg_owner]} | PGP key download FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_KEY_DOWNLOAD" &>/dev/null || exit 1
+			return 1
 		fi
 		if gpg --import "${TMP_PKG[${PKG[short]}_key]}" &> "${TMP_PKG[${PKG[short]}_key_output]}"; then
 			log::debug "${PKG[gpg_pub_key]} | PGP key import OK"
 		else
 			log::debug "${PKG[gpg_pub_key]} | PGP key import FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_KEY_IMPORT" &>/dev/null || exit 2
+			return 2
 		fi
 		local IMPORT_KEY_OUTPUT i IFS=$'\n'
 		mapfile IMPORT_KEY_OUTPUT < "${TMP_PKG[${PKG[short]}_key_output]}"

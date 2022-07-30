@@ -57,8 +57,6 @@ pkg::info() {
 		print::error "Upgrade failure | Metadata fetch from GitHub API failed"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
-	log::debug "no failure files found"
-
 
 	# FILTER VERSION VARIABLE $VER[${PKG[short]}}
 	for i in $UPGRADE_LIST; do

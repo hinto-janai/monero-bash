@@ -86,7 +86,7 @@ pkg::update() {
 	done
 
 	if [[ $UPDATE_FAILED = true ]]; then
-		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
+		print::error "Update failure | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
 
@@ -156,11 +156,33 @@ pkg::update::ver() {
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
 	VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
 
-	# sanity check for "v*"
+	# For some reason, the XMRig JSON from the GitHub API
+	# returns A SINGLE LINE JSON file instead of the regular
+	# spaced file. I still have no idea why this happens, and
+	# why it only happens with XMRig, regardless, this next
+	# code will re-run the download which usually returns a
+	# proper JSON file.
 	if [[ ${VER[${PKG[short]}]} != v* ]]; then
 		log::debug "${PKG[pretty]} weird version found | ${VER[${PKG[short]}]}"
-		echo
-		print::exit "Upgrade failure | ${PKG[pretty]} version fetch error"
+		log::debug "${PKG[pretty]} restarting metadata download"
+		pkg::update::multi || print::error "Update failure | GitHub API returned funky data"
+
+		# re-filter
+		VER[${PKG[short]}]="$(grep -m 1 "\"tag_name\":" "${TMP_INFO[${PKG[short]}]}")"
+		log::debug "${PKG[pretty]} | initial \"tag_name\" filter | ${VER[${PKG[short]}]}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}]//*: }"
+		VER[${PKG[short]}]="${VER[${PKG[short]}]//\"}"
+		VER[${PKG[short]}]="${VER[${PKG[short]}]//,}"
+
+		# just give up if we get the weird JSON twice...
+		if [[ ${VER[${PKG[short]}]} != v* ]]; then
+			echo
+			print::error "Upgrade failure | ${PKG[pretty]} version fetch error"
+			print::error "Congratulations! You've encountered an error I have no idea how to fix!"
+			print::error "For some reason, ${PKG[pretty]}'s version did not get filtered properly..."
+			print::error "BUT ONLY SOMETIMES, SO IT'S IMPOSSIBLE TO DEBUG :D"
+			print::exit  "You can retry your update/install/upgrade and it will most likely work."
+		fi
 	fi
 
 	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"

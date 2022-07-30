@@ -42,13 +42,11 @@ pkg::verify() {
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
 		log::debug "waiting for hash_calc() & check_key() threads to complete"
-		wait -f ${JOB[${PKG[short]}_hash]} || print::exit "${PKG[pretty]} | hash calculation failed"
+		if ! wait -f ${JOB[${PKG[short]}_hash]}; then
+			print::exit "${PKG[pretty]} | hash calculation failed"
+		fi
 		if ! wait -f ${JOB[${PKG[short]}_key]}; then
-			case $? in
-				1) print::exit "${PKG[pretty]} | ${PKG[gpg_owner]} PGP key download failed";;
-				2) print::exit "${PKG[pretty]} | ${PKG[gpg_owner]} PGP key import failed";;
-				*) :;;
-			esac
+			print::exit "${PKG[pretty]} | ${PKG[gpg_owner]} PGP key download/import failed"
 		fi
 	done
 

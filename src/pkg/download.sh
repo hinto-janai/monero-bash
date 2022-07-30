@@ -57,11 +57,22 @@ pkg::download() {
 		log::prog "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
 
 		# sig
-		wait -f ${JOB[${i}_download_sig]} || print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
+		if [[ ${PKG[short]} = xmrig ]]; then
+			if ! wait -f ${JOB[${i}_download_sig]}; then
+				printf "\n"
+				print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
+			fi
+		fi
 		# hash
-		wait -f ${JOB[${i}_download_hash]} || print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
+		if ! wait -f ${JOB[${i}_download_hash]}; then
+			printf "\n"
+			print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
+		fi
 		# pkg
-		wait -f ${JOB[${i}_download_pkg]} || print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
+		if ! wait -f ${JOB[${i}_download_pkg]}; then
+			printf "\n"
+			print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
+		fi
 		# DEFINE TAR PATH VARIABLE
 		pkg::download::find_tar
 

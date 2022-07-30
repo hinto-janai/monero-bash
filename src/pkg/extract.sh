@@ -40,19 +40,14 @@ pkg::extract() {
 
 	# WAIT FOR THREADS
 	for i in $UPGRADE_LIST_SIZE; do
-		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		struct::pkg $i
+		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		log::prog "${PKG[pretty]}"
 
 		# case return code
 		if ! wait -f ${JOB[${i}_extract]}; then
-			case $? in
-				1) print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failure";;
-				2) print::exit "Upgrade failure | ${PKG[pretty]} tar removal failure";;
-				3) print::exit "Upgrade failure | ${PKG[pretty]} NULL folder variable";;
-				4) print::exit "Upgrade failure | ${PKG[pretty]} folder copy failure";;
-				*) :;;
-			esac
+			printf "\n"
+			print::exit "Upgrade failure | ${PKG[pretty]} installation failure"
 		fi
 
 		log::ok "${PKG[pretty]}"
