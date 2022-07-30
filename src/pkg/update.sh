@@ -77,23 +77,22 @@ pkg::update() {
 	for i in $UPDATE_LIST; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
-		wait -f ${JOB[${PKG[short]}_update]} || :
-		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
+		if wait -f ${JOB[${PKG[short]}_update]}; then
+			log::ok "${PKG[pretty]}"
+		else
 			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
-		else
-			log::ok "${PKG[pretty]}"
 		fi
 	done
+
 	if [[ $UPDATE_FAILED = true ]]; then
 		print::error "Update failure for ${PKG[pretty]} | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	fi
-	log::debug "no failure files found"
-	echo
 
 	# FILTER RESULT AND PRINT
 	# always for [monero-bash]
+	echo
 	struct::pkg bash
 	pkg::update::ver
 	pkg::update::result
@@ -140,8 +139,8 @@ pkg::update::multi() {
 		log::debug "${PKG[pretty]} | metadata download OK"
 		log::debug "downloaded ${PKG[link_api]} into ${TMP_INFO[${PKG[short]}]}"
 	else
-		log::debug "${PKG[pretty]} update FAIL"
-		touch "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" &>/dev/null || exit 1
+		log::debug "${PKG[pretty]} metadata download FAIL"
+		return 1
 	fi
 }
 

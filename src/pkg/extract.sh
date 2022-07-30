@@ -43,15 +43,19 @@ pkg::extract() {
 		log::debug "${PKG[pretty]} | waiting for extraction/copy thread to complete"
 		struct::pkg $i
 		log::prog "${PKG[pretty]}"
-		wait -f ${JOB[${i}_extract]} || :
-		# CHECK FAIL FILES
-		log::debug "${PKG[pretty]} | checking for failure files"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_EXTRACT ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_RM ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} tar removal failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_LS ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} NULL folder variable"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_CP ]]      && echo && print::exit "Upgrade failure | ${PKG[pretty]} copy failed"
+
+		# case return code
+		if ! wait -f ${JOB[${i}_extract]}; then
+			case $? in
+				1) print::exit "Upgrade failure | ${PKG[pretty]} tar extraction failure";;
+				2) print::exit "Upgrade failure | ${PKG[pretty]} tar removal failure";;
+				3) print::exit "Upgrade failure | ${PKG[pretty]} NULL folder variable";;
+				4) print::exit "Upgrade failure | ${PKG[pretty]} folder copy failure";;
+				*) :;;
+			esac
+		fi
+
 		log::ok "${PKG[pretty]}"
-		log::debug "${PKG[pretty]} | no failure files found"
 	done
 	return 0
 }
@@ -60,30 +64,29 @@ pkg::extract::multi() {
 	log::debug "${PKG[pretty]} | starting extraction thread"
 
 	# extract
-	if tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}" &>/dev/null; then
+	if tar -xf "${TMP_PKG[${PKG[short]}_tar]}" -C "${TMP_PKG[${PKG[short]}_pkg]}"; then
 		log::debug "${PKG[pretty]} | tar extract OK | ${TMP_PKG[${PKG[short]}_tar]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_EXTRACT" &>/dev/null || exit 1
 		log::debug "${PKG[pretty]} | tar extract FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
+		return 1
 	fi
 
 	# remove tar
-	if rm "${TMP_PKG[${PKG[short]}_tar]}" &>/dev/null; then
+	if rm "${TMP_PKG[${PKG[short]}_tar]}"; then
 		log::debug "${PKG[pretty]} | tar rm OK | ${TMP_PKG[${PKG[short]}_tar]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_RM" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | tar rm FAIL | ${TMP_PKG[${PKG[short]}_tar]}"
+		return 2
 	fi
 
 	# get folder name
 	TMP_PKG[${PKG[short]}_folder]="$(ls ${TMP_PKG[${PKG[short]}_pkg]})"
 	TMP_PKG[${PKG[short]}_folder]="${TMP_PKG[${PKG[short]}_pkg]}/${TMP_PKG[${PKG[short]}_folder]}"
 	log::debug "package folder: ${TMP_PKG[${PKG[short]}_folder]}"
-
 	# NULL folder name sanity check
 	if [[ -z ${TMP_PKG[${PKG[short]}_folder]} || ${TMP_PKG[${PKG[short]}_folder]} =~ ^[[:space:]]+$ ]]; then
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_LS" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | NULL folder variable"
+		return 3
 	fi
 
 	# copy to folder
@@ -91,7 +94,7 @@ pkg::extract::multi() {
 	if cp -fr "${TMP_PKG[${PKG[short]}_folder]}"/* "${PKG[directory]}"; then
 		log::debug "copied ${TMP_PKG[${PKG[short]}_folder]} contents into ${PKG[directory]}"
 	else
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_CP" &>/dev/null || exit 2
 		log::debug "${PKG[pretty]} | cp folder FAIL"
+		return 4
 	fi
 }

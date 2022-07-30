@@ -43,36 +43,29 @@ pkg::download() {
 		pkg::download::pkg & JOB[${i}_download_pkg]=$!
 	done
 
-	# WAIT FOR THREADS
 	# change order from smallest pkg to biggest
 	char UPGRADE_LIST_SIZE
 	[[ $UPGRADE_LIST = *bash* ]]   && UPGRADE_LIST_SIZE="bash"
 	[[ $UPGRADE_LIST = *p2pool* ]] && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE p2pool"
 	[[ $UPGRADE_LIST = *xmrig* ]]  && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE xmrig"
 	[[ $UPGRADE_LIST = *monero* ]] && UPGRADE_LIST_SIZE="$UPGRADE_LIST_SIZE monero"
+
+	# WAIT FOR THREADS
 	for i in $UPGRADE_LIST_SIZE; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for download threads to complete"
 		log::prog "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
-		[[ ${PKG[short]} = xmrig ]] && wait -f ${JOB[${i}_download_sig]} || :
-		wait -f ${JOB[${i}_download_hash]} ${JOB[${i}_download_pkg]} || :
-		log::ok "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
-	done
 
-	# CHECK FAIL FILES
-	log::debug "checking for failure files"
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_SIG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_HASH ]] && echo && print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_DOWNLOAD_PKG ]]  && echo && print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
-		log::debug "${PKG[pretty]} | no failure files found"
-	done
-
-	# DEFINE TAR PATH VARIABLE
-	for i in $UPGRADE_LIST; do
-		struct::pkg $i
+		# sig
+		wait -f ${JOB[${i}_download_sig]} || print::exit "Upgrade failure | ${PKG[pretty]} signature download failed"
+		# hash
+		wait -f ${JOB[${i}_download_hash]} || print::exit "Upgrade failure | ${PKG[pretty]} hash download failed"
+		# pkg
+		wait -f ${JOB[${i}_download_pkg]} || print::exit "Upgrade failure | ${PKG[pretty]} package download failed"
+		# DEFINE TAR PATH VARIABLE
 		pkg::download::find_tar
+
+		log::ok "${PKG[pretty]} | ${LINK_DOWN[${PKG[short]}]}"
 	done
 
 	return 0
@@ -81,11 +74,12 @@ pkg::download() {
 # download links provided by pkg::info()
 pkg::download::sig() {
 	log::debug "${PKG[pretty]} | starting sig download thread"
+	[[ ${PKG[short]} != xmrig ]] && log::debug "${PKG[pretty]} sig file is not seperate, returning 0" && return 0
 	if $DOWNLOAD_OUT "${TMP_PKG[${PKG[short]}_sig]}" "${LINK_SIG[${PKG[short]}]}"; then
 		log::debug "${PKG[pretty]} | sig download OK"
 	else
 		log::debug "${PKG[pretty]} | sig download FAIL"
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_SIG" &>/dev/null || exit 1
+		return 1
 	fi
 }
 
@@ -95,7 +89,7 @@ pkg::download::hash() {
 		log::debug "${PKG[pretty]} | hash download OK"
 	else
 		log::debug "${PKG[pretty]} | hash download FAIL"
-		touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_HASH" &>/dev/null || exit 2
+		return 1
 	fi
 }
 
@@ -109,14 +103,14 @@ pkg::download::pkg() {
 			log::debug "${PKG[pretty]} | pkg download OK"
 		else
 			log::debug "${PKG[pretty]} | pkg download FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_PKG" &>/dev/null || exit 3
+			return 1
 		fi
 	else
 		if $DOWNLOAD_DIR "${TMP_PKG[${PKG[short]}_pkg]}" "${LINK_DOWN[${PKG[short]}]}"; then
 			log::debug "${PKG[pretty]} | pkg download OK"
 		else
 			log::debug "${PKG[pretty]} | pkg download FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_DOWNLOAD_PKG" &>/dev/null || exit 4
+			return 1
 		fi
 	fi
 }

@@ -43,18 +43,15 @@ pkg::info() {
 	done
 
 	# WAIT FOR THREADS
-	log::debug "waiting for metadata threads to complete"
-	wait -f ${JOB[@]} || :
-
-	# CHECK FAIL FILES
-	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		if [[ -e "${TMP_INFO[main]}/FAIL_UPDATE_${PKG[var]}" ]]; then
-			log::debug "${PKG[pretty]} | metadata fetch failed"
+		log::debug "waiting for metadata threads to complete"
+		if ! wait -f ${JOB[${i}_update]}; then
+			log::fail "${PKG[pretty]} | metadata fetch"
 			local UPDATE_FAILED=true
 		fi
 	done
+
 	if [[ $UPDATE_FAILED = true ]]; then
 		echo
 		print::error "Upgrade failure | Metadata fetch from GitHub API failed"

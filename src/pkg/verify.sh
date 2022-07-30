@@ -39,19 +39,18 @@ pkg::verify() {
 	done
 
 	# WAIT FOR THREADS
-	log::debug "waiting for hash_calc() & check_key() threads to complete"
-	wait -f ${JOB[@]} || log::debug "hash_calc() & check_key() wait failed"
-
-	# CHECK FAIL FILES
-	log::debug "checking for failure files"
 	for i in $UPGRADE_LIST; do
 		struct::pkg $i
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_HASH_CALC ]]    && echo && print::exit "Upgrade failure - ${PKG[pretty]} hash calculation failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_DOWNLOAD ]] && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key download failed"
-		[[ -e "${TMP_PKG[${PKG[short]}_main]}"/FAIL_KEY_IMPORT ]]   && echo && print::exit "Upgrade failure - ${PKG[pretty]} PGP key import failed"
+		log::debug "waiting for hash_calc() & check_key() threads to complete"
+		wait -f ${JOB[${PKG[short]}_hash]} || print::exit "${PKG[pretty]} | hash calculation failed"
+		if ! wait -f ${JOB[${PKG[short]}_key]}; then
+			case $? in
+				1) print::exit "${PKG[pretty]} | ${PKG[gpg_owner]} PGP key download failed";;
+				2) print::exit "${PKG[pretty]} | ${PKG[gpg_owner]} PGP key import failed";;
+				*) :;;
+			esac
+		fi
 	done
-	log::debug "no failure files found"
-
 
 	# VERIFY HASH AND PGP
 	for i in $UPGRADE_LIST; do
@@ -70,10 +69,10 @@ pkg::verify() {
 pkg::verify::hash_calc() {
 	log::debug "starting: ${PKG[pretty]}"
 	if sha256sum "${TMP_PKG[${PKG[short]}_tar]}" > "${TMP_PKG[${PKG[short]}_hash_calc]}"; then
-		log::debug "${PKG[pretty]} | hash calc OK"
+		log::debug "${PKG[pretty]} | hash_calc OK"
 	else
-		echo > "${TMP_PKG[${PKG[short]}_main]}/FAIL_HASH_CALC"
-		log::debug "${PKG[pretty]} | hash calc FAIL"
+		log::debug "${PKG[pretty]} | hash_calc FAIL"
+		return 1
 	fi
 }
 
@@ -100,7 +99,7 @@ pkg::verify::check_key() {
 			log::debug "${PKG[gpg_owner]} | PGP key download OK"
 		else
 			log::debug "${PKG[gpg_owner]} | PGP key download FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_KEY_DOWNLOAD" &>/dev/null || exit 1
+			return 1
 		fi
 
 		# import
@@ -108,7 +107,7 @@ pkg::verify::check_key() {
 			log::debug "${PKG[gpg_pub_key]} | PGP key import OK"
 		else
 			log::debug "${PKG[gpg_pub_key]} | PGP key import FAIL"
-			touch "${TMP_PKG[${PKG[short]}_main]}/FAIL_KEY_IMPORT" &>/dev/null || exit 2
+			return 2
 		fi
 
 		# log::debug for key import output
