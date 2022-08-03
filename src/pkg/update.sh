@@ -28,6 +28,7 @@ pkg::update() {
 	# VERBOSE MODE
 	if [[ $OPTION_VERBOSE = true ]]; then
 		STD_LOG_DEBUG=true
+		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "Updating verbosely!"
 	fi
 
 	log::debug "starting"
@@ -50,7 +51,7 @@ pkg::update() {
 
 	# TITLE
 #	print::pkg::update
-	log::prog "Fetching package metadata..."
+	log::prog "Fetching package metadata"
 
 	# START METADATA THREADS AND CREATE UPDATE_LIST
 	struct::pkg bash
@@ -72,16 +73,12 @@ pkg::update() {
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
 
-	# WAIT FOR THREADS & CHECK FAIL FILES
-	log::debug "checking for failure files"
+	# WAIT FOR THREADS
 	for i in $UPDATE_LIST; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
-		log::prog "${PKG[pretty]}"
 		if wait -f ${JOB[${PKG[short]}_update]}; then
-			# use a custom log::ok to overwrite
-			# the last package name
-		    printf "\r\e[2K\e[1;32m[  OK  ]\e[0m %s" "${PKG[pretty]}"
+		    log::debug "${PKG[pretty]} | metadata OK"
 		else
 			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
@@ -92,7 +89,7 @@ pkg::update() {
 		print::error "Update failure | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	else
-		log::prog "Fetched package metadata"
+		log::ok "Fetched package metadata"
 	fi
 
 	# FILTER RESULT AND PRINT
@@ -120,7 +117,7 @@ pkg::update() {
 	# END
 	if [[ $UPDATE_FOUND ]]; then
 		trap 'pkg::tmp::remove; lock::free monero_bash_update; exit' EXIT
-		printf "${BBLUE}%s\n${BGREEN}%s${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
+		printf "${BBLUE}%s\n%s${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
 			"|| " \
 			"|| " \
 			"Updates found, type: " \
@@ -190,12 +187,11 @@ pkg::update::ver() {
 			print::error "Congratulations! You've encountered an error I have no idea how to fix!"
 			print::error "For some reason, GitHub API sends its JSON data in a single line..."
 			print::error "BUT ONLY SOMETIMES, SO IT'S IMPOSSIBLE TO DEBUG :D"
-			print::error "You can retry your update/install/upgrade and it will most likely work."
-			exit 99
+			print::exit  "You can retry your update/install/upgrade and it will most likely work."
 		fi
 	fi
 
-	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
+	log::debug "${PKG[pretty]} | version filtered: ${VER[${PKG[short]}]}"
 }
 
 pkg::update::result() {

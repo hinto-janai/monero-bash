@@ -26,6 +26,14 @@
 # uses variables from parse/options.sh
 # continues to pkg::remove()
 pkg::remove::prompt() {
+	# CHECK FOR VERBOSE/FORCE
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "Removing verbosely!"
+	fi
+	[[ $OPTION_YES = true ]] && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "Removing automatically!"
+	echo
+
 	log::debug "starting"
 
 	# CREATE REMOVE LIST
@@ -82,9 +90,14 @@ pkg::remove::prompt() {
 		"|| " \
 		"|| " \
 		"Continue with removal? (y/N) "
-	if ask::no; then
-		printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
-		exit 1
+	# AUTO (OPTION_YES)
+	if [[ $OPTION_YES = true ]]; then
+		printf "${BBLUE}%s${OFF}\n" "AUTOMATIC REMOVAL STARTING"
+	else
+		if ask::no; then
+			printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
+			exit 1
+		fi
 	fi
 
 	# SUDO
@@ -104,10 +117,12 @@ pkg::remove::prompt() {
 # called from pkg::remove::prompt()
 pkg::remove() {
 	log::debug "${PKG[pretty]} | starting"
+	log::debug "Ignoring INT signal for safety"
 	trap "" INT
 	print::pkg::remove
 
 	# SET TRAP
+	log::debug "Setting trap to continue removal on EXIT signal"
 	trap 'trap::remove' EXIT
 
 	# REMOVE PKG DIRECTORY
@@ -121,18 +136,21 @@ pkg::remove() {
 	log::ok "Removed ${PKG[service]}"
 
 	# REMOVE CHANGELOG
-	log::prog "Removing ${PKG[pretty]} changelog..."
+	log::prog "Removing ${CHANGES:?}/${PKG[name]:?}..."
 	rm -rf "${CHANGES:?}/${PKG[name]:?}"
-	log::ok "Removed ${PKG[pretty]} changelog"
+	log::ok "Removed ${CHANGES:?}/${PKG[name]:?}"
 
 	# UPDATE LOCAL STATE
 	log::prog "Updating local state..."
 	sudo sed \
 		-i -e "s/${PKG[var]}_VER=.*/${PKG[var]}_VER=/" "$STATE" \
 		-i -e "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=\"true\"/" "$STATE"
+	log::debug "STATE | ${PKG[var]}_VER -> null"
+	log::debug "STATE | ${PKG[var]}_OLD -> true"
 	log::ok "Updated local state"
 
 	# FREE TRAP
+	log::debug "Resetting INT and EXIT signals"
 	trap - INT EXIT
 
 	# RELOAD SYSTEMD
@@ -141,6 +159,7 @@ pkg::remove() {
 	log::ok "Reloaded systemd"
 
 	# END
+	log::debug "${PKG[pretty]} | removal OK"
 	print::pkg::removed
 	return 0
 }

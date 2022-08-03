@@ -25,55 +25,55 @@ print::help() {
 	log::debug "starting"
 
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
-		"USAGE: " "monero-bash " "command " "<argument> " "[-o|--option]"
+		"USAGE: " "monero-bash " "command " "<argument> " "[--option]"
 
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
-		"monero-bash                                Open interactive wallet menu" \
-		"list                                       List wallets"
+		"monero-bash                                      Open interactive wallet menu" \
+		"list                                             List wallets"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"open    " "<wallet> " "[-p|--password <pass>]    " "Open a wallet directly"
+		"open    " "<wallet> " "[--password <pass>]             " "Open a wallet directly"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"new     " "<wallet type>                      " "Enter wallet creation mode"
+		"new     " "<wallet type>                            " "Enter wallet creation mode"
 
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
-	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[-v|--verbose] [-f|--force]   " "Install one/multiple packages" \
-		"remove  " "<packages> " "[-v|--verbose]             " "Remove one/multiple packages"
 	printf "    ${OFF}%s${BPURPLE}%s${OFF}%s\n" \
-		"update  " "[-v|--verbose]                        " "Check for package updates" \
-		"upgrade " "[-v|--verbose] [-f|--force]              " "Upgrade all out-of-date packages"
+		"update  " "[--verbose]                              " "Check for package updates" \
+		"upgrade " "[--verbose] [--force] [--yes]            " "Upgrade all out-of-date packages"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"install " "<packages> " "[--verbose] [--force] [--yes] " "Install one/multiple packages" \
+		"remove  " "<packages> " "[--verbose] [--yes]           " "Remove one/multiple packages"
 
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"full    " "<process>                          " "Start <process> fully attached in foreground" \
-		"config  " "<processes>                        " "Enter interactive configuration for <process>"
+		"full    " "<process>                                " "Start <process> fully attached in foreground" \
+		"config  " "<processes>                              " "Enter interactive configuration for <process>"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"default " "<processes> " "[-c|--config] [-s|--systemd] " "Reset your config/systemd file to the default"
+		"default " "<processes> " "[--config] [--systemd]       " "Reset your config/systemd file to the default"
 
 	printf "\n${BWHITE}%s${OFF}\n" "SYSTEMD"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"start   " "<processes>                        " "Start process as systemd background process" \
-		"stop    " "<processes>                        " "Gracefully stop systemd background process" \
-		"kill    " "<processes>                        " "Forcefully kill systemd background process" \
-		"restart " "<processes>                        " "Restart systemd background process" \
-		"enable  " "<processes>                        " "Enable <process> to auto-start on computer boot" \
-		"disable " "<processes>                        " "Disable <process> from auto-starting on computer boot" \
-		"edit    " "<processes>                        " "Edit systemd service file" \
-		"refresh " "<processes>                        " "Refresh your systemd service file to match your config" \
-		"watch   " "<processes>                        " "Watch live output of systemd background process"
+		"start   " "<processes>                              " "Start process as systemd background process" \
+		"stop    " "<processes>                              " "Gracefully stop systemd background process" \
+		"kill    " "<processes>                              " "Forcefully kill systemd background process" \
+		"restart " "<processes>                              " "Restart systemd background process" \
+		"enable  " "<processes>                              " "Enable <process> to auto-start on computer boot" \
+		"disable " "<processes>                              " "Disable <process> from auto-starting on computer boot" \
+		"edit    " "<processes>                              " "Edit systemd service file" \
+		"refresh " "<processes>                              " "Refresh your systemd service file to match your config" \
+		"watch   " "<processes>                              " "Watch live output of systemd background process"
 
 	printf "\n${BWHITE}%s${OFF}\n"    "STATS"
 	printf "    %s\n" \
-		"status                                     Print status of all running processes" \
-		"size                                       Print size of all packages and folders" \
-		"version                                    Print current package versions"
+		"status                                           Print status of all running processes" \
+		"size                                             Print size of all packages and folders" \
+		"version                                          Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"changes " "<packages> " "[-p|--print]               " "View the latests changes for <package>" \
-		"rpc     " "<JSON-RPC method> " "[-v|--verbose]      " "Send a JSON-RPC call to monerod"
+		"changes " "<packages> " "[--print]                     " "View the latests changes for <package>" \
+		"rpc     " "<JSON-RPC method> " "[--verbose]            " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"help    " "<command>                          " "Print help for a command, or all if none specified"
+		"help    " "<command>                                " "Print help for a command, or all if none specified"
 }
 
 # print specific help messages for commands
@@ -165,7 +165,7 @@ print::help::command() {
 
 		# PACKAGE
 		install)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[-v|--verbose] [-f|--force]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[-v|--verbose] [-f|--force] [-y|--yes]"
 			printf "${OFF}%s\n" \
 			"Start the installation process of packages." \
 			"" \
@@ -190,10 +190,12 @@ print::help::command() {
 			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the install." \
 			"If the [-f|--force] option is given, the package will" \
-			"be installed even if it is already installed."
+			"be installed even if it is already installed." \
+			"If the [-y|--yes] option is given, the (Y/n) prompt will" \
+			"be skipped, and the installation will start automatically."
 			;;
 		remove)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[-v|--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[-v|--verbose] [-y|--yes]"
 			printf "${OFF}%s\n" \
 			"Start the removal process of packages." \
 			"" \
@@ -208,7 +210,9 @@ print::help::command() {
 			"[xmrig]" \
 			"" \
 			"If the [-v|--verbose] option is given, detailed" \
-			"debug information will be printed during the removal."
+			"debug information will be printed during the removal." \
+			"If the [-y|--yes] option is given, the (y/N) prompt will" \
+			"be skipped, and the removal will start automatically."
 			;;
 		update)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[-v|--verbose]"
@@ -226,7 +230,7 @@ print::help::command() {
 			"debug information will be printed during the update."
 			;;
 		upgrade)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[-v|--verbose] [-f|--force]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[-v|--verbose] [-f|--force] [-y|--yes]"
 			printf "${OFF}%s\n" \
 			"Upgrade all installed packages that are out-of-date." \
 			"" \
@@ -247,7 +251,9 @@ print::help::command() {
 			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the upgrade." \
 			"If the [-f|--force] option is given, all installed" \
-			"packages will be upgraded even if they are up-to-date."
+			"packages will be upgraded even if they are up-to-date." \
+			"If the [-y|--yes] option is given, the (Y/n) prompt will" \
+			"be skipped, and the upgrade will start automatically."
 			;;
 
 		# PROCESS

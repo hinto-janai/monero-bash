@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/fbd3d35>
-#nix <1659547090>
+#git <monero-bash/0cad9a9>
+#nix <1659552642>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/8038e38>
 #lib <stdlib/const.sh/8038e38>
@@ -1307,6 +1307,7 @@ case "$1" in
 				*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
 				--verbose|-v)         OPTION_VERBOSE=true;;
 				--force|-f)           OPTION_FORCE=true;;
+				--yes|-y)             OPTION_YES=true;;
 				*)
 					print::error "Invalid option: $1"
 					print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
@@ -1328,6 +1329,7 @@ case "$1" in
 				*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
 				*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
 				--verbose|-v)         OPTION_VERBOSE=true;;
+				--yes|-y)             OPTION_YES=true;;
 				*)
 					print::error "Invalid option: $1"
 					print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
@@ -1345,6 +1347,7 @@ case "$1" in
 			case "$1" in
 				--verbose|-v)         OPTION_VERBOSE=true;;
 				--force|-f)           OPTION_FORCE=true;;
+				--yes|-y)             OPTION_YES=true;;
 				"")                   break;;
 				*)
 					print::exit "Invalid option: $1"
@@ -2003,6 +2006,7 @@ pkg::prompt() {
 		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
 	fi
 	[[ $OPTION_FORCE = true ]] && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
+	[[ $OPTION_YES = true ]]   && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB automatically!"
 	echo
 	local PROMPT_UPGRADE_LIST i
 	for i in $UPGRADE_LIST; do
@@ -2020,11 +2024,15 @@ pkg::prompt() {
 		"|| " \
 		"|| " \
 		"Continue with ${PROMPT_NOUN}? (Y/n) "
-	if ! ask::yes; then
-		printf "${BRED}%s${BWHITE}%s${OFF}\n" \
-			"|| " \
-			"Canceling $PROMPT_NOUN"
-		exit 1
+	if [[ $OPTION_YES = true ]]; then
+		printf "${BBLUE}%s${OFF}\n" "AUTOMATIC ${PROMPT_NOUN^^} STARTING"
+	else
+		if ! ask::yes; then
+			printf "${BRED}%s${BWHITE}%s${OFF}\n" \
+				"|| " \
+				"Canceling $PROMPT_NOUN"
+			exit 1
+		fi
 	fi
 	if ! ask::sudo; then
 		print::exit "sudo is required"
@@ -2047,6 +2055,12 @@ pkg::prompt::check::old() {
 	fi
 }
 pkg::remove::prompt() {
+	if [[ $OPTION_VERBOSE = true ]]; then
+		STD_LOG_DEBUG=true
+		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "Removing verbosely!"
+	fi
+	[[ $OPTION_YES = true ]] && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "Removing automatically!"
+	echo
 	log::debug "starting"
 	local REMOVE_LIST || return 1
 	if [[ $OPTION_BASH = true ]]; then
@@ -2093,9 +2107,13 @@ pkg::remove::prompt() {
 		"|| " \
 		"|| " \
 		"Continue with removal? (y/N) "
-	if ask::no; then
-		printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
-		exit 1
+	if [[ $OPTION_YES = true ]]; then
+		printf "${BBLUE}%s${OFF}\n" "AUTOMATIC REMOVAL STARTING"
+	else
+		if ask::no; then
+			printf "${BGREEN}%s${OFF}%s\n" "|| " "Canceling installation"
+			exit 1
+		fi
 	fi
 	if ! ask::sudo; then
 		print::exit "sudo is required"
@@ -2108,8 +2126,10 @@ pkg::remove::prompt() {
 }
 pkg::remove() {
 	log::debug "${PKG[pretty]} | starting"
+	log::debug "Ignoring INT signal for safety"
 	trap "" INT
 	print::pkg::remove
+	log::debug "Setting trap to continue removal on EXIT signal"
 	trap 'trap::remove' EXIT
 	log::prog "Removing ${PKG[directory]}..."
 	rm -rf "${PKG[directory]}"
@@ -2117,18 +2137,22 @@ pkg::remove() {
 	log::prog "Removing ${PKG[service]}..."
 	sudo rm -f "${SYSTEMD:?}/${PKG[service]:?}"
 	log::ok "Removed ${PKG[service]}"
-	log::prog "Removing ${PKG[pretty]} changelog..."
+	log::prog "Removing ${CHANGES:?}/${PKG[name]:?}..."
 	rm -rf "${CHANGES:?}/${PKG[name]:?}"
-	log::ok "Removed ${PKG[pretty]} changelog"
+	log::ok "Removed ${CHANGES:?}/${PKG[name]:?}"
 	log::prog "Updating local state..."
 	sudo sed \
 		-i -e "s/${PKG[var]}_VER=.*/${PKG[var]}_VER=/" "$STATE" \
 		-i -e "s/${PKG[var]}_OLD=.*/${PKG[var]}_OLD=\"true\"/" "$STATE"
+	log::debug "STATE | ${PKG[var]}_VER -> null"
+	log::debug "STATE | ${PKG[var]}_OLD -> true"
 	log::ok "Updated local state"
+	log::debug "Resetting INT and EXIT signals"
 	trap - INT EXIT
 	log::prog "Reloading systemd..."
 	systemd::reload
 	log::ok "Reloaded systemd"
+	log::debug "${PKG[pretty]} | removal OK"
 	print::pkg::removed
 	return 0
 }
@@ -2224,6 +2248,7 @@ pkg::trap::remove() {
 pkg::update() {
 	if [[ $OPTION_VERBOSE = true ]]; then
 		STD_LOG_DEBUG=true
+		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "Updating verbosely!"
 	fi
 	log::debug "starting"
 	trap 'pkg::tmp::remove; lock::free monero_bash_update; exit 1' EXIT
@@ -2238,7 +2263,7 @@ pkg::update() {
 	[[ $JOB ]] || map JOB
 	local UPDATE_LIST UPDATE_FOUND j
 	declare -a SCRATCH
-	log::prog "Fetching package metadata..."
+	log::prog "Fetching package metadata"
 	struct::pkg bash
 	UPDATE_LIST="${PKG[short]}"
 	pkg::update::multi & JOB[${PKG[short]}_update]=$!
@@ -2257,13 +2282,11 @@ pkg::update() {
 		UPDATE_LIST="$UPDATE_LIST ${PKG[short]}"
 		pkg::update::multi & JOB[${PKG[short]}_update]=$!
 	fi
-	log::debug "checking for failure files"
 	for i in $UPDATE_LIST; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
-		log::prog "${PKG[pretty]}"
 		if wait -f ${JOB[${PKG[short]}_update]}; then
-		    printf "\r\e[2K\e[1;32m[  OK  ]\e[0m %s" "${PKG[pretty]}"
+		    log::debug "${PKG[pretty]} | metadata OK"
 		else
 			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
@@ -2273,7 +2296,7 @@ pkg::update() {
 		print::error "Update failure | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
 	else
-		log::prog "Fetched package metadata"
+		log::ok "Fetched package metadata"
 	fi
 	echo
 	struct::pkg bash
@@ -2296,7 +2319,7 @@ pkg::update() {
 	fi
 	if [[ $UPDATE_FOUND ]]; then
 		trap 'pkg::tmp::remove; lock::free monero_bash_update; exit' EXIT
-		printf "${BBLUE}%s\n${BGREEN}%s${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
+		printf "${BBLUE}%s\n%s${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
 			"|| " \
 			"|| " \
 			"Updates found, type: " \
@@ -2345,11 +2368,10 @@ pkg::update::ver() {
 			print::error "Congratulations! You've encountered an error I have no idea how to fix!"
 			print::error "For some reason, GitHub API sends its JSON data in a single line..."
 			print::error "BUT ONLY SOMETIMES, SO IT'S IMPOSSIBLE TO DEBUG :D"
-			print::error "You can retry your update/install/upgrade and it will most likely work."
-			exit 99
+			print::exit  "You can retry your update/install/upgrade and it will most likely work."
 		fi
 	fi
-	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
+	log::debug "${PKG[pretty]} | version filtered: ${VER[${PKG[short]}]}"
 }
 pkg::update::result() {
 	local UPDATE_NAME
@@ -2777,50 +2799,50 @@ print::exit() {
 print::help() {
 	log::debug "starting"
 	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
-		"USAGE: " "monero-bash " "command " "<argument> " "[-o|--option]"
+		"USAGE: " "monero-bash " "command " "<argument> " "[--option]"
 	printf "${BWHITE}%s${OFF}\n" "WALLET"
 	printf "    ${OFF}%s\n" \
-		"monero-bash                                Open interactive wallet menu" \
-		"list                                       List wallets"
+		"monero-bash                                      Open interactive wallet menu" \
+		"list                                             List wallets"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"open    " "<wallet> " "[-p|--password <pass>]    " "Open a wallet directly"
+		"open    " "<wallet> " "[--password <pass>]             " "Open a wallet directly"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"new     " "<wallet type>                      " "Enter wallet creation mode"
+		"new     " "<wallet type>                            " "Enter wallet creation mode"
 	printf "\n${BWHITE}%s${OFF}\n" "PACKAGE"
-	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"install " "<packages> " "[-v|--verbose] [-f|--force]   " "Install one/multiple packages" \
-		"remove  " "<packages> " "[-v|--verbose]             " "Remove one/multiple packages"
 	printf "    ${OFF}%s${BPURPLE}%s${OFF}%s\n" \
-		"update  " "[-v|--verbose]                        " "Check for package updates" \
-		"upgrade " "[-v|--verbose] [-f|--force]              " "Upgrade all out-of-date packages"
+		"update  " "[--verbose]                              " "Check for package updates" \
+		"upgrade " "[--verbose] [--force] [--yes]            " "Upgrade all out-of-date packages"
+	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"install " "<packages> " "[--verbose] [--force] [--yes] " "Install one/multiple packages" \
+		"remove  " "<packages> " "[--verbose] [--yes]           " "Remove one/multiple packages"
 	printf "\n${BWHITE}%s${OFF}\n" "PROCESS"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"full    " "<process>                          " "Start <process> fully attached in foreground" \
-		"config  " "<processes>                        " "Enter interactive configuration for <process>"
+		"full    " "<process>                                " "Start <process> fully attached in foreground" \
+		"config  " "<processes>                              " "Enter interactive configuration for <process>"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"default " "<processes> " "[-c|--config] [-s|--systemd] " "Reset your config/systemd file to the default"
+		"default " "<processes> " "[--config] [--systemd]       " "Reset your config/systemd file to the default"
 	printf "\n${BWHITE}%s${OFF}\n" "SYSTEMD"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"start   " "<processes>                        " "Start process as systemd background process" \
-		"stop    " "<processes>                        " "Gracefully stop systemd background process" \
-		"kill    " "<processes>                        " "Forcefully kill systemd background process" \
-		"restart " "<processes>                        " "Restart systemd background process" \
-		"enable  " "<processes>                        " "Enable <process> to auto-start on computer boot" \
-		"disable " "<processes>                        " "Disable <process> from auto-starting on computer boot" \
-		"edit    " "<processes>                        " "Edit systemd service file" \
-		"refresh " "<processes>                        " "Refresh your systemd service file to match your config" \
-		"watch   " "<processes>                        " "Watch live output of systemd background process"
+		"start   " "<processes>                              " "Start process as systemd background process" \
+		"stop    " "<processes>                              " "Gracefully stop systemd background process" \
+		"kill    " "<processes>                              " "Forcefully kill systemd background process" \
+		"restart " "<processes>                              " "Restart systemd background process" \
+		"enable  " "<processes>                              " "Enable <process> to auto-start on computer boot" \
+		"disable " "<processes>                              " "Disable <process> from auto-starting on computer boot" \
+		"edit    " "<processes>                              " "Edit systemd service file" \
+		"refresh " "<processes>                              " "Refresh your systemd service file to match your config" \
+		"watch   " "<processes>                              " "Watch live output of systemd background process"
 	printf "\n${BWHITE}%s${OFF}\n"    "STATS"
 	printf "    %s\n" \
-		"status                                     Print status of all running processes" \
-		"size                                       Print size of all packages and folders" \
-		"version                                    Print current package versions"
+		"status                                           Print status of all running processes" \
+		"size                                             Print size of all packages and folders" \
+		"version                                          Print current package versions"
 	printf "\n${BWHITE}%s${OFF}\n"    "OTHER"
 	printf "    ${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
-		"changes " "<packages> " "[-p|--print]               " "View the latests changes for <package>" \
-		"rpc     " "<JSON-RPC method> " "[-v|--verbose]      " "Send a JSON-RPC call to monerod"
+		"changes " "<packages> " "[--print]                     " "View the latests changes for <package>" \
+		"rpc     " "<JSON-RPC method> " "[--verbose]            " "Send a JSON-RPC call to monerod"
 	printf "    ${OFF}%s${BYELLOW}%s${OFF}%s\n" \
-		"help    " "<command>                          " "Print help for a command, or all if none specified"
+		"help    " "<command>                                " "Print help for a command, or all if none specified"
 }
 print::help::command() {
 	until [[ $# = 0 ]]; do
@@ -2906,7 +2928,7 @@ print::help::command() {
 			"--generate-from-multisig-keys | [multisig]"
 			;;
 		install)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[-v|--verbose] [-f|--force]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "install " "<packages> " "[-v|--verbose] [-f|--force] [-y|--yes]"
 			printf "${OFF}%s\n" \
 			"Start the installation process of packages." \
 			"" \
@@ -2931,10 +2953,12 @@ print::help::command() {
 			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the install." \
 			"If the [-f|--force] option is given, the package will" \
-			"be installed even if it is already installed."
+			"be installed even if it is already installed." \
+			"If the [-y|--yes] option is given, the (Y/n) prompt will" \
+			"be skipped, and the installation will start automatically."
 			;;
 		remove)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[-v|--verbose]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "remove " "<packages> " "[-v|--verbose] [-y|--yes]"
 			printf "${OFF}%s\n" \
 			"Start the removal process of packages." \
 			"" \
@@ -2949,7 +2973,9 @@ print::help::command() {
 			"[xmrig]" \
 			"" \
 			"If the [-v|--verbose] option is given, detailed" \
-			"debug information will be printed during the removal."
+			"debug information will be printed during the removal." \
+			"If the [-y|--yes] option is given, the (y/N) prompt will" \
+			"be skipped, and the removal will start automatically."
 			;;
 		update)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "update " "[-v|--verbose]"
@@ -2967,7 +2993,7 @@ print::help::command() {
 			"debug information will be printed during the update."
 			;;
 		upgrade)
-			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[-v|--verbose] [-f|--force]"
+			printf "${BWHITE}%s${BRED}%s${OFF}%s${BPURPLE}%s\n\n" "USAGE: " "monero-bash " "upgrade " "[-v|--verbose] [-f|--force] [-y|--yes]"
 			printf "${OFF}%s\n" \
 			"Upgrade all installed packages that are out-of-date." \
 			"" \
@@ -2988,7 +3014,9 @@ print::help::command() {
 			"If the [-v|--verbose] option is given, detailed" \
 			"debug information will be printed during the upgrade." \
 			"If the [-f|--force] option is given, all installed" \
-			"packages will be upgraded even if they are up-to-date."
+			"packages will be upgraded even if they are up-to-date." \
+			"If the [-y|--yes] option is given, the (Y/n) prompt will" \
+			"be skipped, and the upgrade will start automatically."
 			;;
 		full)
 			printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s\n\n" "USAGE: " "monero-bash " "full " "<process>"

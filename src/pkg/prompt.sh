@@ -78,6 +78,7 @@ pkg::prompt() {
 		printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB verbosely!"
 	fi
 	[[ $OPTION_FORCE = true ]] && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB forcefully!"
+	[[ $OPTION_YES = true ]]   && printf "${BPURPLE}%s${BWHITE}%s${OFF}\n" "!! " "$PROMPT_VERB automatically!"
 	echo
 
 	# CREATE UI LIST
@@ -99,11 +100,16 @@ pkg::prompt() {
 		"|| " \
 		"|| " \
 		"Continue with ${PROMPT_NOUN}? (Y/n) "
-	if ! ask::yes; then
-		printf "${BRED}%s${BWHITE}%s${OFF}\n" \
-			"|| " \
-			"Canceling $PROMPT_NOUN"
-		exit 1
+	# AUTO (OPTION_YES)
+	if [[ $OPTION_YES = true ]]; then
+		printf "${BBLUE}%s${OFF}\n" "AUTOMATIC ${PROMPT_NOUN^^} STARTING"
+	else
+		if ! ask::yes; then
+			printf "${BRED}%s${BWHITE}%s${OFF}\n" \
+				"|| " \
+				"Canceling $PROMPT_NOUN"
+			exit 1
+		fi
 	fi
 
 	# SUDO

@@ -122,6 +122,7 @@ case "$1" in
 				*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
 				--verbose|-v)         OPTION_VERBOSE=true;;
 				--force|-f)           OPTION_FORCE=true;;
+				--yes|-y)             OPTION_YES=true;;
 				*)
 					print::error "Invalid option: $1"
 					print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
@@ -143,6 +144,7 @@ case "$1" in
 				*p2p*|*P2p*|*P2P*)    OPTION_P2POOL=true;;
 				*xmr*|*Xmr*|*XMR*)    OPTION_XMRIG=true;;
 				--verbose|-v)         OPTION_VERBOSE=true;;
+				--yes|-y)             OPTION_YES=true;;
 				*)
 					print::error "Invalid option: $1"
 					print::exit  "Pick one/multiple packages: [bash|monero|p2pool|xmrig]"
@@ -160,6 +162,7 @@ case "$1" in
 			case "$1" in
 				--verbose|-v)         OPTION_VERBOSE=true;;
 				--force|-f)           OPTION_FORCE=true;;
+				--yes|-y)             OPTION_YES=true;;
 				"")                   break;;
 				*)
 					print::exit "Invalid option: $1"
