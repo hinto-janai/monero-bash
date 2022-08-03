@@ -4,53 +4,73 @@
 #
 print_GreenHash()
 {
-	$bgreen; echo "###### $1" ;$off
+	$bgreen; echo "######## $1" ;$off
+}
+
+print_BlueHash() {
+	$bblue; echo "######## $1" ;$off
 }
 
 print_RedHash()
 {
-	$bred; echo "###### $1" ;$off
+	$bred; echo "######## $1" ;$off
 }
 
 print_WhiteHash()
 {
-	$bwhite; echo "### $1" ;$off
+	$bwhite; echo "##### $1" ;$off
+}
+
+print_YellowHash()
+{
+	$byellow; echo "##### $1" ;$off
+}
+
+print_PurpleHash()
+{
+	$bpurple; echo "##### $1" ;$off
 }
 
 print_MoneroBashTitle()
 {
-	$bred; echo "###################"
-	$bred; echo "#   monero-bash   #"
-	$bred; echo "###################"
+	$bred; echo "#-------------------------#"
+	$bred; echo "#       monero-bash       #"
+	$bred; echo "#-------------------------#"
 	$off
 }
 
 print_Version()
 {
-	$bwhite; echo -n "[monero-bash] "
+	local VERSION_OLD
+	$bwhite; echo -n "monero-bash | "
 	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
 		$bred; echo "$MONERO_BASH_VER"
+		VERSION_OLD=true
 	else
 		$bgreen; echo "$MONERO_BASH_VER"
 	fi
-	$bwhite; echo -n "[Monero     ] "
-	if [[ "$MONERO_OLD" = "true" ]]; then
+	$bwhite; echo -n "Monero      | "
+	if [[ $MONERO_VER && "$MONERO_OLD" = "true" ]]; then
 		$bred; echo "$MONERO_VER"
+		VERSION_OLD=true
 	else
 		$bgreen; echo "$MONERO_VER"
 	fi
-	$bwhite; echo -n "[XMRig      ] "
-	if [[ "$XMRIG_OLD" = "true" ]]; then
+	$bwhite; echo -n "XMRig       | "
+	if [[ $XMRIG_VER && "$XMRIG_OLD" = "true" ]]; then
 		$bred; echo "$XMRIG_VER"
+		VERSION_OLD=true
 	else
 		$bgreen; echo "$XMRIG_VER"
 	fi
-	$bwhite; echo -n "[P2Pool     ] "
-	if [[ "$P2POOL_OLD" = "true" ]]; then
+	$bwhite; echo -n "P2Pool      | "
+	if [[ $P2POOL_VER && "$P2POOL_OLD" = "true" ]]; then
 		$bred; echo "$P2POOL_VER"
+		VERSION_OLD=true
 	else
 		$bgreen; echo "$P2POOL_VER"
 	fi
+	[[ $VERSION_OLD = true ]] && return 1 || return 0
 }
 
 print_Usage()
@@ -91,16 +111,16 @@ print_Size()
 
 print_Error()
 {
-	$ired; printf "monero-bash error: "
+	$ired; printf "[monero-bash error] "
 	$iwhite; echo "$1"
 }
 
 print_Error_Exit()
 {
-	$ired; printf "monero-bash error: "
+	$ired; printf "[monero-bash error] "
 	$iwhite; echo "$1"
 	$white; echo "Exiting..."
-	exit
+	exit 1
 }
 
 # used for color coding sha256sum/gpg output (FOR VERIFY FUNCTION)
@@ -165,7 +185,7 @@ print_Upgrade()
 	else
 		$bwhite; printf "All packages: "
 		$bgreen; echo "up to date"
-		exit
+		exit 1
 	fi
 }
 
@@ -181,7 +201,7 @@ print_Install()
 	else
 		$bwhite; printf "All packages: "
 		$bgreen; echo "already installed"
-		exit
+		exit 1
 	fi
 }
 

@@ -15,7 +15,6 @@ fi
 # MAKE 600 PERMISSION TMP FOLDER
 mktemp -d /tmp/monero-bash-service.XXXXXXXXXX &>/dev/null
 tmpService="$(find /tmp/monero-bash-service.*)"
-sudo chmod -R 700 "$tmpService"
 
 # CREATE SERVICE FILE
 cat > $tmpService/$SERVICE <<EOM
@@ -37,7 +36,7 @@ WantedBy=multi-user.target
 EOM
 
 # INSTALL SERVICE IN /etc/systemd/system/
-sudo chmod -R 700 "$tmpService"
+sudo chmod -R 600 "$tmpService"
 sudo mv -f "$tmpService/$SERVICE" "$sysd"
 sudo rm -r "$tmpService"
 permission_Systemd

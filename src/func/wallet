@@ -61,7 +61,7 @@ wallet_Template()
 		$white; echo -n "New wallet name: " ;$iwhite
 		read walletName
 		if [[ "$walletName" = *" "* || "$walletName" = "" ]]; then
-			print_Error "wallet name cannot be empty or have spaces"
+			print_Error "Wallet name cannot be empty or have spaces"
 		else
 			break
 		fi
@@ -177,11 +177,13 @@ wallet_Collision()
 wallet_Count()
 {
 	walletCount="$(ls "$wallets" | grep -v ".keys" | wc -l)"
-	$bwhite; echo -n "$walletCount " ;$off
+	$byellow; echo -n "$walletCount " ;$bwhite
 	if [[ $walletCount = 1 ]]; then
 		echo "wallet found:"
+		echo
 	elif [[ $walletCount -gt 1 ]]; then
 		echo "wallets found: "
+		echo
 	elif [[ $walletCount = 0 ]]; then
 		echo "wallets found"
 	fi

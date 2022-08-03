@@ -41,14 +41,14 @@ upgrade <all/pkg> verbose                print detailed download information
 version                                  print installed package versions
 
 config                                   configure MINING settings
-start   <all/daemon/xmrig/p2pool>        start process detached (background)
-stop    <all/daemon/xmrig/p2pool>        gracefully stop the process
-kill    <all/daemon/xmrig/p2pool>        forcefully kill the process
-restart <all/daemon/xmrig/p2pool>        restart the process
-full    <daemon/xmrig/p2pool>            start the process attached (foreground)
-watch   <daemon/xmrig/p2pool>            watch live output of process
-edit    <daemon/xmrig/p2pool>            edit systemd service file
-reset   <bash/daemon/xmrig/p2pool>       reset your configs/systemd to default
+start   <all/monero/xmrig/p2pool>        start process detached (background)
+stop    <all/monero/xmrig/p2pool>        gracefully stop the process
+kill    <all/monero/xmrig/p2pool>        forcefully kill the process
+restart <all/monero/xmrig/p2pool>        restart the process
+full    <monero/xmrig/p2pool>            start the process attached (foreground)
+watch   <monero/xmrig/p2pool>            watch live output of process
+edit    <monero/xmrig/p2pool>            edit systemd service file
+reset   <bash/monero/xmrig/p2pool>       reset your configs/systemd to default
 
 backup                                   encrypt and backup your /wallets/
 decrypt                                  decrypt backup.tar.gpg
@@ -73,8 +73,8 @@ To setup P2Pool, either use `monero-bash config` or edit `.monero-bash/config/mo
 # monero-bash config #
 ######################
 # monero-bash
-AUTO_START_DAEMON="true"         auto-start daemon on wallet open
-AUTO_STOP_DAEMON="true"          auto-stop daemon on wallet close
+AUTO_START_DAEMON="true"         auto-start monero on wallet open
+AUTO_STOP_DAEMON="true"          auto-stop monero on wallet close
 AUTO_UPDATE="false"              check for all updates on wallet open
 PRICE_API_IP_WARNING="true"      warn when checking price API
 
@@ -142,6 +142,6 @@ monero-bash creates and uses systemd service files to control:
 * `p2pool`
 
 If you'd like to directly invoke a program:
-* `monero-bash full <daemon/p2pool/xmrig>`
+* `monero-bash full <monero/p2pool/xmrig>`
 
 This will launch them in the current terminal

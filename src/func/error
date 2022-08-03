@@ -2,50 +2,34 @@
 #
 #						Error Handling Functions
 #
-error_Continue()
-{
-	if [[ $? = "0" ]]; then
-		:
-	else
-		printf "\033[1;31mmonero-bash error: \033[0;97m"
-		echo "$1"
-	fi
-}
+error_Continue(){ [[ $? != "0" ]] && printf "\e[1;31m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "$1"; }
 
-error_Exit()
-{
-	if [[ $? = "0" ]]; then
-		:
-	else
-		printf "\033[1;31mmonero-bash error: \033[0;97m"
-		echo "$1"
-		echo "Exiting..."
-		exit
+error_Exit() {
+	if [[ $? != "0" ]]; then
+		printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "$1"
+		printf "\e[1;91m%s\e[0m\n" "Exiting..."
+		exit 1
 	fi
 }
 
 error_Sudo()
 {
-	if [[ $? = "0" ]]; then
-		:
-	else
-		printf "\033[1;31mmonero-bash error: \033[0;97m"
-		echo "[sudo] is needed"
+	if [[ $? != "0" ]]; then
+		printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "[sudo] is needed"
 		echo "Exiting..."
-		exit
+		exit 1
 	fi
 }
 
 
 error_Unknown()
 {
-	printf "\033[1;31mmonero-bash error: \033[0;97mUnknown command\n"
-	exit
+	printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "Unknown command"
+	exit 1
 }
 
 error_Trap()
 {
 	echo
-	printf "\033[1;31mMONERO-BASH: "
-	printf "\033[1;37mEXIT SIGNAL DETECTED - $1\n"
+	printf "\e[1;91m%s\e[1;97m%s\e[0m\n" "MONERO-BASH: " "EXIT SIGNAL DETECTED - $1"
 }

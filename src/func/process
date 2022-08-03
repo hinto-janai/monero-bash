@@ -12,7 +12,10 @@ process_Start_Template()
 	missing_"$NAME_FUNC"
 
 	# CONFIGURE P2POOL (only once)
-	[[ "$MINE_UNCONFIGURED" = "true" && $PROCESS = "p2pool" ]]&& mine_Config
+	if [[ "$MINE_UNCONFIGURED" = "true" && $PROCESS = "p2pool" ]]; then
+		mine_Config
+		exit
+	fi
 
 	# START PROCESS IF NOT ALREADY ALIVE
 	if pgrep $PROCESS &>/dev/null ; then
