@@ -1,22 +1,22 @@
 # monero-bash
 >a wrapper for Monero written in Bash, for Linux
 
-![monero-bash.png](https://i.ibb.co/x8zcf7p/monero-bash.png)
+![monero-bash](https://user-images.githubusercontent.com/101352116/183257273-6224fa0d-cb10-4a3f-bb5d-057df7c0e18e.jpg)
 
 ## Contents
 * [About](#About)
+* [Distro Coverage](#Distro-Coverage)
 * [Features](#Features)
 * [Install](#Install)
 * [Usage](#Usage)
 * [FAQ](#FAQ)
 
 ## About
-monero-bash is a wrapper/manager for:
+***monero-bash is a Linux CLI wrapper/manager for:***
 
-* [`monerod`](https://github.com/monero-project/monero)
-* [`monero-wallet-cli`](https://github.com/monero-project/monero)
-* [`xmrig`](https://github.com/xmrig/xmrig)
-* [`p2pool`](https://github.com/SChernykh/p2pool)
+* [`Monero`](https://github.com/monero-project/monero)
+* [`P2Pool`](https://github.com/SChernykh/p2pool)
+* [`XMRig`](https://github.com/xmrig/xmrig)
 
 monero-bash automates these programs into interactive prompts and simple commands
 
@@ -26,31 +26,77 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 
 [This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
 
+## Distro Coverage
+| Linux Distribution        | Version            | Status | Info |
+|---------------------------|--------------------|--------|------|
+| Debian                    | 11, 10             | ✅     |
+| Ubuntu                    | LTS 22.04, 20.04   | ✅     |
+| Pop!\_OS                  | LTS 22.04, 20.04   | ✅     |
+| Linux Mint                | 21, 20.03          | ✅     |
+| Fedora                    | Workstation 36, 35 | ❌     | SELinux disables `systemd` functionality
+| Arch Linux                |                    | ⚠️      | `wget` must be installed
+| Manjaro                   | 21.3.6             | ✅     |
+| Gentoo                    |                    | ❌     | `wget` & `systemd` must be installed
+
+***✅ = Works out the box***  
+***⚠️ = Small issues***  
+***❌ = Big issues***  
+
 ## Features
-* 📦 `PACKAGE MANAGER` download/verify/upgrade packages (including itself)
-* 💵 `WALLET` wallet menu to select/create wallets
-* 👺 `DAEMON` control `monerod/p2pool/xmrig` more automatically
-* ⛏️  `MINING` easy mining setup, **default is P2Pool**
-* 👁️  `WATCH` switch between normal terminal and live output of `monerod/p2pool/xmrig`
-* 📈 `STATS` various stats to display (processes, price, CPU/disk usage, etc)
-* 📋 `RPC` monerod JSON-RPC interface
-* 🔒 `GPG` backup/decrypt your wallets
+* 📦 **`PKG MANAGER`** Manage the download/verification/upgrading of packages
+* 💵 **`WALLET MENU`** Interactive menu for selecting/creating wallets
+* 👺 **`SYSTEMD`** Control ***monerod/p2pool/xmrig*** as background processes
+* ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
+* 👁️ **`WATCH`** Switch between normal terminal and live output of ***monerod/p2pool/xmrig***
+* 📈 **`STATS`** Display statistics (CPU usage, P2Pool shares, etc)
+* 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
+* 🔒 **`GPG`** Encrypt and backup your wallets
 
 ## Install
-[To install monero-bash, download the latest release here and](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
+
+---
+
+[To install: download the latest release here, extract and run monero-bash](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
+tar -xf monero-bash-v1.7.0.tar
+cd monero-bash
 ./monero-bash
 ```
-This will install monero-bash onto your system, to uninstall cleanly: `monero-bash uninstall`
+This will start the interactive install process into `/usr/local/share/monero-bash`
 
-OR
-
+It is recommended to verify the hash and PGP signature before installation.  
+Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify the tar:
 ```
-git clone https://github.com/hinto-janaiyo/monero-bash &&
-cd monero-bash &&
+sha256sum -c SHA256SUM
+gpg --import hinto-janaiyo.asc
+gpg --verify SHA256SUM
+```
+
+---
+
+To install with git:
+```
+git clone https://github.com/hinto-janaiyo/monero-bash
+cd monero-bash
 ./monero-bash
 ```
-**ALWAYS clone the main branch,** the other branches are not tested and may result in system damage
+**ALWAYS clone the main branch, the other branches are not tested**
+
+---
+To uninstall cleanly:
+```
+monero-bash uninstall
+```
+ Or manually remove everything:
+```
+rm -r $HOME/.monero-bash
+sudo rm /usr/local/bin/monero-bash
+sudo rm -r /usr/local/share/monero-bash
+sudo rm /etc/systemd/system/monero-bash*
+```
+**THIS WILL DELETE YOUR WALLETS - remember to move them before uninstalling!**
+
+---
 
 ## Usage
 [For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
@@ -77,14 +123,14 @@ upgrade <all/pkg> verbose                print detailed download information
 version                                  print installed package versions
 
 config                                   configure MINING settings
-start   <all/daemon/xmrig/p2pool>        start process detached (background)
-stop    <all/daemon/xmrig/p2pool>        gracefully stop the process
-kill    <all/daemon/xmrig/p2pool>        forcefully kill the process
-restart <all/daemon/xmrig/p2pool>        restart the process
-full    <daemon/xmrig/p2pool>            start the process attached (foreground)
-watch   <daemon/xmrig/p2pool>            watch live output of process
-edit    <daemon/xmrig/p2pool>            edit systemd service file
-reset   <bash/daemon/xmrig/p2pool>       reset your configs/systemd to default
+start   <all/monero/xmrig/p2pool>        start process detached (background)
+stop    <all/monero/xmrig/p2pool>        gracefully stop the process
+kill    <all/monero/xmrig/p2pool>        forcefully kill the process
+restart <all/monero/xmrig/p2pool>        restart the process
+full    <monero/xmrig/p2pool>            start the process attached (foreground)
+watch   <monero/xmrig/p2pool>            watch live output of process
+edit    <monero/xmrig/p2pool>            edit systemd service file
+reset   <bash/monero/xmrig/p2pool>       reset your configs/systemd to default
 
 backup                                   encrypt and backup your /wallets/
 decrypt                                  decrypt backup.tar.gpg
@@ -106,18 +152,32 @@ help                                     show this help message
 
 ---
 
+[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)
+
 * Monero [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
 * monero-bash [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
 * XMRig [`https://github.com/xmrig/xmrig`](https://github.com/xmrig/xmrig)
 * P2Pool [`https://github.com/SChernykh/p2pool`](https://github.com/SChernykh/p2pool)
-
-[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)
 
 VPN/Tor connections are often rate-limited by the API, if so, monero-bash will find the download link by filtering the HTML of the package's `/releases/latest/` GitHub page.
 
 Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.txt`](https://www.getmonero.org/downloads/hashes.txt)
 
 [Every other package hash is found on its GitHub page.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify)
+
+---
+
+</details>
+
+<details>
+<summary>Where are PGP keys downloaded from?</summary>
+
+---
+
+* monero-bash `21958EE945980282FCB849C8D7483F6CA27D1B1D` -> [hinto-janaiyo](https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/main/pgp/hinto-janaiyo.asc)
+* Monero `81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92` -> [binaryFate](https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)
+* P2Pool `1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF` -> [SChernykh](https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc)
+* XMRig `9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409` -> [XMRig](https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc)
 
 ---
 
@@ -137,25 +197,6 @@ monero-bash install/upgrade <package> verbose
 
 ---
 
-</details>
-
-<details>
-<summary>Does monero-bash have dependencies?</summary>
-
----
-
-**No**
-
-If you have a mainstream Linux distro (Ubuntu, Debian, Mint, Arch, Fedora) you already have everything needed:
-
-* bash
-* wget
-* procfs
-* systemd
-* GNU coreutils
-* GNU grep/awk/sed
-
----
 </details>
 
 <details>
@@ -215,12 +256,16 @@ User folder:
 ```
 /home/user/.monero-bash
 ```
+`systemd` service files:
+```bash
+/etc/systemd/systemd/monero-bash-$PACKAGE_NAME.service
+```
 
 ---
 </details>
 
 <details>
-<summary>Where does monero-bash install packages?</summary>
+<summary>Where are packages installed?</summary>
 
 ---
 
@@ -232,26 +277,48 @@ User folder:
 </details>
 
 <details>
-<summary>How to uninstall?</summary>
+<summary>Where are the config files?</summary>
 
 ---
-```
-monero-bash uninstall
-```
-This will delete ALL `monero-bash` files AND `.monero-bash`
 
-To manually remove everything:
 ```
-sudo rm -r /usr/local/share/monero-bash
-sudo rm /usr/local/bin/monero-bash
-sudo rm -r "$HOME/.monero-bash"
-
-sudo rm /etc/systemd/system/monero-bash-monerod.service
-sudo rm /etc/systemd/system/monero-bash-xmrig.service
-sudo rm /etc/systemd/system/monero-bash-p2pool.service
+$HOME/.monero-bash/config
 ```
-
-Please be careful, remember to move your `/wallets/` before uninstalling!
 
 ---
+
+</details>
+
+<details>
+<summary>Where are the wallets?</summary>
+
+---
+
+```
+$HOME/.monero-bash/wallets
+```
+
+---
+
+</details>
+
+<details>
+<summary>Does monero-bash have dependencies?</summary>
+
+---
+
+**No**
+
+If you have a mainstream Linux distro you already have everything needed:
+
+* `bash v5+`
+* `wget`
+* `systemd`
+* `GNU core utilities`
+* `Linux core utilities (util-linux)`
+
+See [Distro Coverage](#Distro-Coverage) for more info.
+
+---
+
 </details>

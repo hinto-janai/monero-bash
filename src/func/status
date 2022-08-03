@@ -5,16 +5,16 @@ status_All()
 {
 	print_MoneroBashTitle
 	print_Version
-	echo
 	status_System
 	[[ $MONERO_VER != "" ]]&& status_Monero
 	[[ $P2POOL_VER != "" ]]&& status_P2Pool
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
+	exit 0
 }
 
 status_System()
 {
-	$bblue; printf "[System     ] "
+	$bblue; printf "System      | "
 	$iwhite; echo "$(uptime -p)"
 	echo
 }
@@ -26,7 +26,7 @@ status_Template()
 		$bgreen; echo "online" ;$off
 
 		# ps stats
-		ps -o "| %p | %C | %t |" -p $(pgrep $DIRECTORY/$PROCESS -f)
+		ps -o "| %C | %t |" -p $(pgrep $DIRECTORY/$PROCESS -f)
 
 		# process specific stats
 		EXTRA_STATS
@@ -48,7 +48,7 @@ status_P2Pool()
 	EXTRA_STATS()
 	{
 		$iwhite; printf "Wallet: "
-		$white; echo "$WALLET"
+		$white; echo "${WALLET:0:6}...${WALLET: -6}"
 
 		# SHARE OUTPUT VARIABLE
 		local shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
@@ -102,7 +102,7 @@ status_XMRig()
 		# WALLET IN xmrig.json
 		$iwhite; printf "Wallet: " ;$off
 		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')"
-		[[ -z $wallet ]] && echo || echo "$wallet"
+		[[ -z $wallet ]] && echo || echo "${wallet:0:6}...${wallet: -6}"
 
 		# HASHRATE
 		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"

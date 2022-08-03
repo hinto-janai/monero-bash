@@ -34,9 +34,8 @@ fi
 
 # safety checks
 safety_Root
-safety_Deps
-safety_LinuxFolders
-safety_Home
+safety::gnu_linux
+safety::bash
 
 # no stdin support
 if [[ -p /dev/stdin ]]; then
@@ -51,7 +50,6 @@ fi
 
 # even more safety checks
 if [[ $FIRST_TIME != "true" ]]; then
-	safety_UsrLocalShare
 	safety_User
 	safety_DotMoneroBash
 	missing_Wallets
@@ -75,9 +73,9 @@ if [[ $interactive = "true" ]]; then
 	# SHOW WALLETS, SELECT
 	$white; wallet_Count ; wallet_List
 	while true ;do
-		$iblue; printf "Select wallet "
+		$byellow; printf "Select wallet "
 		$white; printf "or "
-		$ired; printf "[new / view / recover]"
+		$bpurple; printf "[new / view / recover]"
 		$white; printf ": "
 		read walletSelection
 
@@ -100,8 +98,8 @@ if [[ $interactive = "true" ]]; then
 			new|New|NEW|"[new]"|"[New]") wallet_Create ; break ;;
 			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
 			recover|Recover|RECOVER|"[recover]"|"[Recover]") wallet_Recover ; break ;;
-			"") print_Error "empty input" ;;
-			*) $ired; print_Error "wallet does not exist" ;;
+			"") print_Error "Empty input" ;;
+			*) $ired; print_Error "Wallet does not exist" ;;
 		esac
 	done
 	exit

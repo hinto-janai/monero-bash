@@ -69,7 +69,7 @@ mine_Config()
 	Yes(){ MINI="true" ;}
 	No(){ MINI="false" ;}
 	prompt_YESno
-	$bwhite; printf "P2Pool Log Level (0-6) [default - 2]: " ;$off
+	$bwhite; printf "P2Pool Log Level (0-6) [default - 1]: " ;$off
 	read LOG
 
 	# repeat & confirm user input
@@ -92,8 +92,8 @@ mine_Config()
 		echo "$MINI"
 	$bblue; printf "P2POOL LOG LEVEL: " ;$off
 	if [[ "$LOG" = "" ]]; then
-		echo "2"
-		LOG="2"
+		echo "1"
+		LOG="1"
 	else
 		echo "$LOG"
 	fi

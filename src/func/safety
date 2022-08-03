@@ -12,41 +12,21 @@ safety_DotMoneroBash()
 		{
 			build_DotMoneroBash
 			$bwhite; echo -n "$dotMoneroBash "
-			$off; echo "built"
+			$off; echo "Built!"
 		}
-		No(){ echo "Exiting..." ;exit;}
+		No(){ echo "Exiting..." ;exit 1;}
 		prompt_YESno
     fi
-}
-# checks if the home folder exists
-safety_Home()
-{
-	if [[ ! -d "$HOME" ]]; then
-		$ired; echo "monero bash error: User's home folder does not exist!"
-		echo "Exiting..."
-		exit
-	fi
-}
-
-# checks if the basic linux folders exists at all
-safety_LinuxFolders()
-{
-	if [[ ! -d "/usr/local/share/" || ! -d "/usr/local/bin/" ]]; then
-		$ired; echo "/usr/ folder error!"
-		$white; echo "monero-bash needs a normal /usr/ folder"
-		echo "Exiting..."
-		exit
-	fi
 }
 
 # check if in /usr/local/share/monero-bash
 safety_UsrLocalShare()
 {
 	if [[ "$installDirectory" != "/usr/local/share/monero-bash" ]]; then
-		$ired; echo "error: monero-bash not in /usr/local/share/ !"
+		$ired; echo "ERROR: monero-bash not in /usr/local/share/ !"
 		$white; echo "was monero-bash installed properly?"
 		echo "Exiting for safety..."
-		exit
+		exit 1
 	fi
 }
 
@@ -63,25 +43,9 @@ safety_HashList()
 safety_Root()
 {
 	if [[ "$EUID" = 0 ]]; then
-		printf "\033[1;31mMONERO-BASH ERROR: "
+		printf "\033[1;31m[MONERO-BASH ERROR] "
 		printf "\033[1;37mDO NOT RUN AS ROOT\n"
-		exit
-	fi
-}
-
-# checks if basic linux dependencies are installed
-safety_Deps()
-{
-	if [[ ! -e "/usr/bin/systemctl" ]]; then
-		print_Error_Exit "/usr/bin/systemctl (systemd) not found!"
-	elif [[ ! -e "$sysd" ]]; then
-		print_Error_Exit "$sysd not found!"
-	elif [[ ! -e "/usr/bin/gpg" ]]; then
-		print_Error_Exit "/usr/bin/gpg (GPG) not found!"
-	elif [[ ! -e "/usr/bin/wget" ]]; then
-		print_Error_Exit "/usr/bin/wget (wget) not found!"
-	elif [[ ! -e "/usr/bin/sed" || ! -e "/usr/bin/awk" || ! -e "/usr/bin/grep" || ! -e "/usr/bin/tail" || ! -e "/usr/bin/head" ]]; then
-		print_Error_Exit "Basic GNU tools not found!"
+		exit 1
 	fi
 }
 
@@ -89,9 +53,32 @@ safety_Deps()
 safety_User()
 {
 	if [[ "$INSTALLED_USER" != "$USER" ]]; then
-		printf "\033[1;31mmonero-bash error: "
+		printf "\033[1;31m[monero-bash error] "
 		printf "\033[0mOnly this user is allowed: "
 		printf "\033[1;37m$INSTALLED_USER\n"
-		exit
+		exit 1
+	fi
+}
+
+# check for GNU/Linux
+safety::gnu_linux() {
+	if [[ $OSTYPE != *linux-gnu* ]]; then
+		printf "\033[1;31m%s\033[0m%s\n%s\n" \
+		"[monero-bash error] " \
+		"GNU/Linux not detected!" \
+		"Exiting for safety..."
+		exit 1
+	fi
+}
+
+
+# check for bash v5+
+safety::bash() {
+	if [[ ! ${BASH_VERSINFO[0]} -ge 5 ]]; then
+		printf "\033[1;31m%s\033[0m%s\n%s\n" \
+			"[monero-bash error] " \
+			"Your Bash is older than v5." \
+			"Exiting for safety..."
+		exit 1
 	fi
 }

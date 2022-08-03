@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+#
 # Original code taken from: https://github.com/jtgrassie/xmrpc
 # Modified slightly to work within monero-bash as a function.
 #

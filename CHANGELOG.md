@@ -1,3 +1,19 @@
+# v1.7.0
+**REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
+## Updates
+* P2Pool: Default log level 2 -> 1
+* Update: UI more clearly indicates if up-to-date or not
+* Update: Exits 0 on new packages, 1 on up-to-date
+* Upgrade: Exits 0 on success, 1 on failure
+* Version: Exits 0 on up-to-date, 1 on old packages
+* Misc: General UI changes
+
+## Fixes
+* `status`: Fixed always exiting 1
+* `monero-bash seed`: Fixed, but still experimental
+* Safety: Using a non-GNU/Linux OS or a Bash version less than v5 will error & exit
+
+
 # v1.6.0 - RECOMMENDED UPDATE
 ## Updates
 * **v1 END OF LIFE**

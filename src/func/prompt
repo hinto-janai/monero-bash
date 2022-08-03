@@ -42,7 +42,7 @@ prompt_PriceAPI_IP()
 		$ired; echo "https://cryptocompare.com"
 		$white; echo -n "Continue? (y/N) "
 		Yes(){ :;}
-		No(){ echo "Exiting..." ;exit ;}
+		No(){ echo "Exiting..." ;exit 1;}
 		prompt_NOyes
 	fi
 }

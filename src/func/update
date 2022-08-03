@@ -48,18 +48,23 @@ update_All()
 {
 	prompt_Sudo
 	error_Sudo
-	$bwhite; echo "Checking for updates..."
+	$bwhite; printf "%s\n\n" "--- Fetching pkg meta-data ---"
 	update_MoneroBash
 	[[ $MONERO_VER != "" ]]&& update_Monero
 	[[ $XMRIG_VER != "" ]]&& update_XMRig
 	[[ $P2POOL_VER != "" ]]&& update_P2Pool
     if [[ $updateFound = "true" ]]; then
         echo
-        $ired; echo -n "monero-bash upgrade "
+        $white; echo -n "Type: "
+        $bred; echo -n "[monero-bash upgrade] "
         $white; echo "to upgrade all"
-        $white; echo -n "or: "
-        $ired; echo -n "monero-bash upgrade <package> "
+        $white; echo -n "Or:   "
+        $bred; echo -n "[monero-bash upgrade <package>] "
         $white; echo "to upgrade something specific"
         $off
+		exit 0
+	else
+		$bgreen; printf "\n%s\n" "--- All package up-to-date ---"
+		$off; exit 1
     fi
 }

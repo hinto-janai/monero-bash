@@ -14,7 +14,7 @@ compromised_Hash()
 	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
 	$bred; echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
-	exit
+	exit 1
 }
 
 compromised_GPG()
@@ -30,5 +30,5 @@ compromised_GPG()
 	$bwhite; echo "gpgSTDOUT: " ;$off; echo "$gpgSTDOUT"
 	$bred; echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
-	exit
+	exit 1
 }

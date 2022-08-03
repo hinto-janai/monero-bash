@@ -36,6 +36,6 @@ ___END___OF___LIFE___() {
 		    "@ latest version from:                @@@@@@@@@@"\
 		    "@ https://github.com/hinto-janaiyo/monero-bash @"\
 		    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-		exit
+		exit 1
 	fi
 }

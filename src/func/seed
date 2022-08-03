@@ -9,7 +9,7 @@ seed_Create()
 
 # WARNING
 $bred; echo "THIS IS AN EXPERIMENTAL FEATURE"
-$bwhite; echo "Using monero-wallet-cli to generate a seed is highly recommended"
+$bwhite; echo "Using [monero-wallet-cli] to generate a seed is highly recommended"
 $white; printf "Continue? (y/N) "
 Yes(){ :;}
 No(){ echo "Exiting..." ;exit;}
@@ -19616,47 +19616,25 @@ esac
 
 seed_Rng()
 {
-	# 64 bytes/512 bits of /dev/random fed into sha512sum, only integers printed
-	sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
-
-	# only print first 4 integers
-	number="$(printf ${sha:0:4})"
-
-	# repeat if greater than seed array
-	while true ;do
-		if [[ $number -gt 1625 ]]; then
-			sha="$(cat /dev/random | head -c 64 | sha512sum | sed 's/[^0-9]*//g')"
-			number="$(printf ${sha:0:4})"
-		else
-			break
-		fi
-	done
-
-	# delete leading 0's
-    if [[ $number = 0000 ]]; then
-        number="0"
-    elif [[ $number = 0* && $number != 0000 ]];then
-        number="$(printf "$number" | sed "0,/0*/{s///}")"
-    fi
+	number="$(shuf -i 0-1625 -n 23)"
 }
 
 seed_Generate()
 {
 	# first 23 words
-	for i in {1..23} ;do
-		seed_Rng
-		printf "${array[$number]} "
-	done
-
-	# 24th word - no space
 	seed_Rng
-	printf "${array[$number]}"
+	for i in $number;do
+		printf "${array[$i]} "
+	done
+	# 24th
+	i=$(shuf -i 0-1625 -n 1)
+	printf "${array[$i]}"
 }
 
 seed_Crc_String()
 {
 	# concatenate first 3 letters of every word for last 25th word checksum
-	for i in $list ;do
+	for i in $list; do
 		printf "${i:0:3}"
 	done
 }
@@ -19685,4 +19663,5 @@ seed_Debug()
 [[ $seedOptions != "true" ]]&& echo
 printf "$seed "
 echo "$list" | head -"$crc" | tail +"$crc"
+exit 0
 }

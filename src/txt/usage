@@ -14,14 +14,14 @@ upgrade <all/pkg> verbose                print detailed download information
 version                                  print installed package versions
 
 config                                   configure MINING settings
-start   <all/daemon/xmrig/p2pool>        start process detached (background)
-stop    <all/daemon/xmrig/p2pool>        gracefully stop the process
-kill    <all/daemon/xmrig/p2pool>        forcefully kill the process
-restart <all/daemon/xmrig/p2pool>        restart the process
-full    <daemon/xmrig/p2pool>            start the process attached (foreground)
-watch   <daemon/xmrig/p2pool>            watch live output of process
-edit    <daemon/xmrig/p2pool>            edit systemd service file
-reset   <bash/daemon/xmrig/p2pool>       reset your configs/systemd to default
+start   <all/monero/xmrig/p2pool>        start process detached (background)
+stop    <all/monero/xmrig/p2pool>        gracefully stop the process
+kill    <all/monero/xmrig/p2pool>        forcefully kill the process
+restart <all/monero/xmrig/p2pool>        restart the process
+full    <monero/xmrig/p2pool>            start the process attached (foreground)
+watch   <monero/xmrig/p2pool>            watch live output of process
+edit    <monero/xmrig/p2pool>            edit systemd service file
+reset   <bash/monero/xmrig/p2pool>       reset your configs/systemd to default
 
 backup                                   encrypt and backup your /wallets/
 decrypt                                  decrypt backup.tar.gpg
