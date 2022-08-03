@@ -49,10 +49,10 @@ pkg::update() {
 	declare -a SCRATCH
 
 	# TITLE
-	print::pkg::update
+#	print::pkg::update
+	log::prog "Fetching package metadata..."
 
 	# START METADATA THREADS AND CREATE UPDATE_LIST
-	log::prog "Fetching package metadata..."
 	struct::pkg bash
 	UPDATE_LIST="${PKG[short]}"
 	pkg::update::multi & JOB[${PKG[short]}_update]=$!
@@ -77,8 +77,11 @@ pkg::update() {
 	for i in $UPDATE_LIST; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
+		log::prog "${PKG[pretty]}"
 		if wait -f ${JOB[${PKG[short]}_update]}; then
-			log::ok "${PKG[pretty]}"
+			# use a custom log::ok to overwrite
+			# the last package name
+		    printf "\r\e[2K\e[1;32m[  OK  ]\e[0m %s" "${PKG[pretty]}"
 		else
 			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
@@ -88,6 +91,8 @@ pkg::update() {
 	if [[ $UPDATE_FAILED = true ]]; then
 		print::error "Update failure | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
+	else
+		log::prog "Fetched package metadata"
 	fi
 
 	# FILTER RESULT AND PRINT
@@ -115,18 +120,22 @@ pkg::update() {
 	# END
 	if [[ $UPDATE_FOUND ]]; then
 		trap 'pkg::tmp::remove; lock::free monero_bash_update; exit' EXIT
-		printf "${BBLUE}%s\n%s${BWHITE}%s${BCYAN}%s${BWHITE}%s${OFF}\n" \
+		printf "${BBLUE}%s\n${BGREEN}%s${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
 			"|| " \
 			"|| " \
 			"Updates found, type: " \
 			"[monero-bash upgrade] " \
 			"to upgrade all packages"
+		log::debug "Updates found, exiting 0"
+		exit 0
 	else
-		print::pkg::updated
+		printf "${BBLUE}%s\n${BRED}%s${BWHITE}%s${OFF}\n" \
+			"|| " \
+			"|| " \
+			"All packages up-to-date"
+		log::debug "No updates found, exiting 1"
+		exit 1
 	fi
-
-	log::debug "update() done"
-	exit 0
 }
 
 # a template for multi-threaded updates
@@ -179,9 +188,10 @@ pkg::update::ver() {
 			echo
 			print::error "Upgrade failure | ${PKG[pretty]} version fetch error"
 			print::error "Congratulations! You've encountered an error I have no idea how to fix!"
-			print::error "For some reason, ${PKG[pretty]}'s version did not get filtered properly..."
+			print::error "For some reason, GitHub API sends its JSON data in a single line..."
 			print::error "BUT ONLY SOMETIMES, SO IT'S IMPOSSIBLE TO DEBUG :D"
-			print::exit  "You can retry your update/install/upgrade and it will most likely work."
+			print::error "You can retry your update/install/upgrade and it will most likely work."
+			exit 99
 		fi
 	fi
 

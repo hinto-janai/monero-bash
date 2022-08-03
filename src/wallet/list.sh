@@ -44,11 +44,8 @@ wallet::list() {
 	fi
 
 	# PRINT WALLET LIST
-	if [[ $WALLET_COUNT = 0 ]]; then
-		echo
-	else
-		printf "${BWHITE}%s${OFF}\n\n" "$WALLET_LIST"
-	fi
+	echo
+	[[ $WALLET_COUNT != 0 ]] && printf "${BWHITE}%s${OFF}\n\n" "$WALLET_LIST"
 
 	return 0
 }

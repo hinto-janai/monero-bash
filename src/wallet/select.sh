@@ -30,7 +30,7 @@ wallet::select() {
 
 	while :; do
 	# SELECT/CREATE WALLET
-	printf "${BYELLOW}%s${OFF}%s${BRED}%s${OFF}%s" \
+	printf "${BYELLOW}%s${OFF}%s${BPURPLE}%s${OFF}%s" \
 		"Select a wallet " \
 		"or " \
 		"[new]" \

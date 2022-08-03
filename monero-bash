@@ -26,23 +26,23 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/32fa8ea>
-#nix <1659238196>
+#git <monero-bash/fbd3d35>
+#nix <1659547090>
 #hbc <e35ca7a>
-#lib <stdlib/ask.sh/9a1b93f>
-#lib <stdlib/const.sh/9a1b93f>
-#lib <stdlib/crypto.sh/9a1b93f>
-#lib <stdlib/date.sh/9a1b93f>
-#lib <stdlib/debug.sh/9a1b93f>
-#lib <stdlib/is.sh/9a1b93f>
-#lib <stdlib/lock.sh/9a1b93f>
-#lib <stdlib/log.sh/9a1b93f>
-#lib <stdlib/math.sh/9a1b93f>
-#lib <stdlib/panic.sh/9a1b93f>
-#lib <stdlib/readonly.sh/9a1b93f>
-#lib <stdlib/safety.sh/9a1b93f>
-#lib <stdlib/trace.sh/9a1b93f>
-#lib <stdlib/type.sh/9a1b93f>
+#lib <stdlib/ask.sh/8038e38>
+#lib <stdlib/const.sh/8038e38>
+#lib <stdlib/crypto.sh/8038e38>
+#lib <stdlib/date.sh/8038e38>
+#lib <stdlib/debug.sh/8038e38>
+#lib <stdlib/is.sh/8038e38>
+#lib <stdlib/lock.sh/8038e38>
+#lib <stdlib/log.sh/8038e38>
+#lib <stdlib/math.sh/8038e38>
+#lib <stdlib/panic.sh/8038e38>
+#lib <stdlib/readonly.sh/8038e38>
+#lib <stdlib/safety.sh/8038e38>
+#lib <stdlib/trace.sh/8038e38>
+#lib <stdlib/type.sh/8038e38>
 #src <crypto/key.sh>
 #src <debug.sh>
 #src <monero_bash/install.sh>
@@ -366,34 +366,13 @@ lock::free() {
 		shift
 	done
 }
-log::ok() {
-	printf "\r\e[2K"
-	printf "\r\e[1;32m[  OK  ]\e[0m %s\n" "$@"
-}
-log::info() {
-	printf "\r\e[2K"
-	printf "\r\e[1;37m[ INFO ]\e[0m %s\n" "$@"
-}
-log::warn() {
-	printf "\r\e[2K"
-	printf "\r\e[1;33m[ WARN ]\e[0m %s\n" "$@"
-}
-log::fail() {
-	printf "\r\e[2K"
-	printf "\r\e[1;31m[ FAIL ]\e[0m %s\n" "$@"
-}
-log::danger() {
-	printf "\r\e[2K"
-	printf "\r\e[1;31m[DANGER]\e[0m %s\n" "$@"
-}
-log::tab() {
-	printf "\r\e[2K"
-	printf "\r\e[0m         %s\n" "$@"
-}
-log::prog() {
-	printf "\r\e[2K"
-	printf "\r\e[1;37m[ \e[0m....\e[1;37m ]\e[0m %s " "$@"
-}
+log::ok() { printf "\r\e[2K\e[1;32m[  OK  ]\e[0m %s\n" "$@"; }
+log::info() { printf "\r\e[2K\e[1;37m[ INFO ]\e[0m %s\n" "$@"; }
+log::warn() { printf "\r\e[2K\e[1;33m[ WARN ]\e[0m %s\n" "$@"; }
+log::fail() { printf "\r\e[2K\e[1;31m[ FAIL ]\e[0m %s\n" "$@"; }
+log::danger() { printf "\r\e[2K\e[1;31m[DANGER]\e[0m %s\n" "$@"; }
+log::tab() { printf "\r\e[2K\e[0m         %s\n" "$@"; }
+log::prog() { printf "\r\e[2K\e[1;37m[ \e[0m....\e[1;37m ]\e[0m %s " "$@"; }
 log::debug() {
 	[[ $STD_LOG_DEBUG != true ]] && return 0
 	if [[ $STD_LOG_DEBUG_LAST_FUNC != "${FUNCNAME[1]}" ]]; then
@@ -2259,7 +2238,6 @@ pkg::update() {
 	[[ $JOB ]] || map JOB
 	local UPDATE_LIST UPDATE_FOUND j
 	declare -a SCRATCH
-	print::pkg::update
 	log::prog "Fetching package metadata..."
 	struct::pkg bash
 	UPDATE_LIST="${PKG[short]}"
@@ -2283,8 +2261,9 @@ pkg::update() {
 	for i in $UPDATE_LIST; do
 		struct::pkg $i
 		log::debug "${PKG[pretty]} | waiting for metadata thread to complete"
+		log::prog "${PKG[pretty]}"
 		if wait -f ${JOB[${PKG[short]}_update]}; then
-			log::ok "${PKG[pretty]}"
+		    printf "\r\e[2K\e[1;32m[  OK  ]\e[0m %s" "${PKG[pretty]}"
 		else
 			log::fail "${PKG[pretty]}"
 			local UPDATE_FAILED=true
@@ -2293,6 +2272,8 @@ pkg::update() {
 	if [[ $UPDATE_FAILED = true ]]; then
 		print::error "Update failure | GitHub API connection failure"
 		print::exit "Are you using a VPN/TOR? GitHub API will often rate-limit them."
+	else
+		log::prog "Fetched package metadata"
 	fi
 	echo
 	struct::pkg bash
@@ -2315,17 +2296,22 @@ pkg::update() {
 	fi
 	if [[ $UPDATE_FOUND ]]; then
 		trap 'pkg::tmp::remove; lock::free monero_bash_update; exit' EXIT
-		printf "${BBLUE}%s\n%s${BWHITE}%s${BCYAN}%s${BWHITE}%s${OFF}\n" \
+		printf "${BBLUE}%s\n${BGREEN}%s${BWHITE}%s${BYELLOW}%s${BWHITE}%s${OFF}\n" \
 			"|| " \
 			"|| " \
 			"Updates found, type: " \
 			"[monero-bash upgrade] " \
 			"to upgrade all packages"
+		log::debug "Updates found, exiting 0"
+		exit 0
 	else
-		print::pkg::updated
+		printf "${BBLUE}%s\n${BRED}%s${BWHITE}%s${OFF}\n" \
+			"|| " \
+			"|| " \
+			"All packages up-to-date"
+		log::debug "No updates found, exiting 1"
+		exit 1
 	fi
-	log::debug "update() done"
-	exit 0
 }
 pkg::update::multi() {
 	log::debug "starting metadata thread for: ${PKG[pretty]}"
@@ -2357,9 +2343,10 @@ pkg::update::ver() {
 			echo
 			print::error "Upgrade failure | ${PKG[pretty]} version fetch error"
 			print::error "Congratulations! You've encountered an error I have no idea how to fix!"
-			print::error "For some reason, ${PKG[pretty]}'s version did not get filtered properly..."
+			print::error "For some reason, GitHub API sends its JSON data in a single line..."
 			print::error "BUT ONLY SOMETIMES, SO IT'S IMPOSSIBLE TO DEBUG :D"
-			print::exit  "You can retry your update/install/upgrade and it will most likely work."
+			print::error "You can retry your update/install/upgrade and it will most likely work."
+			exit 99
 		fi
 	fi
 	log::debug "${PKG[pretty]} version filtered: ${VER[${PKG[short]}]}"
@@ -3999,11 +3986,8 @@ wallet::list() {
 	else
 		printf "%s\n" "wallets found"
 	fi
-	if [[ $WALLET_COUNT = 0 ]]; then
-		echo
-	else
-		printf "${BWHITE}%s${OFF}\n\n" "$WALLET_LIST"
-	fi
+	echo
+	[[ $WALLET_COUNT != 0 ]] && printf "${BWHITE}%s${OFF}\n\n" "$WALLET_LIST"
 	return 0
 }
 wallet::open() {
@@ -4039,7 +4023,7 @@ wallet::select() {
 	char WALLET_SELECTION
 	local i
 	while :; do
-	printf "${BYELLOW}%s${OFF}%s${BRED}%s${OFF}%s" \
+	printf "${BYELLOW}%s${OFF}%s${BPURPLE}%s${OFF}%s" \
 		"Select a wallet " \
 		"or " \
 		"[new]" \
