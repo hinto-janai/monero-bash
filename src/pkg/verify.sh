@@ -135,24 +135,11 @@ pkg::verify::hash() {
 		print::exit "Upgrade failure | NULL Hash variable"
 	fi
 
-	# P2Pool has it's hashes in full upper-case
-	# this causes an error because sha256sum outputs in
-	# lower case, so grep for lower-case, then upper, else error.
-	# grep for LOWER CASE hash in hash file
-	if grep -o "${HASH[${PKG[short]}],,}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
-		log::debug "${PKG[pretty]} | lower-case hash match found"
-
-		# calculate first and last 6 digits of hash
-		local HASH_START HASH_END HASH_DIGIT
-		HASH_DIGIT="${#HASH[${PKG[short]}]}"
-		HASH_START="${HASH[${PKG[short]}]:0:6}"
-		HASH_END="$((HASH_DIGIT-6))"
-		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		VERIFY_MSG[${PKG[short]}]="HASH: ${HASH_START}...${HASH_END}"
-
-	# UPPER CASE
-	elif grep -o "${HASH[${PKG[short]}]^^}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
-		log::debug "${PKG[pretty]} | upper-case hash match found"
+	# P2Pool formats its hashes in upper-case.
+	# This causes an error because sha256sum outputs
+	# in lower case, so ignore case during grep.
+	if grep -i -o "${HASH[${PKG[short]}]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+		log::debug "${PKG[pretty]} | hash match found"
 
 		# calculate first and last 6 digits of hash
 		local HASH_START HASH_END HASH_DIGIT
