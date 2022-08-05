@@ -30,4 +30,6 @@ status::table() {
 		"# $MONERO_BASH_VER | $MONERO_VER | $P2POOL_VER | $XMRIG_VER #" \
 		"#-----------------------------------------------#" \
 		"#"
+
+	# // use this for online/offline -> ●
 }

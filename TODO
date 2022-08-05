@@ -1,0 +1,52 @@
+#--------------------------#
+# monero-bash v2.0.0 todos #
+# last updated: 1659802119 #
+#--------------------------#
+# package manager
+  - fault checks: make sure if things go wrong
+    then it's properly handled. forcefully break
+    things by making bad variables, and test
+  - re-read all code
+  - re-think overall design, see if there's more
+    efficient way of doing things, turn complex
+    over-engineered code into simple code
+# state
+  - proper error handling for no state found
+  - recover a corrupted state
+# main install/uninstall
+  - same points as package-manager
+# status
+  - create p2pool.log parser
+    needs floating arithmetic
+  - better monero stats, maybe
+    through local rpc server
+  - create xmrig.log parser
+# fedora
+  - fix SELinux
+  - fix systemd
+# process
+  - create
+# systemd
+  - create
+# config files
+  - add comments to monerod.conf
+    and more options. trusted daemon,
+    etc.
+# config command
+  - interactive config tool for
+    bash/monero/p2pool/xmrig
+# rpc
+  - add new calls
+  - fix some old calls
+
+#---------------------------#
+# tests, fixes, small stuff #
+#---------------------------#
+# tests
+  - create build/runtime tests
+    for all commands on expected
+    output or exit codes
+# help
+  - test all print::help::command()
+# UI
+  - make ui consistent, [], || styles

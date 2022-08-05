@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/0cad9a9>
-#nix <1659552642>
+#git <monero-bash/a3fb43f>
+#nix <1659652760>
 #hbc <e35ca7a>
 #lib <stdlib/ask.sh/8038e38>
 #lib <stdlib/const.sh/8038e38>
@@ -2535,16 +2535,8 @@ pkg::verify::hash() {
 		echo
 		print::exit "Upgrade failure | NULL Hash variable"
 	fi
-	if grep -o "${HASH[${PKG[short]}],,}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
-		log::debug "${PKG[pretty]} | lower-case hash match found"
-		local HASH_START HASH_END HASH_DIGIT
-		HASH_DIGIT="${#HASH[${PKG[short]}]}"
-		HASH_START="${HASH[${PKG[short]}]:0:6}"
-		HASH_END="$((HASH_DIGIT-6))"
-		HASH_END="${HASH[${PKG[short]}]:${HASH_END}}"
-		VERIFY_MSG[${PKG[short]}]="HASH: ${HASH_START}...${HASH_END}"
-	elif grep -o "${HASH[${PKG[short]}]^^}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
-		log::debug "${PKG[pretty]} | upper-case hash match found"
+	if grep -i -o "${HASH[${PKG[short]}]}" "${TMP_PKG[${PKG[short]}_hash]}" &>/dev/null; then
+		log::debug "${PKG[pretty]} | hash match found"
 		local HASH_START HASH_END HASH_DIGIT
 		HASH_DIGIT="${#HASH[${PKG[short]}]}"
 		HASH_START="${HASH[${PKG[short]}]:0:6}"
