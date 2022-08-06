@@ -1,6 +1,7 @@
 # v1.7.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
-## Updates
+## Changes
+* Wallet: Auto turning on/off of `monerod` when opening wallet is now disabled by default in `monero-bash.conf`
 
 ## Fixes
 
