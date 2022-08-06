@@ -1,3 +1,10 @@
+# v1.7.1
+**REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
+## Updates
+
+## Fixes
+
+
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
