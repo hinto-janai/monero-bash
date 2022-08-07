@@ -26,9 +26,11 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/a3fb43f>
-#nix <1659652760>
-#hbc <e35ca7a>
+#git <monero-bash/bc34e01>
+#nix <1659902854>
+#hbc <7f27eed>
+#lib <UNKNOWN>
+#lib <UNKNOWN>
 #lib <stdlib/ask.sh/8038e38>
 #lib <stdlib/const.sh/8038e38>
 #lib <stdlib/crypto.sh/8038e38>
@@ -104,6 +106,101 @@ set -eo pipefail || exit 96
 
 #-------------------------------------------------------------------------------- BEGIN LIB
 trap 'printf "%s\n" "@@@@@@ LIB PANIC @@@@@@" "[line] ${LINENO}" "[file] $0" "[code] $?";set +eo pipefail;trap - ERR;while :;do read;done;exit 112' ERR || exit 112
+config() {
+	local LIBCONFIG_LINE LIBCONFIG_ARG LIBCONFIG_TYPE IFS=$'\n' || return 1
+	declare -a LIBCONFIG_ARRAY || return 1
+	[[ $# -lt 3 ]] && return 2
+	LIBCONFIG_ARG=$(($# % 2))
+	[[ $LIBCONFIG_ART = 0 ]] && return 3
+	[[ -f "$1" ]] || return 4
+	[[ -r "$1" ]] || return 5
+	mapfile LIBCONFIG_ARRAY < "$1" || return 6
+	shift
+	until [[ $# = 0 ]]; do
+		LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//\"}
+		LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//\'}
+		LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//[[:blank:]]}
+		case $1 in
+			ip)
+				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
+					if [[ $LIBCONFIG_LINE =~ ^${2}=[0-9.]+'.'[0-9]+$ ]]; then
+						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
+					fi
+				done
+				shift 2;;
+			int)
+				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
+					if [[ $LIBCONFIG_LINE =~ ^${2}=[0-9]+$ ]]; then
+						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
+					fi
+				done
+				shift 2;;
+			port)
+				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
+					if [[ $LIBCONFIG_LINE =~ ^${2}=[0-9:.]+'.'[0-9]':'[0-9]+$ ]]; then
+						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
+					fi
+				done
+				shift 2;;
+			bool)
+				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
+					if [[ $LIBCONFIG_LINE =~ ^${2}=true$ ]]; then
+						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
+					fi
+				done
+				shift 2;;
+			char)
+				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
+					if [[ $LIBCONFIG_LINE =~ ^${2}=[[:alnum:]._-]+$ ]]; then
+						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
+					fi
+				done
+				shift 2;;
+			path)
+				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
+					if [[ $LIBCONFIG_LINE =~ ^${2}=[[:alnum:]./_-]+$ ]]; then
+						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
+					fi
+				done
+				shift 2;;
+		esac
+	done
+}
+merge() {
+	local LIBMERGE_OLD LIBMERGE_NEW LIBMERGE_TMP LIBMERGE_CMD IFS=$'\n' i || return 1
+	case $# in
+		2|3) :;;
+		*) return 2
+	esac
+	[[ -f "$1" ]] || return 3
+	[[ -f "$2" ]] || return 4
+	[[ -r "$1" ]] || return 5
+	[[ -r "$2" ]] || return 6
+	mapfile LIBMERGE_OLD < "$1" || return 7
+	mapfile LIBMERGE_NEW < "$2" || return 8
+	LIBMERGE_NEW=$(printf "%s" "${LIBMERGE_NEW[@]}") || return 8
+	[[ $LIBMERGE_OLD ]] || return 9
+	[[ $LIBMERGE_NEW ]] || return 10
+	if [[ $3 = "--diff" || $3 = "-d" ]]; then
+		for i in ${LIBMERGE_OLD[@]}; do
+			if printf "%s\n" "$LIBMERGE_NEW" | grep --quiet "^${i/=*/=}.*$"; then
+				LIBMERGE_NEW="$(printf "%s\n" "$LIBMERGE_NEW" | sed "s|^${i/=*/=}.*$|$i|g")" || return 12
+				printf "\e[0;94m~ %s\n" "$i"
+			else
+				printf "\e[0;91m- %s\n" "$i"
+			fi
+		done
+		if LIBMERGE_DIFF=$(printf "%s\n" "$LIBMERGE_NEW" | grep -vxf "$1"); then
+			printf "\e[0;92m+ %s\n" $LIBMERGE_DIFF
+		fi
+	else
+		for i in ${LIBMERGE_OLD[@]}; do
+			LIBMERGE_SED_CMD="s|^${i/=*/=}.*$|$i|g; $LIBMERGE_SED_CMD"
+		done
+		printf "%s\n" "$LIBMERGE_NEW" | sed "$LIBMERGE_SED_CMD" || return 12
+	fi
+	printf "\e[0m"
+}
 ask::yes() {
 	local STD_ASK_REPONSE || return 44
 	read -r STD_ASK_REPONSE
@@ -725,6 +822,8 @@ free::func() {
 	done
 	return 0
 }
+declare -frg config
+declare -frg merge
 declare -frg ask::yes
 declare -frg ask::no
 declare -frg ask::sudo
