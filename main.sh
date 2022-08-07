@@ -40,6 +40,9 @@
 #include <stdlib/src/trace.sh>
 #include <stdlib/src/type.sh>
 
+#include <libconfig/config.sh>
+#include <libmerge/merge.sh>
+
 main() {
 #----------------------------------------- main() START
 log::debug "main() started"

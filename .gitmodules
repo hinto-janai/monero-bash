@@ -4,3 +4,9 @@
 [submodule "external/xmrpc"]
 	path = external/xmrpc
 	url = https://github.com/jtgrassie/xmrpc
+[submodule "lib/libconfig"]
+	path = lib/libconfig
+	url = git@github.com:hinto-janaiyo/libconfig.git
+[submodule "lib/libmerge"]
+	path = lib/libmerge
+	url = git@github.com:hinto-janaiyo/libmerge.git
