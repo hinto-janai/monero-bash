@@ -26,11 +26,11 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/bc34e01>
-#nix <1659902854>
+#git <monero-bash/de631e2>
+#nix <1659974672>
 #hbc <7f27eed>
-#lib <UNKNOWN>
-#lib <UNKNOWN>
+#lib <libconfig/config.sh/4e98d1d>
+#lib <libmerge/merge.sh/a0206db>
 #lib <stdlib/ask.sh/8038e38>
 #lib <stdlib/const.sh/8038e38>
 #lib <stdlib/crypto.sh/8038e38>
@@ -115,50 +115,62 @@ config() {
 	[[ -f "$1" ]] || return 4
 	[[ -r "$1" ]] || return 5
 	mapfile LIBCONFIG_ARRAY < "$1" || return 6
+	printf -v LIBCONFIG_ARRAY "%s" "${LIBCONFIG_ARRAY[@]}"
 	shift
+	LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//\"}
+	LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//\'}
 	until [[ $# = 0 ]]; do
-		LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//\"}
-		LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//\'}
-		LIBCONFIG_ARRAY=${LIBCONFIG_ARRAY//[[:blank:]]}
 		case $1 in
 			ip)
-				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $LIBCONFIG_LINE =~ ^${2}=[0-9.]+'.'[0-9]+$ ]]; then
+				for LIBCONFIG_LINE in $LIBCONFIG_ARRAY; do
+					if [[ $LIBCONFIG_LINE = \#* ]]; then
+						continue
+					elif [[ $LIBCONFIG_LINE =~ ^${2}=[0-9.]+'.'[0-9]+$ ]]; then
 						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
 					fi
 				done
 				shift 2;;
 			int)
-				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $LIBCONFIG_LINE =~ ^${2}=[0-9]+$ ]]; then
+				for LIBCONFIG_LINE in $LIBCONFIG_ARRAY; do
+					if [[ $LIBCONFIG_LINE = \#* ]]; then
+						continue
+					elif [[ $LIBCONFIG_LINE =~ ^${2}=[0-9]+$ ]]; then
 						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
 					fi
 				done
 				shift 2;;
 			port)
-				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $LIBCONFIG_LINE =~ ^${2}=[0-9:.]+'.'[0-9]':'[0-9]+$ ]]; then
+				for LIBCONFIG_LINE in $LIBCONFIG_ARRAY; do
+					if [[ $LIBCONFIG_LINE = \#* ]]; then
+						continue
+					elif [[ $LIBCONFIG_LINE =~ ^${2}=[0-9:.]+'.'[0-9]':'[0-9]+$ ]]; then
 						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
 					fi
 				done
 				shift 2;;
 			bool)
-				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $LIBCONFIG_LINE =~ ^${2}=true$ ]]; then
+				for LIBCONFIG_LINE in $LIBCONFIG_ARRAY; do
+					if [[ $LIBCONFIG_LINE = \#* ]]; then
+						continue
+					elif [[ $LIBCONFIG_LINE =~ ^${2}=true$ || $LIBCONFIG_LINE =~ ^${2}=false$ ]]; then
 						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
 					fi
 				done
 				shift 2;;
 			char)
-				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $LIBCONFIG_LINE =~ ^${2}=[[:alnum:]._-]+$ ]]; then
+				for LIBCONFIG_LINE in $LIBCONFIG_ARRAY; do
+					if [[ $LIBCONFIG_LINE = \#* ]]; then
+						continue
+					elif [[ $LIBCONFIG_LINE =~ ^${2}=[[:alnum:]._-]+$ ]]; then
 						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
 					fi
 				done
 				shift 2;;
 			path)
-				for LIBCONFIG_LINE in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $LIBCONFIG_LINE =~ ^${2}=[[:alnum:]./_-]+$ ]]; then
+				for LIBCONFIG_LINE in $LIBCONFIG_ARRAY; do
+					if [[ $LIBCONFIG_LINE = \#* ]]; then
+						continue
+					elif [[ $LIBCONFIG_LINE =~ ^${2}=[[:alnum:]./_-]+$ ]]; then
 						declare -g ${2}="${LIBCONFIG_LINE/*=/}" || return 7
 					fi
 				done
@@ -185,13 +197,13 @@ merge() {
 		for i in ${LIBMERGE_OLD[@]}; do
 			if printf "%s\n" "$LIBMERGE_NEW" | grep --quiet "^${i/=*/=}.*$"; then
 				LIBMERGE_NEW="$(printf "%s\n" "$LIBMERGE_NEW" | sed "s|^${i/=*/=}.*$|$i|g")" || return 12
-				printf "\e[0;94m~ %s\n" "$i"
+				printf "\e[0;94m~ %s\e[0m\n" "$i"
 			else
-				printf "\e[0;91m- %s\n" "$i"
+				printf "\e[0;91m- %s\e[0m\n" "$i"
 			fi
 		done
 		if LIBMERGE_DIFF=$(printf "%s\n" "$LIBMERGE_NEW" | grep -vxf "$1"); then
-			printf "\e[0;92m+ %s\n" $LIBMERGE_DIFF
+			printf "\e[0;92m+ %s\e[0m\n" $LIBMERGE_DIFF
 		fi
 	else
 		for i in ${LIBMERGE_OLD[@]}; do
@@ -199,7 +211,6 @@ merge() {
 		done
 		printf "%s\n" "$LIBMERGE_NEW" | sed "$LIBMERGE_SED_CMD" || return 12
 	fi
-	printf "\e[0m"
 }
 ask::yes() {
 	local STD_ASK_REPONSE || return 44
@@ -3623,6 +3634,7 @@ readonly WALLETS="$DOT/wallets"
 readonly PACKAGES="$DOT/packages"
 readonly CHANGES="$DOT/changes"
 readonly EXPORT_IMPORT="$DOT/export_import"
+readonly DOT_SYSD="$DOT/systemd"
 readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"
 readonly CONFIG_MONEROD="$CONFIG/monerod.conf"
 readonly CONFIG_WALLET="$CONFIG/monero-wallet-cli.conf"
@@ -3902,7 +3914,8 @@ systemd::create() {
 	log::debug "starting ${FUNCNAME}() for: ${PKG[pretty]}"
 	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
-	chmod 600 "$TMP_SERVICE"
+	chmod 660 "$TMP_SERVICE"
+	chown -R monero-bash:"$USER" "$TMP_SERVICE"
 	case "${PKG[name]}" in
 		monero)
 			SYSTEMD_USER=monero-bash
@@ -3936,8 +3949,9 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOM
-	sudo chown root:root "$TMP_SERVICE"
-	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
+	mkdir -p "$DOT_SYSD"
+	mv "$TMP_SERVICE" "$DOT_SYSD/${PKG[service]}"
+	sudo ln -s "$DOT_SYSD/${PKG[service]}" "$SYSTEMD/${PKG[service]}"
 }
 systemd::reload() {
 	log::debug "starting"
