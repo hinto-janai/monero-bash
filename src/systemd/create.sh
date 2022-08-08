@@ -29,7 +29,6 @@ systemd::create() {
 	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
 	chmod 660 "$TMP_SERVICE"
-	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 
 	# CASE PACKAGES FOR UNIQUE COMMANDS
 	case "${PKG[name]}" in
@@ -69,6 +68,9 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOM
+
+	# PERMISSIONS
+	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 
 	# MOVE TO MONERO-BASH SYSTEMD DIRECTORY
 	mkdir -p "$DOT_SYSD"

@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/09ad361>
-#nix <1659974726>
+#git <monero-bash/d47aa6c>
+#nix <1659974828>
 #hbc <7f27eed>
 #lib <libconfig/config.sh/4e98d1d>
 #lib <libmerge/merge.sh/a0206db>
@@ -3915,7 +3915,6 @@ systemd::create() {
 	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
 	chmod 660 "$TMP_SERVICE"
-	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 	case "${PKG[name]}" in
 		monero)
 			SYSTEMD_USER=monero-bash
@@ -3949,6 +3948,7 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOM
+	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 	mkdir -p "$DOT_SYSD"
 	mv "$TMP_SERVICE" "$DOT_SYSD/${PKG[service]}"
 	sudo ln -s "$DOT_SYSD/${PKG[service]}" "$SYSTEMD/${PKG[service]}"
