@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/de631e2>
-#nix <1659974672>
+#git <monero-bash/09ad361>
+#nix <1659974726>
 #hbc <7f27eed>
 #lib <libconfig/config.sh/4e98d1d>
 #lib <libmerge/merge.sh/a0206db>
@@ -3915,7 +3915,7 @@ systemd::create() {
 	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
 	chmod 660 "$TMP_SERVICE"
-	chown -R monero-bash:"$USER" "$TMP_SERVICE"
+	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 	case "${PKG[name]}" in
 		monero)
 			SYSTEMD_USER=monero-bash
