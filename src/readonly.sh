@@ -36,6 +36,7 @@ readonly WALLETS="$DOT/wallets"
 readonly PACKAGES="$DOT/packages"
 readonly CHANGES="$DOT/changes"
 readonly EXPORT_IMPORT="$DOT/export_import"
+readonly DOT_SYSD="$DOT/systemd"
 
 # config files
 readonly CONFIG_MONERO_BASH="$CONFIG/monero-bash.conf"

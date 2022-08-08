@@ -28,7 +28,8 @@ systemd::create() {
 	# CREATE TMP SERVICE FILE
 	local TMP_SERVICE SYSTEMD_USER SYSTEMD_EXEC SYSTEMD_DIRECTORY || return 2
 	TMP_SERVICE=$(mktemp "/tmp/${PKG[service]}.XXXXXXXXXX")
-	chmod 600 "$TMP_SERVICE"
+	chmod 660 "$TMP_SERVICE"
+	chown -R monero-bash:"$USER" "$TMP_SERVICE"
 
 	# CASE PACKAGES FOR UNIQUE COMMANDS
 	case "${PKG[name]}" in
@@ -69,7 +70,10 @@ RestartSec=5
 WantedBy=multi-user.target
 EOM
 
-	# MOVE TO SYSTEMD DIRECTORY
-	sudo chown root:root "$TMP_SERVICE"
-	sudo mv "$TMP_SERVICE" "$SYSTEMD/${PKG[service]}" || return 3
+	# MOVE TO MONERO-BASH SYSTEMD DIRECTORY
+	mkdir -p "$DOT_SYSD"
+	mv "$TMP_SERVICE" "$DOT_SYSD/${PKG[service]}"
+
+	# CREATE SYMLINK TO /etc/systemd/system
+	sudo ln -s "$DOT_SYSD/${PKG[service]}" "$SYSTEMD/${PKG[service]}"
 }
