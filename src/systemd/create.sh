@@ -74,7 +74,7 @@ EOM
 	mv "$TMP_SERVICE" "$DOT_SYSD/${PKG[service]}"
 
 	# PERMISSIONS
-	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
+	sudo chown monero-bash:"$USER" $DOT_SYSD/${PKG[service]}""
 
 	# CREATE SYMLINK TO /etc/systemd/system
 	sudo ln -s "$DOT_SYSD/${PKG[service]}" "$SYSTEMD/${PKG[service]}"
