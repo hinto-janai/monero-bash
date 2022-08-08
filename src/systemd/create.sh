@@ -69,12 +69,12 @@ RestartSec=5
 WantedBy=multi-user.target
 EOM
 
-	# PERMISSIONS
-	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
-
 	# MOVE TO MONERO-BASH SYSTEMD DIRECTORY
 	mkdir -p "$DOT_SYSD"
 	mv "$TMP_SERVICE" "$DOT_SYSD/${PKG[service]}"
+
+	# PERMISSIONS
+	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 
 	# CREATE SYMLINK TO /etc/systemd/system
 	sudo ln -s "$DOT_SYSD/${PKG[service]}" "$SYSTEMD/${PKG[service]}"

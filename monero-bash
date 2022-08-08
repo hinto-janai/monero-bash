@@ -26,8 +26,8 @@
 # Copyright (c) 2019-2022, jtgrassie          | https://github.com/jtgrassie
 # Copyright (c) 2014-2022, The Monero Project | https://github.com/monero-project/monero
 
-#git <monero-bash/d47aa6c>
-#nix <1659974828>
+#git <monero-bash/dca989f>
+#nix <1659974973>
 #hbc <7f27eed>
 #lib <libconfig/config.sh/4e98d1d>
 #lib <libmerge/merge.sh/a0206db>
@@ -3948,9 +3948,9 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOM
-	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 	mkdir -p "$DOT_SYSD"
 	mv "$TMP_SERVICE" "$DOT_SYSD/${PKG[service]}"
+	sudo chown -R monero-bash:"$USER" "$TMP_SERVICE"
 	sudo ln -s "$DOT_SYSD/${PKG[service]}" "$SYSTEMD/${PKG[service]}"
 }
 systemd::reload() {
