@@ -47,11 +47,22 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$iwhite; printf "Wallet: "
+		$bwhite; printf "Wallet: "
 		$white; echo "${WALLET:0:6}...${WALLET: -6}"
 
+		# Get p2pool.log into memory.
+		# Also ONLY look for logs after
+		# p2pool is fully synced.
+		local LOG="$(sed -n '/SideChain SYNCHRONIZED/,/*/p' $DIRECTORY/p2pool.log)"
+
+		# Return error if P2Pool is not synced yet.
+		if [[ $LOG != *"SideChain SYNCHRONIZED"* ]]; then
+			$bred; printf "Warning: P2Pool is not fully synced yet."
+			return 1
+		fi
+
 		# SHARE OUTPUT VARIABLE
-		local shareOutput="$(grep "SHARE FOUND" $DIRECTORY/p2pool.log)"
+		local shareOutput="$(echo "$LOG" | grep "SHARE FOUND")"
 
 		# SHARES PER HOUR
 		if [[ -z $shareOutput ]]; then
@@ -74,20 +85,20 @@ status_P2Pool()
 		local sharesPerHour="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processHours ))e-9")"
 		local sharesPerDay="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processDays ))e-9")"
 
+		# SHARES FOUND
+		$bgreen; printf "Shares found  | "
+		$bwhite; printf "$sharesFound "
+		echo "($sharesPerHour per hour / $sharesPerDay per day)"
+
 		# LATEST SHARE (stupid amount of sed and pipes, thankfully the output is in memory so it's pretty fast)
 		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/NOTICE .\|Stratum.*: //g' | sed 's/, diff .*, c/ c/' | sed 's/user.*, //')"
-		$iblue; printf "Latest share: "
+		$bblue; printf "Latest share  | "
 		$white; echo "$latestShare"
 
 		# LATEST PAYOUT
 		local latestPayout="$(tac $binP2Pool/p2pool.log | grep -m1 "payout" | sed 's/NOTICE  //' | sed 's/P2Pool //')"
-		$ired; printf "Latest payout: "
+		$byellow; printf "Latest payout | "
 		$white; echo "$latestPayout"
-
-		# SHARES FOUND
-		$igreen; printf "Shares found: "
-		$bwhite; printf "$sharesFound "
-		echo "($sharesPerHour per hour / $sharesPerDay per day)"
 
 		echo
 	}
@@ -99,24 +110,25 @@ status_XMRig()
 	define_XMRig
 	EXTRA_STATS()
 	{
-		# WALLET IN xmrig.json
-		$iwhite; printf "Wallet: " ;$off
+		# POOL
+		$bblue; printf "Pool            | " ;$off
+		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		echo
+
+		# WALLET (in xmrig.json)
+		$bwhite; printf "Wallet          | " ;$off
 		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')"
 		[[ -z $wallet ]] && echo || echo "${wallet:0:6}...${wallet: -6}"
 
 		# HASHRATE
 		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
-		$ired; printf "Hashrate: "
+		$byellow; printf "Hashrate        | "
 		$white; echo "$hashrate"
 
 		# SHARES
 		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
-		$igreen; printf "Accepted shares: "
+		$bgreen; printf "Accepted shares | "
 		$white; echo "$shares"
-
-		$iblue; printf "Pool: " ;$off
-		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
-		echo
 	}
 	status_Template
 }

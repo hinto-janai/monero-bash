@@ -2,9 +2,11 @@
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Changes
 * Wallet: Auto turning on/off of `monerod` when opening wallet is now disabled by default in `monero-bash.conf`
+* Config: `monerod.conf` now contains many more options by default, with helpful comments
+######### use libmerge?
 
 ## Fixes
-
+* Status: Invalid P2Pool shares found before fully syncing will now properly be excluded
 
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**

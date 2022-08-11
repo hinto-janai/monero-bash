@@ -56,16 +56,16 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 
 ---
 
-[To install: download the latest release here, extract and run monero-bash](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
+[**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
-tar -xf monero-bash-v1.7.0.tar
+tar -xf monero-bash-v1.7.1.tar
 cd monero-bash
 ./monero-bash
 ```
 This will start the interactive install process into `/usr/local/share/monero-bash`
 
 It is recommended to verify the hash and PGP signature before installation.  
-Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify the tar:
+Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify:
 ```
 sha256sum -c SHA256SUM
 gpg --import hinto-janaiyo.asc
@@ -174,6 +174,8 @@ Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.t
 
 ---
 
+Keys are pre-downloaded in: `gpg/` [**HOWEVER, they are checked against the online versions before getting imported.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg) If a difference is found, you'll be dropped into a selection menu to pick which key to trust. If this happens, please search around to see what caused the difference.
+
 * monero-bash `21958EE945980282FCB849C8D7483F6CA27D1B1D` -> [hinto-janaiyo](https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/main/pgp/hinto-janaiyo.asc)
 * Monero `81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92` -> [binaryFate](https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)
 * P2Pool `1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF` -> [SChernykh](https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc)
@@ -200,7 +202,7 @@ monero-bash install/upgrade <package> verbose
 </details>
 
 <details>
-<summary>monero-bash won't let me upgrade?</summary>
+<summary>I can't upgrade?</summary>
 
 ---
 
@@ -240,7 +242,7 @@ If you cancel ***after*** software is installed, but before the local state is u
 </details>
 
 <details>
-<summary>Where does monero-bash install itself?</summary>
+<summary>Where is monero-bash installed?</summary>
 
 ---
 
