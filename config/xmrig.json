@@ -1,3 +1,15 @@
+// [XMRig configuration]
+// ---------------------
+// This file configures XMRig when used with [monero-bash].
+// To configure basic settings, use: [monero-bash config].
+// To use the official config wizard: https://config.xmrig.com
+//                                    ^
+//                                    |__ Make sure to replace this file with the new one if you use this!
+//
+// This file is already pre-configured with options that most people would want.
+// You can replace: "url": "127.0.0.1:3333" with your pool IP (default is set to your local P2Pool)
+// And replace: "user": "YOUR_WALLET_ADDRESS" with your address. If you're using P2Pool, you set
+// the wallet address in P2Pool, not here. Edit [monero-bash.conf] to configure P2Pool.
 {
     "api": {
         "id": null,
