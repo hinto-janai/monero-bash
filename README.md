@@ -118,13 +118,12 @@ To start mining on P2Pool:
 3. You can then start all processes in the background: `monero-bash start all`
 4. And watch them live with: `monero-bash watch <monero/p2pool/xmrig>`
 
-If you have something like `screen` or `tmux` you can open multiple terminals and:
+It may be useful to download `screen` or `tmux` so you can open multiple terminals and use:
 ```
-monero-bash full monero
-monero-bash full p2pool
-monero-bash full xmrig
+monero-bash full <monero/p2pool/xmrig>
 ```
-Instead of running of them in the background.
+This allows you to interact with the processes directly AND have them in a background terminal.  
+Unfortunately, you cannot interact directly with a `systemd` background process.
 
 ### Command Usage
 ```
@@ -358,6 +357,8 @@ If you have a mainstream Linux distro you already have everything needed:
 * `Linux core utilities (util-linux)`
 
 See [Distro Coverage](#Distro-Coverage) for more info.
+
+Having either `screen` or `tmux` is nice to have for `monero-bash full <process>`, but it is optional.
 
 ---
 

@@ -24,8 +24,8 @@ process_Start_Template()
 		missing_config_"$NAME_FUNC"
 
 		# REFRESH LOGS
-		if [[ $NAME_PRETTY = "P2Pool" ]]; then
-			[[ -e "$binP2Pool/p2pool.log" ]]&& sudo rm "$binP2Pool/p2pool.log"
+		if [[ $NAME_PRETTY = "P2Pool" && -e "$binP2Pool/p2pool.log" ]]; then
+			sudo rm "$binP2Pool/p2pool.log"
 		elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
 			sudo rm "$binXMRig/xmrig-log"
 			sudo touch "$binXMRig/xmrig-log"

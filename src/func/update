@@ -62,7 +62,7 @@ update_All()
         $white; echo -n "Updates found, type: "
         $bred; echo -n "[monero-bash upgrade] "
         $white; echo "to upgrade all"
-        $white; echo -n "Or:   "
+        $white; echo -n "Or type: "
         $bred; echo -n "[monero-bash upgrade <package>] "
         $white; echo "to upgrade something specific"
         $off

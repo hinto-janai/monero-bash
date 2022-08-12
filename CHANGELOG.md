@@ -4,9 +4,11 @@
 [Configuration upgrades are not automatic, click here to see the new versions.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)
 * Config: `monero-bash.conf/monerod.conf/monero-wallet-cli.conf/xmrig.json` now contain many more options by default, with helpful comments
 * Wallet: Auto turning on/off of `monerod` when opening wallet is now disabled by default in `monero-bash.conf`
+* Status: `P2Pool` will indicate if synced or not
+* Misc: General UI changes
 
 ## Fixes
-* Status: Invalid P2Pool shares found before fully synced will be excluded
+* Status: Invalid P2Pool shares found before being fully synced will be excluded
 
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**

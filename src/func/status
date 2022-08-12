@@ -54,12 +54,14 @@ status_P2Pool()
 		# Get p2pool.log into memory.
 		# Also ONLY look for logs after
 		# p2pool is fully synced.
-		local LOG="$(sed -n '/SideChain SYNCHRONIZED/,/*/p' $DIRECTORY/p2pool.log)"
+		local LOG="$(tac $DIRECTORY/p2pool.log | grep -m1 "SideChain SYNCHRONIZED")"
 
 		# Return error if P2Pool is not synced yet.
 		if [[ $LOG != *"SideChain SYNCHRONIZED"* ]]; then
-			$bred; printf "Warning: P2Pool is not fully synced yet."
+			$bred; printf "%s\n\n" "Warning       | P2Pool is not fully synced yet"
 			return 1
+		else
+			local LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"
 		fi
 
 		# SHARE OUTPUT VARIABLE
@@ -91,13 +93,13 @@ status_P2Pool()
 		$bwhite; printf "$sharesFound "
 		echo "($sharesPerHour per hour / $sharesPerDay per day)"
 
-		# LATEST SHARE (stupid amount of sed and pipes, thankfully the output is in memory so it's pretty fast)
-		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/NOTICE .\|Stratum.*: //g' | sed 's/, diff .*, c/ c/' | sed 's/user.*, //')"
+		# LATEST SHARE
+		local latestShare="$(echo "$shareOutput" | tail -1 | sed 's/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //')"
 		$bblue; printf "Latest share  | "
 		$white; echo "$latestShare"
 
 		# LATEST PAYOUT
-		local latestPayout="$(tac $binP2Pool/p2pool.log | grep -m1 "payout" | sed 's/NOTICE  //' | sed 's/P2Pool //')"
+		local latestPayout="$(tac $binP2Pool/p2pool.log | grep -m1 "payout" | sed 's/NOTICE  //; s/P2Pool //')"
 		$byellow; printf "Latest payout | "
 		$white; echo "$latestPayout"
 
@@ -122,7 +124,6 @@ status_XMRig()
 
 		# SHARES
 		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
-		local shares="${shares/cpu[[:blank:]]*}"
 		$bblue; printf "Latest share | "
 		$white; echo "$shares"
 
