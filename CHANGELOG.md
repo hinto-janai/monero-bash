@@ -1,18 +1,19 @@
 # v1.8.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
-[Configuration upgrades are not automatic, click here to see the new versions.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)
-* Config: `monero-bash.conf/monerod.conf/monero-wallet-cli.conf/xmrig.json` contain many more options by default, with helpful comments
+[Configuration upgrades are not automatic, click here to see the new versions. You can also use `monero-bash reset <process>` to reset your configs to the new default.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)
+* Config: All config files now contain many more options by default, with helpful comments
 * Config: Auto `monerod` when opening wallet now disabled by default in `monero-bash.conf`
 * Config: Auto hugepages now disabled by default in `monero-bash.conf`
-* Status: `P2Pool` indicates if synced or not
+* systemd: New command to allow auto-starting processes on boot: `monero-bash enable/disable <process>`
+* Status: Indicates if `P2Pool` is synced or not
 * Wallet: Seed during `recover` is now visible while typing and cleared after confirming
-* Install: `monero-bash` install will prompt for `mb` symlink creation for convenience: `monero-bash <command> -> mb <command>`
+* Install: `monero-bash` install will prompt for `mb` symlink creation for convenience: `monero-bash <command>` -> `mb <command>`
 * Misc: General UI changes
 
 ## Fixes
 * Status: Invalid P2Pool shares found before being fully synced will be excluded
-
+* Git: Branches have been cleaned & squashed: `709` -> `473` total commits
 
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**

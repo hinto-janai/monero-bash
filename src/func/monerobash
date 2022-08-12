@@ -23,9 +23,9 @@ while true ;do
 	# $HOME/.bitmonero check
 	if [[ -d "$HOME/.bitmonero" ]]; then
 		$ired; echo "Monero data folder detected"
-		$bwhite; echo -n "Use "
+		$off; echo -n "Use "
 		$ired; echo -n "$HOME/.bitmonero"
-		$bwhite; echo -n "? (Y/n): " ;$iwhite
+		$off; echo -n "? (Y/n): " ;$iwhite
 		Yes(){ alreadyFoundDataPath="true" ;}
 		No(){ :;}
 		prompt_YESno
@@ -39,18 +39,18 @@ while true ;do
 	if [[ $alreadyFoundDataPath = "true" ]]; then
 		$bwhite; echo -n "Data path: "
 		$ired; echo "$HOME/.bitmonero"
-		$bwhite; echo -n "Is this okay? (Y/n) "
+		$off; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
-	elif [[ $alreadyFoundDataPath != "true" ]]; then
+	else
 		$bwhite; echo -n "Data path: "
-		if [[ "$inputData" = "" ]]; then
-			$ired; echo "$bitMonero"
-		else
+		if [[ $inputData ]]; then
 			$ired; echo "$inputData"
+		else
+			$ired; echo "$HOME/.bitmonero"
 		fi
-		$bwhite; echo -n "Is this okay? (Y/n) "
+		$off; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
@@ -95,7 +95,7 @@ fi
 
 # Hash Integrity Check
 	print_GreenHash "Checking monero-bash hash integrity"
-	CHECK_HASH_LIST
+	QUIET_HASH_LIST
 	alreadyCheckedHashList="true"
 
 # TRAP
@@ -141,17 +141,16 @@ trap "" 1 2 3 6 15
 
 # Setting Data Path
 	print_GreenHash "Setting data path"
-	if [[ $alreadyFoundDataPath = "true" ]]; then
-		sed -i "s@.*data-dir.*@data-dir="$HOME/.bitmonero"@" "$config/monerod.conf"
-	elif [[ $inputData != "" ]]; then
-		sed -i "s@.*data-dir.*@data-dir="$inputData"@" "$config/monerod.conf"
+	if [[ $inputData ]]; then
+		sed -i "s|^data-dir.*|data-dir=${inputData}|" "$config/monerod.conf"
 	else
-		sed -i "s@.*data-dir.*@data-dir="$bitMonero"@" "$config/monerod.conf"
+		sed -i "s|^data-dir.*|data-dir=${HOME}/.bitmonero|" "$config/monerod.conf"
 	fi
 
 # First Time = false , Set Installed User , chown
-sudo sed -i "s@.*FIRST_TIME.*@FIRST_TIME=\"false\"@" "$state"
-sudo sed -i "s@.*INSTALLED_USER.*@INSTALLED_USER=\"$USER\"@" "$state"
+sudo sed \
+	-i -e "s|.*FIRST_TIME.*|FIRST_TIME=false|g" "$state" \
+	-i -e "s|.*INSTALLED_USER.*|INSTALLED_USER=\"${USER}\"|g" "$state"
 sudo chown -R "$USER:$USER" "$installDirectory"
 permission_All
 PRODUCE_HASH_LIST
@@ -163,17 +162,17 @@ echo
 $bred; echo "###################################################################"
 $bred; echo "#                monero-bash installation complete                #"
 $bred; echo "###################################################################"
-$bwhite; echo -n "monero-bash path: " ;$white; echo "$dotMoneroBash"
-$white; echo -n "Data: "
-if [[ "$alreadyFoundDataPath" = "true" ]]; then
-	echo "$HOME/.bitmonero"
-elif [[ "$inputData" != "" ]]; then
+$byellow; echo -n "monero-bash   | " ;$off; echo "$dotMoneroBash"
+$byellow; echo -n "Monero data   | " ;$off
+if [[ $inputData ]]; then
 	echo "$inputData"
 else
-	echo "$bitMonero"
+	echo "$HOME/.bitmonero"
 fi
-echo "Configs: $config"
-echo "Wallets: $wallets"
+$byellow; echo -n "Config folder | "
+$off; echo "$config"
+$byellow; echo -n "Wallet folder | "
+$off; echo "$wallets"
 echo
 
 if [[ $INSTALL_SYMLINK = true ]]; then
@@ -196,6 +195,9 @@ monerobash_Uninstall()
 	$bwhite; echo -n "@   "
 	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE /.monero-bash/ AND EVERYTHING INSIDE IT"
 	$bwhite; echo "   @"
+	$bwhite; echo -n "@                         "
+	$bred; echo -n "It will NOT delete \$HOME/.bitmonero"
+	$bwhite; echo "                         @"
 	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	print_Size
 	$bwhite; echo -n "Uninstall "
@@ -259,11 +261,23 @@ monerobash_Uninstall()
 			error_Exit "monero-bash not removed"
 		print_WhiteHash "Removing systemd services"
 			define_Monero
-				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE" && error_Continue "$SERVICE not removed"
+				if [[ -e "$sysd/$SERVICE" ]]; then
+					sudo rm "$sysd/$SERVICE"
+					error_Continue "$SERVICE not removed"
+					[[ -e "/etc/systemd/system/multi-user.target.wants/$SERVICE" ]] && sudo rm "/etc/systemd/system/multi-user.target.wants/$SERVICE"
+				fi
 			define_XMRig
-				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE" && error_Continue "$SERVICE not removed"
+				if [[ -e "$sysd/$SERVICE" ]]; then
+					sudo rm "$sysd/$SERVICE"
+					error_Continue "$SERVICE not removed"
+					[[ -e "/etc/systemd/system/multi-user.target.wants/$SERVICE" ]] && sudo rm "/etc/systemd/system/multi-user.target.wants/$SERVICE"
+					fi
 			define_P2Pool
-				[[ -e "$sysd/$SERVICE" ]]&& sudo rm "$sysd/$SERVICE" && error_Continue "$SERVICE not removed"
+				if [[ -e "$sysd/$SERVICE" ]]; then
+					sudo rm "$sysd/$SERVICE"
+					error_Continue "$SERVICE not removed"
+					[[ -e "/etc/systemd/system/multi-user.target.wants/$SERVICE" ]] && sudo rm "/etc/systemd/system/multi-user.target.wants/$SERVICE"
+				fi
 		print_GreenHash "monero-bash has been uninstalled"
 	}
 	No(){ $white; echo "Exiting..." ;exit;}

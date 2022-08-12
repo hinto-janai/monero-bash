@@ -214,7 +214,8 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
-				*) print_Error_Exit "Pick: <monero/xmrig/p2pool>" ;;
+				all) define_Monero;process_Enable;define_XMRig;process_Enable;define_P2Pool;process_Enable;exit;;
+				*) print_Error_Exit "Pick: <all/monero/xmrig/p2pool>" ;;
 			esac
 			process_Enable
 			;;
@@ -223,7 +224,8 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) define_Monero ;;
 				*"xmr"*) define_XMRig ;;
 				*"p2p"*) define_P2Pool ;;
-				*) print_Error_Exit "Pick: <monero/xmrig/p2pool>" ;;
+				all) define_Monero;process_Disable;define_XMRig;process_Disable;define_P2Pool;process_Disable;exit;;
+				*) print_Error_Exit "Pick: <all/monero/xmrig/p2pool>" ;;
 			esac
 			process_Disable
 			;;

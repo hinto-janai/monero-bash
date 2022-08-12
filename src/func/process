@@ -117,10 +117,10 @@ process_Enable() {
 	missing_systemd_"$NAME_FUNC"
 	if sudo systemctl enable "$SERVICE"; then
 		$bblue; printf "%s" "[${PROCESS}] "
-		$bwhite; printf "%s\n" "enabled, it will auto-start in the background on boot!"
+		$iwhite; printf "%s\n\n" "enabled, it will auto-start in the background on boot!"; $off
 		return 0
 	else
-		$bred; printf "%s\n" "[${PROCESS}] enable failed!"
+		$bred; printf "%s\n\n" "[${PROCESS}] enable failed!"; $off
 		return 1
 	fi
 }
@@ -128,12 +128,12 @@ process_Enable() {
 process_Disable() {
 	prompt_Sudo;error_Sudo
 	missing_systemd_"$NAME_FUNC"
-	if sudo systemctl enable "$SERVICE"; then
-		$bblue; printf "%s" "[${PROCESS}] "
-		$bwhite; printf "%s\n" "disabled, it will NOT auto-start on boot!"
+	if sudo systemctl disable "$SERVICE"; then
+		$bred; printf "%s" "[${PROCESS}] "
+		$iwhite; printf "%s\n\n" "disabled, it will NOT auto-start on boot!"; $off
 		return 0
 	else
-		$bred; printf "%s\n" "[${PROCESS}] disable failed!"
+		$bred; printf "%s\n\n" "[${PROCESS}] disable failed!"; $off
 		return 1
 	fi
 }

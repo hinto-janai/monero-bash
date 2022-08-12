@@ -107,10 +107,11 @@ monero-bash uninstall
 ```
  Or manually remove everything:
 ```
-rm -r $HOME/.monero-bash
+rm -r ~/.monero-bash
 sudo rm /usr/local/bin/monero-bash
 sudo rm -r /usr/local/share/monero-bash
 sudo rm /etc/systemd/system/monero-bash*
+sudo rm /etc/systemd/system/multi-user.target.wants/monero-bash*
 ```
 THIS WILL DELETE YOUR WALLETS - remember to move them before uninstalling!
 
@@ -170,39 +171,39 @@ Unfortunately, you cannot interact directly with a `systemd` background process.
 ```
 USAGE: monero-bash <argument> [optional]
 
-monero-bash                              open wallet menu
-uninstall                                uninstall ALL OF monero-bash
+monero-bash                           open wallet menu
+uninstall                             uninstall ALL OF monero-bash
 
-update                                   check for package updates
-upgrade [force] [verbose]                upgrade all out-of-date packages
-upgrade <pkg> [force] [verbose]          upgrade a CERTAIN package
-install <all/pkg> [verbose]              install <all> or a specific package
-remove  <all/pkg>                        remove <all> or a specific package
+update                                check for package updates
+upgrade [force] [verbose]             upgrade all out-of-date packages
+upgrade <pkg> [force] [verbose]       upgrade a specific package
+install <all/pkg> [verbose]           install <all> or a specific package
+remove  <all/pkg>                     remove <all> or a specific package
 
-config                                   configure P2Pool+XMRig mining settings
-full    <monero/xmrig/p2pool>            start the process directly attached (foreground)
-start   <all/monero/xmrig/p2pool>        start process with systemd (background)
-stop    <all/monero/xmrig/p2pool>        gracefully stop the process
-kill    <all/monero/xmrig/p2pool>        forcefully kill the process
-restart <all/monero/xmrig/p2pool>        restart the process
-reset   <bash/monero/xmrig/p2pool>       reset your configs/systemd to default
-enable  <monero/xmrig/p2pool>            enable the process to auto-start on boot
-disable <monero/xmrig/p2pool>            disable the process from auto-starting on boot
-watch   <monero/xmrig/p2pool>            watch live output of the background process
-edit    <monero/xmrig/p2pool>            edit systemd service file
+config                                configure P2Pool+XMRig mining settings
+full    <monero/xmrig/p2pool>         start the process directly attached (foreground)
+start   <all/monero/xmrig/p2pool>     start process with systemd (background)
+stop    <all/monero/xmrig/p2pool>     gracefully stop the process
+kill    <all/monero/xmrig/p2pool>     forcefully kill the process
+restart <all/monero/xmrig/p2pool>     restart the process
+enable  <all/monero/xmrig/p2pool>     enable the process to auto-start on boot
+disable <all/monero/xmrig/p2pool>     disable the process from auto-starting on boot
+reset   <bash/monero/xmrig/p2pool>    reset your configs/systemd to default
+watch   <monero/xmrig/p2pool>         watch live output of the background process
+edit    <monero/xmrig/p2pool>         edit systemd service file
 
-rpc                                      send a JSON RPC call to monerod
-seed    [language]                       generate random 25-word Monero seed
-list                                     list wallets
-size                                     show size of monero-bash folders
-price                                    fetch price data from cryptocompare.com API
-status                                   print status of all running processes
-version                                  print versions of installed packages
+rpc                                   send a JSON RPC call to monerod
+seed    [language]                    generate random 25-word Monero seed
+list                                  list wallets
+size                                  show size of monero-bash folders
+price                                 fetch price data from cryptocompare.com API
+status                                print status of all running processes
+version                               print versions of installed packages
 
-backup                                   encrypt and backup your /wallets/
-decrypt                                  decrypt backup.tar.gpg
+backup                                encrypt & backup /wallets/ -> backup.tar.gpg
+decrypt                               decrypt backup.tar.gpg -> /backup/
 
-help                                     show this help message
+help                                  show this help message
 ```
 
 ## FAQ
@@ -320,6 +321,7 @@ User folder:
 `systemd` files:
 ```bash
 /etc/systemd/systemd/monero-bash-$PACKAGE_NAME.service
+/etc/systemd/system/multi-user.target.wants/monero-bash-$PACKAGE_NAME.service
 ```
 
 ---
@@ -343,7 +345,7 @@ User folder:
 ---
 
 ```
-$HOME/.monero-bash/config
+~/.monero-bash/config
 ```
 
 ---
@@ -356,7 +358,7 @@ $HOME/.monero-bash/config
 ---
 
 ```
-$HOME/.monero-bash/wallets
+~/.monero-bash/wallets
 ```
 
 ---
@@ -370,6 +372,11 @@ $HOME/.monero-bash/wallets
 
 ```
 /etc/systemd/system/
+├─ monero-bash-monerod.service
+├─ monero-bash-p2pool.service
+├─ monero-bash-xmrig.service
+
+/etc/systemd/system/multi-user.target.wants/
 ├─ monero-bash-monerod.service
 ├─ monero-bash-p2pool.service
 ├─ monero-bash-xmrig.service

@@ -113,15 +113,15 @@ print_Size()
 
 print_Error()
 {
-	$ired; printf "[monero-bash error] "
-	$iwhite; echo "$1"
+	$bred; printf "[monero-bash error] "
+	$iwhite; echo "$1"; $off
 }
 
 print_Error_Exit()
 {
-	$ired; printf "[monero-bash error] "
+	$bred; printf "[monero-bash error] "
 	$iwhite; echo "$1"
-	$white; echo "Exiting..."
+	$off; echo "Exiting..."
 	exit 1
 }
 
@@ -130,11 +130,11 @@ print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
-		$igreen; echo "HASH OK" ;$white
+		$igreen; echo "HASH OK" ;$off
 		verifyOK="true"
 	else
 		$white; echo -n "$NAME_PRETTY: "
-		$bred; echo "HASH FAILED" ;$white
+		$bred; echo "HASH FAILED" ;$off
 		verifyOK="false"
 	fi
 }
@@ -143,11 +143,11 @@ print_GPG()
 {
 	if [[ $? = "0" ]]; then
 		$white; echo -n "$NAME_PRETTY: "
-		$igreen; echo "GPG OK" ;$white
+		$igreen; echo "GPG OK" ;$off
 		gpgOK="true"
 	else
 		$white; echo -n "$NAME_PRETTY: "
-		$bred; echo "GPG FAILED" ;$white
+		$bred; echo "GPG FAILED" ;$off
 		gpgOK="false"
 	fi
 }
@@ -186,7 +186,7 @@ print_Upgrade()
 		echo;echo
 	else
 		$bwhite; printf "All packages: "
-		$bgreen; echo "up to date"
+		$bgreen; echo "up to date"; $off
 		exit 1
 	fi
 }
@@ -202,7 +202,7 @@ print_Install()
 		echo;echo
 	else
 		$bwhite; printf "All packages: "
-		$bgreen; echo "already installed"
+		$bgreen; echo "already installed"; $off
 		exit 1
 	fi
 }
