@@ -6,6 +6,7 @@
 * Wallet: Auto turning on/off of `monerod` when opening wallet is now disabled by default in `monero-bash.conf`
 * Hugepages: Disabled by default in `monero-bash.conf`
 * Status: `P2Pool` will indicate if synced or not
+* Recover: Seed is now visible while typing and cleared after confirming
 * Misc: General UI changes
 
 ## Fixes

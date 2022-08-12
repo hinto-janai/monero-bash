@@ -135,13 +135,28 @@ wallet_Recover()
 
 	# SEED INPUT
 	while true ;do
-		$white; echo -n "Seed: "
-		read -s walletSeed ; echo
+		$white; echo -n "Seed (24/25 words): "
+		read -r walletSeed ; echo
 		case $walletSeed in
 			"") print_Error "Empty input" ;;
-			*) break ;;
+			*)
+				clear
+				n=1
+				for i in $walletSeed; do
+					printf "${n}. %s\n" "${i/${i:2}/...} "
+					((n++))
+				done
+				$bwhite; echo -n "Is this correct? (Y/n) "
+				local YES_NO
+				read -r YES_NO
+				case $YES_NO in
+					*n*|*N*) :;;
+					*) break;;
+				esac
 		esac
 	done
+
+	# CONFIRM SEED
 
 	# START monero-wallet-cli WITH RECOVERY VARIABLES SET
 	$bred; echo "Starting Monero..." ;$off
