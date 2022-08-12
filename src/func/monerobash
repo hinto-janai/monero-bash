@@ -23,40 +23,58 @@ while true ;do
 	# $HOME/.bitmonero check
 	if [[ -d "$HOME/.bitmonero" ]]; then
 		$ired; echo "Monero data folder detected"
-		$white; echo -n "Use "
+		$bwhite; echo -n "Use "
 		$ired; echo -n "$HOME/.bitmonero"
-		$white; echo -n "? (Y/n): " ;$iwhite
+		$bwhite; echo -n "? (Y/n): " ;$iwhite
 		Yes(){ alreadyFoundDataPath="true" ;}
 		No(){ :;}
 		prompt_YESno
 	fi
 	if [[ $alreadyFoundDataPath != "true" ]]; then
-		$white; echo -n "Monero data path [Enter for default]: " ;$iwhite
+		$bwhite; echo -n "Monero data path [Enter for default]: " ;$iwhite
 		read inputData
 	fi
 
 	# Data Path Confirmation
 	if [[ $alreadyFoundDataPath = "true" ]]; then
-		$white; echo -n "Data path: "
+		$bwhite; echo -n "Data path: "
 		$ired; echo "$HOME/.bitmonero"
-		$white; echo -n "Is this okay? (Y/n) "
+		$bwhite; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
 	elif [[ $alreadyFoundDataPath != "true" ]]; then
-		$white; echo -n "Data path: "
+		$bwhite; echo -n "Data path: "
 		if [[ "$inputData" = "" ]]; then
 			$ired; echo "$bitMonero"
 		else
 			$ired; echo "$inputData"
 		fi
-		$white; echo -n "Is this okay? (Y/n) "
+		$bwhite; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
 	fi
-	[[ "$yes" = "true" ]]&& break
+	[[ "$yes" = "true" ]] && echo && break
 done
+
+# MB ALIAS
+if [[ ! -e /usr/local/bin/mb && ! -h /usr/local/bin/mb ]]; then
+	$byellow; printf "%s\n" "Symlink creation: [monero-bash] -> [mb]"
+	$bwhite; printf "%s\n" "This allows you to do stuff like this: mb update && mb upgrade"; $off
+	printf "%s" "Create symlink? (Y/n) "
+	read -r YES_NO
+	case $YES_NO in
+		y|Y|yes|Yes|YES|"")
+			local INSTALL_SYMLINK=true
+			printf "%s\n" "Will create [mb] symlink"
+			;;
+		*)
+			printf "%s\n" "Skipping [mb] symlink..."
+			;;
+	esac
+	echo
+fi
 
 # Installation Prompt
 	$bwhite; echo -n "Start "
@@ -105,9 +123,13 @@ trap "" 1 2 3 6 15
 	source "/usr/local/share/monero-bash/src/source"
 	cd "/usr/local/share/monero-bash"
 
-# Adding to PATH
+# Adding to PATH + symlink
 	print_GreenHash "Adding monero-bash to PATH"
 	path_Add
+	if [[ $INSTALL_SYMLINK = true ]]; then
+		print_GreenHash "Creating [mb] symlink"
+		sudo ln -s /usr/local/share/monero-bash/monero-bash /usr/local/bin/mb
+	fi
 
 # Building $HOME/.monero-bash
 	print_GreenHash "Building /.monero-bash/ folders"
@@ -153,9 +175,18 @@ fi
 echo "Configs: $config"
 echo "Wallets: $wallets"
 echo
-$white; echo -n "type: "
-$bred; echo -n "monero-bash help "
-$white; echo "to get started"
+
+if [[ $INSTALL_SYMLINK = true ]]; then
+	$white; echo -n "Type: "
+	$byellow; echo -n "[monero-bash help] "
+	$white; echo -n "OR "
+	$byellow; echo -n "[mb help]"
+	$white; echo "to get started"
+else
+	$white; echo -n "Type: "
+	$byellow; echo -n "[monero-bash help] "
+	$white; echo "to get started"
+fi
 }
 ###################################################   END OF INSTALL FUNCTION   ###################################################
 
@@ -219,6 +250,10 @@ monerobash_Uninstall()
 		print_WhiteHash "Removing from PATH"
 			path_Remove
 			error_Exit "PATH not removed"
+		if [[ -h /usr/local/bin/mb ]]; then
+			print_WhiteHash "Removing [mb] symlink"
+			sudo rm /usr/local/bin/mb
+		fi
 		print_WhiteHash "Removing /usr/local/share/monero-bash/"
 			sudo rm -rf "/usr/local/share/monero-bash"
 			error_Exit "monero-bash not removed"
