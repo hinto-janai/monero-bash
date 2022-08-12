@@ -21,18 +21,27 @@
 ***A few video demos of its features:***
 
 <details>
-<summary>Wallet Menu</summary>
+<summary>Wallet menu</summary>
 
+https://user-images.githubusercontent.com/101352116/184435540-6505d8d3-8cf0-4d72-a414-506f0abca57f.mp4
 </details>
 
 <details>
-<summary>Package Manager</summary>
+<summary>Package manager</summary>
 
+https://user-images.githubusercontent.com/101352116/184435551-76fc5820-1845-4287-9e74-7380c84a7f34.mp4
 </details>
 
 <details>
 <summary>P2Pool + XMRig mining</summary>
 
+https://user-images.githubusercontent.com/101352116/184435572-8555b85a-9d17-459b-8ff9-f88c5d310d81.mp4
+</details>
+
+<details>
+<summary>Background mining with systemd</summary>
+
+https://user-images.githubusercontent.com/101352116/184435585-e2e7de20-ab27-4b17-a88e-ca29f586a6fd.mp4
 </details>
 
 [This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
