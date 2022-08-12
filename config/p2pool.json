@@ -4,7 +4,7 @@
 //
 // Fixed difficulty for miners that connect to your node must be set in their p2pool.json
 //
-// Change "default" to "mini" to mine on P2Pool-Mini
+// Change "default" to "mini" to mine on P2Pool-Mini, or use: [monero-bash config]
 {
 	"name": "default",
 	"password": "",

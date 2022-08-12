@@ -19,7 +19,8 @@ process_Start_Template()
 
 	# START PROCESS IF NOT ALREADY ALIVE
 	if pgrep $PROCESS &>/dev/null ; then
-        $bred; echo "$PROCESS already detected..." ;$off
+        $bred; echo "[${PROCESS}] already detected!" ;$off
+		return 1
     else
 		missing_config_"$NAME_FUNC"
 
@@ -33,9 +34,9 @@ process_Start_Template()
 		fi
 
 		# START PROCESS
-		$bblue; echo "Starting $PROCESS..." ;$off
+		$bblue; echo "Starting [${PROCESS}]..." ;$off
 		COMMANDS
-		error_Exit "Could not start $PROCESS"
+		error_Exit "Could not start [${PROCESS}]"
 	fi
 }
 
@@ -45,7 +46,7 @@ process_Stop_Template()
 	if pgrep $PROCESS &>/dev/null ; then
 		COMMANDS
 	else
-		$white; echo -n "$PROCESS: "
+		$white; echo -n "[${PROCESS}] "
 		$bred; echo "not online" ;$off
 	fi
 }
@@ -70,12 +71,12 @@ process_Stop()
 {
 	COMMANDS()
 	{
-		$ired; echo "Stopping $PROCESS gracefully..." ;$off
+		$ired; echo "Stopping [${PROCESS}] gracefully..." ;$off
 		sudo systemctl stop "$SERVICE" &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo
-				print_Error "$PROCESS not responding, killing..."
+				print_Error "[${PROCESS}] not responding, killing..."
 				process_Kill
 			fi
 			if pgrep $PROCESS &>/dev/null ;then
@@ -95,7 +96,7 @@ process_Kill()
 	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
-		$ired; echo "Sending kill signal to $PROCESS..."
+		$ired; echo "Sending kill signal to [${PROCESS}]..."
 		sudo systemctl kill "$SERVICE"
 	}
 	process_Stop_Template
@@ -109,4 +110,30 @@ process_Full()
 		xmrig) COMMANDS(){ cd "$binXMRig" ; sudo "$binXMRig/xmrig" --config "$xmrigConf" --log-file="$binXMRig/xmrig-log" ;} ;;
 	esac
 	process_Start_Template
+}
+
+process_Enable() {
+	prompt_Sudo;error_Sudo
+	missing_systemd_"$NAME_FUNC"
+	if sudo systemctl enable "$SERVICE"; then
+		$bblue; printf "%s" "[${PROCESS}] "
+		$bwhite; printf "%s\n" "enabled, it will auto-start in the background on boot!"
+		return 0
+	else
+		$bred; printf "%s\n" "[${PROCESS}] enable failed!"
+		return 1
+	fi
+}
+
+process_Disable() {
+	prompt_Sudo;error_Sudo
+	missing_systemd_"$NAME_FUNC"
+	if sudo systemctl enable "$SERVICE"; then
+		$bblue; printf "%s" "[${PROCESS}] "
+		$bwhite; printf "%s\n" "disabled, it will NOT auto-start on boot!"
+		return 0
+	else
+		$bred; printf "%s\n" "[${PROCESS}] disable failed!"
+		return 1
+	fi
 }

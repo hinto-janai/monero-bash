@@ -134,65 +134,72 @@ if [[ $options = "true" ]]; then
 			;;
 		edit)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;systemd_Edit ;;
-				*"xmr"*) define_XMRig;systemd_Edit ;;
-				*"p2p"*) define_P2Pool;systemd_Edit ;;
+				*"daemon"*|*"monero"*) define_Monero
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Poo;;
 				*) print_Error "Pick: <monero/p2pool/xmrig>" ;;
 			esac
+			systemd_Edit
 			;;
 		reset)
 			case $2 in
-				*"bash"*)define_MoneroBash;reset_Template ;;
-				*"daemon"*|*"monero"*) define_Monero;reset_Template ;;
-				*"xmr"*) define_XMRig;reset_Template ;;
-				*"p2p"*) define_P2Pool;reset_Template ;;
+				*"bash"*)define_MoneroBash;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
 				*) print_Error "Pick: <bash/monero/p2pool/xmrig>" ;;
 			esac
+			reset_Template
 			;;
 		start)
 			shift
 			case "$*" in
-				*"daemon"*|*"monero"*) define_Monero;process_Start ;;
-				*"xmr"*) define_XMRig;process_Start ;;
-				*"p2p"*) define_P2Pool;process_Start ;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
 				all) mine_Start ;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
+			process_Start
 			;;
 		stop)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;process_Stop ;;
-				*"xmr"*) define_XMRig;process_Stop ;;
-				*"p2p"*) define_P2Pool;process_Stop ;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
 				all) mine_Stop ;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
+			process_Stop
 			;;
 		restart)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;process_Restart ;;
-				*"xmr"*) define_XMRig;process_Restart ;;
-				*"p2p"*) define_P2Pool;process_Restart ;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
 				all) mine_Restart ;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
+			process_Restart
 			;;
 		kill)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;process_Kill ;;
-				*"xmr"*) define_XMRig;process_Kill ;;
-				*"p2p"*) define_P2Pool;process_Kill ;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
 				all) mine_Kill ;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
+			process_Kill
 			;;
 		full)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;process_Full ;;
-				*"xmr"*) define_XMRig;process_Full ;;
-				*"p2p"*) define_P2Pool;process_Full ;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
 				*) print_Error "Pick: <monero/xmrig/p2pool>" ;;
 			esac
+			process_Full
 			;;
 		watch)
 			case $2 in
@@ -201,6 +208,24 @@ if [[ $options = "true" ]]; then
 				*"p2p"*) watch_P2Pool ;;
 				*) print_Error "Pick: <monero/xmrig/p2pool>" ;;
 			esac
+			;;
+		enable)
+			case $2 in
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
+				*) print_Error "Pick: <monero/xmrig/p2pool>" ;;
+			esac
+			process_Enable
+			;;
+		disable)
+			case $2 in
+				*"daemon"*|*"monero"*) define_Monero ;;
+				*"xmr"*) define_XMRig ;;
+				*"p2p"*) define_P2Pool ;;
+				*) print_Error "Pick: <monero/xmrig/p2pool>" ;;
+			esac
+			process_Disable
 			;;
 		upgrade)
 			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&$iblue&& echo "Verbosely upgrading...!" ;$off
