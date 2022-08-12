@@ -4,31 +4,31 @@
 #
 print_GreenHash()
 {
-	$bgreen; echo "#------# $1" ;$off
+	$bgreen; echo "######## $1" ;$off
 }
 
 print_BlueHash() {
-	$bblue; echo "#------# $1" ;$off
+	$bblue; echo "######## $1" ;$off
 }
 
 print_RedHash()
 {
-	$bred; echo "#------# $1" ;$off
+	$bred; echo "######## $1" ;$off
 }
 
 print_WhiteHash()
 {
-	$bwhite; echo "#---# $1" ;$off
+	$bwhite; echo "##### $1" ;$off
 }
 
 print_YellowHash()
 {
-	$byellow; echo "#---# $1" ;$off
+	$byellow; echo "##### $1" ;$off
 }
 
 print_PurpleHash()
 {
-	$bpurple; echo "#---# $1" ;$off
+	$bpurple; echo "##### $1" ;$off
 }
 
 print_MoneroBashTitle()
