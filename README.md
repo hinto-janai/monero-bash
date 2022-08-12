@@ -159,7 +159,7 @@ monero-bash                              open wallet menu
 uninstall                                uninstall ALL OF monero-bash
 
 update                                   check for package updates
-upgrade [force] [verbose]                upgrade all out-of-date packages
+upgrade [verbose]                        upgrade all out-of-date packages
 upgrade <pkg> [force] [verbose]          upgrade a CERTAIN package
 install <all/pkg> [verbose]              install <all> or a specific package
 remove  <all/pkg>                        remove <all> or a specific package

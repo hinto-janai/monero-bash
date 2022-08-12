@@ -180,7 +180,7 @@ if [[ $INSTALL_SYMLINK = true ]]; then
 	$white; echo -n "Type: "
 	$byellow; echo -n "[monero-bash help] "
 	$white; echo -n "OR "
-	$byellow; echo -n "[mb help]"
+	$byellow; echo -n "[mb help] "
 	$white; echo "to get started"
 else
 	$white; echo -n "Type: "
