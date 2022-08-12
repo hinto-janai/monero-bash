@@ -9,6 +9,7 @@ status_All()
 	[[ $MONERO_VER != "" ]]&& status_Monero
 	[[ $P2POOL_VER != "" ]]&& status_P2Pool
 	[[ $XMRIG_VER != "" ]]&& status_XMRig
+	echo
 	exit 0
 }
 
@@ -47,7 +48,7 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$bwhite; printf "Wallet: "
+		$bwhite; printf "Wallet        | "
 		$white; echo "${WALLET:0:6}...${WALLET: -6}"
 
 		# Get p2pool.log into memory.
@@ -110,25 +111,25 @@ status_XMRig()
 	define_XMRig
 	EXTRA_STATS()
 	{
-		# POOL
-		$bblue; printf "Pool            | " ;$off
-		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
-		echo
-
 		# WALLET (in xmrig.json)
-		$bwhite; printf "Wallet          | " ;$off
+		$bwhite; printf "Wallet       | " ;$off
 		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')"
 		[[ -z $wallet ]] && echo || echo "${wallet:0:6}...${wallet: -6}"
 
-		# HASHRATE
-		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
-		$byellow; printf "Hashrate        | "
-		$white; echo "$hashrate"
+		# POOL
+		$bgreen; printf "Pool         | " ;$off
+		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES
 		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
-		$bgreen; printf "Accepted shares | "
+		local shares="${shares/cpu[[:blank:]]*}"
+		$bblue; printf "Latest share | "
 		$white; echo "$shares"
+
+		# HASHRATE
+		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
+		$byellow; printf "Hashrate     | "
+		$white; echo "$hashrate"
 	}
 	status_Template
 }

@@ -1,9 +1,8 @@
 # monero-bash guide:
 * [Mining](#mining)
-* [Usage](#usage)
+* [Full vs Start](#full-vs-start)
 * [Configuration](#configuration)
 * [File Structure](#file-structure)
-* [systemd](#systemd)
 
 ## Mining
 To quickly start mining on P2Pool, make sure you have all the packages:
@@ -15,82 +14,20 @@ Configure basic mining settings:
 You can then:
 * `monero-bash start all`
 
-Remember, you are using your own node to mine. The blockchain has to be fully synced!
+Remember, you are using your own nodes to mine. Both the Monero & P2Pool nodes have to be fully synced!
 
+## `Full` vs `Start`
+There are 2 ways to start a process with monero-bash:
+* `monero-bash full <process>`
+* `monero-bash start <process>`
 
-## Usage
-<details>
-<summary>Click to reveal full command usage</summary>
-
-```
-monero-bash usage: monero-bash <option> <more options>
-
-monero-bash                              open wallet menu
-uninstall                                uninstall ALL OF monero-bash
-rpc                                      send a JSON RPC call to monerod
-
-install <all/pkg>                        install <all> or a specific package
-install <all/pkg> verbose                print detailed download information
-remove  <all/pkg>                        remove <all> or a specific package
-
-update                                   CHECK for updates
-upgrade                                  upgrade all packages
-upgrade <pkg>                            upgrade a specific package
-upgrade <all/pkg> force                  forcefully upgrade packages
-upgrade <all/pkg> verbose                print detailed download information
-version                                  print installed package versions
-
-config                                   configure MINING settings
-start   <all/monero/xmrig/p2pool>        start process detached (background)
-stop    <all/monero/xmrig/p2pool>        gracefully stop the process
-kill    <all/monero/xmrig/p2pool>        forcefully kill the process
-restart <all/monero/xmrig/p2pool>        restart the process
-full    <monero/xmrig/p2pool>            start the process attached (foreground)
-watch   <monero/xmrig/p2pool>            watch live output of process
-edit    <monero/xmrig/p2pool>            edit systemd service file
-reset   <bash/monero/xmrig/p2pool>       reset your configs/systemd to default
-
-backup                                   encrypt and backup your /wallets/
-decrypt                                  decrypt backup.tar.gpg
-
-status                                   print status of all running processes
-seed                                     generate random 25-word Monero seed
-list                                     list wallets
-size                                     show size of monero-bash folders
-price                                    fetch price data from cryptocompare.com API
-integrity                                check hash integrity of monero-bash
-
-help                                     show this help message
-```
-</details>
+***Full*** will launch the process in the current terminal.  
+***Start*** will use `systemd` to start the program in the background. 
 
 ## Configuration
-Config files are in `~/.monero-bash/config`, you can edit them or replace them with your own
+Config files for all packages are in `~/.monero-bash/config`, you can edit them or replace them with your own.
 
-To setup P2Pool, either use `monero-bash config` or edit `.monero-bash/config/monero-bash.conf`
-```
-######################
-# monero-bash config #
-######################
-# monero-bash
-AUTO_START_DAEMON="true"         auto-start monero on wallet open
-AUTO_STOP_DAEMON="true"          auto-stop monero on wallet close
-AUTO_UPDATE="false"              check for all updates on wallet open
-PRICE_API_IP_WARNING="true"      warn when checking price API
-
-# hugepages
-AUTO_HUGEPAGES="true"            auto-set hugepages when starting all processes
-HUGEPAGES="3072"                 hugepage size
-
-# p2pool
-DAEMON_IP="127.0.0.1"            monerod IP to connect to (default: 127.0.0.1/localhost)
-WALLET=""                        wallet address to send payouts to
-LOG_LEVEL="2"                    log/console output level (default: 2, options are 0-6)
-
-# daemon rpc
-DAEMON_RPC_IP="127.0.0.1:18081"  monerod IP used by RPC calls (default is localhost:18081)
-DAEMON_RPC_VERBOSE="false"       print extra messages on RPC calls
-```
+P2Pool does not come with a config file, but monero-bash lets you edit small things:
 
 ## File Structure
 These are all the folders/files created by `monero-bash` after installation:
@@ -134,14 +71,3 @@ These are all the folders/files created by `monero-bash` after installation:
 ├─ monero-bash-service.XXXXXXXXX
 ```
 *note:* monero-bash `/tmp/` folders are deleted after upgrade, and wiped if computer is rebooted. All files created by `monero-bash` have `700/600` permissions or are within folders that have those permissions. This is to prevent any other user from reading the data. After uninstalling monero-bash, all these files are deleted with the exception of `$HOME/.bitmonero` if you picked that as your data directory.
-
-## systemd
-monero-bash creates and uses systemd service files to control:
-* `monerod`
-* `xmrig`
-* `p2pool`
-
-If you'd like to directly invoke a program:
-* `monero-bash full <monero/p2pool/xmrig>`
-
-This will launch them in the current terminal

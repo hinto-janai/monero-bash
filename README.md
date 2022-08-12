@@ -5,26 +5,37 @@
 
 ## Contents
 * [About](#About)
-* [Distro Coverage](#Distro-Coverage)
 * [Features](#Features)
+* [Distro Coverage](#Distro-Coverage)
 * [Install](#Install)
 * [Usage](#Usage)
+	- [Wallet](#Wallet)
+	- [Config](#Config)
+	- [P2Pool Mining](#p2pool-mining)
+	- [Full vs Start](#full-vs-start)
+	- [Commands](#Commands)
 * [FAQ](#FAQ)
 
 ## About
-***monero-bash is a Linux CLI wrapper/manager for:***
+**monero-bash is a Linux CLI wrapper/manager for: [`Monero`](https://github.com/monero-project/monero) | [`P2Pool`](https://github.com/SChernykh/p2pool) | [`XMRig`](https://github.com/xmrig/xmrig)**
 
-* [`Monero`](https://github.com/monero-project/monero)
-* [`P2Pool`](https://github.com/SChernykh/p2pool)
-* [`XMRig`](https://github.com/xmrig/xmrig)
+***Package manager:***
 
-monero-bash automates these programs into interactive prompts and simple commands
+***Wallet menu:***
 
-***Installing `monero-bash` and mining on P2Pool in 40 seconds:***
+***P2Pool & XMRig mining:***
 
-https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7-bb4d-9a1669650e53.mp4
+[This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
 
-[This project was a community funded CCS Proposal, thanks to all who donated](https://ccs.getmonero.org/proposals/monero-bash.html)
+## Features
+* 📦 **`PKG MANAGER`** Manage the download/verification/upgrading of packages
+* 💵 **`WALLET MENU`** Interactive menu for selecting/creating wallets
+* 👺 **`SYSTEMD`** Control ***monerod/p2pool/xmrig*** as background processes
+* ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
+* 👁️ **`WATCH`** Switch between normal terminal and live output of ***monerod/p2pool/xmrig***
+* 📈 **`STATS`** Display statistics (CPU usage, P2Pool shares, etc)
+* 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
+* 🔒 **`GPG`** Encrypt and backup your wallets
 
 ## Distro Coverage
 | Linux Distribution        | Version            | Status | Info |
@@ -42,20 +53,7 @@ https://user-images.githubusercontent.com/101352116/162639580-f635d492-60b7-43e7
 ***⚠️ = Small issues***  
 ***❌ = Big issues***  
 
-## Features
-* 📦 **`PKG MANAGER`** Manage the download/verification/upgrading of packages
-* 💵 **`WALLET MENU`** Interactive menu for selecting/creating wallets
-* 👺 **`SYSTEMD`** Control ***monerod/p2pool/xmrig*** as background processes
-* ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
-* 👁️ **`WATCH`** Switch between normal terminal and live output of ***monerod/p2pool/xmrig***
-* 📈 **`STATS`** Display statistics (CPU usage, P2Pool shares, etc)
-* 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
-* 🔒 **`GPG`** Encrypt and backup your wallets
-
 ## Install
-
----
-
 [**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
 tar -xf monero-bash-v1.7.1.tar
@@ -74,16 +72,17 @@ gpg --verify SHA256SUM
 
 ---
 
-To install with git:
+**To install with git:**
 ```
 git clone https://github.com/hinto-janaiyo/monero-bash
 cd monero-bash
 ./monero-bash
 ```
-**ALWAYS clone the main branch, the other branches are not tested**
+ALWAYS clone the main branch, the other branches are not tested
 
 ---
-To uninstall cleanly:
+
+**To uninstall:**
 ```
 monero-bash uninstall
 ```
@@ -94,16 +93,40 @@ sudo rm /usr/local/bin/monero-bash
 sudo rm -r /usr/local/share/monero-bash
 sudo rm /etc/systemd/system/monero-bash*
 ```
-**THIS WILL DELETE YOUR WALLETS - remember to move them before uninstalling!**
-
----
+THIS WILL DELETE YOUR WALLETS - remember to move them before uninstalling!
 
 ## Usage
-[For full usage and configuration options of monero-bash, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/guide.md)
+### Config
+Config files for all packages are in: `~/.monero-bash/config`.
 
-<details>
-<summary>Click for command usage</summary>
+monero-bash comes with pre-configured/optimized configuration files:
+* [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)
+* [`monerod.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf)
+* [`monero-wallet-cli.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf)
+* [`xmrig.json`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/xmrig.json)
 
+P2Pool does not currently support config files, so its options are found in: `monero-bash.conf`.You can also use the interactive `monero-bash config` command to quickly setup P2Pool+XMRig mining.
+
+### P2Pool Mining
+***Warning:***
+* Wallet addresses are public on P2Pool! It is recommended to create a seperate mining wallet.
+* You are using your own nodes to mine. Both the Monero & P2Pool nodes have to be fully synced!
+
+To start mining on P2Pool:
+1. Install all the packages: `monero-bash install all`
+2. Configure basic mining settings: `monero-bash config`
+3. You can then start all processes in the background: `monero-bash start all`
+4. And watch them live with: `monero-bash watch <monero/p2pool/xmrig>`
+
+If you have something like `screen` or `tmux` you can open multiple terminals and:
+```
+monero-bash full monero
+monero-bash full p2pool
+monero-bash full xmrig
+```
+Instead of running of them in the background.
+
+### Command Usage
 ```
 monero-bash usage: monero-bash <option> <more options>
 
@@ -144,7 +167,6 @@ integrity                                check hash integrity of monero-bash
 
 help                                     show this help message
 ```
-</details>
 
 ## FAQ
 <details>
@@ -258,7 +280,7 @@ User folder:
 ```
 /home/user/.monero-bash
 ```
-`systemd` service files:
+`systemd` files:
 ```bash
 /etc/systemd/systemd/monero-bash-$PACKAGE_NAME.service
 ```
@@ -298,6 +320,22 @@ $HOME/.monero-bash/config
 
 ```
 $HOME/.monero-bash/wallets
+```
+
+---
+
+</details>
+
+<details>
+<summary>Where are the systemd files?</summary>
+
+---
+
+```
+/etc/systemd/system/
+├─ monero-bash-monerod.service
+├─ monero-bash-p2pool.service
+├─ monero-bash-xmrig.service
 ```
 
 ---
