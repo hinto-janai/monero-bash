@@ -134,7 +134,7 @@ if [[ $options = "true" ]]; then
 			;;
 		edit)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero
+				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Poo;;
 				*) print_Error "Pick: <monero/p2pool/xmrig>" ;;

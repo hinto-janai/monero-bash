@@ -143,15 +143,19 @@ wallet_Recover()
 				clear
 				n=1
 				for i in $walletSeed; do
-					printf "${n}. %s\n" "${i/${i:2}/...} "
+					if [[ $n -lt 10 ]]; then
+						printf "${n}  | %s\n" "${i/${i:1}/...} "
+					else
+						printf "${n} | %s\n" "${i/${i:1}/...} "
+					fi
 					((n++))
 				done
 				$bwhite; echo -n "Is this correct? (Y/n) "
 				local YES_NO
 				read -r YES_NO
 				case $YES_NO in
-					*n*|*N*) :;;
-					*) break;;
+					y|Y|yes|Yes|YES) break;;
+					*) echo;;
 				esac
 		esac
 	done
