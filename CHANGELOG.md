@@ -3,11 +3,11 @@
 ## Updates
 [Configuration upgrades are not automatic, click here to see the new versions.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)
 * Config: `monero-bash.conf/monerod.conf/monero-wallet-cli.conf/xmrig.json` contain many more options by default, with helpful comments
+* Config: Auto `monerod` when opening wallet now disabled by default in `monero-bash.conf`
+* Config: Auto hugepages now disabled by default in `monero-bash.conf`
 * Status: `P2Pool` indicates if synced or not
 * Wallet: Seed during `recover` is now visible while typing and cleared after confirming
-* Wallet: Auto turning on/off of `monerod` when opening wallet is now disabled by default in `monero-bash.conf`
 * Install: `monero-bash` install will prompt for `mb` symlink creation for convenience: `monero-bash <command> -> mb <command>`
-* Hugepages: Disabled by default in `monero-bash.conf`
 * Misc: General UI changes
 
 ## Fixes

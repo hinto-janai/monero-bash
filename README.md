@@ -18,7 +18,7 @@
 ## About
 **monero-bash is a Linux CLI wrapper for: [`Monero`](https://github.com/monero-project/monero) | [`P2Pool`](https://github.com/SChernykh/p2pool) | [`XMRig`](https://github.com/xmrig/xmrig)**
 
-***A few demos of its features:***
+***A few video demos of its features:***
 
 <details>
 <summary>Wallet Menu</summary>

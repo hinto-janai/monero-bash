@@ -157,7 +157,7 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
-				all) mine_Start ;;
+				all) mine_Start; exit;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
 			process_Start
@@ -167,7 +167,7 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
-				all) mine_Stop ;;
+				all) mine_Stop; exit;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
 			process_Stop
@@ -177,7 +177,7 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
-				all) mine_Restart ;;
+				all) mine_Restart; exit ;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
 			process_Restart
@@ -187,7 +187,7 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
-				all) mine_Kill ;;
+				all) mine_Kill; exit ;;
 				*) print_Error "Pick: <all/monero/p2pool/xmrig>" ;;
 			esac
 			process_Kill
