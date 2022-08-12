@@ -12,18 +12,28 @@
 	- [Wallet](#Wallet)
 	- [Config](#Config)
 	- [P2Pool Mining](#p2pool-mining)
-	- [Full vs Start](#full-vs-start)
 	- [Commands](#Commands)
 * [FAQ](#FAQ)
 
 ## About
 **monero-bash is a Linux CLI wrapper/manager for: [`Monero`](https://github.com/monero-project/monero) | [`P2Pool`](https://github.com/SChernykh/p2pool) | [`XMRig`](https://github.com/xmrig/xmrig)**
 
-***Package manager:***
+***A few demos of its features:***
 
-***Wallet menu:***
+<details>
+<summary>Package Manager</summary>
 
-***P2Pool & XMRig mining:***
+</details>
+
+<details>
+<summary>Wallet Menu</summary>
+
+</details>
+
+<details>
+<summary>P2Pool + XMRig mining</summary>
+
+</details>
 
 [This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
 
@@ -56,7 +66,7 @@
 ## Install
 [**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```
-tar -xf monero-bash-v1.7.1.tar
+tar -xf monero-bash-v1.8.0.tar
 cd monero-bash
 ./monero-bash
 ```
@@ -96,8 +106,24 @@ sudo rm /etc/systemd/system/monero-bash*
 THIS WILL DELETE YOUR WALLETS - remember to move them before uninstalling!
 
 ## Usage
+### Wallet
+Wallet files are found in: `~/.monero-bash/wallets`
+
+To open the wallet menu, type: `monero-bash`. You will have 4 options:
+* `Select` Type a wallets name to open it
+* `New` Create a new wallet
+* `View` Create a new VIEW-ONLY wallet
+* `Recover` Recover a wallet with standard 24/25 word Monero seeds
+
+For safety reasons, there is no built-in way to **delete** a wallet.  
+You'll have to manually remove the files inside the wallet folder, for example:
+```
+rm ~/.monero-bash/wallets/MY_WALLET
+rm ~/.monero-bash/wallets/MY_WALLET.keys
+```
+
 ### Config
-Config files for all packages are in: `~/.monero-bash/config`.
+Config files for all packages are in: `~/.monero-bash/config`
 
 monero-bash comes with pre-configured/optimized configuration files:
 * [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)
@@ -125,7 +151,7 @@ monero-bash full <monero/p2pool/xmrig>
 This allows you to interact with the processes directly AND have them in a background terminal.  
 Unfortunately, you cannot interact directly with a `systemd` background process.
 
-### Command Usage
+### Commands
 ```bash
 USAGE: monero-bash <argument> [optional]
 

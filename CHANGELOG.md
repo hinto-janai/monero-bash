@@ -1,4 +1,4 @@
-# v1.7.1
+# v1.8.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
 [Configuration upgrades are not automatic, click here to see the new versions.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)
