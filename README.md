@@ -16,17 +16,17 @@
 * [FAQ](#FAQ)
 
 ## About
-**monero-bash is a Linux CLI wrapper/manager for: [`Monero`](https://github.com/monero-project/monero) | [`P2Pool`](https://github.com/SChernykh/p2pool) | [`XMRig`](https://github.com/xmrig/xmrig)**
+**monero-bash is a Linux CLI wrapper for: [`Monero`](https://github.com/monero-project/monero) | [`P2Pool`](https://github.com/SChernykh/p2pool) | [`XMRig`](https://github.com/xmrig/xmrig)**
 
 ***A few demos of its features:***
 
 <details>
-<summary>Package Manager</summary>
+<summary>Wallet Menu</summary>
 
 </details>
 
 <details>
-<summary>Wallet Menu</summary>
+<summary>Package Manager</summary>
 
 </details>
 
@@ -113,7 +113,7 @@ To open the wallet menu, type: `monero-bash`. You will have 4 options:
 * `Select` Type a wallets name to open it
 * `New` Create a new wallet
 * `View` Create a new VIEW-ONLY wallet
-* `Recover` Recover a wallet with standard 24/25 word Monero seeds
+* `Recover` Recover a wallet with a standard 24/25 word Monero seed
 
 For safety reasons, there is no built-in way to **delete** a wallet.  
 You'll have to manually remove the files inside the wallet folder, for example:
@@ -121,6 +121,8 @@ You'll have to manually remove the files inside the wallet folder, for example:
 rm ~/.monero-bash/wallets/MY_WALLET
 rm ~/.monero-bash/wallets/MY_WALLET.keys
 ```
+
+---
 
 ### Config
 Config files for all packages are in: `~/.monero-bash/config`
@@ -132,6 +134,8 @@ monero-bash comes with pre-configured/optimized configuration files:
 * [`xmrig.json`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/xmrig.json)
 
 P2Pool does not currently support config files, so its options are found in: `monero-bash.conf`.You can also use the interactive `monero-bash config` command to quickly setup P2Pool+XMRig mining.
+
+---
 
 ### P2Pool Mining
 ***Warning:***
@@ -151,8 +155,10 @@ monero-bash full <monero/p2pool/xmrig>
 This allows you to interact with the processes directly AND have them in a background terminal.  
 Unfortunately, you cannot interact directly with a `systemd` background process.
 
+---
+
 ### Commands
-```bash
+```
 USAGE: monero-bash <argument> [optional]
 
 monero-bash                              open wallet menu

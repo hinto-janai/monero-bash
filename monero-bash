@@ -279,7 +279,7 @@ if [[ $options = "true" ]]; then
 			case $2 in
 				*"bash"*|*"Bash"*|*"BASH"*)
 					$bwhite; echo -n "Install [monero-bash]? (Y/n) " ;$off
-					Yes(){ echo "Umm... It's already installed..." ;}
+					Yes(){ echo "install_MoneroBash" ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;

@@ -150,11 +150,12 @@ wallet_Recover()
 					fi
 					((n++))
 				done
+				$bwhite; echo "Seed # | 1st letter"
 				$bwhite; echo -n "Is this correct? (Y/n) "
 				local YES_NO
 				read -r YES_NO
 				case $YES_NO in
-					y|Y|yes|Yes|YES) break;;
+					y|Y|yes|Yes|YES|"") break;;
 					*) echo;;
 				esac
 		esac
