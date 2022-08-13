@@ -8,12 +8,8 @@ seed_Create()
 ###########################################################################################   LANGUAGE SELECTION
 
 # WARNING
-$bred; echo "THIS IS AN EXPERIMENTAL FEATURE"
+$bred; echo -n "[THIS IS AN EXPERIMENTAL FEATURE] "
 $bwhite; echo "Using [monero-wallet-cli] to generate a seed is highly recommended"
-$white; printf "Continue? (y/N) "
-Yes(){ :;}
-No(){ echo "Exiting..." ;exit;}
-prompt_NOyes
 
 # INTERACTIVE
 if [[ $seedOptions != "true" ]]; then

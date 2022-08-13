@@ -4,31 +4,36 @@
 #
 print_GreenHash()
 {
-	$bgreen; echo "######## $1" ;$off
+	$bgreen; echo "<######> $1" ;$off
 }
 
 print_BlueHash() {
-	$bblue; echo "######## $1" ;$off
+	$bblue; echo "<######> $1" ;$off
 }
 
 print_RedHash()
 {
-	$bred; echo "######## $1" ;$off
+	$bred; echo "<######> $1" ;$off
 }
 
 print_WhiteHash()
 {
-	$bwhite; echo "##### $1" ;$off
+	$bwhite; echo "<######> $1" ;$off
+}
+
+print_CyanHash()
+{
+	$bcyan; echo "<######> $1" ;$off
 }
 
 print_YellowHash()
 {
-	$byellow; echo "##### $1" ;$off
+	$byellow; echo "<######> $1" ;$off
 }
 
 print_PurpleHash()
 {
-	$bpurple; echo "##### $1" ;$off
+	$bpurple; echo "<######> $1" ;$off
 }
 
 print_MoneroBashTitle()
@@ -120,8 +125,7 @@ print_Error()
 print_Error_Exit()
 {
 	$bred; printf "[monero-bash error] "
-	$iwhite; echo "$1"
-	$off; echo "Exiting..."
+	$iwhite; echo "$1"; $off
 	exit 1
 }
 
@@ -129,12 +133,12 @@ print_Error_Exit()
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
-		$white; echo -n "$NAME_PRETTY: "
-		$igreen; echo "HASH OK" ;$off
+		$off; echo -n "[${HASH:0:4}...${HASH:60:64}] "
+		$igreen; echo "HASH OK"
 		verifyOK="true"
 	else
-		$white; echo -n "$NAME_PRETTY: "
-		$bred; echo "HASH FAILED" ;$off
+		$off; echo -n "[${HASH:0:4}...${HASH:60:64}] "
+		$bred; echo "HASH FAIL" ;$off
 		verifyOK="false"
 	fi
 }
@@ -142,12 +146,12 @@ print_OKFAILED()
 print_GPG()
 {
 	if [[ $? = "0" ]]; then
-		$white; echo -n "$NAME_PRETTY: "
-		$igreen; echo "GPG OK" ;$off
+		$off; echo -n "[${FINGERPRINT:0:4}...${FINGERPRINT:36:40}] "
+		$igreen; echo "SIGN OK"
 		gpgOK="true"
 	else
-		$white; echo -n "$NAME_PRETTY: "
-		$bred; echo "GPG FAILED" ;$off
+		$off; echo -n "[${FINGERPRINT:0:4}...${FINGERPRINT:36:40}] "
+		$bred; echo "SIGN FAIL" ;$off
 		gpgOK="false"
 	fi
 }

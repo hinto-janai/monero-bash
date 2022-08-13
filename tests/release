@@ -12,7 +12,7 @@ cp -fr "$path" "/tmp/"
 
 # remove non-release files
 cd "/tmp/monero-bash"
-rm -fr docs .git tests .gitignore LICENSE README.md
+rm -rf docs .git tests .gitignore LICENSE README.md external lib LICENSE
 mv -f CHANGELOG.md /tmp/CHANGELOG.md
 
 # version
@@ -36,5 +36,18 @@ rm SHA256SUM
 mv SHA256SUM.asc SHA256SUM
 
 # check hash + sign
-gpg --verify SHA256SUM
-sha256sum -c SHA256SUM
+gpg --verify SHA256SUM &>/dev/null && echo "sign OK"  || echo "sign FAIL"
+sha256sum -c SHA256SUM &>/dev/null && echo "hash OK" || echo "hash FAIL"
+
+# copy changelog/sign to clipboard
+CLIP() {
+	grep -B999 -m2 "^$" CHANGELOG.md
+	echo "## SHA256SUM & [PGP Signature](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc)"
+	echo '```'
+	cat SHA256SUM
+	echo '```'
+}
+CLIP | xclip -selection clipboard
+echo "changelog copied to clipboard"
+rm SHA256SUM
+rm CHANGELOG.md

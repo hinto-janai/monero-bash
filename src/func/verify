@@ -38,7 +38,7 @@ verify_Template()
 
     # check if gpg key is imported
     if ! gpg --list-keys "$FINGERPRINT" &>/dev/null ;then
-        $white; echo "Importing GPG key..."
+        $white; echo "Importing [${GPG_OWNER}'s] GPG key..."
         gpg_import_Template
     fi
 
@@ -68,7 +68,7 @@ verify_Template()
 	else
 		HASH="$(echo "$hashSTDOUT" | grep "$DOT_PKG" | awk '{print $1}')"
 	fi
-	[[ "$HASH" = "" ]]&& error_Exit "Hash file was empty"
+	[[ -z $HASH ]] && error_Exit "Hash file was empty"
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
 	if [[ "$verifyOK" != "true" ]]; then

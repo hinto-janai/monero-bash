@@ -8,11 +8,11 @@ reset_Template()
 	# PROMPT
 	if [[ $NAME_PRETTY = "monero-bash" ]]; then
 		$bred; printf "This will overwrite your current "
-		$bwhite; printf "$NAME_PRETTY "
+		$bwhite; echo "[${NAME_PRETTY}] "
 		$bred; echo "config with a new default version"
 	else
 		$bred; printf "This will overwrite your current "
-		$bwhite; printf "$NAME_PRETTY "
+		$bwhite; echo "[${NAME_PRETTY}] "
 		$bred; echo "configs & systemd services with a new default version"
 	fi
 	$bwhite; printf "Continue? (y/N) " ;$off
@@ -49,5 +49,5 @@ reset_Template()
 			PRODUCE_HASH_LIST
 			;;
 	esac
-	$white; echo "Reset complete"
+	$off; echo "Reset complete"
 }

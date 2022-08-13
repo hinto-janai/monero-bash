@@ -97,8 +97,8 @@ CHECK_HASH_LIST()
 		$white; echo "Exiting for safety..."
 		exit 1
 	else
-		$bwhite; echo -n "monero-bash: "
-		$bgreen; echo "hash check success!" ;$off
+		$bwhite; echo -n "[monero-bash] "
+		$bgreen; echo "HASH CHECK OK!" ;$off
 	fi
 }
 
@@ -150,12 +150,12 @@ QUIET_HASH_LIST()
 	QUIET_HASH_LIST_TEMPLATE
 
 	if [[ $hashFail = "true" ]]; then
-		$bred; echo -n "monero-bash error: "
+		$bred; echo -n "[monero-bash error] "
 		$bwhite; echo "hash check has failed"
 		$white; echo "Exiting for safety..."
 		exit 1
 	else
-		$bwhite; echo -n "monero-bash: "
-		$bgreen; echo "hash check success!" ;$off
+		$bwhite; echo -n "[monero-bash] "
+		$bgreen; echo "HASH CHECK OK!" ;$off
 	fi
 }

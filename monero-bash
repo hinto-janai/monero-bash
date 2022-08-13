@@ -1,5 +1,50 @@
 #!/usr/bin/env bash
+#
+# monero-bash -  a wrapper for Monero written in Bash
+#
+# Copyright (c) 2022 hinto.janaiyo
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
+# This is the [main] script for [monero-bash].
+# It REQUIRES and takes a lot of safety precautions
+# to make sure everything found in `src` exists.
+
+# | File/Folder | Purpose                                    |
+# |-------------|--------------------------------------------|
+# | src/func/   | all the functions [monero-bash] uses       |
+# | src/txt/    | text files to store long-term on disk      |
+# | src/source  | master source file that sources everything |
+# | src/debug   | debugging functions                        |
+# | src/var     | frequently used GLOBAL variables           |
+
+# [monero-bash] order of operations
+# ---------------------------------
+# 1. User inputs [monero-bash <something>]
+# 2. [monero-bash] sources -> [src/source]
+# 3. [source] sources -> EVERYTHING (functions, state, user config, etc)
+# 4. A whole bunch of safety checks
+# 5. Parse & execute user input (update, wallet, etc)
+
+
+
+#-------------------------------------------------------------------------------------------- BEGIN MAIN
 # installDirectory = where ever /monero-bash/ is
 scriptPath="$(realpath $0)"
 installDirectory="$(dirname "$scriptPath")"
