@@ -9,15 +9,15 @@ mine_Start()
 	missing_XMRig
 	missing_P2Pool
 	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
+		printf "%s\n" "First time detected! Entering configure mode."
 		mine_Config
 	else
-		[[ -z $AUTO_HUGEPAGES ]] && AUTO_HUGEPAGES="true"
 		[[ $AUTO_HUGEPAGES = "true" ]] && mine_Hugepages
 		define_Monero;process_Start
 		define_P2Pool;process_Start
 		define_XMRig;process_Start
 		printf "Watch with: "
-		$bwhite; echo "monero-bash watch <monero/p2pool/xmrig>" ;$off
+		$bwhite; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;$off
 	fi
 }
 
@@ -56,9 +56,10 @@ mine_Hugepages()
 
 mine_Config()
 {
-    $bred; echo "###########################################################"
-    $bred; echo "#            monero-bash mining configuration             #"
-    $bred; echo "###########################################################"
+	while :; do
+    $bred; echo "#-----------------------------------------#"
+    $bred; echo "#   P2Pool & XMRig mining configuration   #"
+    $bred; echo "#-----------------------------------------#"
 
 	# wallet + daemon ip + pool ip + mini config
 	$bwhite; printf "WALLET ADDRESS: " ;$off
@@ -102,7 +103,7 @@ mine_Config()
 	fi
 	$bwhite; printf "Use these settings? (Y/n) "
 
-	# set user input if yes, exit if no
+	# set user input if yes, repeat if no
 	Yes()
 	{
 		prompt_Sudo ; error_Sudo
@@ -126,8 +127,8 @@ mine_Config()
 		# xmrig.json
 		echo "Editing xmrig.json..."
 		sudo -u "$USER" sed \
-			-i -e "s@.*user.*@            \"user\": \"${WALLET_INTERACTIVE}\",@" "$xmrigConf" \
-			-i -e "s@.*url.*@            \"url\": \"$POOL\",@" "$xmrigConf"
+			-i -e "s@\"user\":.*@\"user\": \"${WALLET_INTERACTIVE}\",@" "$xmrigConf" \
+			-i -e "s@\"url\":.*@\"url\": \"${POOL}\",@" "$xmrigConf"
 
 		# state file
 		sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=false@" "$state"
@@ -135,8 +136,16 @@ mine_Config()
 		echo
 		$bgreen; echo "Mining configuration complete!"
 		$white; echo -n "To get started: "
-		$bwhite; echo "monero-bash start all"
+		$bwhite; echo "[monero-bash start all]"
 	}
-	No(){ echo "Exiting..." ;exit;}
-	prompt_YESno
+	No(){ :; }
+	local yn
+    read yn
+    if [[ $yn = "" || $yn = "y" || $yn = "Y" ||$yn = "yes" || $yn = "Yes" ]]; then
+        Yes
+        break
+    else
+        No
+    fi
+	done
 }

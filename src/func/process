@@ -12,9 +12,16 @@ process_Start_Template()
 	missing_"$NAME_FUNC"
 
 	# CONFIGURE P2POOL (only once)
-	if [[ "$MINE_UNCONFIGURED" = "true" && $PROCESS = "p2pool" ]]; then
-		mine_Config
-		exit
+	if [[ $MINE_UNCONFIGURED = "true" && $PROCESS = "p2pool" ]]; then
+		printf "%s\n"
+			"First time [P2Pool] detected!"
+			"Would you like to enter configure mode? (Y/n) "
+		local YES_NO
+		read YES_NO
+		case $YES_NO in
+			y|Y|yes|Yes|YES|"") mine_Config;;
+			*) echo "Skipping...";;
+		esac
 	fi
 
 	# START PROCESS IF NOT ALREADY ALIVE

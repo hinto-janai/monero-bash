@@ -15,9 +15,9 @@ monerobash_Install()
 			;;
 	esac
 
-	$bred; echo "###################################################################"
+	$bred; echo "#-----------------------------------------------------------------#"
 	$bred; echo "#            monero-bash configuration & installation             #"
-	$bred; echo "###################################################################"
+	$bred; echo "#-----------------------------------------------------------------#"
 
 while true ;do
 	# $HOME/.bitmonero check
@@ -159,9 +159,9 @@ PRODUCE_HASH_LIST
 #                       End
 #
 echo
-$bred; echo "###################################################################"
+$bred; echo "#-----------------------------------------------------------------#"
 $bred; echo "#                monero-bash installation complete                #"
-$bred; echo "###################################################################"
+$bred; echo "#-----------------------------------------------------------------#"
 $byellow; echo -n "monero-bash   | " ;$off; echo "$dotMoneroBash"
 $byellow; echo -n "Monero data   | " ;$off
 if [[ $inputData ]]; then
@@ -186,6 +186,7 @@ else
 	$byellow; echo -n "[monero-bash help] "
 	$white; echo "to get started"
 fi
+exit 0
 }
 ###################################################   END OF INSTALL FUNCTION   ###################################################
 
@@ -221,8 +222,8 @@ monerobash_Uninstall()
 		prompt_Sudo
 		error_Exit "Sudo is needed to uninstall"
 
-		# 10 second countdown
-		for i in {10..0} ;do
+		# 5 second countdown
+		for i in {5..0} ;do
 			tput sc
 			if [[ "$i" = "0" ]]; then
 				$bred; echo -n "Uninstalling..."

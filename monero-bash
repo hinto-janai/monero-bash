@@ -181,7 +181,7 @@ if [[ $options = "true" ]]; then
 			case $2 in
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
-				*"p2p"*) define_P2Poo;;
+				*"p2p"*) define_P2Pool;;
 				*) print_Error_Exit "Pick: <monero/p2pool/xmrig>" ;;
 			esac
 			systemd_Edit

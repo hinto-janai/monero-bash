@@ -10,6 +10,7 @@ seed_Create()
 # WARNING
 $bred; echo -n "[THIS IS AN EXPERIMENTAL FEATURE] "
 $bwhite; echo "Using [monero-wallet-cli] to generate a seed is highly recommended"
+$off; echo
 
 # INTERACTIVE
 if [[ $seedOptions != "true" ]]; then

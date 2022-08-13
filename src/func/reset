@@ -8,11 +8,11 @@ reset_Template()
 	# PROMPT
 	if [[ $NAME_PRETTY = "monero-bash" ]]; then
 		$bred; printf "This will overwrite your current "
-		$bwhite; echo "[${NAME_PRETTY}] "
+		$bwhite; echo -n "[${NAME_PRETTY}] "
 		$bred; echo "config with a new default version"
 	else
 		$bred; printf "This will overwrite your current "
-		$bwhite; echo "[${NAME_PRETTY}] "
+		$bwhite; echo -n "[${NAME_PRETTY}] "
 		$bred; echo "configs & systemd services with a new default version"
 	fi
 	$bwhite; printf "Continue? (y/N) " ;$off
@@ -29,20 +29,25 @@ reset_Template()
 	# OVERWRITE
 	case $NAME_PRETTY in
 		Monero)
+			echo "Resetting [$config/monerod.conf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/monerod.conf" "$config/monerod.conf"
+			echo "Resetting [$config/monero-wallet-cli.conf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/monero-wallet-cli.conf" "$config/monero-wallet-cli.conf"
 			systemd_"$NAME_FUNC"
 			;;
 		monero-bash)
+			echo "Resetting [$config/monero-bash.conf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/monero-bash.conf" "$config/monero-bash.conf"
 			;;
 		XMRig)
+			echo "Resetting [$xmrigConf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/xmrig.json" "$xmrigConf"
 			systemd_"$NAME_FUNC"
 			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"
 			PRODUCE_HASH_LIST
 			;;
 		P2Pool)
+			echo "Resetting [$p2poolConf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.json" "$p2poolConf"
 			systemd_"$NAME_FUNC"
 			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"

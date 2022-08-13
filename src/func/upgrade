@@ -135,7 +135,7 @@ upgrade_Post()
 	version_Template
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-	$white; echo -n "[${NAME_PRETTY}] "
+	$off; echo -n "[${NAME_PRETTY}] "
 	$igreen; echo "$NewVer" ;$off
 	[[ $INSTALL = true ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
