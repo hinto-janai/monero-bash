@@ -53,8 +53,20 @@ process_Stop_Template()
 
 process_Restart()
 {
-	process_Stop
-	process_Start
+	prompt_Sudo;error_Sudo
+	if pgrep $PROCESS &>/dev/null ; then
+		$byellow; echo "Restarting [${PROCESS}]..." ;$off
+		if sudo systemctl restart "$SERVICE"; then
+			$bblue; echo "Restarted [${PROCESS}]!" ;$off
+			return 0
+		else
+			$bred; printf "%s\n\n" "[${PROCESS}] restart failed!"; $off
+			return 1
+		fi
+	else
+		$white; echo -n "[${PROCESS}] "
+		$bred; echo "not online" ;$off
+	fi
 }
 
 process_Start()

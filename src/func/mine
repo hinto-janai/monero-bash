@@ -31,8 +31,10 @@ mine_Stop()
 
 mine_Restart()
 {
-	mine_Stop
-	mine_Start
+	prompt_Sudo;error_Sudo
+	define_Monero;process_Restart
+	define_P2Pool;process_Restart
+	define_XMRig;process_Restart
 }
 
 mine_Kill()

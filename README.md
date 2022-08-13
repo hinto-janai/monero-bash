@@ -57,16 +57,16 @@ https://user-images.githubusercontent.com/101352116/184435585-e2e7de20-ab27-4b17
 * 🔒 **`GPG`** Encrypt and backup your wallets
 
 ## Distro Coverage
-| Linux Distribution        | Version            | Status | Info |
-|---------------------------|--------------------|--------|------|
-| Debian                    | 11, 10             | ✅     |
-| Ubuntu                    | LTS 22.04, 20.04   | ✅     |
-| Pop!\_OS                  | LTS 22.04, 20.04   | ✅     |
-| Linux Mint                | 21, 20.03          | ✅     |
-| Fedora                    | Workstation 36, 35 | ❌     | SELinux disables `systemd` functionality
-| Arch Linux                |                    | ⚠️      | `wget` must be installed
-| Manjaro                   | 21.3.6             | ✅     |
-| Gentoo                    |                    | ❌     | `wget` & `systemd` must be installed
+| Linux Distribution                   | Version            | Status | Info |
+|--------------------------------------|--------------------|--------|------|
+| [Debian](https://www.debian.org)     | 11, 10             | ✅     |
+| [Ubuntu](https://ubuntu.com)         | LTS 22.04, 20.04   | ✅     |
+| [Pop!\_OS](https://pop.system76.com) | LTS 22.04, 20.04   | ✅     |
+| [Linux Mint](https://linuxmint.com)  | 21, 20.03          | ✅     |
+| [Fedora](https://getfedora.org)      | Workstation 36, 35 | ❌     | SELinux disables `systemd` functionality
+| [Arch Linux](https://archlinux.org)  |                    | ⚠️      | `wget` must be installed
+| [Manjaro](https://manjaro.org)       | 21.3.6             | ✅     |
+| [Gentoo](https://www.gentoo.org)     |                    | ❌     | `wget` & `systemd` must be installed
 
 ***✅ = Works out the box***  
 ***⚠️ = Small issues***  
