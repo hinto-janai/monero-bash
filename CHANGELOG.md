@@ -14,7 +14,7 @@
 ## Fixes
 * **Status:** Invalid P2Pool shares found before being fully synced will be excluded
 * **systemd:** `monero-bash restart <process>` uses systemd's `restart` instead of `stop` -> `start`
-* **Git:** Branches have been cleaned & squashed: `709` -> `476` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
+* **Git:** Branches have been cleaned & squashed: `709` -> `478` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
 
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
