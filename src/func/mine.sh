@@ -90,6 +90,10 @@ mine_Config()
 	read -r WALLET_INTERACTIVE
 	$bwhite; printf "MONERO NODE IP [default: 127.0.0.1]: " ;$off
 	read -r IP
+	$bwhite; printf "MONERO RPC PORT [default: 18081]: " ;$off
+	read -r RPC
+	$bwhite; printf "MONERO ZMQ PORT [default: 18083]: " ;$off
+	read -r ZMQ
 	$bwhite; printf "POOL IP [default: 127.0.0.1:3333]: " ;$off
 	read -r POOL
 	$bwhite; printf "Use P2Pool Mini-Pool? (Y/n): " ;$off
@@ -103,27 +107,41 @@ mine_Config()
 	# repeat & confirm user input
 	$bblue; printf "WALLET ADDRESS   | " ;$off; echo "$WALLET_INTERACTIVE"
 	$bblue; printf "MONERO NODE IP   | " ;$off
-	if [[ "$IP" = "" ]]; then
+	if [[ $IP ]]; then
+		echo "$IP"
+	else
 		echo "127.0.0.1"
 		IP="127.0.0.1"
+	fi
+	$bblue; printf "MONERO RPC PORT  | " ;$off
+	if [[ $RPC ]]; then
+		echo "$RPC"
 	else
-		echo "$IP"
+		echo "127.0.0.1"
+		RPC="18081"
+	fi
+	$bblue; printf "MONERO ZMQ PORT  | " ;$off
+	if [[ $ZMQ ]]; then
+		echo "$ZMQ"
+	else
+		echo "127.0.0.1"
+		ZMQ="18083"
 	fi
 	$bblue; printf "POOL IP          | " ;$off
-	if [[ "$POOL" = "" ]]; then
+	if [[ $POOL ]]; then
+		echo "$POOL"
+	else
 		echo "127.0.0.1:3333"
 		POOL="127.0.0.1:3333"
-	else
-		echo "$POOL"
 	fi
 	$bblue; printf "P2POOL MINI      | " ;$off
 		echo "$MINI"
 	$bblue; printf "P2POOL LOG LEVEL | " ;$off
-	if [[ "$LOG" = "" ]]; then
+	if [[ $LOG ]]; then
+		echo "$LOG"
+	else
 		echo "1"
 		LOG="1"
-	else
-		echo "$LOG"
 	fi
 	$bwhite; printf "Use these settings? (Y/n) "
 
@@ -139,6 +157,8 @@ mine_Config()
 		sudo -u "$USER" \
 			sed \
 				-i -e "s/^DAEMON_IP.*$/DAEMON_IP=${IP}/" "$config/monero-bash.conf" \
+				-i -e "s/^DAEMON_RPC.*$/DAEMON_RPC=${RPC}/" "$config/monero-bash.conf" \
+				-i -e "s/^DAEMON_ZMQ.*$/DAEMON_ZMQ=${ZMQ}/" "$config/monero-bash.conf" \
 				-i -e "s/^WALLET.*$/WALLET=${WALLET_INTERACTIVE}/" "$config/monero-bash.conf" \
 				-i -e "s/^LOG_LEVEL.*$/LOG_LEVEL=${LOG}/" "$config/monero-bash.conf"
 

@@ -109,6 +109,11 @@ status_P2Pool()
 		if [[ $LOG != *"SideChain SYNCHRONIZED"* ]]; then
 			$bred; printf "%s\n" "Warning       | P2Pool is not fully synced yet"
 			return 1
+		# Return error if ZMQ error message is found
+		elif ZMQ_LOG=$(echo "$LOG" | grep -o "ZMQReader failed to connect to.*$"); then
+			$bred; printf "%s\n" "Warning       | P2Pool failed to connect to [monerod]'s ZMQ server!"
+			$bred; printf "%s\n" "Warning       | "
+			return 1
 		else
 			LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"
 		fi

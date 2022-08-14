@@ -112,10 +112,11 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
+	# mini
 	if [[ $MINI = true ]]; then
-		local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL --mini"
+		local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --rpc-port \$DAEMON_RPC --zmq-port \$DAEMON_ZMQ --wallet \$WALLET --loglevel \$LOG_LEVEL --mini"
 	else
-		local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+		local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --rpc-port \$DAEMON_RPC --zmq-port \$DAEMON_ZMQ --wallet \$WALLET --loglevel \$LOG_LEVEL"
 	fi
 	systemd_Template
 }
