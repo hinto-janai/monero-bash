@@ -53,9 +53,12 @@ status_Monero()
 		done
 		# This removes the ANSI color codes in monerod output
 		LINE[0]="$(echo "${LINE[0]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g')"
-		# Split this line into 2 and replace ',' with '|'
-		LINE[1]="$(echo "${LINE[1]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g; s/, v/\nv/; s/, / | /g')"
-		printf "\e[0;96m%s\n\e[0;92m%s\e[0m\n" "${LINE[0]}" "${LINE[1]}"
+		printf "\e[0;96m%s\e[0m\n" "${LINE[0]}"
+
+		# Split this line into 2
+		LINE[1]="$(echo "${LINE[1]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g; s/, v/\nv/')"
+		# Replace ',' with '|' and add color
+		echo -e "\e[0;92m${LINE[1]//, /\\e[0;97m | \\e[0;92m}\e[0m"
 	}
 	status_Template
 }
@@ -73,6 +76,7 @@ status_P2Pool()
 		# p2pool is fully synced.
 		local LOG="$(tac $DIRECTORY/p2pool.log | grep -m1 "SideChain SYNCHRONIZED")"
 		# Get time of sync (read wall of text for reason)
+		local SYNC_DAY="$(echo "$LOG" | grep -o "..-..-..-")"
 		local SYNC_TIME="$(echo "$LOG" | grep -o "..:..:..")"
 
 		# Return error if P2Pool is not synced yet.
@@ -122,11 +126,14 @@ status_P2Pool()
 		# $SYNC_TIME_2 = 1 second after
 
 		# 22:22:22 -> 22 22 22
-		SYNC_SPACE=(${SYNC_TIME//:/ })
+		SYNC_SPACE=(${SYNC_DAY//-/ } ${SYNC_TIME//:/ })
 		# Back into string because it's easier to read
-        local SYNC_HOUR=${SYNC_SPACE[0]}
-        local SYNC_MINUTE=${SYNC_SPACE[1]}
-        local SYNC_SECOND=${SYNC_SPACE[2]}
+		local SYNC_YEAR=${SYNC_SPACE[0]}
+		local SYNC_MONTH=${SYNC_SPACE[1]}
+		local SYNC_DAY=${SYNC_SPACE[2]}
+        local SYNC_HOUR=${SYNC_SPACE[3]}
+        local SYNC_MINUTE=${SYNC_SPACE[4]}
+        local SYNC_SECOND=${SYNC_SPACE[5]}
 
         # Account for overflow (23:59:59 -> 00:00:00)
 		# Second
@@ -147,14 +154,30 @@ status_P2Pool()
         fi
 		# Hour
         if [[ $SYNC_HOUR = 24 ]]; then
-            SYNC_TIME_2="00:00:00"
-        else
-			# Our 2nd time we will use.
-            SYNC_TIME_2="${SYNC_HOUR}:${SYNC_MINUTE}:${SYNC_SECOND}"
-        fi
+            SYNC_HOUR=00
+            SYNC_DAY=$(echo "$SYNC_DAY" | awk '{print $1 + 1}')
+		fi
+		# Days
+		# Yes, I realize some months are less than 31 days.
+		# I'm not going write code to figure that out,
+		# the overflow reaching all the way here probably
+		# won't happen that often enough anyway :)
+		if [[ $SYNC_DAY = 32 ]]; then
+			SYNC_DAY=01
+			SYNC_MONTH=$(echo "$SYNC_MONTH" | awk '{print $1 + 1}')
+		fi
+		# Months
+		if [[ $SYNC_MONTH = 13 ]]; then
+			SYNC_MONTH=01
+			SYNC_YEAR=$(echo "$SYNC_YEAR" | awk '{print $1 + 1}')
+		fi
+
+		# Our 2nd date+time we will use.
+		SYNC_DAY_2="${SYNC_YEAR}-${SYNC_HOUR}-${SYNC_DAY}"
+		SYNC_TIME_2="${SYNC_HOUR}:${SYNC_MINUTE}:${SYNC_SECOND}"
 
 		# Delete all lines within 2 seconds of initial SYNC
-		LOG="$(echo "$LOG" | sed "/${SYNC_TIME}/d; /${SYNC_TIME_2}/d")"
+		LOG="$(echo "$LOG" | sed "/${SYNC_DAY} ${SYNC_TIME}/d; /${SYNC_DAY_2} ${SYNC_TIME_2}/d")"
 
 		# Okay, we're good.
 		# Hopefully we can parse properly now.

@@ -1,5 +1,4 @@
 # monero-bash
->a wrapper for Monero written in Bash, for Linux
 
 ![monero-bash](https://user-images.githubusercontent.com/101352116/183257273-6224fa0d-cb10-4a3f-bb5d-057df7c0e18e.jpg)
 
@@ -29,19 +28,19 @@ https://user-images.githubusercontent.com/101352116/184435540-6505d8d3-8cf0-4d72
 <details>
 <summary>Package manager</summary>
 
-https://user-images.githubusercontent.com/101352116/184435551-76fc5820-1845-4287-9e74-7380c84a7f34.mp4
+https://user-images.githubusercontent.com/101352116/184544224-4698de80-9818-41d5-89d3-a0a1b8dc7add.mp4
 </details>
 
 <details>
 <summary>P2Pool + XMRig mining</summary>
 
-https://user-images.githubusercontent.com/101352116/184435572-8555b85a-9d17-459b-8ff9-f88c5d310d81.mp4
+https://user-images.githubusercontent.com/101352116/184544237-87b2c2ee-9f32-48d4-83cd-85138b2a2146.mp4
 </details>
 
 <details>
 <summary>Background mining with systemd</summary>
 
-https://user-images.githubusercontent.com/101352116/184435585-e2e7de20-ab27-4b17-a88e-ca29f586a6fd.mp4
+https://user-images.githubusercontent.com/101352116/184544242-36a199fc-ae05-4174-a820-b33246efda1d.mp4
 </details>
 
 [This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)

@@ -11,10 +11,15 @@
 
 watch_Template()
 {
+	# tput lines = available lines detected terminal
+	# divided by 2 to account for line wraps.
+	# 1 line that line wraps still counts as 1 line,
+	# this makes it so bottom messages won't be seen.
+	local LINES=$(($(tput lines) / 2))
 	if [[ "$SERVICE" = "monero-bash-xmrig.service" ]]; then
-		sudo watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
+		sudo watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $LINES"
 	else
-		watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $(tput lines)"
+		watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $LINES"
 	fi
 }
 
