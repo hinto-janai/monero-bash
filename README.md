@@ -211,7 +211,7 @@ help                                  show this help message
 
 ---
 
-[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download)
+[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download.sh)
 
 * Monero [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
 * monero-bash [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
@@ -222,7 +222,7 @@ VPN/Tor connections are often rate-limited by the API, if so, monero-bash will f
 
 Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.txt`](https://www.getmonero.org/downloads/hashes.txt)
 
-[Every other package hash is found on its GitHub page.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify)
+[Every other package hash is found on its GitHub page.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify.sh)
 
 ---
 
@@ -233,7 +233,7 @@ Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.t
 
 ---
 
-Keys are pre-downloaded in: `gpg/` [**HOWEVER, they are checked against the online versions before getting imported.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg) If a difference is found, you'll be dropped into a selection menu to pick which key to trust. If this happens, please search around to see what caused the difference.
+Keys are pre-downloaded in: `gpg/` [**HOWEVER, they are checked against the online versions before getting imported.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg.sh) If a difference is found, you'll be dropped into a selection menu to pick which key to trust. If this happens, please search around to see what caused the difference.
 
 * monero-bash `21958EE945980282FCB849C8D7483F6CA27D1B1D` -> [hinto-janaiyo](https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/main/pgp/hinto-janaiyo.asc)
 * Monero `81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92` -> [binaryFate](https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)

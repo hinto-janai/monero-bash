@@ -27,51 +27,54 @@
 # Copyright (c) 2014-2022, The Monero Project
 
 
-
 # This is the [main] script for [monero-bash].
 # It REQUIRES and takes a lot of safety precautions
 # to make sure everything found in `src` exists.
 
-# | File/Folder | Purpose                                    |
-# |-------------|--------------------------------------------|
-# | src/func/   | all the functions [monero-bash] uses       |
-# | src/txt/    | text files to store long-term on disk      |
-# | src/source  | master source file that sources everything |
-# | src/debug   | debugging functions                        |
-# | src/var     | frequently used GLOBAL variables           |
+# | File/Folder   | Purpose                                    |
+# |---------------|--------------------------------------------|
+# | src/func/     | all the functions [monero-bash] uses       |
+# | src/txt/      | text files to store long-term on disk      |
+# | src/source.sh | master source file that sources everything |
+# | src/debug.sh  | debugging functions                        |
+# | src/var.sh    | frequently used GLOBAL variables           |
 
 # [monero-bash] order of operations
 # ---------------------------------
 # 1. User inputs [monero-bash <something>]
-# 2. [monero-bash] sources -> [src/source]
-# 3. [source] sources -> EVERYTHING (functions, state, user config, etc)
+# 2. [monero-bash] sources -> [src/source.sh]
+# 3. [source.sh] sources -> EVERYTHING (functions, state, user config, etc)
 # 4. A whole bunch of safety checks
 # 5. Parse & execute user input (update, wallet, etc)
 
-
-
 #-------------------------------------------------------------------------------------------- BEGIN MAIN
-# installDirectory = where ever /monero-bash/ is
+# installDirectory = whereever /monero-bash/ is
 scriptPath="$(realpath $0)"
 installDirectory="$(dirname "$scriptPath")"
 
-# check if script is in monero-bash folder
+# Check if script is in [monero-bash] folder
 if [[ $installDirectory != *"/monero-bash" ]]; then
 	printf "\033[1;31mExecuting monero-bash while it isn't in the /monero-bash/ folder is DANGEROUS\n"
 	printf "\033[0;31mExiting for safety...\n"
 	exit
 fi
 
-# source files, exit on failure
+# Make the root reference folder [/usr/local/share/monero-bash]
 cd "$installDirectory"
-source "$installDirectory/src/source"
-[[ $? != "0" ]]&& printf "\033[1;31mMONERO BASH: SOURCING ERROR\n" && exit
+
+# Source files, exit on failure
+if ! source "$installDirectory/src/source.sh"; then
+	printf "\033[1;31mMONERO BASH: SOURCING ERROR\n"
+	exit 1
+fi
+
+# Exit on any source failure
 case true in
-	$varMissing) printf "\033[1;31mMONERO BASH: Variables not sourced\n" ;exit;;
-	$funcMissing) printf "\033[1;31mMONERO BASH: Functions not sourced\n" ;exit;;
-	$stateMissing) printf "\033[1;31mMONERO BASH: state file missing\n" ;exit;;
-	$debugMissing) printf "\033[1;31mMONERO BASH: debug file missing\n" ;exit;;
-	$hashlistMissing) printf "\033[1;31mMONERO BASH: hashlist file missing\n" ;exit;;
+	$varMissing) printf "\033[1;31mMONERO BASH: Variables not sourced\n"; exit 1;;
+	$funcMissing) printf "\033[1;31mMONERO BASH: Functions not sourced\n"; exit 1;;
+	$stateMissing) printf "\033[1;31mMONERO BASH: state file missing\n"; exit 1;;
+	$debugMissing) printf "\033[1;31mMONERO BASH: debug file missing\n"; exit 1;;
+	$hashlistMissing) printf "\033[1;31mMONERO BASH: hashlist file missing\n"; exit 1;;
 esac
 
 # DEBUG COMMAND - read /src/debug for more info
@@ -83,12 +86,12 @@ if [[ $1 = "DEBUG_04e3be9" ]]; then
 	exit
 fi
 
-# safety checks
+# Safety checks
 safety_Root
 safety::gnu_linux
 safety::bash
 
-# no stdin support
+# No stdin support
 if [[ -p /dev/stdin ]]; then
 	print_Error_Exit "no stdin/pipe support!"
 fi
@@ -99,7 +102,7 @@ if [[ $FIRST_TIME = "true" ]]; then
 	exit
 fi
 
-# even more safety checks
+# Even more safety checks
 if [[ $FIRST_TIME != "true" ]]; then
 	safety_User
 	safety_DotMoneroBash
@@ -109,7 +112,7 @@ if [[ $FIRST_TIME != "true" ]]; then
 	missing_systemd_All
 fi
 
-# interactive/option check
+# Interactive/option check
 [[ $1 = "" ]]&& interactive="true"
 [[ $1 != "" ]]&& options="true"
 
