@@ -69,7 +69,7 @@ missing_XMRig()
 missing_Wallets()
 {
 	if [[ ! -d "$wallets" ]]; then
-		print_Error "$wallets missing!"
+		print_Warn "$wallets missing!"
 		echo "Creating wallet folder..."
 		mkdir "$wallets"
 	fi
@@ -78,7 +78,7 @@ missing_Wallets()
 missing_config_Folder()
 {
 	if [[ ! -d "$config" ]]; then
-		print_Error "$config missing!"
+		print_Warn "$config missing!"
 		echo "Creating default config folder..."
 		build_Config
 		source "$config/monero-bash.conf" &>/dev/null
@@ -88,7 +88,7 @@ missing_config_Folder()
 missing_config_Template()
 {
 	if [[ ! -f "$config/$conf" ]]; then
-		print_Error "$conf missing!"
+		print_Warn "$conf missing!"
 		echo "Creating default $conf..."
 		sudo -u "$USER" cp "$installDirectory/config/$conf" "$config/$conf"
 	fi
@@ -139,7 +139,7 @@ missing_systemd_Template()
 {
 	# if pkg is installed but no service file:
 	if [[ "$NAME_VER" != "" && ! -f $sysd/$SERVICE ]]; then
-		print_Error "${SERVICE} missing!"
+		print_Warn "${SERVICE} missing!"
 		echo "Creating default..."
 		systemd_"$NAME_FUNC"
 	fi

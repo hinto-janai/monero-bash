@@ -145,6 +145,12 @@ print_Error()
 	$iwhite; echo "$1"; $off
 }
 
+print_Warn()
+{
+	$byellow; printf "[monero-bash warning] "
+	$iwhite; echo "$1"; $off
+}
+
 print_Error_Exit()
 {
 	$bred; printf "[monero-bash error] "

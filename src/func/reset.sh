@@ -78,5 +78,5 @@ reset_Template()
 			PRODUCE_HASH_LIST
 			;;
 	esac
-	$off; echo "Reset complete"
+	$bgreen; echo "Reset complete"; $off
 }

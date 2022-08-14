@@ -94,9 +94,6 @@ status_P2Pool()
 	define_P2Pool
 	EXTRA_STATS()
 	{
-		$bwhite; printf "Wallet        | "
-		$white; echo "${WALLET:0:6}...${WALLET: -6}"
-
 		# Get p2pool.log into memory.
 		# Also ONLY look for logs after
 		# p2pool is fully synced.
@@ -104,19 +101,33 @@ status_P2Pool()
 		# Get time of sync (read wall of text for reason)
 		local SYNC_DAY="$(echo "$LOG" | grep -o "..-..-..-")"
 		local SYNC_TIME="$(echo "$LOG" | grep -o "..:..:..")"
+		local SYNC_1ST="$SYNC_DAY ${SYNC_TIME}"
 
 		# Return error if P2Pool is not synced yet.
 		if [[ $LOG != *"SideChain SYNCHRONIZED"* ]]; then
-			$bred; printf "%s\n" "Warning       | P2Pool is not fully synced yet"
-			return 1
-		# Return error if ZMQ error message is found
-		elif ZMQ_LOG=$(echo "$LOG" | grep -o "ZMQReader failed to connect to.*$"); then
-			$bred; printf "%s\n" "Warning       | P2Pool failed to connect to [monerod]'s ZMQ server!"
-			$bred; printf "%s\n" "Warning       | "
-			return 1
+			# Return RPC error message if found
+			if RPC_LOG=$(tac $DIRECTORY/p2pool.log | grep -o -m1 "2.*get_info RPC request failed.*$"); then
+				printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "$RPC_LOG"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [monerod]'s RPC server!"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Does [DAEMON_RPC] in [monero-bash.conf] match [rpc-bind-port] in [monerod.conf]?"
+				return 1
+			# Return ZMQ error message if found
+			elif ZMQ_LOG=$(tac $DIRECTORY/p2pool.log | grep -o -m1 "2.*ZMQReader failed to connect to.*$"); then
+				printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "$ZMQ_LOG"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [monerod]'s ZMQ server!"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Does [DAEMON_ZMQ] in [monero-bash.conf] match [zmq-pub] in [monerod.conf]?"
+				return 1
+			# Else, normal error
+			else
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool is not fully synced yet!"
+				return 1
+			fi
 		else
 			LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"
 		fi
+
+		$bwhite; printf "Wallet        | "
+		$white; echo "${WALLET:0:6}...${WALLET: -6}"
 
 		# P2POOL ALLOWING MINER CONNECTIONS DURING SYNC CAUSES FAKE STATS
 		# ---------------------------------------------------------------
@@ -203,12 +214,11 @@ status_P2Pool()
 			SYNC_YEAR=$(echo "$SYNC_YEAR" | awk '{print $1 + 1}')
 		fi
 
-		# Our 2nd date+time we will use.
-		SYNC_DAY_2="${SYNC_YEAR}-${SYNC_HOUR}-${SYNC_DAY}"
-		SYNC_TIME_2="${SYNC_HOUR}:${SYNC_MINUTE}:${SYNC_SECOND}"
+		# Our 2nd timetamp
+		SYNC_2ND="${SYNC_YEAR}-${SYNC_HOUR}-${SYNC_DAY} ${SYNC_HOUR}:${SYNC_MINUTE}:${SYNC_SECOND}"
 
 		# Delete all lines within 2 seconds of initial SYNC
-		LOG="$(echo "$LOG" | sed "/${SYNC_DAY} ${SYNC_TIME}/d; /${SYNC_DAY_2} ${SYNC_TIME_2}/d")"
+		LOG="$(echo "$LOG" | sed "/${SYNC_1ST}/d; /${SYNC_2ND}/d")"
 
 		# Okay, we're good.
 		# Hopefully we can parse properly now.

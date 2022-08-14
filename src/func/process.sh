@@ -38,13 +38,13 @@ process_Start_Template()
 
 	# CONFIGURE P2POOL (only once)
 	if [[ $MINE_UNCONFIGURED = "true" && $PROCESS = "p2pool" ]]; then
-		printf "%s\n"
-			"First time [P2Pool] detected!"
+		printf "%s\n%s" \
+			"First time [P2Pool] detected!" \
 			"Would you like to enter configure mode? (Y/n) "
 		local YES_NO
 		read YES_NO
 		case $YES_NO in
-			y|Y|yes|Yes|YES|"") mine_Config;;
+			y|Y|yes|Yes|YES|"") mine_Config; exit;;
 			*) echo "Skipping...";;
 		esac
 	fi
@@ -120,7 +120,7 @@ process_Stop()
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
 				echo
-				print_Error "[${PROCESS}] not responding, killing..."
+				print_Warn "[${PROCESS}] not responding, killing..."
 				process_Kill
 			fi
 			if pgrep $PROCESS &>/dev/null ;then
@@ -159,28 +159,28 @@ process_Full()
 				:
 			# else, check for [monerod.conf] RPC port...
 			elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
-				DAEMON_RPC=${DAEMON_RPC/*=}
-				print_Error "[DAEMON_RPC] not found in [monero-bash.conf]"
-				print_Error "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+				DAEMON_RPC=${DAEMON_RPC//*=}
+				print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+				print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
 			# else, default.
 			else
 				DAEMON_RPC=18081
-				print_Error "[DAEMON_RPC] not found in [monero-bash.conf]"
-				print_Error "[rpc-bind-port] not found in [monerod.conf]"
-				print_Error "Falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
+				print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+				print_Warn "[rpc-bind-port] not found in [monerod.conf]"
+				print_Warn "Falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
 			fi
 			# same for ZMQ
 			if [[ $DAEMON_ZMQ ]]; then
 				:
 			elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
-				DAEMON_ZMQ=${DAEMON_ZMQ/*=}
-				print_Error "[DAEMON_ZMQ] not found in [monero-bash.conf]"
-				print_Error "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+				DAEMON_ZMQ=${DAEMON_ZMQ//*:}
+				print_Warn "[DAEMON_ZMQ] not found in [monero-bash.conf]"
+				print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
 			else
 				DAEMON_ZMQ=18083
-				print_Error "[DAEMON_RPC] not found in [monero-bash.conf]"
-				print_Error "[zmq-pub] not found in [monerod.conf]"
-				print_Error "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
+				print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+				print_Warn "[zmq-pub] not found in [monerod.conf]"
+				print_Warn "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
 			fi
 			# start
 			"$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet "$WALLET" --loglevel "$LOG_LEVEL"

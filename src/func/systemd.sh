@@ -79,7 +79,7 @@ systemd_Edit()
 	fi
 	prompt_Sudo;error_Sudo
 	if [[ -z $EDITOR ]]; then
-		print_Error "No default \$EDITOR found!"
+		print_Warn "No default \$EDITOR found!"
 		$white; printf "Pick editor [nano, vim, emacs, etc] (default=nano): "
 		read EDITOR
 		[[ -z $EDITOR || $EDITOR = "default" ]] && EDITOR="nano"
@@ -112,12 +112,41 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	# mini
-	if [[ $MINI = true ]]; then
-		local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --rpc-port \$DAEMON_RPC --zmq-port \$DAEMON_ZMQ --wallet \$WALLET --loglevel \$LOG_LEVEL --mini"
+	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+	# if [monero-bash.conf] $DAEMON_RPC exists...
+	if [[ $DAEMON_RPC ]]; then
+		COMMAND="$COMMAND --rpc-port \$DAEMON_RPC"
+	# else, check for [monerod.conf] RPC port...
+	elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
+		DAEMON_RPC=${DAEMON_RPC//*=}
+		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
+		print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+	# else, default.
 	else
-		local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --rpc-port \$DAEMON_RPC --zmq-port \$DAEMON_ZMQ --wallet \$WALLET --loglevel \$LOG_LEVEL"
+		DAEMON_RPC=18081
+		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
+		print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+		print_Warn "[rpc-bind-port] not found in [monerod.conf]"
+		print_Warn "Falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
 	fi
+	# same for ZMQ
+	if [[ $DAEMON_ZMQ ]]; then
+		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
+	elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
+		DAEMON_ZMQ=${DAEMON_ZMQ//*:}
+		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
+		print_Warn "[DAEMON_ZMQ] not found in [monero-bash.conf]"
+		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+	else
+		DAEMON_ZMQ=18083
+		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
+		print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+		print_Warn "[zmq-pub] not found in [monerod.conf]"
+		print_Warn "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
+	fi
+	# mini
+	[[ $MINI = true ]] && COMMAND="$COMMAND --mini"
 	systemd_Template
 }
 

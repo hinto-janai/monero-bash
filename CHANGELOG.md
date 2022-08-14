@@ -4,12 +4,12 @@
 [**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)  
 **You can also use `monero-bash reset <process>` to reset your configs to the new default.**
 * **Config:** All config files now contain many more options, with helpful comments
-* **Config:** Different `RPC/ZMQ` ports can be configured for P2Pool in `monero-bash.conf`. `monerod.conf` will be used as a fallback, and P2Pool's default ports will be used as a double fallback. `systemd` usage of P2Pool will always use ports found in `monero-bash.conf`, however.
+* **P2Pool:** Different `RPC/ZMQ` ports can be configured for in `monero-bash.conf`. Ports found in `monerod.conf` will be used as a fallback, and P2Pool's default ports will be used as a double fallback
 * **systemd:** New command to auto-start processes on boot: `monero-bash enable/disable <process>`
 * **Install:** monero-bash install will prompt for `mb` symlink creation for convenience: `monero-bash <command>` -> `mb <command>`
 * **Package manager:** Hash and PGP sign of packages will be shown: `[8de5...fcc1] HASH OK [9AC4...4409] SIGN OK`
 * **Wallet:** Typed in seed during recovery mode is now visible and cleared after confirming
-* **Status:** Indicates if P2Pool is synced or not
+* **Status:** Indicates if P2Pool encountered an error (Not synced, RPC, ZMQ)
 * **Misc:** General UI changes
 
 ## Fixes
