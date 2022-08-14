@@ -40,7 +40,23 @@ status_Template()
 status_Monero()
 {
 	define_Monero
-	EXTRA_STATS(){ $binMonero/monerod status; }
+	EXTRA_STATS()
+	{
+		# Get into memory so we can split it
+		# (the regular output is ugly long)
+		local STATUS="$($binMonero/monerod status)"
+		# Split per newline
+		local IFS=$'\n' LINE l=0
+		for i in $STATUS; do
+			LINE[$l]="$i"
+			((l++))
+		done
+		# This removes the ANSI color codes in monerod output
+		LINE[0]="$(echo "${LINE[0]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g')"
+		# Split this line into 2 and replace ',' with '|'
+		LINE[1]="$(echo "${LINE[1]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g; s/, v/\nv/; s/, / | /g')"
+		printf "\e[0;96m%s\n\e[0;92m%s\e[0m\n" "${LINE[0]}" "${LINE[1]}"
+	}
 	status_Template
 }
 
@@ -61,7 +77,7 @@ status_P2Pool()
 
 		# Return error if P2Pool is not synced yet.
 		if [[ $LOG != *"SideChain SYNCHRONIZED"* ]]; then
-			$bred; printf "%s\n\n" "Warning       | P2Pool is not fully synced yet"
+			$bred; printf "%s\n" "Warning       | P2Pool is not fully synced yet"
 			return 1
 		else
 			LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"

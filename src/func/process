@@ -90,7 +90,7 @@ process_Stop()
 {
 	COMMANDS()
 	{
-		$ired; echo "Stopping [${PROCESS}] gracefully..." ;$off
+		$bred; echo "Stopping [${PROCESS}] gracefully..." ;$off
 		sudo systemctl stop "$SERVICE" &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then

@@ -133,7 +133,8 @@ if [[ $interactive = "true" ]]; then
 			# ELSE, START WALLET NORMALLY IF IT EXISTS
 			elif [[ $walletSelection = $i ]]; then
 				$white; printf "Password: "
-				read -s walletPassword && echo
+				read -s walletPassword
+				printf "\n\n"
 				wallet_Start
 			fi
 		done
