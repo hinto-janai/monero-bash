@@ -47,3 +47,6 @@ fi
 
 # monero-bash config
 source "$config/monero-bash.conf" 2>/dev/null || configMissing="true"
+
+# p2pool config
+source "$config/p2pool.conf" 2>/dev/null || configMissing="true"

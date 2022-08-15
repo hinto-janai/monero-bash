@@ -140,9 +140,10 @@ monero-bash comes with pre-configured/optimized configuration files:
 * [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)
 * [`monerod.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf)
 * [`monero-wallet-cli.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf)
+* [`p2pool.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/p2pool.conf)
 * [`xmrig.json`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/xmrig.json)
 
-P2Pool does not currently support config files, so its options are found in: `monero-bash.conf`.You can also use the interactive `monero-bash config` command to quickly setup P2Pool+XMRig mining.
+P2Pool currently does not have native support for config files, so monero-bash will use its self-created `p2pool.conf`. On the other hand, `p2pool.json` is for adjusting P2Pool side-chain parameters, you most likely shouldn't touch this.
 
 ---
 

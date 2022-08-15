@@ -52,7 +52,7 @@ After=network.target
 User=$USER
 Group=$USER
 Type=simple
-EnvironmentFile=$config/monero-bash.conf
+$ENV_FILE
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
 Restart=always
@@ -113,20 +113,20 @@ systemd_P2Pool()
 {
 	define_P2Pool
 	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
-	# if [monero-bash.conf] $DAEMON_RPC exists...
+	# if [p2pool.conf] $DAEMON_RPC exists...
 	if [[ $DAEMON_RPC ]]; then
 		COMMAND="$COMMAND --rpc-port \$DAEMON_RPC"
 	# else, check for [monerod.conf] RPC port...
 	elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
 		DAEMON_RPC=${DAEMON_RPC//*=}
 		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
-		print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
 		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
 	# else, default.
 	else
 		DAEMON_RPC=18081
 		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
-		print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
 		print_Warn "[rpc-bind-port] not found in [monerod.conf]"
 		print_Warn "Falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
 	fi
@@ -136,17 +136,31 @@ systemd_P2Pool()
 	elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
 		DAEMON_ZMQ=${DAEMON_ZMQ//*:}
 		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
-		print_Warn "[DAEMON_ZMQ] not found in [monero-bash.conf]"
-		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+		print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf]"
+		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_ZMQ]"
 	else
 		DAEMON_ZMQ=18083
 		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
-		print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
 		print_Warn "[zmq-pub] not found in [monerod.conf]"
 		print_Warn "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
 	fi
+	# check for out/in peers
+	if [[ -z $OUT_PEERS ]]; then
+		OUT_PEERS=10
+		COMMAND="$COMMAND --out-peers $OUT_PEERS"
+		print_Warn "[OUT_PEERS] not found in [p2pool.conf]"
+		print_Warn "Falling back to [P2Pool]'s default: [$OUT_PEERS]"
+	fi
+	if [[ -z $IN_PEERS ]]; then
+		IN_PEERS=10
+		COMMAND="$COMMAND --out-peers $OUT_PEERS"
+		print_Warn "[IN_PEERS] not found in [p2pool.conf]"
+		print_Warn "Falling back to [P2Pool]'s default: [$IN_PEERS]"
+	fi
 	# mini
 	[[ $MINI = true ]] && COMMAND="$COMMAND --mini"
+	local ENV_FILE="EnvironmentFile=$config/p2pool.conf"
 	systemd_Template
 }
 

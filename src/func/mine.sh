@@ -86,7 +86,7 @@ mine_Config()
     $bred; echo "#-----------------------------------------#"
 
 	# wallet + daemon ip + pool ip + mini config
-	unset -v WALLET_INTERACTIVE IP RPC ZMQ POOL MINI LOG
+	unset -v WALLET_INTERACTIVE IP RPC ZMQ POOL MINI LOG OUT_PEERS IN_PEERS
 	$bwhite; printf "WALLET ADDRESS: " ;$off
 	read -r WALLET_INTERACTIVE
 	echo
@@ -98,6 +98,10 @@ mine_Config()
 	read -r RPC
 	$bwhite; printf "MONERO ZMQ PORT [default: 18083]: " ;$off
 	read -r ZMQ
+	$bwhite; printf "P2POOL OUT PEERS (10-1000) [default: 10]: " ;$off
+	read -r OUT_PEERS
+	$bwhite; printf "P2POOL IN PEERS (10-1000) [default: 10]: " ;$off
+	read -r IN_PEERS
 	$bwhite; printf "POOL IP [default: 127.0.0.1:3333]: " ;$off
 	read -r POOL
 	$bwhite; printf "P2Pool Log Level (0-6) [default - 1]: " ;$off
@@ -123,6 +127,14 @@ mine_Config()
 	[[ $ZMQ ]] || ZMQ="18083"
 	echo "$ZMQ"
 
+	$bblue; printf "P2POOL OUT PEERS | " ;$off
+	[[ $IN_PEERS ]] || IN_PEERS="10"
+	echo "$IN_PEERS"
+
+	$bblue; printf "P2POOL IN PEERS  | " ;$off
+	[[ $OUT_PEERS ]] || OUT_PEERS="10"
+	echo "$OUT_PEERS"
+
 	$bblue; printf "POOL IP          | " ;$off
 	[[ $POOL ]] || POOL="127.0.0.1:3333"
 	echo "$POOL"
@@ -142,17 +154,19 @@ mine_Config()
 		safety_HashList
 		trap "" 1 2 3 6 15
 
-		# monero-bash.conf
-		echo "Editing monero-bash.conf..."
+		# p2pool.conf
+		echo "Editing [p2pool.conf]..."
 		sudo -u "$USER" sed \
-				-i -e "s/^DAEMON_IP=.*$/DAEMON_IP=${IP}/" "$config/monero-bash.conf" \
-				-i -e "s/^DAEMON_RPC=.*$/DAEMON_RPC=${RPC}/" "$config/monero-bash.conf" \
-				-i -e "s/^DAEMON_ZMQ=.*$/DAEMON_ZMQ=${ZMQ}/" "$config/monero-bash.conf" \
-				-i -e "s/^WALLET=.*$/WALLET=${WALLET_INTERACTIVE}/" "$config/monero-bash.conf" \
-				-i -e "s/^LOG_LEVEL=.*$/LOG_LEVEL=${LOG}/" "$config/monero-bash.conf"
+				-i -e "s/^DAEMON_IP=.*$/DAEMON_IP=${IP}/" "$config/p2pool.conf" \
+				-i -e "s/^DAEMON_RPC=.*$/DAEMON_RPC=${RPC}/" "$config/p2pool.conf" \
+				-i -e "s/^DAEMON_ZMQ=.*$/DAEMON_ZMQ=${ZMQ}/" "$config/p2pool.conf" \
+				-i -e "s/^OUT_PEERS=.*$/OUT_PEERS=${OUT_PEERS}/" "$config/p2pool.conf" \
+				-i -e "s/^IN_PEERS=.*$/IN_PEERS=${IN_PEERS}/" "$config/p2pool.conf" \
+				-i -e "s/^WALLET=.*$/WALLET=${WALLET_INTERACTIVE}/" "$config/p2pool.conf" \
+				-i -e "s/^LOG_LEVEL=.*$/LOG_LEVEL=${LOG}/" "$config/p2pool.conf"
 
 		# p2pool.json
-		echo "Editing p2pool.json..."
+		echo "Editing [p2pool.json]..."
 		if [[ $MINI = true ]]; then
 			sudo -u "$USER" sed -i "s@\"name\":.*@\"name\": \"mini\",@" "$p2poolConf"
 		else
@@ -161,7 +175,7 @@ mine_Config()
 		systemd_P2Pool
 
 		# xmrig.json
-		echo "Editing xmrig.json..."
+		echo "Editing [xmrig.json]..."
 		sudo -u "$USER" sed \
 			-i -e "s@\"user\":.*@\"user\": \"${WALLET_INTERACTIVE}\",@" "$xmrigConf" \
 			-i -e "s@\"url\":.*@\"url\": \"${POOL}\",@" "$xmrigConf"

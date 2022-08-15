@@ -154,36 +154,49 @@ process_Full()
 		p2pool)
 		COMMANDS() {
 			cd "$binP2Pool"
-			# if [monero-bash.conf] $DAEMON_RPC exists...
+			# if [p2pool.conf] $DAEMON_RPC exists...
 			if [[ $DAEMON_RPC ]]; then
 				:
 			# else, check for [monerod.conf] RPC port...
-			elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
+			elif DAEMON_RPC=$(grep "^rpc-bind-port=[0-9]\+$" "$config/monerod.conf"); then
 				DAEMON_RPC=${DAEMON_RPC//*=}
-				print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+				print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
 				print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
 			# else, default.
 			else
 				DAEMON_RPC=18081
-				print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
+				print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
 				print_Warn "[rpc-bind-port] not found in [monerod.conf]"
 				print_Warn "Falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
 			fi
 			# same for ZMQ
 			if [[ $DAEMON_ZMQ ]]; then
 				:
-			elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
+			# else, check for [monerod.conf] ZMQ port...
+			elif DAEMON_ZMQ=$(grep "^zmq-pub=.*:[0-9]\+$" "$config/monerod.conf"); then
 				DAEMON_ZMQ=${DAEMON_ZMQ//*:}
-				print_Warn "[DAEMON_ZMQ] not found in [monero-bash.conf]"
-				print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+				print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf]"
+				print_Warn "Falling back to [monerod.conf]'s [zmq-pub=$DAEMON_ZMQ]"
+			# else, default.
 			else
-				DAEMON_ZMQ=18083
-				print_Warn "[DAEMON_RPC] not found in [monero-bash.conf]"
-				print_Warn "[zmq-pub] not found in [monerod.conf]"
+				DAEMON_ZMQ=18081
+				print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf]"
+				print_Warn "[rpc-bind-port] not found in [monerod.conf]"
 				print_Warn "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
 			fi
+			# check for out/in peers
+			if [[ -z $OUT_PEERS ]]; then
+				OUT_PEERS=10
+				print_Warn "[OUT_PEERS] not found in [p2pool.conf]"
+				print_Warn "Falling back to [P2Pool]'s default: [$OUT_PEERS]"
+			fi
+			if [[ -z $IN_PEERS ]]; then
+				IN_PEERS=10
+				print_Warn "[IN_PEERS] not found in [p2pool.conf]"
+				print_Warn "Falling back to [P2Pool]'s default: [$IN_PEERS]"
+			fi
 			# start
-			"$binP2Pool/p2pool" --config $p2poolConf --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet "$WALLET" --loglevel "$LOG_LEVEL"
+			"$binP2Pool/p2pool" --config $p2poolConf --out-peers $OUT_PEERS --in-peers $IN_PEERS --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet "$WALLET" --loglevel "$LOG_LEVEL"
 		}
 		;;
 	esac

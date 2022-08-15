@@ -47,6 +47,27 @@
 # 4. A whole bunch of safety checks
 # 5. Parse & execute user input (update, wallet, etc)
 
+# 2022-08-14 [v1.8.0]
+# -------------------
+# There's a lot of baggage and bad code/design
+# in [monero-bash] for backwards compatibility.
+# You can still install [monero-bash v1.0.0] and
+# upgrade directly to the newest version...!
+#
+# But it's also because I didn't think ahead.
+# Stuff like:
+#     - confusing paths
+#     - bad function names
+#     - bad variable names
+#     - over-complicated functions
+#     - files being un-upgradable (state/configs)
+#
+# Since [v2.0.0] is planned to be a hard-fork
+# and incompatible with [v1.x.x] versions, I'll
+# just continue to maintain and expand on the
+# bad [v1.x.x] code instead of rebuilding it all.
+# That's what [v2.0.0] will be for :)
+
 #-------------------------------------------------------------------------------------------- BEGIN MAIN
 # installDirectory = whereever /monero-bash/ is
 scriptPath="$(realpath $0)"

@@ -3,20 +3,23 @@
 ## Updates
 [**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)  
 **You can also use `monero-bash reset <process>` to reset your configs to the new default.**
+* **Config:** New config file: `p2pool.conf`, old options found in `monero-bash.conf` will be used as a fallback, new options are:
+	- `Out/In peers` P2Pool's default `10/10` will be used as fallback
+	- `RPC/ZMQ` Ports in `monerod.conf` and P2Pool's default ports `18081/18083` will be used as fallbacks
 * **Config:** All config files now contain many more advanced options (with helpful comments)
-* **P2Pool:** Different `RPC/ZMQ` ports can be configured in `monero-bash.conf`. Ports found in `monerod.conf` will be used as a fallback, and P2Pool's default ports will be used as a double fallback
-* **Status:** New P2Pool stats: `Total payouts` & `XMR received`. More accurate as well: `1.00` -> `1.0000000` 
+* **Status:** New P2Pool stats: `Total payouts` & `XMR received`
+* **Status:** P2Pool stat precision increased: `1.00` -> `1.0000000`
 * **Status:** Indicates if P2Pool encountered an error (Not synced, RPC, ZMQ)
 * **systemd:** New command to auto-start processes on boot: `monero-bash enable/disable <process>`
-* **Install:** Fresh monero-bash installs will prompt for `mb` symlink creation for convenience: `monero-bash <command>` -> `mb <command>`
-* **Package manager:** Hash and PGP sign of packages will be shown: `[8de5...fcc1] HASH OK [9AC4...4409] SIGN OK`
+* **Package manager:** Package hash & PGP will be shown: `[8de5...fcc1] HASH OK [9AC4...4409] SIGN OK`
+* **Install:** Fresh monero-bash installs will prompt for `mb` symlink creation: `monero-bash <command>` -> `mb <command>`
 * **Wallet:** Typed in seed during recovery mode is now visible and cleared after confirming
 * **Misc:** General UI changes
 
 ## Fixes
-* **Status:** Invalid P2Pool shares found before being fully synced will be excluded
+* **Status:** P2Pool shares found before being synced will be excluded
 * **systemd:** `monero-bash restart <process>` uses systemd's `restart` instead of `stop` -> `start`
-* **Git:** Branches have been cleaned & squashed: `709` -> `496` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
+* **Git:** Branches have been cleaned & squashed: `709` -> `497` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
 
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**

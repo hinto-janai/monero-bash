@@ -88,9 +88,9 @@ missing_config_Folder()
 missing_config_Template()
 {
 	if [[ ! -f "$config/$conf" ]]; then
-		print_Warn "$conf missing!"
-		echo "Creating default $conf..."
-		sudo -u "$USER" cp "$installDirectory/config/$conf" "$config/$conf"
+		print_Warn "[${conf}] missing!"
+		echo "Creating default [${conf}]..."
+		cp "$installDirectory/config/$conf" "$config/$conf"
 	fi
 }
 
@@ -124,6 +124,8 @@ missing_config_XMRig()
 missing_config_P2Pool()
 {
 	local conf="p2pool.json"
+	missing_config_Template
+	local conf="p2pool.conf"
 	missing_config_Template
 }
 
