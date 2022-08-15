@@ -232,8 +232,10 @@ status_P2Pool()
 
 		# SHARE OUTPUT VARIABLE
 		local shareOutput="$(echo "$LOG" | grep "SHARE FOUND")"
+		# PAYOUT COLUMN
+		local payoutColumn="$(echo "$LOG" | grep -o "[0-9]\+.[0-9]\+ XMR")"
 
-		# SHARES PER HOUR
+		# shares/hour calculation
 		if [[ -z $shareOutput ]]; then
 			local sharesFound="0"
 		else
@@ -243,29 +245,45 @@ status_P2Pool()
 		local processHours="$(echo "$processUnixTime" "60" "60" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 / $3}'))"
 		local processHours="$(($processUnixTime / 60 / 60))"
 		[[ $processHours = 0 ]] && processHours="1"
-
-		# SHARES PER DAY
+		# shares/day calculation
 		if [[ $processHours -lt 24 ]]; then
 			local processDays="1"
 		else
 			local processDays="$(echo "$processHours" "24" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
 		fi
+		# payout/hour calculation
+		if [[ $payoutColumn ]]; then
+			local payoutTotal="$(echo "$payoutColumn" | awk -M -v PREC=200 '{SUM+=$1}END{printf "%.7f\n", SUM }')"
+			local payoutPerHour="$(echo "$payoutTotal" "$processHours" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
+			local payoutPerDay="$(echo "$payoutTotal" "$processDays" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
+		else
+			local payoutTotal=0
+			local payoutPerHour=0.0000000
+			local payoutPerDay=0.0000000
+		fi
 
-		# SHARES/hour & SHARES/day
+		# SHARES/hour & SHARES/day final variable
 		local sharesPerHour="$(echo "$sharesFound" "$processHours" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
 		local sharesPerDay="$(echo "$sharesFound" "$processDays" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
 
-		# SHARES FOUND
-		$bpurple; printf "Shares found  | "
-		$off; echo "$sharesFound ($sharesPerHour per hour / $sharesPerDay per day)"
 
-		# LATEST SHARE
+		# print SHARES FOUND
+		$bpurple; printf "Shares found  | "
+		$iwhite; echo -n "$sharesFound shares "
+		$off; echo "($sharesPerHour per hour / $sharesPerDay per day)"
+
+		# print PAYOUTS FOUND
+		$bcyan; printf "Payout total  | "
+		$iwhite; echo -n "$payoutTotal XMR "
+		$off; echo "($payoutPerHour per hour / $payoutPerDay per day)"
+
+		# print LATEST SHARE
 		$bblue; printf "Latest share  | "
 		$white; echo "$(echo "$shareOutput" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //')"
 
-		# LATEST PAYOUT
-		$byellow; printf "Latest payout | "
-		$white; echo "$(echo "$LOG" | grep -m1 "payout" | tail -1 | sed 's/NOTICE  //; s/P2Pool //')"
+		# print LATEST PAYOUT
+		$byellow; printf "Latest payout | "; $off
+		[[ $payoutColumn ]] && echo "$(echo "$LOG" | grep -m1 "payout" | tail -1 | sed 's/NOTICE  //; s/P2Pool //')"
 	}
 	status_Template
 }
