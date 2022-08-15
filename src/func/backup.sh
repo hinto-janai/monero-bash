@@ -44,9 +44,9 @@ backup_Wallets()
 		print_Error_Exit "GPG error"
 	fi
 	rm "backup.tar"
-	$bwhite; echo -n "Cipher algo: " ;$white; echo "AES256"
-	$bwhite; echo -n "Key type: " ;$white; echo "Passphrase"
-	$bwhite; echo -n "Encrypted wallet tar: " ;$white; echo "$dotMoneroBash/backup.tar.gpg"
+	$bwhite; echo -n "Cipher algo: " ;$off; echo "AES256"
+	$bwhite; echo -n "Key type: " ;$off; echo "Passphrase"
+	$bwhite; echo -n "Encrypted wallet tar: " ;$off; echo "$dotMoneroBash/backup.tar.gpg"
 	$bwhite; echo -n "To decrypt: " ;$bgreen; echo -n "monero-bash decrypt"
 	$bwhite; echo -n " OR " ;$bgreen; echo "gpg backup.tar.gpg && tar -xf backup.tar"
 }
@@ -63,5 +63,5 @@ backup_Decrypt()
 	tar -xf "backup.tar"
 	error_Exit "tar failed"
 	rm "backup.tar"
-	$bwhite; echo -n "Decrypted backup: " ;$white; echo "$dotMoneroBash/backup"
+	$bwhite; echo -n "Decrypted backup: " ;$off; echo "$dotMoneroBash/backup"
 }

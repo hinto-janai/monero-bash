@@ -47,10 +47,10 @@ upgrade_Pre()
 
 	# CHECK IF ALREADY INSTALLED/UP TO DATE
 	if [[ -z $NAME_VER && $INSTALL != true ]]; then
-		$white; echo -n "$NAME_PRETTY: "
+		$off; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
 	elif [[ $NAME_OLD != true && $FORCE_UPGRADE != true ]]; then
-		$white; echo -n "$NAME_PRETTY: "
+		$off; echo -n "$NAME_PRETTY: "
 		$bgreen; echo "up to date" ;$off
 	else
 

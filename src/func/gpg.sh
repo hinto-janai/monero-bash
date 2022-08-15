@@ -77,9 +77,9 @@ gpg_Diff()
 	$bred; echo -n "$GPG_OWNER "
 	$bwhite; echo "are different!" ;$off
 	$bblue; echo -n "LOCAL: "
-	$white; echo "$installDirectory/gpg/${GPG_OWNER}.asc"
+	$off; echo "$installDirectory/gpg/${GPG_OWNER}.asc"
 	$bgreen; echo -n "ONLINE: "
-	$white; echo "$GPG_PUB_KEY"
+	$off; echo "$GPG_PUB_KEY"
 	while true ;do
 		$bwhite; echo -n "What to do? [show / pick / skip] " ;$off
 		read OPTION

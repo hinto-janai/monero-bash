@@ -113,28 +113,28 @@ print_Usage()
 
 print_Size()
 {
-	$white; echo -n "monero-bash install: " ;$byellow
+	$off; echo -n "monero-bash install: " ;$byellow
 	du -h "$installDirectory"  --exclude="$installDirectory/bin" | tail -n 1 | awk '{print $1}'
-	$white; echo -n "/.monero-bash/: " ;$byellow
+	$off; echo -n "/.monero-bash/: " ;$byellow
 	du -h "$dotMoneroBash" | tail -n 1 | awk '{print $1}'
 	if [[ -d "$bitMonero" ]]; then
-		$white; echo -n "$bitMonero/: " ;$byellow
+		$off; echo -n "$bitMonero/: " ;$byellow
 		du -h "$bitMonero" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ -d "$HOME/.bitmonero" ]]; then
-		$white; echo -n "$HOME/.bitmonero/: " ;$byellow
+		$off; echo -n "$HOME/.bitmonero/: " ;$byellow
 		du -h "$HOME/.bitmonero" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ $MONERO_VER != "" ]]; then
-		$white; echo -n "Monero: " ;$byellow
+		$off; echo -n "Monero: " ;$byellow
 		du -h "$binMonero" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ $XMRIG_VER != "" ]]; then
-		$white; echo -n "XMRig: " ;$byellow
+		$off; echo -n "XMRig: " ;$byellow
 		du -h "$binXMRig" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ $P2POOL_VER != "" ]]; then
-		$white; echo -n "P2Pool: " ;$byellow
+		$off; echo -n "P2Pool: " ;$byellow
 		du -h "$binP2Pool" | tail -n 1 | awk '{print $1}'
 	fi
 }

@@ -83,7 +83,7 @@ wallet_Template()
 {
 	# WALLET NAME
 	while true ;do
-		$white; echo -n "New wallet name: " ;$iwhite
+		$off; echo -n "New wallet name: " ;$iwhite
 		read walletName
 		if [[ "$walletName" = *" "* || "$walletName" = "" ]]; then
 			print_Error "Wallet name cannot be empty or have spaces"
@@ -94,10 +94,10 @@ wallet_Template()
 
 	# WALLET PASS
 	while true; do
-		$white; echo -n "Wallet password: "
+		$off; echo -n "Wallet password: "
 		read -s walletPassword
 		echo
-		$white; echo -n "Enter password again: "
+		$off; echo -n "Enter password again: "
 		read -s walletPasswordAgain
 		echo
 		if [[ "$walletPassword" = "$walletPasswordAgain" ]]; then
@@ -115,7 +115,7 @@ wallet_Create()
 	while true ;do
 		$ired; echo "Monero seed languages:" ;$iwhite
 		print_SeedLanguageList
-		$white; echo -n "Pick seed language: " ;$iwhite
+		$off; echo -n "Pick seed language: " ;$iwhite
 		read seedLanguage
 			case "$seedLanguage" in
 				"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;
@@ -160,7 +160,7 @@ wallet_Recover()
 
 	# SEED INPUT
 	while true ;do
-		$white; echo -n "Seed (24/25 words): "
+		$off; echo -n "Seed (24/25 words): "
 		read -r walletSeed ; echo
 		case $walletSeed in
 			"") print_Error "Empty input" ;;
@@ -197,10 +197,10 @@ wallet_Recover()
 # if wallet name happens to be "new/view/recover"
 wallet_Collision()
 {
-	$white; echo "Wallet name is similar to option..."
+	$off; echo "Wallet name is similar to option..."
 	while true ;do
 	$iblue; printf "SELECT "
-	$white; printf "or "
+	$off; printf "or "
 	$ired; printf "CREATE? " ;$off
 	read selectCreate
 		case $selectCreate in

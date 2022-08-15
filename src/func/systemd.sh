@@ -29,7 +29,7 @@
 
 systemd_Template()
 {
-$white; echo "Creating [${SERVICE}]..."
+$off; echo "Creating [${SERVICE}]..."
 prompt_Sudo
 error_Sudo
 
@@ -68,7 +68,7 @@ sudo rm -r "$tmpService"
 permission_Systemd
 
 # RELOAD SYSTEMD
-$white; echo "Reloading [systemd]..."
+$off; echo "Reloading [systemd]..."
 sudo systemctl daemon-reload
 }
 
@@ -80,14 +80,14 @@ systemd_Edit()
 	prompt_Sudo;error_Sudo
 	if [[ -z $EDITOR ]]; then
 		print_Warn "No default \$EDITOR found!"
-		$white; printf "Pick editor [nano, vim, emacs, etc] (default=nano): "
+		$off; printf "Pick editor [nano, vim, emacs, etc] (default=nano): "
 		read EDITOR
 		[[ -z $EDITOR || $EDITOR = "default" ]] && EDITOR="nano"
 	fi
 
 	sudo "$EDITOR" "$sysd/$SERVICE"
 	if [[ $? = 0 ]]; then
-		$white; echo "Reloading [systemd]..."
+		$off; echo "Reloading [systemd]..."
 		sudo systemctl daemon-reload
 	else
 		print_Error "systemd changes failed"
@@ -113,11 +113,46 @@ systemd_P2Pool()
 {
 	define_P2Pool
 	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+	# 2022-08-14 Backwards compatibility with
+	# old [monero-bash.conf] p2pool settings.
+	# WALLET
+	if [[ -z $WALLET ]]; then
+		if WALLET=$(grep -E "^WALLET=(|'|\")4.*$" "$config/monero-bash.conf"); then
+			WALLET=${WALLET//\'}
+			WALLET=${WALLET//\"}
+			WALLET=${WALLET/*=}
+			COMMAND="$COMMAND --wallet $WALLET"
+			print_Warn "[WALLET] not found in [p2pool.conf]"
+			print_Warn "Falling back to [monero-bash.conf]'s [${WALLET:0:6}...${WALLET:89:95}]"
+		else
+			print_Warn "[WALLET] not found in [p2pool.conf]"
+			print_Warn "[WALLET] not found in [monero-bash.conf]"
+		fi
+	fi
+	# LOG LEVEL
+	if [[ -z $LOG_LEVEL ]]; then
+		if LOG_LEVEL=$(grep -E "^LOG_LEVEL=(|'|\")[0-6].*$" "$config/monero-bash.conf"); then
+			LOG_LEVEL=${LOG_LEVEL//\'}
+			LOG_LEVEL=${LOG_LEVEL//\"}
+			LOG_LEVEL=${LOG_LEVEL/*=}
+			COMMAND="$COMMAND --loglevel $LOG_LEVEL"
+			print_Warn "[LOG_LEVEL] not found in [p2pool.conf]"
+			print_Warn "Falling back to [monero-bash.conf]'s [${LOG_LEVEL}]"
+		else
+			LOG_LEVEL=3
+			COMMAND="$COMMAND --log-level $LOG_LEVEL"
+			print_Warn "[LOG_LEVEL] not found in [p2pool.conf]"
+			print_Warn "[LOG_LEVEL] not found in [monero-bash.conf]"
+			print_Warn "Falling back to [P2Pool]'s default [3]"
+		fi
+	fi
 	# if [p2pool.conf] $DAEMON_RPC exists...
 	if [[ $DAEMON_RPC ]]; then
 		COMMAND="$COMMAND --rpc-port \$DAEMON_RPC"
 	# else, check for [monerod.conf] RPC port...
 	elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
+		DAEMON_RPC=${DAEMON_RPC//\'}
+		DAEMON_RPC=${DAEMON_RPC//\"}
 		DAEMON_RPC=${DAEMON_RPC//*=}
 		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
 		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
@@ -132,8 +167,10 @@ systemd_P2Pool()
 	fi
 	# same for ZMQ
 	if [[ $DAEMON_ZMQ ]]; then
-		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
+		COMMAND="$COMMAND --zmq-port \$DAEMON_ZMQ"
 	elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
+		DAEMON_ZMQ=${DAEMON_ZMQ//\'}
+		DAEMON_ZMQ=${DAEMON_ZMQ//\"}
 		DAEMON_ZMQ=${DAEMON_ZMQ//*:}
 		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
 		print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf]"
@@ -146,15 +183,19 @@ systemd_P2Pool()
 		print_Warn "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
 	fi
 	# check for out/in peers
-	if [[ -z $OUT_PEERS ]]; then
+	if [[ $OUT_PEERS ]]; then
+		COMMAND="$COMMAND --out-peers \$OUT_PEERS"
+	else
 		OUT_PEERS=10
 		COMMAND="$COMMAND --out-peers $OUT_PEERS"
 		print_Warn "[OUT_PEERS] not found in [p2pool.conf]"
 		print_Warn "Falling back to [P2Pool]'s default: [$OUT_PEERS]"
 	fi
-	if [[ -z $IN_PEERS ]]; then
+	if [[ $IN_PEERS ]]; then
+		COMMAND="$COMMAND --in-peers \$IN_PEERS"
+	else
 		IN_PEERS=10
-		COMMAND="$COMMAND --out-peers $OUT_PEERS"
+		COMMAND="$COMMAND --in-peers $IN_PEERS"
 		print_Warn "[IN_PEERS] not found in [p2pool.conf]"
 		print_Warn "Falling back to [P2Pool]'s default: [$IN_PEERS]"
 	fi

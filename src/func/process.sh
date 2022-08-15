@@ -78,7 +78,7 @@ process_Stop_Template()
 	if pgrep $PROCESS &>/dev/null ; then
 		COMMANDS
 	else
-		$white; echo -n "[${PROCESS}] "
+		$off; echo -n "[${PROCESS}] "
 		$bred; echo "not online" ;$off
 	fi
 }
@@ -108,7 +108,7 @@ process_Restart()
 			return 1
 		fi
 	else
-		$white; echo -n "[${PROCESS}] "
+		$off; echo -n "[${PROCESS}] "
 		$bred; echo "not online" ;$off
 	fi
 }
@@ -166,12 +166,44 @@ process_Full()
 		p2pool)
 		COMMANDS() {
 			cd "$binP2Pool"
+			# 2022-08-14 Backwards compatibility with
+			# old [monero-bash.conf] p2pool settings.
+			# WALLET
+			if [[ -z $WALLET ]]; then
+				if WALLET=$(grep -m 1 -E "^WALLET=(|'|\")4.*$" "$config/monero-bash.conf"); then
+					WALLET=${WALLET//\'}
+					WALLET=${WALLET//\"}
+					WALLET=${WALLET/*=}
+					print_Warn "[WALLET] not found in [p2pool.conf]"
+					print_Warn "Falling back to [monero-bash.conf]'s [${WALLET:0:6}...${WALLET:89:95}]"
+				else
+					print_Warn "[WALLET] not found in [p2pool.conf]"
+					print_Warn "[WALLET] not found in [monero-bash.conf]"
+				fi
+			fi
+			# LOG_LEVEL
+			if [[ -z $LOG_LEVEL ]]; then
+				if LOG_LEVEL=$(grep -E "^LOG_LEVEL=(|'|\")[0-6].*$" "$config/monero-bash.conf"); then
+					LOG_LEVEL=${LOG_LEVEL//\'}
+					LOG_LEVEL=${LOG_LEVEL//\"}
+					LOG_LEVEL=${LOG_LEVEL/*=}
+					print_Warn "[LOG_LEVEL] not found in [p2pool.conf]"
+					print_Warn "Falling back to [monero-bash.conf]'s [${LOG_LEVEL}]"
+				else
+					LOG_LEVEL=3
+					print_Warn "[LOG_LEVEL] not found in [p2pool.conf]"
+					print_Warn "[LOG_LEVEL] not found in [monero-bash.conf]"
+					print_Warn "Falling back to [P2Pool]'s default [3]"
+				fi
+			fi
 			# if [p2pool.conf] $DAEMON_RPC exists...
 			if [[ $DAEMON_RPC ]]; then
 				:
 			# else, check for [monerod.conf] RPC port...
-			elif DAEMON_RPC=$(grep "^rpc-bind-port=[0-9]\+$" "$config/monerod.conf"); then
-				DAEMON_RPC=${DAEMON_RPC//*=}
+			elif DAEMON_RPC=$(grep -E "^rpc-bind-port=(|'|\")[0-9]\+$" "$config/monerod.conf"); then
+				DAEMON_RPC=${DAEMON_RPC//\'}
+				DAEMON_RPC=${DAEMON_RPC//\"}
+				DAEMON_RPC=${DAEMON_RPC/*=}
 				print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
 				print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
 			# else, default.
@@ -185,8 +217,8 @@ process_Full()
 			if [[ $DAEMON_ZMQ ]]; then
 				:
 			# else, check for [monerod.conf] ZMQ port...
-			elif DAEMON_ZMQ=$(grep "^zmq-pub=.*:[0-9]\+$" "$config/monerod.conf"); then
-				DAEMON_ZMQ=${DAEMON_ZMQ//*:}
+			elif DAEMON_ZMQ=$(grep -E "^zmq-pub=.*:[0-9].*$" "$config/monerod.conf"); then
+				DAEMON_ZMQ=${DAEMON_ZMQ/*:}
 				print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf]"
 				print_Warn "Falling back to [monerod.conf]'s [zmq-pub=$DAEMON_ZMQ]"
 			# else, default.

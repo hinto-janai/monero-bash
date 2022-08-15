@@ -73,6 +73,8 @@ reset_Template()
 		P2Pool)
 			echo "Resetting [$p2poolConf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.json" "$p2poolConf"
+			echo "Resetting [$config/p2pool.conf]..."
+			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.conf" "$config/p2pool.conf"
 			systemd_"$NAME_FUNC"
 			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"
 			PRODUCE_HASH_LIST

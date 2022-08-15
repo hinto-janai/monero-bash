@@ -29,7 +29,7 @@
 remove_Template()
 {
 	if [[ "$NAME_VER" = "" ]]; then
-		$white; echo -n "$NAME_PRETTY: "
+		$off; echo -n "$NAME_PRETTY: "
 		$ired; echo "is not installed"
 	else
 		# sudo, trap

@@ -86,11 +86,11 @@ mine_Config()
     $bred; echo "#-----------------------------------------#"
 
 	# wallet + daemon ip + pool ip + mini config
-	unset -v WALLET_INTERACTIVE IP RPC ZMQ POOL MINI LOG OUT_PEERS IN_PEERS
+	unset -v WALLET IP RPC ZMQ POOL MINI LOG OUT_PEERS IN_PEERS
 	while :; do
 		$bwhite; printf "WALLET ADDRESS: " ;$off
-		read -r WALLET_INTERACTIVE
-		if [[ $WALLET_INTERACTIVE ]]; then
+		read -r WALLET
+		if [[ $WALLET ]]; then
 			break
 		else
 			print_Error "Empty input!"
@@ -102,17 +102,17 @@ mine_Config()
 	$iwhite; printf "Pool IP [default: 127.0.0.1:3333]        | " ;$off
 	read -r POOL
 	$iwhite; printf "Monero Node IP [default: 127.0.0.1]      | " ;$off
-	read -r IP
+	read -r DAEMON_IP
 	$iwhite; printf "Monero RPC port [default: 18081]         | " ;$off
-	read -r RPC
+	read -r DAEMON_RPC
 	$iwhite; printf "Monero ZMQ port [default: 18083]         | " ;$off
-	read -r ZMQ
+	read -r DAEMON_ZMQ
 	$iwhite; printf "P2Pool OUT peers (10-1000) [default: 10] | " ;$off
 	read -r OUT_PEERS
 	$iwhite; printf "P2Pool IN peers (10-1000) [default: 10]  | " ;$off
 	read -r IN_PEERS
 	$iwhite; printf "P2Pool Log Level (0-6) [default: 3]      | " ;$off
-	read -r LOG
+	read -r LOG_LEVEL
 	$iwhite; printf "Use P2Pool Mini-Pool? (Y/n)              | " ;$off
 	Yes(){ MINI="true" ;}
 	No(){ MINI="false" ;}
@@ -120,23 +120,23 @@ mine_Config()
 	echo
 
 	# repeat & confirm user input
-	$bblue; printf "WALLET ADDRESS   | " ;$off; echo "$WALLET_INTERACTIVE"
+	$bblue; printf "WALLET ADDRESS   | " ;$off; echo "$WALLET"
 
 	$bblue; printf "POOL IP          | " ;$off
 	[[ $POOL ]] || POOL="127.0.0.1:3333"
 	echo "$POOL"
 
 	$bblue; printf "MONERO NODE IP   | " ;$off
-	[[ $IP ]] || IP="127.0.0.1"
-	echo "$IP"
+	[[ $DAEMON_IP ]] || DAEMON_IP="127.0.0.1"
+	echo "$DAEMON_IP"
 
 	$bblue; printf "MONERO RPC PORT  | " ;$off
-	[[ $RPC ]] || RPC="18081"
-	echo "$RPC"
+	[[ $DAEMON_RPC ]] || DAEMON_RPC="18081"
+	echo "$DAEMON_RPC"
 
 	$bblue; printf "MONERO ZMQ PORT  | " ;$off
-	[[ $ZMQ ]] || ZMQ="18083"
-	echo "$ZMQ"
+	[[ $DAEMON_ZMQ ]] || DAEMON_ZMQ="18083"
+	echo "$DAEMON_ZMQ"
 
 	$bblue; printf "P2POOL OUT PEERS | " ;$off
 	[[ $IN_PEERS ]] || IN_PEERS="10"
@@ -147,8 +147,8 @@ mine_Config()
 	echo "$OUT_PEERS"
 
 	$bblue; printf "P2POOL LOG LEVEL | " ;$off
-	[[ $LOG ]] || LOG="3"
-	echo "$LOG"
+	[[ $LOG_LEVEL ]] || LOG_LEVEL="3"
+	echo "$LOG_LEVEL"
 
 	$bblue; printf "P2POOL MINI      | " ;$off; echo "$MINI"
 
@@ -164,13 +164,13 @@ mine_Config()
 		# p2pool.conf
 		echo "Editing [p2pool.conf]..."
 		sudo -u "$USER" sed \
-				-i -e "s/^DAEMON_IP=.*$/DAEMON_IP=${IP}/" "$config/p2pool.conf" \
-				-i -e "s/^DAEMON_RPC=.*$/DAEMON_RPC=${RPC}/" "$config/p2pool.conf" \
-				-i -e "s/^DAEMON_ZMQ=.*$/DAEMON_ZMQ=${ZMQ}/" "$config/p2pool.conf" \
+				-i -e "s/^DAEMON_IP=.*$/DAEMON_IP=${DAEMON_IP}/" "$config/p2pool.conf" \
+				-i -e "s/^DAEMON_RPC=.*$/DAEMON_RPC=${DAEMON_RPC}/" "$config/p2pool.conf" \
+				-i -e "s/^DAEMON_ZMQ=.*$/DAEMON_ZMQ=${DAEMON_ZMQ}/" "$config/p2pool.conf" \
 				-i -e "s/^OUT_PEERS=.*$/OUT_PEERS=${OUT_PEERS}/" "$config/p2pool.conf" \
 				-i -e "s/^IN_PEERS=.*$/IN_PEERS=${IN_PEERS}/" "$config/p2pool.conf" \
-				-i -e "s/^WALLET=.*$/WALLET=${WALLET_INTERACTIVE}/" "$config/p2pool.conf" \
-				-i -e "s/^LOG_LEVEL=.*$/LOG_LEVEL=${LOG}/" "$config/p2pool.conf"
+				-i -e "s/^WALLET=.*$/WALLET=${WALLET}/" "$config/p2pool.conf" \
+				-i -e "s/^LOG_LEVEL=.*$/LOG_LEVEL=${LOG_LEVEL}/" "$config/p2pool.conf"
 
 		# p2pool.json
 		echo "Editing [p2pool.json]..."
@@ -179,6 +179,12 @@ mine_Config()
 		else
 			sudo -u "$USER" sed -i "s@\"name\":.*@\"name\": \"default\",@" "$p2poolConf"
 		fi
+
+		# re-source
+		source "$config/monero-bash.conf" &>/dev/null
+		source "$config/p2pool.conf" &>/dev/null
+
+		# re-create systemd file
 		systemd_P2Pool
 
 		# xmrig.json
@@ -192,7 +198,7 @@ mine_Config()
 		PRODUCE_HASH_LIST
 		echo
 		$bgreen; echo "Mining configuration complete!"
-		$white; echo -n "To get started: "
+		$off; echo -n "To get started: "
 		$bwhite; echo "[monero-bash start all]"
 	}
 	No(){ :; }

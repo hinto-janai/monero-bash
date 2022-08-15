@@ -31,16 +31,11 @@
 safety_DotMoneroBash()
 {
     if [[ ! -d "$dotMoneroBash" ]]; then
-        print_Warn "$HOME/.monero-bash/ folder not found!"
-        $white; printf "Build a default folder? (Y/n) "
-		Yes()
-		{
-			build_DotMoneroBash
-			$bwhite; echo -n "$dotMoneroBash "
-			$off; echo "Built!"
-		}
-		No(){ echo "Exiting..." ;exit 1;}
-		prompt_YESno
+        print_Warn "[${HOME}/.monero-bash/] folder not found!"
+		echo "Building default [.monero-bash] folder..."
+		build_DotMoneroBash
+		$bwhite; echo -n "$dotMoneroBash "
+		$off; echo "Built!"
     fi
 }
 
@@ -49,7 +44,7 @@ safety_UsrLocalShare()
 {
 	if [[ "$installDirectory" != "/usr/local/share/monero-bash" ]]; then
 		$ired; echo "ERROR: monero-bash not in /usr/local/share/ !"
-		$white; echo "was monero-bash installed properly?"
+		$off; echo "was monero-bash installed properly?"
 		echo "Exiting for safety..."
 		exit 1
 	fi

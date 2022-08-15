@@ -432,9 +432,10 @@ if [[ $options = "true" ]]; then
 			esac
 			;;
 		*)
-			$ired; echo "monero-bash: invalid option!"
-			$white; echo -n "for help, type: "
-			$bred; echo "monero-bash help"; $off
+			$bred; echo -n "[monero-bash] "
+			$iwhite; echo "Invalid option!"
+			$off; echo -n "For help, type: "
+			$bcyan; echo "monero-bash help"; $off
 	esac
 	exit
 fi

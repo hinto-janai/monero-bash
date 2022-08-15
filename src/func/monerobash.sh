@@ -94,8 +94,8 @@ fi
 	$bwhite; echo -n "Start "
 	$bred; echo -n "monero-bash "
 	$bwhite; echo -n "install? (Y/n) "
-	Yes(){ $white; echo "Starting..." ;}
-	No(){ $white; echo "Exiting..." ;exit;}
+	Yes(){ $off; echo "Starting..." ;}
+	No(){ $off; echo "Exiting..." ;exit;}
 	prompt_YESno
 	prompt_Sudo
 	error_Exit "Sudo is required to install monero-bash"
@@ -190,15 +190,15 @@ $off; echo "$wallets"
 echo
 
 if [[ $INSTALL_SYMLINK = true ]]; then
-	$white; echo -n "Type: "
+	$off; echo -n "Type: "
 	$byellow; echo -n "[monero-bash help] "
-	$white; echo -n "OR "
+	$off; echo -n "OR "
 	$byellow; echo -n "[mb help] "
-	$white; echo "to get started"
+	$off; echo "to get started"
 else
-	$white; echo -n "Type: "
+	$off; echo -n "Type: "
 	$byellow; echo -n "[monero-bash help] "
-	$white; echo "to get started"
+	$off; echo "to get started"
 fi
 exit 0
 }
@@ -230,7 +230,7 @@ monerobash_Uninstall()
 			$bwhite; ls "$wallets"
 			$bred; echo -n "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) " ;$bwhite
 			Yes(){ : ;}
-			No(){ $white; echo "Exiting..." ;exit;}
+			No(){ $off; echo "Exiting..." ;exit;}
 			prompt_NOyes
 		fi
 		prompt_Sudo
@@ -295,6 +295,6 @@ monerobash_Uninstall()
 				fi
 		print_GreenHash "monero-bash has been uninstalled"
 	}
-	No(){ $white; echo "Exiting..." ;exit;}
+	No(){ $off; echo "Exiting..." ;exit;}
 	prompt_NOyes
 }

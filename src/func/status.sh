@@ -119,15 +119,12 @@ status_P2Pool()
 				return 1
 			# Else, normal error
 			else
-				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool is not fully synced yet!"
+				printf "\e[1;91m%s\e[1;93m%s\e[0m\n" "Warning | " "P2Pool is not fully synced yet!"
 				return 1
 			fi
 		else
 			LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"
 		fi
-
-		$bwhite; printf "Wallet        | "
-		$white; echo "${WALLET:0:6}...${WALLET: -6}"
 
 		# P2POOL ALLOWING MINER CONNECTIONS DURING SYNC CAUSES FAKE STATS
 		# ---------------------------------------------------------------
@@ -274,10 +271,27 @@ status_P2Pool()
 			local xmrPerDay=0.0000000
 		fi
 
+		# print WALLET
+		# Backwards compatibility with [monero-bash.conf]
+		if [[ -z $WALLET ]]; then
+			if WALLET=$(grep -E "^WALLET=(|'|\")4.*$" "$config/monero-bash.conf"); then
+				WALLET=${WALLET//\'}
+				WALLET=${WALLET//\"}
+				WALLET=${WALLET/*=}
+				print_Warn "[WALLET] not found in [p2pool.conf]"
+				print_Warn "Falling back to [monero-bash.conf]'s [${WALLET:0:6}...${WALLET:89:95}]"
+			else
+				print_Warn "[WALLET] not found in [p2pool.conf]"
+				print_Warn "[WALLET] not found in [monero-bash.conf]"
+			fi
+		fi
+		$bwhite; printf "Wallet        | "
+		$off; echo "${WALLET:0:6}...${WALLET: -6}"
+
 		# print SHARES FOUND
 		$bpurple; printf "Shares found  | "
 		$ipurple; echo -n "$sharesFound shares "
-		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;91m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
 			"${sharesPerHour}" \
 			"/" \
@@ -291,7 +305,7 @@ status_P2Pool()
 		# print PAYOUTS FOUND
 		$bcyan; printf "Total payouts | "
 		$icyan; echo -n "$payoutTotal payouts "
-		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;91m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
 			"${payoutPerHour}" \
 			"/" \
@@ -305,7 +319,7 @@ status_P2Pool()
 		# print XMR
 		$bgreen; printf "XMR received  | "
 		$igreen; echo -n "$xmrTotal XMR "
-		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;91m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
 			"${xmrPerHour}" \
 			"/" \
@@ -318,7 +332,7 @@ status_P2Pool()
 
 		# print LATEST SHARE
 		$bblue; printf "Latest share  | "
-		$white; echo "$(echo "$shareOutput" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //')"
+		$off; echo "$(echo "$shareOutput" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //')"
 
 		# print LATEST PAYOUT
 		$byellow; printf "Latest payout | "; $off
@@ -344,12 +358,12 @@ status_XMRig()
 		# SHARES
 		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
 		$bblue; printf "Latest share | "
-		$white; echo "$shares"
+		$off; echo "$shares"
 
 		# HASHRATE
 		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
 		$byellow; printf "Hashrate     | "
-		$white; echo "$hashrate"
+		$off; echo "$hashrate"
 	}
 	status_Template
 }

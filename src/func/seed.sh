@@ -44,7 +44,7 @@ if [[ $seedOptions != "true" ]]; then
 while true ;do
 	$ired; echo "Monero seed languages:" ;$iwhite
 	print_SeedLanguageList
-	$white; echo -n "Pick seed language: " ;$iwhite
+	$off; echo -n "Pick seed language: " ;$iwhite
 	read seedLanguage
 	case "$seedLanguage" in
 		"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;

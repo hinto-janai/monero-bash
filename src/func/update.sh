@@ -85,12 +85,9 @@ update_All()
 	[[ $P2POOL_VER != "" ]]&& update_P2Pool
     if [[ $updateFound = "true" ]]; then
         echo
-        $white; echo -n "Updates found, type: "
-        $bred; echo -n "[monero-bash upgrade] "
-        $white; echo "to upgrade all"
-        $white; echo -n "Or type: "
-        $bred; echo -n "[monero-bash upgrade <package>] "
-        $white; echo "to upgrade something specific"
+        $off; echo -n "Updates found, type: "
+        $byellow; echo -n "[monero-bash upgrade] "
+        $off; echo "to upgrade all"
         $off
 		exit 0
 	else

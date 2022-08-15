@@ -31,7 +31,7 @@ path_Add()
 {
 	if [[ -f "/usr/local/bin/monero-bash" ]]; then
 		$ired; echo -n "monero-bash PATH is already set: "
-		$white; echo "/usr/local/bin/monero-bash"
+		$off; echo "/usr/local/bin/monero-bash"
 		path_Reset
 	else
 		sudo ln -s "$installDirectory/monero-bash" "/usr/local/bin/monero-bash"

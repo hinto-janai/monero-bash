@@ -50,7 +50,7 @@ version_Update()
 	LINK="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	if [[ $? != "0" && "$HTML" != "true" ]]; then
 		$ired; echo "GitHub API error detected..."
-		$white; echo "Trying GitHub HTML filter instead..."
+		$off; echo "Trying GitHub HTML filter instead..."
 		HTML="true"
 	fi
 	if [[ "$HTML" = "true" ]]; then

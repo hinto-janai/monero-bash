@@ -28,8 +28,8 @@
 install_Template()
 {
 	if [[ "$NAME_VER" != "" ]]; then
-		$white; echo -n "$NAME_PRETTY ($NAME_VER) "
-		$white; echo "is already installed"
+		$off; echo -n "$NAME_PRETTY ($NAME_VER) "
+		$off; echo "is already installed"
 	else
 		local INSTALL="true"
 		upgrade_"$NAME_FUNC"
