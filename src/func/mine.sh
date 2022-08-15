@@ -87,26 +87,33 @@ mine_Config()
 
 	# wallet + daemon ip + pool ip + mini config
 	unset -v WALLET_INTERACTIVE IP RPC ZMQ POOL MINI LOG OUT_PEERS IN_PEERS
-	$bwhite; printf "WALLET ADDRESS: " ;$off
-	read -r WALLET_INTERACTIVE
+	while :; do
+		$bwhite; printf "WALLET ADDRESS: " ;$off
+		read -r WALLET_INTERACTIVE
+		if [[ $WALLET_INTERACTIVE ]]; then
+			break
+		else
+			print_Error "Empty input!"
+		fi
+	done
 	echo
 
-	$byellow; printf "%s\n" "Hit [enter] to select the [default]" "if you don't know what to input."
-	$bwhite; printf "MONERO NODE IP [default: 127.0.0.1]: " ;$off
-	read -r IP
-	$bwhite; printf "MONERO RPC PORT [default: 18081]: " ;$off
-	read -r RPC
-	$bwhite; printf "MONERO ZMQ PORT [default: 18083]: " ;$off
-	read -r ZMQ
-	$bwhite; printf "P2POOL OUT PEERS (10-1000) [default: 10]: " ;$off
-	read -r OUT_PEERS
-	$bwhite; printf "P2POOL IN PEERS (10-1000) [default: 10]: " ;$off
-	read -r IN_PEERS
-	$bwhite; printf "POOL IP [default: 127.0.0.1:3333]: " ;$off
+	$uyellow; $byellow; printf "%s\n" "Hit [enter] to select the [default] if you don't know what to input."
+	$iwhite; printf "Pool IP [default: 127.0.0.1:3333]        | " ;$off
 	read -r POOL
-	$bwhite; printf "P2Pool Log Level (0-6) [default - 1]: " ;$off
+	$iwhite; printf "Monero Node IP [default: 127.0.0.1]      | " ;$off
+	read -r IP
+	$iwhite; printf "Monero RPC port [default: 18081]         | " ;$off
+	read -r RPC
+	$iwhite; printf "Monero ZMQ port [default: 18083]         | " ;$off
+	read -r ZMQ
+	$iwhite; printf "P2Pool OUT peers (10-1000) [default: 10] | " ;$off
+	read -r OUT_PEERS
+	$iwhite; printf "P2Pool IN peers (10-1000) [default: 10]  | " ;$off
+	read -r IN_PEERS
+	$iwhite; printf "P2Pool Log Level (0-6) [default: 3]      | " ;$off
 	read -r LOG
-	$bwhite; printf "Use P2Pool Mini-Pool? (Y/n): " ;$off
+	$iwhite; printf "Use P2Pool Mini-Pool? (Y/n)              | " ;$off
 	Yes(){ MINI="true" ;}
 	No(){ MINI="false" ;}
 	prompt_YESno
@@ -114,6 +121,10 @@ mine_Config()
 
 	# repeat & confirm user input
 	$bblue; printf "WALLET ADDRESS   | " ;$off; echo "$WALLET_INTERACTIVE"
+
+	$bblue; printf "POOL IP          | " ;$off
+	[[ $POOL ]] || POOL="127.0.0.1:3333"
+	echo "$POOL"
 
 	$bblue; printf "MONERO NODE IP   | " ;$off
 	[[ $IP ]] || IP="127.0.0.1"
@@ -135,12 +146,8 @@ mine_Config()
 	[[ $OUT_PEERS ]] || OUT_PEERS="10"
 	echo "$OUT_PEERS"
 
-	$bblue; printf "POOL IP          | " ;$off
-	[[ $POOL ]] || POOL="127.0.0.1:3333"
-	echo "$POOL"
-
 	$bblue; printf "P2POOL LOG LEVEL | " ;$off
-	[[ $LOG ]] || LOG="1"
+	[[ $LOG ]] || LOG="3"
 	echo "$LOG"
 
 	$bblue; printf "P2POOL MINI      | " ;$off; echo "$MINI"

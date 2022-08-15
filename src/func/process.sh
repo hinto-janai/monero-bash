@@ -86,6 +86,18 @@ process_Stop_Template()
 process_Restart()
 {
 	prompt_Sudo;error_Sudo
+	missing_config_"$NAME_FUNC"
+
+	# REFRESH LOGS
+	if [[ $NAME_PRETTY = "P2Pool" && -e "$binP2Pool/p2pool.log" ]]; then
+		sudo rm "$binP2Pool/p2pool.log"
+	elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
+		sudo rm "$binXMRig/xmrig-log"
+		sudo touch "$binXMRig/xmrig-log"
+		sudo chown "$USER:$USER" "$binXMRig/xmrig-log"
+	fi
+
+	# RESTART
 	if pgrep $PROCESS &>/dev/null ; then
 		$byellow; echo "Restarting [${PROCESS}]..." ;$off
 		if sudo systemctl restart "$SERVICE"; then
