@@ -240,19 +240,20 @@ status_P2Pool()
 			local sharesFound="$(echo "$shareOutput" | wc -l)"
 		fi
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
+		local processHours="$(echo "$processUnixTime" "60" "60" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 / $3}'))"
 		local processHours="$(($processUnixTime / 60 / 60))"
 		[[ $processHours = 0 ]] && processHours="1"
 
-		# SHARES PER DAY (not floating, 47 hours = 1 day)
+		# SHARES PER DAY
 		if [[ $processHours -lt 24 ]]; then
 			local processDays="1"
 		else
-			local processDays="$(($processHours / 24))"
+			local processDays="$(echo "$processHours" "24" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
 		fi
 
-		# SHARES/hour & SHARES/day WITH FLOATING POINT
-		local sharesPerHour="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processHours ))e-9")"
-		local sharesPerDay="$(printf %.2f\\n "$((1000000000 * $sharesFound / $processDays ))e-9")"
+		# SHARES/hour & SHARES/day
+		local sharesPerHour="$(echo "$sharesFound" "$processHours" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
+		local sharesPerDay="$(echo "$sharesFound" "$processDays" | awk -M -v PREC=200 '{printf "%.7f\n", $1 / $2 }')"
 
 		# SHARES FOUND
 		$bpurple; printf "Shares found  | "
@@ -264,7 +265,7 @@ status_P2Pool()
 
 		# LATEST PAYOUT
 		$byellow; printf "Latest payout | "
-		$white; echo "$(echo "$LOG" | grep -m1 "payout" | sed 's/NOTICE  //; s/P2Pool //')"
+		$white; echo "$(echo "$LOG" | grep -m1 "payout" | tail -1 | sed 's/NOTICE  //; s/P2Pool //')"
 	}
 	status_Template
 }
