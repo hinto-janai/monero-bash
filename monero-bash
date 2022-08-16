@@ -52,7 +52,7 @@
 # There's a lot of baggage and bad code/design
 # in [monero-bash] for backwards compatibility.
 # You can still install [monero-bash v1.0.0] and
-# upgrade directly to the newest version...!
+# upgrade directly to the latest version...!
 #
 # But it's also because I didn't think ahead.
 # Stuff like:
@@ -164,7 +164,7 @@ if [[ $interactive = "true" ]]; then
 			elif [[ $walletSelection = $i ]]; then
 				$white; printf "Password: "
 				read -s walletPassword
-				printf "\n\n"
+				$byellow; printf "\n%s\n" "Starting wallet..." ;$off
 				wallet_Start
 			fi
 		done

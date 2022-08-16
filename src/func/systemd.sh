@@ -97,7 +97,7 @@ systemd_Edit()
 systemd_Monero()
 {
 	define_Monero
-	local COMMAND="$binMonero/monerod --config-file "$config/monerod.conf" --non-interactive"
+	local COMMAND="$binMonero/monerod --config-file $config/monerod.conf --non-interactive"
 	systemd_Template
 }
 
@@ -105,7 +105,7 @@ systemd_XMRig()
 {
 	define_XMRig
 	local USER="root"
-	local COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file="$binXMRig/xmrig-log""
+	local COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file=$binXMRig/xmrig-log"
 	systemd_Template
 }
 
@@ -116,38 +116,38 @@ systemd_P2Pool()
 	# 2022-08-14 Backwards compatibility with
 	# old [monero-bash.conf] p2pool settings.
 	# WALLET
-	if [[ -z $WALLET ]]; then
-		if WALLET=$(grep -E "^WALLET=(|'|\")4.*$" "$config/monero-bash.conf"); then
+	# (only if not installing for first time)
+	if [[ -z $WALLET && -z $INSTALL ]]; then
+		if [[ $INSTALL ]]; then
+			print_Warn "[WALLET] not found in [p2pool.conf], falling back to [monero-bash.conf]'s [${WALLET:0:6}...${WALLET:89:95}]"
+		elif WALLET=$(grep -E "^WALLET=(|'|\")4.*$" "$config/monero-bash.conf"); then
 			WALLET=${WALLET//\'}
 			WALLET=${WALLET//\"}
 			WALLET=${WALLET/*=}
 			COMMAND="$COMMAND --wallet $WALLET"
-			print_Warn "[WALLET] not found in [p2pool.conf]"
-			print_Warn "Falling back to [monero-bash.conf]'s [${WALLET:0:6}...${WALLET:89:95}]"
+			print_Warn "[WALLET] not found in [p2pool.conf], falling back to [monero-bash.conf]'s [${WALLET:0:6}...${WALLET:89:95}]"
 		else
 			print_Warn "[WALLET] not found in [p2pool.conf]"
 			print_Warn "[WALLET] not found in [monero-bash.conf]"
 		fi
 	fi
 	# LOG LEVEL
-	if [[ -z $LOG_LEVEL ]]; then
+	if [[ -z $LOG_LEVEL && -z $INSTALL ]]; then
 		if LOG_LEVEL=$(grep -E "^LOG_LEVEL=(|'|\")[0-6].*$" "$config/monero-bash.conf"); then
 			LOG_LEVEL=${LOG_LEVEL//\'}
 			LOG_LEVEL=${LOG_LEVEL//\"}
 			LOG_LEVEL=${LOG_LEVEL/*=}
 			COMMAND="$COMMAND --loglevel $LOG_LEVEL"
-			print_Warn "[LOG_LEVEL] not found in [p2pool.conf]"
-			print_Warn "Falling back to [monero-bash.conf]'s [${LOG_LEVEL}]"
+			print_Warn "[LOG_LEVEL] not found in [p2pool.conf], falling back to [monero-bash.conf]'s [${LOG_LEVEL}]"
 		else
 			LOG_LEVEL=3
 			COMMAND="$COMMAND --log-level $LOG_LEVEL"
 			print_Warn "[LOG_LEVEL] not found in [p2pool.conf]"
-			print_Warn "[LOG_LEVEL] not found in [monero-bash.conf]"
-			print_Warn "Falling back to [P2Pool]'s default [3]"
+			print_Warn "[LOG_LEVEL] not found in [monero-bash.conf], falling back to [P2Pool]'s default [3]"
 		fi
 	fi
 	# if [p2pool.conf] $DAEMON_RPC exists...
-	if [[ $DAEMON_RPC ]]; then
+	if [[ $DAEMON_RPC || $INSTALL ]]; then
 		COMMAND="$COMMAND --rpc-port \$DAEMON_RPC"
 	# else, check for [monerod.conf] RPC port...
 	elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
@@ -155,49 +155,43 @@ systemd_P2Pool()
 		DAEMON_RPC=${DAEMON_RPC//\"}
 		DAEMON_RPC=${DAEMON_RPC//*=}
 		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
-		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
-		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
+		print_Warn "[DAEMON_RPC] not found in [p2pool.conf], falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_RPC]"
 	# else, default.
 	else
 		DAEMON_RPC=18081
 		COMMAND="$COMMAND --rpc-port $DAEMON_RPC"
 		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
-		print_Warn "[rpc-bind-port] not found in [monerod.conf]"
-		print_Warn "Falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
+		print_Warn "[rpc-bind-port] not found in [monerod.conf], falling back to [P2Pool]'s default RPC port: [$DAEMON_RPC]"
 	fi
 	# same for ZMQ
-	if [[ $DAEMON_ZMQ ]]; then
+	if [[ $DAEMON_ZMQ || $INSTALL ]]; then
 		COMMAND="$COMMAND --zmq-port \$DAEMON_ZMQ"
 	elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
 		DAEMON_ZMQ=${DAEMON_ZMQ//\'}
 		DAEMON_ZMQ=${DAEMON_ZMQ//\"}
 		DAEMON_ZMQ=${DAEMON_ZMQ//*:}
 		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
-		print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf]"
-		print_Warn "Falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_ZMQ]"
+		print_Warn "[DAEMON_ZMQ] not found in [p2pool.conf], falling back to [monerod.conf]'s [rpc-bind-port=$DAEMON_ZMQ]"
 	else
 		DAEMON_ZMQ=18083
 		COMMAND="$COMMAND --zmq-port $DAEMON_ZMQ"
 		print_Warn "[DAEMON_RPC] not found in [p2pool.conf]"
-		print_Warn "[zmq-pub] not found in [monerod.conf]"
-		print_Warn "Falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
+		print_Warn "[zmq-pub] not found in [monerod.conf], falling back to [P2Pool]'s default ZMQ port: [$DAEMON_ZMQ]"
 	fi
 	# check for out/in peers
-	if [[ $OUT_PEERS ]]; then
+	if [[ $OUT_PEERS || $INSTALL ]]; then
 		COMMAND="$COMMAND --out-peers \$OUT_PEERS"
 	else
 		OUT_PEERS=10
 		COMMAND="$COMMAND --out-peers $OUT_PEERS"
-		print_Warn "[OUT_PEERS] not found in [p2pool.conf]"
-		print_Warn "Falling back to [P2Pool]'s default: [$OUT_PEERS]"
+		print_Warn "[OUT_PEERS] not found in [p2pool.conf], falling back to [P2Pool]'s default: [$OUT_PEERS]"
 	fi
-	if [[ $IN_PEERS ]]; then
+	if [[ $IN_PEERS || $INSTALL ]]; then
 		COMMAND="$COMMAND --in-peers \$IN_PEERS"
 	else
 		IN_PEERS=10
 		COMMAND="$COMMAND --in-peers $IN_PEERS"
-		print_Warn "[IN_PEERS] not found in [p2pool.conf]"
-		print_Warn "Falling back to [P2Pool]'s default: [$IN_PEERS]"
+		print_Warn "[IN_PEERS] not found in [p2pool.conf], falling back to [P2Pool]'s default: [$IN_PEERS]"
 	fi
 	# mini
 	[[ $MINI = true ]] && COMMAND="$COMMAND --mini"

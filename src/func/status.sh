@@ -370,7 +370,7 @@ status_XMRig()
 	{
 		# WALLET (in xmrig.json)
 		$bwhite; printf "Wallet       | " ;$off
-		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')"
+		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '", ')"
 		[[ -z $wallet ]] && echo || echo "${wallet:0:6}...${wallet: -6}"
 
 		# POOL

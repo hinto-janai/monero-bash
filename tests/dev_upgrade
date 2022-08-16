@@ -5,7 +5,7 @@
 BRANCH="$1"
 
 installDirectory="/usr/local/share/monero-bash"
-source $installDirectory/src/source.sh
+source $installDirectory/src/source || source $installDirectory/src/source.sh
 
 # to bypass the v1.x.x EOL message
 NewVer=v1.0.0

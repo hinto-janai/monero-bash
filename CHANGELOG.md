@@ -9,16 +9,18 @@
 * **Config:** All config files now contain many more advanced options (with helpful comments)
 * **Status:** New P2Pool stats: `Total payouts` & `XMR received`
 * **Status:** P2Pool stat precision increased: `1.00` -> `1.0000000`
-* **Status:** Indicates if P2Pool encountered an error (Not synced, RPC, ZMQ)
+* **Status:** P2Pool errors will be indicated (Not synced, RPC, ZMQ)
 * **systemd:** New command to auto-start processes on boot: `monero-bash enable/disable <process>`
 * **Package manager:** Package hash & PGP will be shown: `[8de5...fcc1] HASH OK [9AC4...4409] SIGN OK`
 * **Install:** Fresh monero-bash installs will prompt for `mb` symlink creation: `monero-bash <command>` -> `mb <command>`
+* **Install:** monero-bash install will list install PATH information before installing
 * **Wallet:** Typed in seed during recovery mode is now visible and cleared after confirming
 * **Misc:** General UI changes
 
 ## Fixes
-* **Status:** P2Pool shares found before being synced will be excluded
+* **Status:** P2Pool shares found before being fully synced will be excluded
 * **systemd:** `monero-bash restart <process>` uses systemd's `restart` instead of `stop` -> `start`
+* **Seed:** Non-english seeds will be `24` words instead of `25` to prevent incorrect CRC issue
 * **Git:** Branches have been cleaned & squashed: `709` -> `345` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
 
 # v1.7.0

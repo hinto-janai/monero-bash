@@ -29,14 +29,16 @@
 permission_DotMoneroBash()
 {
 	sudo chmod 700 "$dotMoneroBash"
+	sudo chmod -R 600 "$config"
+	sudo chmod 700 "$config" "$wallets"
 	sudo chown -R "$USER:$USER" "$dotMoneroBash"
 }
 
 permission_InstallDirectory()
 {
-	sudo chmod 700 "$installDirectory"
-	sudo chmod -R 700 "$installDirectory"/config
-	sudo chmod -R 700 "$installDirectory"/src/txt
+	sudo chmod -R 700 "$installDirectory"
+	sudo chmod -R 600 "$installDirectory/config" "$installDirectory/src/txt"
+	sudo chmod 700 "$installDirectory/config" "$installDirectory/src/txt"
 	sudo chown -R "$USER:$USER" "$installDirectory"
 }
 

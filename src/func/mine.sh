@@ -190,7 +190,7 @@ mine_Config()
 		# xmrig.json
 		echo "Editing [xmrig.json]..."
 		sudo -u "$USER" sed \
-			-i -e "s@\"user\":.*@\"user\": \"${WALLET_INTERACTIVE}\",@" "$xmrigConf" \
+			-i -e "s@\"user\":.*@\"user\": \"${WALLET}\",@" "$xmrigConf" \
 			-i -e "s@\"url\":.*@\"url\": \"${POOL}\",@" "$xmrigConf"
 
 		# state file

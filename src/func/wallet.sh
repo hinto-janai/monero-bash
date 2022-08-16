@@ -135,7 +135,7 @@ wallet_Create()
 		done
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	$bred; echo "Starting Monero..." ;$off
+	$byellow; echo "Starting wallet..." ;$off
 	createWallet="true"
 	wallet_Start
 }
@@ -147,7 +147,7 @@ wallet_View()
 	wallet_Template
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	$bred; echo "Starting Monero..." ;$off
+	$byellow; echo "Starting wallet..." ;$off
 	createView="true"
 	wallet_Start
 }
@@ -188,7 +188,7 @@ wallet_Recover()
 	# CONFIRM SEED
 
 	# START monero-wallet-cli WITH RECOVERY VARIABLES SET
-	$bred; echo "Starting Monero..." ;$off
+	$byellow; echo "Starting wallet..." ;$off
 	recoverWallet="true"
 	wallet_Start
 }

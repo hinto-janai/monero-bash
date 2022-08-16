@@ -164,7 +164,7 @@ upgrade_Post()
 	$igreen; echo "$NewVer" ;$off
 	[[ $INSTALL = true ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
-	sudo chown -R "$USER:$USER" "$installDirectory"
+	permission_All
 
 	# CLEANUP, FINAL MESSAGE
 	tmp_Del

@@ -29,14 +29,13 @@ code_Wget()
 {
 	case $? in
 		0) : ;;
-		1) print_Error_Exit "wget - Generic error" ;;
+		1|8) print_Error_Exit "wget - Generic error" ;;
 		2) print_Error_Exit "wget - Parse error" ;;
 		3) print_Error_Exit "wget - File I/O error" ;;
 		4) print_Error_Exit "wget - Network failure" ;;
 		5) print_Error_Exit "wget - SSL verification failure" ;;
 		6) print_Error_Exit "wget - Username/password authentication failure" ;;
 		7) print_Error_Exit "wget - Protocol errors" ;;
-		8) print_Error_Exit "wget - Rate limit" ;;
 		*) print_Error_Exit "wget - Unknown error"
 	esac
 }

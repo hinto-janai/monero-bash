@@ -153,12 +153,12 @@ trap "" 1 2 3 6 15
 
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
-	permission_InstallDirectory
 	sudo mv "$installDirectory" "/usr/local/share/"
 
 # Resetting variables
 	installDirectory="/usr/local/share/monero-bash"
 	source "/usr/local/share/monero-bash/src/source.sh"
+	permission_InstallDirectory
 	cd "/usr/local/share/monero-bash"
 
 # Adding to PATH + symlink

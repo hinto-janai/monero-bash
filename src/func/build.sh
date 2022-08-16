@@ -32,7 +32,7 @@ build_Template()
 	prompt_Sudo ; error_Sudo
 	safety_HashList
 	mkdir -p "$dotMoneroBash"
-	permission_DotMoneroBash
+	permission_InstallDirectory
 	mkdir -p "$wallets"
 	sudo -u "$USER" cp -r "$installDirectory/config" "$config"
 	permission_DotMoneroBash
@@ -48,6 +48,7 @@ build_Config()
 {
 	prompt_Sudo ; error_Sudo
 	safety_HashList
+	permission_installDirectory
 	sudo -u "$USER" cp -r "$installDirectory/config" "$config"
 	permission_DotMoneroBash
 }
