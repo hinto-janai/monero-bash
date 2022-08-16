@@ -19653,6 +19653,16 @@ seed_Generate()
 	printf "${array[$i]}"
 }
 
+# 2022-08-14
+# 25th crc word doesn't seem to work
+# for non-English seeds, so just print
+# 24 word seed for other languages.
+if [[ $seedLanguage != English ]]; then
+	[[ $seedOptions != true ]] && echo
+	printf "%s\n" "$(seed_Generate)"
+	exit 0
+fi
+
 seed_Crc_String()
 {
 	# concatenate first 3 letters of every word for last 25th word checksum
