@@ -63,7 +63,7 @@ verify_Template()
 
     # check if gpg key is imported
     if ! gpg --list-keys "$FINGERPRINT" &>/dev/null ;then
-        $off; echo "Importing [${GPG_OWNER}'s] GPG key..."
+        $off; echo "Importing [${GPG_OWNER}]'s PGP key..."
         gpg_import_Template
     fi
 

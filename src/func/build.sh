@@ -41,7 +41,6 @@ build_Template()
 build_DotMoneroBash()
 {
 	build_Template
-	mkdir -p "$bitMonero"
 }
 
 # just build monero-bash config

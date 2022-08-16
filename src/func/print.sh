@@ -121,10 +121,6 @@ print_Size()
 		$off; echo -n "$bitMonero/: " ;$byellow
 		du -h "$bitMonero" | tail -n 1 | awk '{print $1}'
 	fi
-	if [[ -d "$HOME/.bitmonero" ]]; then
-		$off; echo -n "$HOME/.bitmonero/: " ;$byellow
-		du -h "$HOME/.bitmonero" | tail -n 1 | awk '{print $1}'
-	fi
 	if [[ $MONERO_VER != "" ]]; then
 		$off; echo -n "Monero: " ;$byellow
 		du -h "$binMonero" | tail -n 1 | awk '{print $1}'

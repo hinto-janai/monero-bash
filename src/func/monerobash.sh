@@ -30,16 +30,18 @@
 monerobash_Install()
 {
 	$bred; echo "#-----------------------------------------------------------------#"
-	$bred; echo "#            monero-bash configuration & installation             #"
+	$bred; echo -n "#                 "
+	$bred; echo -n "monero-bash $MONERO_BASH_VER installation"
+	$bred; echo "                 #"
 	$bred; echo "#-----------------------------------------------------------------#"
 
 while true ;do
 	# $HOME/.bitmonero check
 	if [[ -d "$HOME/.bitmonero" ]]; then
-		$ired; echo "Monero data folder detected"
+		$bwhite; echo "Monero data folder detected!"
 		$off; echo -n "Use "
-		$ired; echo -n "$HOME/.bitmonero"
-		$off; echo -n "? (Y/n): " ;$iwhite
+		$byellow; echo -n "[${HOME}/.bitmonero]"
+		$off; echo -n "? (Y/n): "
 		Yes(){ alreadyFoundDataPath="true" ;}
 		No(){ :;}
 		prompt_YESno
@@ -52,7 +54,7 @@ while true ;do
 	# Data Path Confirmation
 	if [[ $alreadyFoundDataPath = "true" ]]; then
 		$bwhite; echo -n "Data path: "
-		$ired; echo "$HOME/.bitmonero"
+		$byellow; echo "[${HOME}/.bitmonero]"
 		$off; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
@@ -60,9 +62,9 @@ while true ;do
 	else
 		$bwhite; echo -n "Data path: "
 		if [[ $inputData ]]; then
-			$ired; echo "$inputData"
+			$byellow; echo "$inputData"
 		else
-			$ired; echo "$HOME/.bitmonero"
+			$byellow; echo "$HOME/.bitmonero"
 		fi
 		$off; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
@@ -75,13 +77,14 @@ done
 # MB ALIAS
 if [[ ! -e /usr/local/bin/mb && ! -h /usr/local/bin/mb ]]; then
 	$byellow; printf "%s\n" "Symlink creation: [monero-bash] -> [mb]"
-	$bwhite; printf "%s\n" "This allows you to do stuff like this: mb update && mb upgrade"; $off
+	$bwhite; printf "%s" "This allows you use monero-bash like so: "
+	$bcyan; printf "%s\n" "[mb update && mb upgrade]"; $off
 	printf "%s" "Create symlink? (Y/n) "
 	read -r YES_NO
 	case $YES_NO in
 		y|Y|yes|Yes|YES|"")
 			local INSTALL_SYMLINK=true
-			printf "%s\n" "Will create [mb] symlink"
+			printf "%s\n" "Will create [mb] symlink!"
 			;;
 		*)
 			printf "%s\n" "Skipping [mb] symlink..."
@@ -90,9 +93,31 @@ if [[ ! -e /usr/local/bin/mb && ! -h /usr/local/bin/mb ]]; then
 	echo
 fi
 
+# INSTALLATION INFORMATION
+local i
+$bred; printf "%s" "#"
+for ((i=0; i < 65; i++)); do
+	read -r -t 0.01 || true
+	printf "%s" "-"
+done
+printf "%s\n\n" "#"; $off
+printf "\e[0m%s\e[1;93m%s\n" \
+	"Install     | " "/usr/local/share/monero-bash" \
+	"PATH        | " "/usr/local/bin/monero-bash"
+if [[ $INSTALL_SYMLINK = true ]]; then
+	printf "\e[0m%s\e[1;93m%s\n" "Symlink     | " "/usr/local/bin/mb"
+fi
+printf "\e[0m%s\e[1;93m%s\n" "User folder | " "${HOME}/.monero-bash"
+if [[ $inputData ]]; then
+	printf "\e[0m%s\e[1;93m%s\n" "Monero data | " "$inputData"
+else
+	printf "\e[0m%s\e[1;93m%s\n" "Monero data | " "${HOME}/.bitmonero"
+fi
+echo
+
 # Installation Prompt
 	$bwhite; echo -n "Start "
-	$bred; echo -n "monero-bash "
+	$bred; echo -n "[monero-bash] "
 	$bwhite; echo -n "install? (Y/n) "
 	Yes(){ $off; echo "Starting..." ;}
 	No(){ $off; echo "Exiting..." ;exit;}
@@ -129,7 +154,6 @@ trap "" 1 2 3 6 15
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"
 	permission_InstallDirectory
-	sudo chown -R "$USER:$USER" "$installDirectory"
 	sudo mv "$installDirectory" "/usr/local/share/"
 
 # Resetting variables
@@ -176,28 +200,30 @@ echo
 $bred; echo "#-----------------------------------------------------------------#"
 $bred; echo "#                monero-bash installation complete                #"
 $bred; echo "#-----------------------------------------------------------------#"
-$byellow; echo -n "monero-bash   | " ;$off; echo "$dotMoneroBash"
-$byellow; echo -n "Monero data   | " ;$off
+$off; echo -n "Install     | "; $byellow; echo "/usr/local/share/monero-bash"
+$off; echo -n "Packages    | "; $byellow; echo "/usr/local/share/monero-bash/bin"
+$off; echo -n "PATH        | "; $byellow; echo "/usr/local/bin/monero-bash"
+if [[ $INSTALL_SYMLINK = true ]]; then
+	$off; echo -n "Symlink     | "; $byellow; echo "/usr/local/bin/mb"
+fi
+$off; echo -n "User folder | "; $byellow; echo "$dotMoneroBash"
+$off; echo -n "Monero data | "; $byellow
 if [[ $inputData ]]; then
 	echo "$inputData"
 else
 	echo "$HOME/.bitmonero"
 fi
-$byellow; echo -n "Config folder | "
-$off; echo "$config"
-$byellow; echo -n "Wallet folder | "
-$off; echo "$wallets"
 echo
 
 if [[ $INSTALL_SYMLINK = true ]]; then
 	$off; echo -n "Type: "
-	$byellow; echo -n "[monero-bash help] "
+	$bcyan; echo -n "[monero-bash help] "
 	$off; echo -n "OR "
-	$byellow; echo -n "[mb help] "
+	$bcyan; echo -n "[mb help] "
 	$off; echo "to get started"
 else
 	$off; echo -n "Type: "
-	$byellow; echo -n "[monero-bash help] "
+	$bcyan; echo -n "[monero-bash help] "
 	$off; echo "to get started"
 fi
 exit 0

@@ -34,7 +34,6 @@ safety_DotMoneroBash()
         print_Warn "[${HOME}/.monero-bash/] folder not found!"
 		echo "Building default [.monero-bash] folder..."
 		build_DotMoneroBash
-		$bwhite; echo -n "$dotMoneroBash "
 		$off; echo "Built!"
     fi
 }
