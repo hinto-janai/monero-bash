@@ -186,6 +186,29 @@ status_P2Pool()
 		# $SYNC_TIME   = sync timestamp
 		# $SYNC_TIME_2 = 1 second after
 
+		# Update: 2022-08-15
+		# ------------------
+		# I assumed P2Pool's local API would show the same
+		# "fake" data as well so I didn't bother to check
+		# but it seems like it only counts mainchain shares.
+		# For some reason the API gets a different feed of
+		# data than the console 'status' does. Anyway, I'll just
+		# take 'shares_found' from there because it's better than
+		# whatever the hell I wrote below. It also has other stats
+		# I could include I guess (hashrate, effort, connections)
+
+		# Update: 2022-08-15 10 minutes later
+		# -----------------------------------
+		# I lied. The API data also gets distorted by the
+		# sub-second "fake" shares coming in at sync time.
+		# Looks like we're using this code after all.
+		# Note: We can also reset the EFFORT % with this
+		# accurate share data, if shares found = 0, then
+		# average_effort MUST also be 0.
+		# I'll keep the API data around if the user set
+		# the LOG_LEVEL = 0, then we can supply at least
+		# SOME amount of information (even if it's inaccurate)
+
 		# 22:22:22 -> 22 22 22
 		SYNC_SPACE=(${SYNC_DAY//-/ } ${SYNC_TIME//:/ })
 		# Back into string because it's easier to read
@@ -249,20 +272,53 @@ status_P2Pool()
 
 
 
-		# SHARE OUTPUT VARIABLE
-		local shareOutput="$(echo "$LOG" | grep "SHARE FOUND")"
+		# Warn if no p2poolApi file was found.
+		if [[ ! -e $p2poolApi ]]; then
+			print_Warn "P2Pool API file was not found, stats will be inaccurate!"
+			print_Warn "Consider restarting P2Pool. It will regenerate necessary files."
+		fi
+
+		local sharesFound p2pHash_15m p2pHash_1h p2pHash_24h averageEffort currentEffort connections
+		# SHARES FOUND
+		case $LOG_LEVEL in
+			0)
+				sharesFound=$(grep -o "\"shares_found\":[0-9]\+" $p2poolApi 2>/dev/null)
+				sharesFound=${sharesFound//*:};;
+			*)
+				sharesFound="$(echo "$LOG" | grep -c "SHARE FOUND")";;
+		esac
+		# HASHRATE
+		p2pHash_15m=$(grep -o "\"hashrate_15m\":[0-9]\+\|\"hashrate_15m\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
+		p2pHash_1h=$(grep -o "\"hashrate_1h\":[0-9]\+\|\"hashrate_1h\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
+		p2pHash_24h=$(grep -o "\"hashrate_24h\":[0-9]\+\|\"hashrate_24h\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
+		p2pHash_15m=${p2pHash_15m//*:}
+		p2pHash_1h=${p2pHash_1h//*:}
+		p2pHash_24h=${p2pHash_24h//*:}
+		# EFFORT
+		averageEffort=$(grep -o "\"average_effort\":[0-9]\+\|\"average_effort\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
+		currentEffort=$(grep -o "\"current_effort\":[0-9]\+\|\"current_effort\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
+		averageEffort=${averageEffort//*:}
+		currentEffort=${currentEffort//*:}
+		[[ $sharesFound = 0 ]] && averageEffort=0
+		# CONNECTIONS
+		connections=$(grep -o "\"incoming_connections\":[0-9]\+" $p2poolApi 2>/dev/null)
+		connections=${connections//*:}
+		# DEFAULT TO 0
+		[[ $sharesFound ]]   || sharesFound=0
+		[[ $p2pHash_15m ]]   || p2pHash_15m=0
+		[[ $p2pHash_1h ]]    || p2pHash_1h=0
+		[[ $p2pHash_24h ]]   || p2pHash_24h=0
+		[[ $averageEffort ]] || averageEffort=0
+		[[ $currentEffort ]] || currentEffort=0
+		[[ $connections ]]   || connections=0
+
 		# XMR COLUMN
 		local xmrColumn="$(echo "$LOG" | grep -o "You received a payout of [0-9]\+.[0-9]\+ XMR")"
 		local xmrColumn="$(echo "$xmrColumn" | grep -o "[0-9]\+.[0-9]\+")"
 
 		# hour calculation
-		if [[ -z $shareOutput ]]; then
-			local sharesFound="0"
-		else
-			local sharesFound="$(echo "$shareOutput" | wc -l)"
-		fi
 		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
-		local processHours="$(echo "$processUnixTime" "60" "60" | awk '{printf "%.7f\n", $1 / $2 / $3}'))"
+		local processHours="$(echo "$processUnixTime" "60" "60" | awk '{printf "%.7f\n", $1 / $2 / $3 }')"
 		[[ $processHours = 0 ]] && processHours="1"
 
 		# day calculation
@@ -308,7 +364,25 @@ status_P2Pool()
 			fi
 		fi
 		$bwhite; printf "Wallet        | "
-		$off; echo "${WALLET:0:6}...${WALLET: -6}"
+		$off; echo "[${WALLET:0:6}...${WALLET: -6}]"
+
+
+		# print EFFORT
+		$bwhite; printf "Effort        | "; $off
+		$off; echo -n "[average: ${averageEffort}%] "
+		$off; echo "[current: ${currentEffort}%]"
+
+		# print HASHRATE
+		$bwhite; printf "Hashrate      | "; $off
+		printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "15s" "/" "1h" "/" "24h"
+		$iyellow; echo -n "[$p2pHash_15m H/s] "
+		$iblue; echo -n "[$p2pHash_1h H/s] "
+		$ipurple; echo "[$p2pHash_24h H/s]"
+
+		# print CONNECTIONS
+		$bwhite; printf "Connections   | "; $off
+		$off; echo "[${connections}] "
+		$bwhite; echo "--------------| "
 
 		# print SHARES FOUND
 		$bpurple; printf "Shares found  | "
@@ -354,7 +428,7 @@ status_P2Pool()
 
 		# print LATEST SHARE
 		$bblue; printf "Latest share  | "; $off
-		declare -a latestShare=($(echo "$shareOutput" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
+		declare -a latestShare=($(echo "$LOG" | tac | grep -m1 "SHARE FOUND" | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
 		# [0] = day
 		# [1] = time
 		# [2] = height
@@ -396,7 +470,7 @@ status_XMRig()
 		# WALLET (in xmrig.json)
 		$bwhite; printf "Wallet       | " ;$off
 		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '", ')"
-		[[ -z $wallet ]] && echo || echo "${wallet:0:6}...${wallet: -6}"
+		[[ -z $wallet ]] && echo || echo "[${wallet:0:6}...${wallet: -6}]"
 
 		# POOL
 		$bpurple; printf "Pool         | " ;$off

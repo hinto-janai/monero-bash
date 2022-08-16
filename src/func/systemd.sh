@@ -112,7 +112,7 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
 	# 2022-08-14 Backwards compatibility with
 	# old [monero-bash.conf] p2pool settings.
 	# WALLET

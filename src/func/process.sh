@@ -57,12 +57,16 @@ process_Start_Template()
 		missing_config_"$NAME_FUNC"
 
 		# REFRESH LOGS
-		if [[ $NAME_PRETTY = "P2Pool" && -e "$binP2Pool/p2pool.log" ]]; then
-			sudo rm "$binP2Pool/p2pool.log"
+		if [[ $NAME_PRETTY = "P2Pool" ]]; then
+			[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
+			[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
+			mkdir -p "$binP2Pool/local"
+			touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
+			chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 		elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
-			sudo rm "$binXMRig/xmrig-log"
-			sudo touch "$binXMRig/xmrig-log"
-			sudo chown "$USER:$USER" "$binXMRig/xmrig-log"
+			rm "$binXMRig/xmrig-log"
+			touch "$binXMRig/xmrig-log"
+			chmod 700 "$binXMRig/xmrig-log"
 		fi
 
 		# START PROCESS
@@ -89,12 +93,16 @@ process_Restart()
 	missing_config_"$NAME_FUNC"
 
 	# REFRESH LOGS
-	if [[ $NAME_PRETTY = "P2Pool" && -e "$binP2Pool/p2pool.log" ]]; then
-		sudo rm "$binP2Pool/p2pool.log"
+	if [[ $NAME_PRETTY = "P2Pool" ]]; then
+		[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
+		[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
+		mkdir -p "$binP2Pool/local"
+		touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
+		chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 	elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
-		sudo rm "$binXMRig/xmrig-log"
-		sudo touch "$binXMRig/xmrig-log"
-		sudo chown "$USER:$USER" "$binXMRig/xmrig-log"
+		rm "$binXMRig/xmrig-log"
+		touch "$binXMRig/xmrig-log"
+		chmod 700 "$binXMRig/xmrig-log"
 	fi
 
 	# RESTART
@@ -231,7 +239,7 @@ process_Full()
 				print_Warn "[IN_PEERS] not found in [p2pool.conf], falling back to [P2Pool]'s default: [$IN_PEERS]"
 			fi
 			# start
-			"$binP2Pool/p2pool" --config $p2poolConf --out-peers $OUT_PEERS --in-peers $IN_PEERS --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet "$WALLET" --loglevel "$LOG_LEVEL"
+			"$binP2Pool/p2pool" --data-api $binP2Pool --stratum-api --config $p2poolConf --out-peers $OUT_PEERS --in-peers $IN_PEERS --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet "$WALLET" --loglevel "$LOG_LEVEL"
 		}
 		;;
 	esac

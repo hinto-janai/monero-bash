@@ -127,11 +127,12 @@ upgrade_Template()
 		sudo -u "$USER" mkdir -p "$DIRECTORY"
 		sudo -u "$USER" mv "$tmp/$folderName"/* "$DIRECTORY"
 
-		# KEEP OLD P2POOL CACHE/PEERS/LOG
+		# KEEP (some) OLD P2POOL FILES
 		if [[ $NAME_PRETTY = P2Pool ]]; then
 			[[ -f "$old/$FOLDER/p2pool.cache" ]] && mv -f "$old/$FOLDER/p2pool.cache" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/p2pool_peers.txt" ]] && mv -f "$old/$FOLDER/p2pool_peers.txt" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/p2pool.log" ]] && mv -f "$old/$FOLDER/p2pool.log" "$DIRECTORY"
+			[[ -f "$old/$FOLDER/local/stats" ]] && mkdir -p "$DIRECTORY/local" && mv -f "$old/$FOLDER/local/stats" "$DIRECTORY"
 		fi
 		if [[ -d $DIRECTORY && $trapSet = true ]]; then
 			error_Trap "RESTORING OLD [$NAME_PRETTY]"
