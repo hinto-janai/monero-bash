@@ -92,6 +92,7 @@ missing_config_Template()
 		print_Warn "[${conf}] missing!"
 		echo "Creating default [${conf}]..."
 		cp "$installDirectory/config/$conf" "$config/$conf"
+		chown 660 "$config/$conf"
 	fi
 }
 

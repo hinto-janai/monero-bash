@@ -126,42 +126,64 @@ status_P2Pool()
 			LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"
 		fi
 
-		# P2POOL ALLOWING MINER CONNECTIONS DURING SYNC CAUSES FAKE STATS
+		# P2Pool allowing miner connections during sync causes fake stats
 		# ---------------------------------------------------------------
 		# If you have miners already pointed at p2pool while it's syncing,
 		# it will send jobs to those miners, even though it's still syncing.
-		# This is a big issue because it causes fake stats.
-		# (e.g.: SHARE FOUND message on a fake job).
+		# These jobs aren't "fake" but they do cause distorted stats.
+		# (e.g.: SHARE FOUND message on a non-mainchain job).
 		#
-		# P2Pool doesn't COMPLETELY KILL the old jobs EVEN AFTER SYNCING.
-		# So if you get unlucky and get an accepted share within the same
+		# P2Pool doesn't ignore the old jobs even AFTER SYNCING.
+		# So if you get unlucky and P2Pool gets a share within the same
 		# milliseconds as syncing (which is easy since you're the only
-		# miner on your fake chain), you'll get something like this:
+		# miner on your personal chain, and almost guaranteed when there's
+		# network latency involved), you'll get something like this:
 		#
 		# 2022-08-14 15:58:09.2753 SideChain SYNCHRONIZED           <--- okay, we're synced? time to parse from here!
-		# 2022-08-14 15:58:09.3276 SHARE FOUND: mainchain ...       <--- wow! these have to be real shares we found
-		# 2022-08-14 15:58:09.3315 SHARE FOUND: mainchain ...            since we synced already, right...? RIGHT SCHERNYKH...!?
+		# 2022-08-14 15:58:09.3276 SHARE FOUND: mainchain ...       <--- wow, we found a share within 0.05 seconds!
+	    # 2022-08-14 15:58:09.3315 SHARE FOUND: mainchain ...            these have to be real shares we found since
+		#                                                                we synced already, right...? RIGHT SCHERNYKH...!?
 		#
-		# How the hell am I supposed to know if these shares are real or not?
-		# They _ARE_ after the "SYNCHRONIZED" message but they aren't real.
-		# Even P2Pool itself is fooled when you type 'status', it'll show them as
-		# 100% real mainchain shares you found. I think this awkward print order
-		# is because the miner job is multi-threaded, so it returns at uneven timings.
+		# How am I supposed to know if these shares are "real" or not?
+		# They are after the "SYNCHRONIZED" message but they aren't real.
+		# P2Pool doesn't discard these shares after syncing, so when you type
+		# in 'status', it'll show you are synced with the mainchain, and that
+		# you found 2 shares (but not that those 2 aren't mainchain shares!):
 		#
-		# P2Pool also has other issues like printing "SYNCHRONIZED" multiple
-		# times which will temporarily allow for invalid parsing, this is fine
-		# though because it'll eventually print "SYNCHRONIZED" again and it'll be fixed.
+		# Side chain ID             = default           <-- you are synced with the main-chain
+		# Side chain height         = 2xxxxxx
+		# Side chain hashrate       = 1xx.xxx MH/s
+		# Your shares position      = [2.........]      <-- these were found before you synced
+		# Shares found              = 2                     but p2pool doesn't tell you that
+		#
+		# Technically these shares aren't "fake", they can be real Monero hashes,
+		# but they probably shouldn't be lumped together with the mainchain stats.
+		#
+		# After p2pool syncs, it'll start sending "real" mainchain jobs to
+		# the miners so this issue is only prevalent before being synced,
+		# and for a few seconds after the inital sync (old jobs coming in)
+		#
+		# Some others mentioning this "bug":
+		#     - https://github.com/SChernykh/p2pool/issues/154
+		#     - https://github.com/SChernykh/p2pool/issues/185
+		#
+		# SChernykh's reply:
+		#     - "It's a rare situation for such computer to even
+		#        find a share, let alone find it at the exact time
+		#        p2pool gets synchronized and resets counters."
+		#
+		# But Mr.Chernykh... this happens every time I start p2pool :)
 		#
 		# The fake share parsing fix:
-		# 1. Parse the time of the SYNCHRONIZED msg
-		# 2. Get the NEXT second after that initial time
-		# 3. Account for any time overflows (23:59:59 -> 00:00:00)
-		# 4. Delete any lines that contain those (2 second) timestamps
+		#     1. Parse the time of the SYNCHRONIZED msg
+		#     2. Get the NEXT second after that initial time
+		#     3. Account for any time overflows (23:59:59 -> 00:00:00)
+		#     4. Delete any lines that contain those (2 second) timestamps
 		#
 		# 2 seconds should be a big enough margin to delete the fake shares,
 		# and small enough to not clobber any real shares found.
 		#
-		# $SYNC_TIME   = intial sync timestamp
+		# $SYNC_TIME   = sync timestamp
 		# $SYNC_TIME_2 = 1 second after
 
 		# 22:22:22 -> 22 22 22
@@ -221,7 +243,7 @@ status_P2Pool()
 		# Hopefully we can parse properly now.
 		#
 		# Reminder: all of this breaks down if
-		# Mr. Chernykh decides to change any
+		# Mr.Chernykh decides to change any
 		# keywords or the 24h timing scheme.
 
 
