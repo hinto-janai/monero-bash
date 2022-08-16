@@ -318,7 +318,7 @@ status_P2Pool()
 			"${sharesPerHour}" \
 			"/" \
 			"hour" \
-			" | " \
+			"] [" \
 			"${sharesPerDay}" \
 			"/" \
 			"day" \
@@ -332,7 +332,7 @@ status_P2Pool()
 			"${payoutPerHour}" \
 			"/" \
 			"hour" \
-			" | " \
+			"] [" \
 			"${payoutPerDay}" \
 			"/" \
 			"day" \
@@ -346,19 +346,44 @@ status_P2Pool()
 			"${xmrPerHour}" \
 			"/" \
 			"hour" \
-			" | " \
+			"] [" \
 			"${xmrPerDay}" \
 			"/" \
 			"day" \
 			"]"
 
 		# print LATEST SHARE
-		$bblue; printf "Latest share  | "
-		$off; echo "$(echo "$shareOutput" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //')"
+		$bblue; printf "Latest share  | "; $off
+		declare -a latestShare=($(echo "$shareOutput" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
+		# [0] = day
+		# [1] = time
+		# [2] = height
+		# [3] = #
+		# [4] = client
+		# [5] = ip:port
+		# [6] = effort
+		# [7] = %
+		if [[ $latestShare ]]; then
+			latestShare[1]=${latestShare[1]//.*}
+			echo -n "[${latestShare[0]} ${latestShare[1]}] [block ${latestShare[3]}] [${latestShare[4]} ${latestShare[5]}] [${latestShare[6]} ${latestShare[7]}]" || echo
+		fi
+		echo
 
 		# print LATEST PAYOUT
 		$byellow; printf "Latest payout | "; $off
-		echo "$(echo "$LOG" | grep "You received a payout of" | tail -1 | sed 's/NOTICE  //; s/P2Pool //')"
+		declare -a latestPayout=($(echo "$LOG" | grep "You received a payout of" | tail -1 | sed 's/NOTICE  //; s/P2Pool //'))
+		# [0] = day
+		# [1] = time
+		# [2,3,4,5,6] = You received a payout of
+		# [7] = #
+		# [8] = XMR
+		# [9,10] = in block
+		# [11] = #
+		if [[ $latestPayout ]]; then
+			latestPayout[1]=${latestPayout[1]//.*}
+			echo -n "[${latestPayout[0]} ${latestPayout[1]}] [block ${latestPayout[11]}] [${latestPayout[7]} XMR]"
+		fi
+		echo
 	}
 	status_Template
 }
@@ -378,14 +403,50 @@ status_XMRig()
 		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
 
 		# SHARES
-		local shares="$(tac "$binXMRig/xmrig-log" | grep -m1 "accepted")"
+		declare -a shares=($(tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed 's/[[:blank:]]\+cpu[[:blank:]]\+/ /'))
+		# [0] = [day
+		# [1] = time]
+		# [2] = accepted
+		# [3] = (#/#)
+		# [4] = diff
+		# [5] = #
+		# [6] = (#
+		# [7] = ms)
 		$bblue; printf "Latest share | "
-		$off; echo "$shares"
+		if [[ $shares ]]; then
+			shares[1]=${shares[1]//.*/]}
+			shares[3]=${shares[3]//(}
+			shares[3]=${shares[3]//)}
+			shares[6]=${shares[6]//(}
+			shares[7]=${shares[7]//)}
+			$off; echo -n "${shares[0]} ${shares[1]} [${shares[2]} ${shares[3]}] [${shares[4]} ${shares[5]}] [${shares[6]} ${shares[7]}]"
+		fi
+		echo
 
 		# HASHRATE
-		local hashrate="$(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed "s/].*miner.*speed/] speed/")"
+		declare -a hashrate=($(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed 's|].*miner.*10s/60s/15m|]|'))
+		# [0] = [day
+		# [1] = time]
+		# [2] = # or n/a
+		# [3] = # or n/a
+		# [4] = # or n/a
+		# [5] = H/s
+		# [6] = max
+		# [7] = #
+		# [8] = H/s
 		$byellow; printf "Hashrate     | "
-		$off; echo "$hashrate"
+		if [[ $hashrate ]]; then
+			hashrate[1]=${hashrate[1]//.*/]}
+			$off; echo -n "${hashrate[0]} ${hashrate[1]} "
+			[[ ${hashrate[2]} != 'n/a' ]] && hashrate[2]="${hashrate[2]} H/s"
+			[[ ${hashrate[3]} != 'n/a' ]] && hashrate[3]="${hashrate[3]} H/s"
+			[[ ${hashrate[4]} != 'n/a' ]] && hashrate[4]="${hashrate[4]} H/s"
+			printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "10s" "/" "60s" "/" "15m"
+			$iyellow; echo -n "[${hashrate[2]}] "
+			$iblue; echo -n "[${hashrate[3]}] "
+			$ipurple; echo -n "[${hashrate[4]}]"
+		fi
+		echo
 	}
 	status_Template
 }
