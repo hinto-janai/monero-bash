@@ -68,23 +68,100 @@ status_Monero()
 	define_Monero
 	EXTRA_STATS()
 	{
-		# Get into memory so we can split it
-		# (the regular output is ugly long)
-		local STATUS="$($binMonero/monerod status)"
-		# Split per newline
-		local IFS=$'\n' LINE l=0
-		for i in $STATUS; do
-			LINE[$l]="$i"
-			((l++))
-		done
-		# This removes the ANSI color codes in monerod output
-		LINE[0]="$(echo "${LINE[0]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g')"
-		printf "\e[0;96m%s\e[0m\n" "${LINE[0]}"
+		# [monero-bash.conf DAEMON_RPC_IP call]
+		if [[ $DAEMON_RPC_IP = *:* ]]; then
+			:
+		elif DAEMON_RPC_IP=$(grep -E "^rpc-bind-ip=(|'|\")[0-9].*$" $config/monerod.conf); then
+			if DAEMON_RPC_PORT=$(grep -E "^rpc-bind-port=(|'|\")[0-9].*$" $config/monerod.conf); then
+				print_Warn "[DAEMON_RPC_IP] not found in [monero-bash.conf]"
+				print_Warn "Falling back to [monerod.conf]'s [${DAEMON_RPC_IP//*=}:${DAEMON_RPC_PORT//*=}]"
+				DAEMON_RPC_IP=${DAEMON_RPC_IP//*=}:${DAEMON_RPC_PORT//*=}
+			fi
+		elif GET_INFO=$(wget -qO- "localhost:18081/json_rpc" --header='Content-Type:application/json' --post-data='{"jsonrpc":"2.0","id":"0","method":"get_info"}'); then			if [[ -z $GET_INFO || $GET_INFO = *error* ]]; then
+				print_Warn "[DAEMON_RPC_IP] not found in [monero-bash.conf]"
+				print_Warn "[rpc-bind-ip] and/or [rpc-bind-port] not found in [monerod.conf]"
+				print_Warn "Local fallback [localhost:18081] did not work!"
+				print_Warn "Falling back to (slow) local invoking of [monerod status]"
+				# [monerod status fallback]
+				# Get into memory so we can split it
+				# (the regular output is ugly long)
+				local STATUS="$($binMonero/monerod status)"
+				# Split per newline
+				local IFS=$'\n' LINE l=0
+				for i in $STATUS; do
+					LINE[$l]="$i"
+					((l++))
+				done
+				# This removes the ANSI color codes in monerod output
+				LINE[0]="$(echo "${LINE[0]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g')"
+				printf "\e[0;96m%s\e[0m\n" "${LINE[0]}"
 
-		# Split this line into 2
-		LINE[1]="$(echo "${LINE[1]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g; s/, net hash/\nnet hash/')"
-		# Replace ',' with '|' and add color
-		echo -e "\e[0;92m${LINE[1]//, /\\e[0;97m | \\e[0;92m}\e[0m"
+				# Split this line into 2
+				LINE[1]="$(echo "${LINE[1]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g; s/, net hash/\nnet hash/')"
+				# Replace ',' with '|' and add color
+				echo -e "\e[0;92m${LINE[1]//, /\\e[0;97m | \\e[0;92m}\e[0m"
+				return
+			else
+				print_Warn "[DAEMON_RPC_IP] not found in [monero-bash.conf]"
+				print_Warn "[rpc-bind-ip] and/or [rpc-bind-port] not found in [monerod.conf]"
+				print_Warn "Falling back to [localhost:18081]"
+			fi
+		fi
+		if [[ -z $GET_INFO ]]; then
+			GET_INFO=$(wget -qO- "${DAEMON_RPC_IP}/json_rpc" --header='Content-Type:application/json' --post-data='{"jsonrpc":"2.0","id":"0","method":"get_info"}')
+			if [[ $? != 0 || -z $GET_INFO || $GET_INFO = *error* ]]; then
+				print_Warn "Could not connect to [$DAEMON_RPC_IP] to get Monero stats!"
+				return 1
+			fi
+		fi
+
+		# filter 'get_info' rpc call
+		local height height_percent percent_color incoming outgoing rpc synchronized nettype synchronized target_height tx_pool_size net_hash database_size
+		height=$(echo "$GET_INFO" | grep "\"height\":")
+		height=${height//[!0-9]}
+		target_height=$(echo "$GET_INFO" | grep "\"target_height\":")
+		target_height=${target_height//[!0-9]}
+		incoming=$(echo "$GET_INFO" | grep "\"incoming_connections_count\":")
+		incoming=${incoming//[!0-9]}
+		outgoing=$(echo "$GET_INFO" | grep "\"outgoing_connections_count\":")
+		outgoing=${outgoing//[!0-9]}
+		rpc=$(echo "$GET_INFO" | grep "\"rpc_connections_count\":")
+		rpc=${rpc//[!0-9]}
+		synchronized=$(echo "$GET_INFO" | grep "\"synchronized\":")
+		if [[ $synchronized = *true* ]]; then
+			target_height=$height
+			height_percent="100"
+		else
+			height_percent=$(echo "$target_height" "$height" | awk '{print $1 / $2}')
+			height_percent=${height_percent:0:5}
+		fi
+		height_percent_int=${height_percent//.*}
+		if [[ $height_percent = 100 ]]; then
+			percent_color="\e[92m"
+		elif [[ $height_percent_int -le 30 ]]; then
+			percent_color="\e[91m"
+		else
+			percent_color="\e[93m"
+		fi
+		nettype=$(echo "$GET_INFO" | grep "\"nettype\":")
+		nettype=${nettype//*:}
+		nettype=${nettype//[![:alnum:]]}
+		tx_pool_size=$(echo "$GET_INFO" | grep "\"tx_pool_size\":")
+		tx_pool_size=${tx_pool_size//[!0-9]}
+		net_hash=$(echo "$GET_INFO" | grep "\"difficulty\":")
+		net_hash=${net_hash//[!0-9]}
+		net_hash=$(echo "$net_hash" | awk '{print $1 / 120000000000}')
+		database_size=$(echo "$GET_INFO" | grep "\"database_size\":")
+		database_size=${database_size//[!0-9]}
+		database_size=$(echo "$database_size" | awk '{print $1 / 1000000000}')
+
+		# print
+		$bwhite; printf "Size        | "; printf "\e[0m%s\e[97m%s\e[0m%s\n" "[" "$database_size GB" "]"
+		$bwhite; printf "Height      | "; printf "\e[0m%s\e[92m%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
+			"[" "$height" "/" "$target_height" "] (" "${height_percent}%" ") on [" "$nettype" "]"
+		$bwhite; printf "TX Pool     | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
+		$bwhite; printf "Net Hash    | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
+		$bwhite; printf "Connections | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "]"
 	}
 	status_Template
 }

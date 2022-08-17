@@ -28,11 +28,15 @@
 # watch functions - for watching output of the systemd services created
 # by monero-bash, e.g. "monero-bash-xmrig.service"
 #
-# this function would be much simpler to implement if i could use "screen".
-# although that program is GNU, it is not within the coreutils, and also not
-# pre-installed on Arch, Debian, Fedora, etc.
-#
-# and so, this is a (poor man's) version using tools most Linux distros have
+# This used to use `watch` from core-utils but
+# since it didn't support more than 8-bit color
+# its output  was pretty ugly. These functions
+# simulate `watch` by:
+#     1. buffering the output into a variable
+#     2. clearing the screen
+#     3. printing variable
+#     4. sleeping
+#     5. repeat
 
 watch_Template()
 {
@@ -40,11 +44,40 @@ watch_Template()
 	# divided by 2 to account for line wraps.
 	# 1 line that line wraps still counts as 1 line,
 	# this makes it so bottom messages won't be seen.
-	local LINES=$(($(tput lines) / 2))
-	if [[ "$SERVICE" = "monero-bash-xmrig.service" ]]; then
-		sudo watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $LINES"
+	unset -v HALF_LINES STATS
+	local DOT_COLOR HALF_LINES STATS IFS=$'\n'
+	HALF_LINES=$(($(tput lines) / 2))
+	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"' EXIT
+	if [[ $SERVICE = "monero-bash-xmrig.service" ]]; then
+		while :; do
+			STATS=$(sudo journalctl -u $SERVICE --output cat | tail -n $HALF_LINES)
+			SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
+			case "$SYSTEMD_STATS" in
+				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE}";;
+				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${SERVICE}";;
+				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${SERVICE}";;
+				*) DOT_COLOR="\e[1;91m???: ${SERVICE}";;
+			esac
+			clear
+			printf "\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m\n\n" "$(date)"
+			echo -e "$STATS"
+			read -s -t 1 && read -s -t 1
+		done
 	else
-		watch -n 1 -t -c "journalctl -u $SERVICE --output cat | tail -n $LINES"
+		while :; do
+			STATS=$(journalctl -u $SERVICE --output cat | tail -n $HALF_LINES)
+			SYSTEMD_STATS=$(systemctl status $SERVICE)
+			case "$SYSTEMD_STATS" in
+				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE}";;
+				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${SERVICE}";;
+				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${SERVICE}";;
+				*) DOT_COLOR="\e[1;91m???: ${SERVICE}";;
+			esac
+			clear
+			printf "\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m\n\n" "$(date)"
+			echo -e "$STATS"
+			read -s -t 1 && read -s -t 1
+		done
 	fi
 }
 
@@ -52,7 +85,16 @@ watch_Template()
 # It's more like 5-second because [monerod --status] take so long to open.
 # Thanks for the idea u/austinspringer64
 # https://www.reddit.com/r/Monero/comments/wqp62v/comment/ikoijbh/?utm_source=reddit&utm_medium=web2x&context=3
-watch_Status() { watch -c 'monero-bash status'; }
+watch_Status() {
+	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash status" "]"' EXIT
+	while :; do
+		local STATS=$(monero-bash status)
+		clear
+		printf "\e[1;97m%s\e[1;93m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" "[Watching: " "monero-bash status" "] [" "$(date)" "]"
+		echo -e "$STATS"
+		read -s -t 1 && read -s -t 1
+	done
+}
 
 watch_Monero()
 {

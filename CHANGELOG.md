@@ -1,7 +1,13 @@
 # v1.8.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
-* **Status** New command to watch a refreshing status: `monero-bash watch status`
+* **Watch** Colored text is more vibrant (8-bit -> 256-bit)
+* **Status** New command to watch refreshing status (1 second interval): `monero-bash watch status`
+* **Status** Monero info is now fetched around `25x` faster using the `DAEMON_RPC_IP` specified in `monero-bash.conf`. If not found, the fallbacks are:
+	1. `rpc-bind-ip/port` in `monerod.conf`
+	2. `localhost:18081`
+	3. Reverting back to the old `./monerod status`
+
 ## Fixes
 
 # v1.8.0
