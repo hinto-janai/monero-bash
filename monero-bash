@@ -164,7 +164,8 @@ if [[ $interactive = "true" ]]; then
 			elif [[ $walletSelection = $i ]]; then
 				$white; printf "Password: "
 				read -s walletPassword
-				printf "\n\e[1;93m%s\e[1;97m%s\n\n" "Starting wallet " "[$walletSelection]";$off
+				printf "\n\n"
+				printf "\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletSelection]";$off
 				wallet_Start
 			fi
 		done

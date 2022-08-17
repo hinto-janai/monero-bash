@@ -76,6 +76,7 @@ trap_MoneroBash()
 	sudo -u "$USER" mv -fr "$old/config" "$installDirectory"
 	sudo -u "$USER" mv -fr "$old/gpg" "$installDirectory"
 	sudo -u "$USER" mv -f "$old/src/txt/state" "$state"
+	sudo -u "$USER" cp -fr "$old/src/mini" "$installDirectory/src/"
 	tmp_Del
 	exit
 }

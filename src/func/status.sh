@@ -108,14 +108,14 @@ status_P2Pool()
 			# Return RPC error message if found
 			if RPC_LOG=$(tac $DIRECTORY/p2pool.log | grep -o -m1 "2.*get_info RPC request failed.*$"); then
 				printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "$RPC_LOG"
-				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [monerod]'s RPC server!"
-				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Does [DAEMON_RPC] in [monero-bash.conf] match [rpc-bind-port] in [monerod.conf]?"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [$DAEMON_IP]'s RPC server!"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Is [$DAEMON_RPC] in [p2pool.conf] the correct port?"
 				return 1
 			# Return ZMQ error message if found
 			elif ZMQ_LOG=$(tac $DIRECTORY/p2pool.log | grep -o -m1 "2.*ZMQReader failed to connect to.*$"); then
 				printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "$ZMQ_LOG"
-				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [monerod]'s ZMQ server!"
-				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Does [DAEMON_ZMQ] in [monero-bash.conf] match [zmq-pub] in [monerod.conf]?"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [$DAEMON_IP]'s ZMQ server!"
+				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Is [$DAEMON_ZMQ] in [p2pool.conf] the correct port?"
 				return 1
 			# Else, normal error
 			else
@@ -379,6 +379,14 @@ status_P2Pool()
 		$iblue; echo -n "[$p2pHash_1h H/s] "
 		$ipurple; echo "[$p2pHash_24h H/s]"
 
+		# print SIDECHAIN
+		$bwhite; printf "Side-Chain    | "
+		if [[ -e $installDirectory/src/mini/mini_now ]]; then
+			$off; echo "[P2Pool Mini]"
+		else
+			$off; echo "[P2Pool Main (default)]"
+		fi
+
 		# print CONNECTIONS
 		$bwhite; printf "Connections   | "; $off
 		$off; echo "[${connections}] "
@@ -474,7 +482,8 @@ status_XMRig()
 
 		# POOL
 		$bpurple; printf "Pool         | " ;$off
-		grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","'
+		local xmrigPool=$(grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')
+		echo "[${xmrigPool}]"
 
 		# SHARES
 		declare -a shares=($(tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed 's/[[:blank:]]\+cpu[[:blank:]]\+/ /'))

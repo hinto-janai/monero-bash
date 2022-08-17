@@ -170,15 +170,8 @@ mine_Config()
 				-i -e "s/^OUT_PEERS=.*$/OUT_PEERS=${OUT_PEERS}/" "$config/p2pool.conf" \
 				-i -e "s/^IN_PEERS=.*$/IN_PEERS=${IN_PEERS}/" "$config/p2pool.conf" \
 				-i -e "s/^WALLET=.*$/WALLET=${WALLET}/" "$config/p2pool.conf" \
+				-i -e "s/^MINI=.*$/MINI=${MINI}/" "$config/p2pool.conf" \
 				-i -e "s/^LOG_LEVEL=.*$/LOG_LEVEL=${LOG_LEVEL}/" "$config/p2pool.conf"
-
-		# p2pool.json
-		echo "Editing [p2pool.json]..."
-		if [[ $MINI = true ]]; then
-			sudo -u "$USER" sed -i "s@\"name\":.*@\"name\": \"mini\",@" "$p2poolConf"
-		else
-			sudo -u "$USER" sed -i "s@\"name\":.*@\"name\": \"default\",@" "$p2poolConf"
-		fi
 
 		# re-source
 		source "$config/monero-bash.conf" &>/dev/null
@@ -195,6 +188,12 @@ mine_Config()
 
 		# state file
 		sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=false@" "$state"
+		# p2pool mini state
+		if [[ $MINI = true ]]; then
+			sudo -u "$USER" echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
+		else
+			sudo -u "$USER" echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+		fi
 		PRODUCE_HASH_LIST
 		echo
 		$bgreen; echo "Mining configuration complete!"

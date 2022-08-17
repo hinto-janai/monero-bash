@@ -49,5 +49,4 @@ CLIP() {
 }
 CLIP | xclip -selection clipboard
 echo "changelog copied to clipboard"
-rm SHA256SUM
 rm CHANGELOG.md

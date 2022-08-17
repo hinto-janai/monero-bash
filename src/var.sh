@@ -42,7 +42,7 @@ hashlist="$installDirectory/src/txt/hashlist"
 state="$installDirectory/src/txt/state"
 sysd="/etc/systemd/system"
 xmrigConf="$config/xmrig.json"
-p2poolConf="$config/p2pool.json"
+p2poolConf="$config/p2pool.conf"
 p2poolApi="$binP2Pool/local/stats"
 
 #

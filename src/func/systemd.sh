@@ -53,6 +53,7 @@ User=$USER
 Group=$USER
 Type=simple
 $ENV_FILE
+$ENV_LINE
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
 Restart=always
@@ -112,7 +113,7 @@ systemd_XMRig()
 systemd_P2Pool()
 {
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool --config $p2poolConf --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL"
+	local COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
 	# 2022-08-14 Backwards compatibility with
 	# old [monero-bash.conf] p2pool settings.
 	# WALLET
@@ -150,7 +151,7 @@ systemd_P2Pool()
 	if [[ $DAEMON_RPC || $INSTALL ]]; then
 		COMMAND="$COMMAND --rpc-port \$DAEMON_RPC"
 	# else, check for [monerod.conf] RPC port...
-	elif DAEMON_RPC=$(grep "^rpc-bind-port=.*$" "$config/monerod.conf"); then
+	elif DAEMON_RPC=$(grep -E "^rpc-bind-port=(|'|\")[0-9]\+$" "$config/monerod.conf"); then
 		DAEMON_RPC=${DAEMON_RPC//\'}
 		DAEMON_RPC=${DAEMON_RPC//\"}
 		DAEMON_RPC=${DAEMON_RPC//*=}
@@ -166,7 +167,7 @@ systemd_P2Pool()
 	# same for ZMQ
 	if [[ $DAEMON_ZMQ || $INSTALL ]]; then
 		COMMAND="$COMMAND --zmq-port \$DAEMON_ZMQ"
-	elif DAEMON_ZMQ=$(grep "^zmq-pub=.*$" "$config/monerod.conf"); then
+	elif DAEMON_ZMQ=$(grep -E "^zmq-pub=.*:[0-9].*$" "$config/monerod.conf"); then
 		DAEMON_ZMQ=${DAEMON_ZMQ//\'}
 		DAEMON_ZMQ=${DAEMON_ZMQ//\"}
 		DAEMON_ZMQ=${DAEMON_ZMQ//*:}
@@ -194,8 +195,16 @@ systemd_P2Pool()
 		print_Warn "[IN_PEERS] not found in [p2pool.conf], falling back to [P2Pool]'s default: [$IN_PEERS]"
 	fi
 	# mini
-	[[ $MINI = true ]] && COMMAND="$COMMAND --mini"
+	if [[ $MINI = true ]]; then
+		echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
+	elif [[ $MINI = false ]]; then
+		echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+	else
+		echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+		print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
+	fi
 	local ENV_FILE="EnvironmentFile=$config/p2pool.conf"
+	local ENV_LINE="EnvironmentFile=$installDirectory/src/mini/flag"
 	systemd_Template
 }
 
