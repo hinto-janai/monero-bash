@@ -16,7 +16,7 @@ restart <all/monero/xmrig/p2pool>     restart the process
 enable  <all/monero/xmrig/p2pool>     enable the process to auto-start on boot
 disable <all/monero/xmrig/p2pool>     disable the process from auto-starting on boot
 reset   <bash/monero/xmrig/p2pool>    reset your configs/systemd to default
-watch   <monero/xmrig/p2pool>         watch live output of the background process
+watch   <status/monero/xmrig/p2pool>  watch live output of stats/processes
 edit    <monero/xmrig/p2pool>         edit systemd service file
 
 rpc                                   send a JSON RPC call to monerod

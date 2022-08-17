@@ -48,6 +48,12 @@ watch_Template()
 	fi
 }
 
+# Watch [monero-bash status] at (default) 2-second intervals.
+# It's more like 5-second because [monerod --status] take so long to open.
+# Thanks for the idea u/austinspringer64
+# https://www.reddit.com/r/Monero/comments/wqp62v/comment/ikoijbh/?utm_source=reddit&utm_medium=web2x&context=3
+watch_Status() { watch -c 'monero-bash status'; }
+
 watch_Monero()
 {
 	define_Monero

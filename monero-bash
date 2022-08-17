@@ -283,6 +283,7 @@ if [[ $options = "true" ]]; then
 				*"daemon"*|*"monero"*) watch_Monero ;;
 				*"xmr"*) watch_XMRig ;;
 				*"p2p"*) watch_P2Pool ;;
+				*stat*) watch_Status;;
 				*) print_Error_Exit "Pick: <monero/xmrig/p2pool>" ;;
 			esac
 			;;

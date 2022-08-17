@@ -1,6 +1,7 @@
 # v1.8.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
+* **Status** New command to watch a refreshing status: `monero-bash watch status`
 ## Fixes
 
 # v1.8.0
