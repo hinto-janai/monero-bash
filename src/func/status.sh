@@ -32,9 +32,19 @@ status_All()
 	print_MoneroBashTitle
 	print_Version
 	status_System
-	[[ $MONERO_VER != "" ]]&& status_Monero
-	[[ $P2POOL_VER != "" ]]&& status_P2Pool
-	[[ $XMRIG_VER != "" ]]&& status_XMRig
+	[[ $MONERO_VER ]] && status_Monero
+	[[ $P2POOL_VER ]] && status_P2Pool
+	[[ $XMRIG_VER ]]  && status_XMRig
+	exit 0
+}
+
+# same as above, just don't print title
+# for `monero-bash watch status`
+# (it wastes line space)
+status_Watch() {
+	[[ $MONERO_VER ]] && status_Monero
+	[[ $P2POOL_VER ]] && status_P2Pool
+	[[ $XMRIG_VER ]]  && status_XMRig
 	exit 0
 }
 
@@ -132,7 +142,7 @@ status_Monero()
 			target_height=$height
 			height_percent="100"
 		else
-			height_percent=$(echo "$target_height" "$height" | awk '{print $1 / $2}')
+			height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2}')
 			height_percent=${height_percent:0:5}
 		fi
 		height_percent_int=${height_percent//.*}
@@ -157,7 +167,7 @@ status_Monero()
 
 		# print
 		$bwhite; printf "Size        | "; printf "\e[0m%s\e[97m%s\e[0m%s\n" "[" "$database_size GB" "]"
-		$bwhite; printf "Height      | "; printf "\e[0m%s\e[92m%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
+		$bwhite; printf "Height      | "; printf "\e[0m%s${percent_color}%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
 			"[" "$height" "/" "$target_height" "] (" "${height_percent}%" ") on [" "$nettype" "]"
 		$bwhite; printf "TX Pool     | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
 		$bwhite; printf "Net Hash    | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
@@ -461,7 +471,7 @@ status_P2Pool()
 		if [[ -e $installDirectory/src/mini/mini_now ]]; then
 			$off; echo "[P2Pool Mini]"
 		else
-			$off; echo "[P2Pool Main (default)]"
+			$off; echo "[P2Pool Main] (default)"
 		fi
 
 		# print CONNECTIONS
@@ -471,9 +481,10 @@ status_P2Pool()
 
 		# print SHARES FOUND
 		$bpurple; printf "Shares found  | "
-		$ipurple; echo -n "$sharesFound shares "
-		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;95m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
+			"$sharesFound shares" \
+			"] [" \
 			"${sharesPerHour}" \
 			"/" \
 			"hour" \
@@ -485,9 +496,10 @@ status_P2Pool()
 
 		# print PAYOUTS FOUND
 		$bcyan; printf "Total payouts | "
-		$icyan; echo -n "$payoutTotal payouts "
-		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;96m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
+			"$payoutTotal payouts" \
+			"] [" \
 			"${payoutPerHour}" \
 			"/" \
 			"hour" \
@@ -499,9 +511,10 @@ status_P2Pool()
 
 		# print XMR
 		$bgreen; printf "XMR received  | "
-		$igreen; echo -n "$xmrTotal XMR "
-		printf "\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;92m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
+			"$xmrTotal XMR" \
+			"] [" \
 			"${xmrPerHour}" \
 			"/" \
 			"hour" \

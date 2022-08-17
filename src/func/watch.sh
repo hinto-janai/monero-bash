@@ -90,9 +90,10 @@ watch_Status() {
 	while :; do
 		# use status_All() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
-		local STATS=$(status_All)
+		local STATS=$(status_Watch)
 		clear
-		printf "\e[1;97m%s\e[1;93m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" "[Watching: " "monero-bash status" "] [" "$(date)" "]"
+		printf "\e[1;97m%s\e[1;93m%s\e[1;97m%s\e[1;94m%s\e[0;97m%s\e[1;97m%s\e[1;35m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" \
+			"[Watching: " "monero-bash status" "] [" "System: " "$(uptime -p)" "] [" "Time: " "$(date)" "]"
 		echo -e "$STATS"
 		read -s -t 1 && read -s -t 1
 	done
