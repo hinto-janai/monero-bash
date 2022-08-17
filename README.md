@@ -50,8 +50,8 @@ https://user-images.githubusercontent.com/101352116/184544242-36a199fc-ae05-4174
 * 💵 **`WALLET MENU`** Interactive menu for selecting/creating wallets
 * 👺 **`SYSTEMD`** Control ***monerod/p2pool/xmrig*** as background processes
 * ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
-* 👁️ **`WATCH`** Switch between normal terminal and live output of ***monerod/p2pool/xmrig***
-* 📈 **`STATS`** Display statistics (CPU usage, P2Pool shares, etc)
+* 📈 **`STATUS`** Display stat (CPU usage, P2Pool shares, Hashrate, etc)
+* 👁️ **`WATCH`** Watch live output of processes or general status
 * 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
 * 🔒 **`GPG`** Encrypt and backup your wallets
 
@@ -156,7 +156,7 @@ To start mining on P2Pool:
 1. Install all the packages: `monero-bash install all`
 2. Configure basic mining settings: `monero-bash config`
 3. You can then start all processes in the background: `monero-bash start all`
-4. And watch them live with: `monero-bash watch <monero/p2pool/xmrig>`
+4. And watch them live with: `monero-bash watch <status/monero/p2pool/xmrig>`
 
 It may be useful to download `screen` or `tmux` so you can open multiple terminals and use:
 ```
