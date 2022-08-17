@@ -71,8 +71,6 @@ reset_Template()
 			PRODUCE_HASH_LIST
 			;;
 		P2Pool)
-			echo "Resetting [$p2poolConf]..."
-			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.json" "$p2poolConf"
 			echo "Resetting [$config/p2pool.conf]..."
 			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.conf" "$config/p2pool.conf"
 			systemd_"$NAME_FUNC"

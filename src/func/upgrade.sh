@@ -112,6 +112,7 @@ upgrade_Template()
 		sudo -u "$USER" cp -fr "$tmp/$folderName/config" "$installDirectory"
 		sudo -u "$USER" cp -fr "$tmp/$folderName/gpg" "$installDirectory"
 		sudo -u "$USER" cp -fr "$old/src/txt/state" "$state"
+		sudo -u "$USER" cp -fr "$old/src/mini" "$installDirectory/src/"
 	else
 
 	# INSTALL FOR EVERYTHING ELSE
@@ -141,6 +142,23 @@ upgrade_Template()
 			exit 1
 		fi
 	fi
+	# CONFIG
+	case $NAME_PRETTY in
+		monero-bash)
+			[[ -e $config/monero-bash.conf ]] || cp "$installDirectory"/config/monero-bash.conf "$config/"
+			source "$config/monero-bash.conf"
+			;;
+		Monero)
+			[[ -e $config/monerod.conf ]] || cp "$installDirectory"/config/monerod.conf "$config/"
+			[[ -e $config/monero-wallet-cli.conf ]] || cp "$installDirectory"/config/monero-wallet-cli.conf "$config/"
+			;;
+		P2Pool)
+			[[ -e $config/p2pool.conf ]] || cp "$installDirectory"/config/p2pool.conf "$config/"
+			source "$config/p2pool.conf"
+			;;
+		XMRig) [[ -e $config/xmrig.json ]] || cp "$installDirectory"/config/xmrig.json "$config/";;
+	esac
+
 	if [[ $INSTALL = true ]]; then
 		$off; echo -n "[Install] "
 		$igreen; echo "OK" ;$off

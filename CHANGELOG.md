@@ -4,6 +4,7 @@
 [**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)  
 **You can also use `monero-bash reset <process>` to reset your configs to the new default.**
 * **Config:** New config file: `p2pool.conf`, old options found in `monero-bash.conf` will be used as a fallback, new options are:
+	- `Mini` Use P2Pool mini or not, fallback is `false`
 	- `Out/In peers` P2Pool's default `10/10` will be used as fallback
 	- `RPC/ZMQ` Ports in `monerod.conf` and P2Pool's default ports `18081/18083` will be used as fallbacks
 * **Config:** All config files now contain many more advanced options (with helpful comments)
@@ -22,7 +23,7 @@
 * **Status:** P2Pool shares found before being fully synced will be excluded
 * **systemd:** `monero-bash restart <process>` uses systemd's `restart` instead of `stop` -> `start`
 * **Seed:** Non-english seeds will be `24` words instead of `25` to prevent incorrect CRC issue
-* **Git:** Branches have been cleaned & squashed: `709` -> `347` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
+* **Git:** Branches have been cleaned & squashed: `709` -> `348` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
 
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**

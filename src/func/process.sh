@@ -60,11 +60,23 @@ process_Start_Template()
 		if [[ $NAME_PRETTY = "P2Pool" ]]; then
 			[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
 			[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
-			mkdir -p "$binP2Pool/local"
+			mkdir -p "$binP2Pool/local" "$installDirectory/src/mini"
 			touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 			chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
+			# mini state
+			if [[ $MINI = true ]]; then
+				echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
+				touch "$installDirectory/src/mini/mini_now"
+			elif [[ $MINI = false ]]; then
+				echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+				[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+			else
+				echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+				[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+				print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
+			fi
 		elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
-			rm "$binXMRig/xmrig-log"
+			rm -rf "$binXMRig/xmrig-log"
 			touch "$binXMRig/xmrig-log"
 			chmod 700 "$binXMRig/xmrig-log"
 		fi
@@ -94,13 +106,25 @@ process_Restart()
 
 	# REFRESH LOGS
 	if [[ $NAME_PRETTY = "P2Pool" ]]; then
-		[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
-		[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
-		mkdir -p "$binP2Pool/local"
+		[[ -e "$binP2Pool/p2pool.log" ]] && rm -rf "$binP2Pool/p2pool.log"
+		[[ -e "$binP2Pool/local/stats" ]] && rm -rf "$binP2Pool/local/stats"
+		mkdir -p "$binP2Pool/local" "$installDirectory/src/mini"
 		touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 		chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
+		# mini state
+		if [[ $MINI = true ]]; then
+			echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
+			touch "$installDirectory/src/mini/mini_now"
+		elif [[ $MINI = false ]]; then
+			echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+			[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+		else
+			echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+			[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+			print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
+		fi
 	elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
-		rm "$binXMRig/xmrig-log"
+		rm -rf "$binXMRig/xmrig-log"
 		touch "$binXMRig/xmrig-log"
 		chmod 700 "$binXMRig/xmrig-log"
 	fi
@@ -238,8 +262,17 @@ process_Full()
 				IN_PEERS=10
 				print_Warn "[IN_PEERS] not found in [p2pool.conf], falling back to [P2Pool]'s default: [$IN_PEERS]"
 			fi
+			# mini
+			if [[ $MINI = true ]]; then
+				MINI_FLAG="--mini"
+			elif [[ $MINI = false ]]; then
+				MINI_FLAG=
+			else
+				MINI_FLAG=
+				print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
+			fi
 			# start
-			"$binP2Pool/p2pool" --data-api $binP2Pool --stratum-api --config $p2poolConf --out-peers $OUT_PEERS --in-peers $IN_PEERS --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet "$WALLET" --loglevel "$LOG_LEVEL"
+			"$binP2Pool/p2pool" --data-api $binP2Pool --stratum-api --out-peers $OUT_PEERS --in-peers $IN_PEERS --host "$DAEMON_IP" --rpc-port "$DAEMON_RPC" --zmq-port "$DAEMON_ZMQ" --wallet $WALLET --loglevel $LOG_LEVEL $MINI_FLAG
 		}
 		;;
 	esac

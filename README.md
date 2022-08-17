@@ -143,7 +143,7 @@ monero-bash comes with pre-configured/optimized configuration files:
 * [`p2pool.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/p2pool.conf)
 * [`xmrig.json`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/xmrig.json)
 
-P2Pool currently does not have native support for config files, so monero-bash will use its self-created `p2pool.conf`. On the other hand, `p2pool.json` is for adjusting P2Pool side-chain parameters, you most likely shouldn't touch this.
+P2Pool does not currently have native support for a configuration file, so monero-bash uses its self-created `p2pool.conf`. Processes that are started in the background (`monero-bash start <process>`) will also respect their config files, for example: If you set `MINI=true` in `p2pool.conf`, `monero-bash start p2pool` will start P2Pool on the mini sidechain. And of course, a process will use the config file if started directly (`monero-bash full <process>`).
 
 ---
 

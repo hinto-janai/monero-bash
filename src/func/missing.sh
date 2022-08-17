@@ -125,8 +125,6 @@ missing_config_XMRig()
 
 missing_config_P2Pool()
 {
-	local conf="p2pool.json"
-	missing_config_Template
 	local conf="p2pool.conf"
 	missing_config_Template
 	source "$config/monero-bash.conf" &>/dev/null

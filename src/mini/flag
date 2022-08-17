@@ -1,0 +1,2 @@
+# env file for [systemd]'s p2pool service file
+MINI_FLAG=

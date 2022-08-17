@@ -135,7 +135,7 @@ wallet_Create()
 		done
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	printf "\n\e[1;93m%s\e[\n\n" "Starting wallet " "[$walletName]";$off
+	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";$off
 	createWallet="true"
 	wallet_Start
 }
@@ -147,7 +147,7 @@ wallet_View()
 	wallet_Template
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n\n" "Starting wallet " "[$walletName]";$off
+	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";$off
 	createView="true"
 	wallet_Start
 }
@@ -188,7 +188,7 @@ wallet_Recover()
 	# CONFIRM SEED
 
 	# START monero-wallet-cli WITH RECOVERY VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n\n" "Starting wallet " "[$walletName]";$off
+	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";$off
 	recoverWallet="true"
 	wallet_Start
 }
