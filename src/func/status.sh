@@ -150,11 +150,20 @@ status_Monero()
 			target_height=$height
 			height_percent="100"
 		else
-			height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2 * 100}')
-			height_percent=${height_percent:0:5}
+			# prevent dividing by 0
+			# $height gets found first
+			# before $target_height
+			if [[ $target_height = 0 ]]; then
+				height_percent=???
+			else
+				height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2 * 100}')
+				height_percent=${height_percent:0:5}
+			fi
 		fi
 		height_percent_int=${height_percent//.*}
-		if [[ $height_percent = 100 ]]; then
+		if [[ $height_percent = '???' ]]; then
+			percent_color="\e[93m"
+		elif [[ $height_percent = 100 ]]; then
 			percent_color="\e[92m"
 		elif [[ $height_percent_int -le 30 ]]; then
 			percent_color="\e[91m"

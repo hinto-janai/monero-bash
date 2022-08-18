@@ -56,7 +56,8 @@ $ENV_FILE
 $ENV_LINE
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
-Restart=always
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
