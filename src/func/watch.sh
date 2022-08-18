@@ -47,7 +47,7 @@ watch_Template()
 	unset -v HALF_LINES STATS
 	local DOT_COLOR HALF_LINES STATS IFS=$'\n'
 	HALF_LINES=$(($(tput lines) / 2))
-	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"' EXIT
+	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
 	# need sudo for xmrig journals
 	if [[ $SERVICE = "monero-bash-xmrig.service" ]]; then
@@ -63,7 +63,8 @@ watch_Template()
 			clear
 			printf "\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m\n\n" "$(date)"
 			echo -e "$STATS"
-			read -s -t 1 && read -s -t 1
+#			printf "\n\e[1;95m%s" "[Press any key to exit] "
+			read -r -s -n 1 -t 1 && exit 0
 		done
 	else
 		while :; do
@@ -78,7 +79,8 @@ watch_Template()
 			clear
 			printf "\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m\n\n" "$(date)"
 			echo -e "$STATS"
-			read -s -t 1 && read -s -t 1
+#			printf "\n\e[1;95m%s" "[Press any key to exit] "
+			read -r -s -n 1 -t 1 && exit 0
 		done
 	fi
 }
@@ -86,16 +88,22 @@ watch_Template()
 # Watch [monero-bash status] at 1-second intervals. Thanks for the idea u/austinspringer64
 # https://www.reddit.com/r/Monero/comments/wqp62v/comment/ikoijbh/?utm_source=reddit&utm_medium=web2x&context=3
 watch_Status() {
-	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash status" "]"' EXIT
+	if [[ $MONERO_BASH_OLD = true ]]; then
+		COL="\e[1;91m"
+	else
+		COL="\e[1;92m"
+	fi
+	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash status" "]"; exit 0' EXIT
 	while :; do
 		# use status_All() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
 		local STATS=$(status_Watch)
 		clear
-		printf "\e[1;97m%s\e[1;91m%s\e[1;97m%s\e[1;94m%s\e[0;97m%s\e[1;97m%s\e[1;35m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" \
+		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;94m%s\e[0;97m%s\e[1;97m%s\e[1;35m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "System: " "$(uptime -p)" "] [" "Time: " "$(date)" "]"
 		echo -e "$STATS"
-		read -s -t 1 && read -s -t 1
+#		printf "\n\e[1;95m%s" "[Press any key to exit] "
+		read -r -s -n 1 -t 1 && exit 0
 	done
 }
 
