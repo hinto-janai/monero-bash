@@ -57,19 +57,18 @@ watch_Template()
 	# need sudo for xmrig journals
 	if [[ $SERVICE = "monero-bash-xmrig.service" ]]; then
 		while :; do
-			STATS=$(sudo journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat)
-			SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
+			sudo -v
+			STATS=$(sudo journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat) SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
+			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
 			case "$SYSTEMD_STATS" in
-				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE} $NAME_VER";;
-				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${SERVICE} $NAME_VER";;
-				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${SERVICE} $NAME_VER";;
-				*) DOT_COLOR="\e[1;93m???: ${SERVICE}";;
+				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
+				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY}";;
 			esac
-			clear
 			echo -e "$STATS"
-		echo "${STATUS_LIST[@]}"
-		echo "$CURRENT"
-			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
+			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
@@ -85,19 +84,19 @@ watch_Template()
 		done
 	else
 		while :; do
-			STATS=$(journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat)
-			SYSTEMD_STATS=$(systemctl status $SERVICE)
+			[[ $XMRIG_VER ]] && sudo -v
+			STATS=$(journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat) SYSTEMD_STATS=$(systemctl status $SERVICE)
+			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
 			case "$SYSTEMD_STATS" in
-				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE}";;
-				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${SERVICE}";;
-				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${SERVICE}";;
-				*) DOT_COLOR="\e[1;93m???: ${SERVICE}";;
+				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
+				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY} $NAME_VER";;
 			esac
 			clear
 			echo -e "$STATS"
-		echo "${STATUS_LIST[@]}"
-		echo "$CURRENT"
-			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
+			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
@@ -111,7 +110,6 @@ watch_Template()
 					exit 0
 			fi
 		done
-		[[ $XMRIG_VER ]] && prompt_Sudo
 	fi
 }
 
@@ -131,16 +129,14 @@ watch_Status() {
 	fi
 	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash status" "]"; exit 0' EXIT
 	while :; do
+		[[ $XMRIG_VER ]] && sudo -v
 		# use status_Watch() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
-		local STATS=$(status_Watch)
+		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
 		clear
 		echo -e "$STATS"
-		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;94m%s\e[0;97m%s\e[1;97m%s\e[1;35m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" \
-			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "System: " "$(uptime -p)" "] [" "Time: " "$(date)" "]"
-
-		echo "${STATUS_LIST[@]}"
-		echo "$CURRENT"
+		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 		# exit on any input unless [left] or [right] escape codes
 		read -r -s -N 1 -t 1 VAR_1
 		if [[ $VAR_1 = $'\e' ]]; then
@@ -201,6 +197,26 @@ watch_Prev() {
 	fi
 }
 
+# calculate and return process uptime
+watch_Uptime() {
+	if PROC_UPTIME=$(pgrep $DIRECTORY/$PROCESS -f); then
+		PROC_UPTIME=$(ps -o "%t" -p $PROC_UPTIME)
+	else
+		PROC_UPTIME=00:00:00
+	fi
+	printf "%s" "${PROC_UPTIME//[!0-9:]}"
+}
+
+# calculate list for 1/4
+watch_Amount() {
+	# process amount = 1
+	if [[ ${#STATUS_LIST[@]} = 1 ]]; then
+		printf "%s" "1/1"
+	else
+		# process amount -gt 1
+		printf "%s" "$((CURRENT+1))/${#STATUS_LIST[@]}"
+	fi
+}
 watch_Monero()
 {
 	define_Monero
