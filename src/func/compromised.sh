@@ -28,31 +28,31 @@
 
 compromised_Hash()
 {
-    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-    $bred; echo "  WARNING: HASH ERROR!"
-    $bred; echo "  [$NAME_PRETTY] hash did not match!"
-    $bred; echo "  [$AUTHOR] might be compromised"
-    $bred; echo  "  (or more likely, there was an error)"
-    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
-	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
-	$bred; echo "EXITING FOR SAFTEY..."
+    BWHITE; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    BRED; echo "  WARNING: HASH ERROR!"
+    BRED; echo "  [$NAME_PRETTY] hash did not match!"
+    BRED; echo "  [$AUTHOR] might be compromised"
+    BRED; echo  "  (or more likely, there was an error)"
+    BWHITE; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	BWHITE; echo -n "ONLINE HASH: " ;BBLUE; echo "$HASH"
+	BWHITE; echo -n "LOCAL HASH: " ;BRED; echo "$LOCAL_HASH"
+	BRED; echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit 1
 }
 
 compromised_GPG()
 {
-    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-    $bblue; echo "  WARNING: GPG SIGNATURE ERROR!"
-    $bblue; echo "  [$NAME_PRETTY] GPG Signature did not match!"
-    $bblue; echo "  [$GPG_OWNER] might be compromised"
-    $bblue; echo  "  (or more likely, there was an error)"
-    $bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "ONLINE HASH: " ;$bblue; echo "$HASH"
-	$bwhite; echo -n "LOCAL HASH: " ;$bred; echo "$LOCAL_HASH"
-	$bwhite; echo "gpgSTDOUT: " ;$off; echo "$gpgSTDOUT"
-	$bred; echo "EXITING FOR SAFTEY..."
+    BWHITE; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+    BBLUE; echo "  WARNING: GPG SIGNATURE ERROR!"
+    BBLUE; echo "  [$NAME_PRETTY] GPG Signature did not match!"
+    BBLUE; echo "  [$GPG_OWNER] might be compromised"
+    BBLUE; echo  "  (or more likely, there was an error)"
+    BWHITE; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	BWHITE; echo -n "ONLINE HASH: " ;BBLUE; echo "$HASH"
+	BWHITE; echo -n "LOCAL HASH: " ;BRED; echo "$LOCAL_HASH"
+	BWHITE; echo "gpgSTDOUT: " ;OFF; echo "$gpgSTDOUT"
+	BRED; echo "EXITING FOR SAFTEY..."
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 	exit 1
 }

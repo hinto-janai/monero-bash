@@ -49,40 +49,40 @@ p2poolApi="$binP2Pool/local/stats"
 #						Colors
 #
 # regular
-black="printf \e[0;30m"
-red="printf \e[0;31m"
-green="printf \e[0;32m"
-yellow="printf \e[0;33m"
-blue="printf \e[0;34m"
-purple="printf \e[0;35m"
-cyan="printf \e[0;36m"
-white="printf \e[0;37m"
-# bold
-bblack="printf \e[1;90m"
-bred="printf \e[1;91m"
-bgreen="printf \e[1;92m"
-byellow="printf \e[1;93m"
-bblue="printf \e[1;94m"
-bpurple="printf \e[1;95m"
-bcyan="printf \e[1;96m"
-bwhite="printf \e[1;97m"
-# underscore
-ublack="printf \e[4;30m"
-ured="printf \e[4;31m"
-ugreen="printf \e[4;32m"
-uyellow="printf \e[4;33m"
-ublue="printf \e[4;34m"
-upurple="printf \e[4;35m"
-ucyan="printf \e[4;36m"
-uwhite="printf \e[4;37m"
-# high intensity
-iblack="printf \e[0;90m"
-ired="printf \e[0;91m"
-igreen="printf \e[0;92m"
-iyellow="printf \e[0;93m"
-iblue="printf \e[0;94m"
-ipurple="printf \e[0;95m"
-icyan="printf \e[0;96m"
-iwhite="printf \e[0;97m"
-# no color
-off="printf \e[0m"
+BLACK() { printf "\e[0;30m"; }
+RED() { printf "\e[0;31m"; }
+GREEN() { printf "\e[0;32m"; }
+YELLOW() { printf "\e[0;33m"; }
+BLUE() { printf "\e[0;34m"; }
+PURPLE() { printf "\e[0;35m"; }
+CYAN() { printf "\e[0;36m"; }
+WHITE() { printf "\e[0;37m"; }
+# BOLD
+BBLACK() { printf "\e[1;90m"; }
+BRED() { printf "\e[1;91m"; }
+BGREEN() { printf "\e[1;92m"; }
+BYELLOW() { printf "\e[1;93m"; }
+BBLUE() { printf "\e[1;94m"; }
+BPURPLE() { printf "\e[1;95m"; }
+BCYAN() { printf "\e[1;96m"; }
+BWHITE() { printf "\e[1;97m"; }
+# UNDERSCORE
+UBLACK() { printf "\e[4;30m"; }
+URED() { printf "\e[4;31m"; }
+UGREEN() { printf "\e[4;32m"; }
+UYELLOW() { printf "\e[4;33m"; }
+UBLUE() { printf "\e[4;34m"; }
+UPURPLE() { printf "\e[4;35m"; }
+UCYAN() { printf "\e[4;36m"; }
+UWHITE() { printf "\e[4;37m"; }
+# HIGH INTENSITY
+IBLACK() { printf "\e[0;90m"; }
+IRED() { printf "\e[0;91m"; }
+IGREEN() { printf "\e[0;92m"; }
+IYELLOW() { printf "\e[0;93m"; }
+IBLUE() { printf "\e[0;94m"; }
+IPURPLE() { printf "\e[0;95m"; }
+ICYAN() { printf "\e[0;96m"; }
+IWHITE() { printf "\e[0;97m"; }
+# NO COLOR
+OFF() { printf "\e[0m"; }

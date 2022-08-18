@@ -12,7 +12,7 @@ NewVer=v1.0.0
 
 upgrade_Template()
 {
-	$bred; echo "MONERO-BASH DEV INSTALL" ;$off
+	BRED; echo "MONERO-BASH DEV INSTALL" ;OFF
 
 	cd "$tmp"
 	git clone https://github.com/hinto-janaiyo/monero-bash

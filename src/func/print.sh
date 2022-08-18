@@ -27,130 +27,130 @@
 # Print Functions
 print_GreenHash()
 {
-	$bgreen; echo "<######> $1" ;$off
+	BGREEN; echo "<######> $1" ;OFF
 }
 
 print_BlueHash() {
-	$bblue; echo "<######> $1" ;$off
+	BBLUE; echo "<######> $1" ;OFF
 }
 
 print_RedHash()
 {
-	$bred; echo "<######> $1" ;$off
+	BRED; echo "<######> $1" ;OFF
 }
 
 print_WhiteHash()
 {
-	$bwhite; echo "<######> $1" ;$off
+	BWHITE; echo "<######> $1" ;OFF
 }
 
 print_CyanHash()
 {
-	$bcyan; echo "<######> $1" ;$off
+	BCYAN; echo "<######> $1" ;OFF
 }
 
 print_YellowHash()
 {
-	$byellow; echo "<######> $1" ;$off
+	BYELLOW; echo "<######> $1" ;OFF
 }
 
 print_PurpleHash()
 {
-	$bpurple; echo "<######> $1" ;$off
+	BPURPLE; echo "<######> $1" ;OFF
 }
 
 print_MoneroBashTitle()
 {
-	$bred; echo "#-------------------------#"
-	$bred; echo "#       monero-bash       #"
-	$bred; echo "#-------------------------#"
-	$off
+	BRED; echo "#-------------------------#"
+	BRED; echo "#       monero-bash       #"
+	BRED; echo "#-------------------------#"
+	OFF
 }
 
 print_Version()
 {
 	local VERSION_OLD
-	$bwhite; echo -n "monero-bash | "
+	BWHITE; echo -n "monero-bash | "
 	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
-		$bred; echo "$MONERO_BASH_VER"
+		BRED; echo "$MONERO_BASH_VER"
 		VERSION_OLD=true
 	else
-		$bgreen; echo "$MONERO_BASH_VER"
+		BGREEN; echo "$MONERO_BASH_VER"
 	fi
-	$bwhite; echo -n "Monero      | "
+	BWHITE; echo -n "Monero      | "
 	if [[ $MONERO_VER && "$MONERO_OLD" = "true" ]]; then
-		$bred; echo "$MONERO_VER"
+		BRED; echo "$MONERO_VER"
 		VERSION_OLD=true
 	else
-		$bgreen; echo "$MONERO_VER"
+		BGREEN; echo "$MONERO_VER"
 	fi
-	$bwhite; echo -n "XMRig       | "
+	BWHITE; echo -n "XMRig       | "
 	if [[ $XMRIG_VER && "$XMRIG_OLD" = "true" ]]; then
-		$bred; echo "$XMRIG_VER"
+		BRED; echo "$XMRIG_VER"
 		VERSION_OLD=true
 	else
-		$bgreen; echo "$XMRIG_VER"
+		BGREEN; echo "$XMRIG_VER"
 	fi
-	$bwhite; echo -n "P2Pool      | "
+	BWHITE; echo -n "P2Pool      | "
 	if [[ $P2POOL_VER && "$P2POOL_OLD" = "true" ]]; then
-		$bred; echo "$P2POOL_VER"
+		BRED; echo "$P2POOL_VER"
 		VERSION_OLD=true
 	else
-		$bgreen; echo "$P2POOL_VER"
+		BGREEN; echo "$P2POOL_VER"
 	fi
 	[[ $VERSION_OLD = true ]] && return 1 || return 0
 }
 
 print_Usage()
 {
-    $bwhite; echo -n "USAGE: "
-    $bred; echo -n "monero-bash "
-    $byellow; echo -n "<argument> "
-    $bpurple; echo "[optional]" ;$off
+    BWHITE; echo -n "USAGE: "
+    BRED; echo -n "monero-bash "
+    BYELLOW; echo -n "<argument> "
+    BPURPLE; echo "[optional]" ;OFF
     echo
     cat "$installDirectory/src/txt/usage"
 }
 
 print_Size()
 {
-	$off; echo -n "monero-bash install: " ;$byellow
+	OFF; echo -n "monero-bash install: " ;BYELLOW
 	du -h "$installDirectory"  --exclude="$installDirectory/bin" | tail -n 1 | awk '{print $1}'
-	$off; echo -n "/.monero-bash/: " ;$byellow
+	OFF; echo -n "/.monero-bash/: " ;BYELLOW
 	du -h "$dotMoneroBash" | tail -n 1 | awk '{print $1}'
 	if [[ -d "$bitMonero" ]]; then
-		$off; echo -n "$bitMonero/: " ;$byellow
+		OFF; echo -n "$bitMonero/: " ;BYELLOW
 		du -h "$bitMonero" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ $MONERO_VER != "" ]]; then
-		$off; echo -n "Monero: " ;$byellow
+		OFF; echo -n "Monero: " ;BYELLOW
 		du -h "$binMonero" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ $XMRIG_VER != "" ]]; then
-		$off; echo -n "XMRig: " ;$byellow
+		OFF; echo -n "XMRig: " ;BYELLOW
 		du -h "$binXMRig" | tail -n 1 | awk '{print $1}'
 	fi
 	if [[ $P2POOL_VER != "" ]]; then
-		$off; echo -n "P2Pool: " ;$byellow
+		OFF; echo -n "P2Pool: " ;BYELLOW
 		du -h "$binP2Pool" | tail -n 1 | awk '{print $1}'
 	fi
 }
 
 print_Error()
 {
-	$bred; printf "[monero-bash error] "
-	$iwhite; echo "$1"; $off
+	BRED; printf "[monero-bash error] "
+	IWHITE; echo "$1"; OFF
 }
 
 print_Warn()
 {
-	$byellow; printf "[monero-bash warning] "
-	$iwhite; echo "$1"; $off
+	BYELLOW; printf "[monero-bash warning] "
+	IWHITE; echo "$1"; OFF
 }
 
 print_Error_Exit()
 {
-	$bred; printf "[monero-bash error] "
-	$iwhite; echo "$1"; $off
+	BRED; printf "[monero-bash error] "
+	IWHITE; echo "$1"; OFF
 	exit 1
 }
 
@@ -158,12 +158,12 @@ print_Error_Exit()
 print_OKFAILED()
 {
 	if [[ $? = "0" ]]; then
-		$off; echo -n "[${HASH:0:4}...${HASH:60:64}] "
-		$igreen; echo "HASH OK"
+		OFF; echo -n "[${HASH:0:4}...${HASH:60:64}] "
+		IGREEN; echo "HASH OK"
 		verifyOK="true"
 	else
-		$off; echo -n "[${HASH:0:4}...${HASH:60:64}] "
-		$bred; echo "HASH FAIL" ;$off
+		OFF; echo -n "[${HASH:0:4}...${HASH:60:64}] "
+		BRED; echo "HASH FAIL" ;OFF
 		verifyOK="false"
 	fi
 }
@@ -171,12 +171,12 @@ print_OKFAILED()
 print_GPG()
 {
 	if [[ $? = "0" ]]; then
-		$off; echo -n "[${FINGERPRINT:0:4}...${FINGERPRINT:36:40}] "
-		$igreen; echo "SIGN OK"
+		OFF; echo -n "[${FINGERPRINT:0:4}...${FINGERPRINT:36:40}] "
+		IGREEN; echo "SIGN OK"
 		gpgOK="true"
 	else
-		$off; echo -n "[${FINGERPRINT:0:4}...${FINGERPRINT:36:40}] "
-		$bred; echo "SIGN FAIL" ;$off
+		OFF; echo -n "[${FINGERPRINT:0:4}...${FINGERPRINT:36:40}] "
+		BRED; echo "SIGN FAIL" ;OFF
 		gpgOK="false"
 	fi
 }
@@ -206,7 +206,7 @@ print_Upgrade()
 		|| $MONERO_VER != "" && $MONERO_OLD = "true" \
 		|| $XMRIG_VER != "" && $XMRIG_OLD = "true" \
 		|| $P2POOL_VER != "" && $P2POOL_OLD = "true" ]]; then
-		$bwhite; printf "Packages to upgrade: " ;$off
+		BWHITE; printf "Packages to upgrade: " ;OFF
 
 		[[ $MONERO_BASH_VER != "" && $MONERO_BASH_OLD = "true" ]]&& printf " [monero-bash] "
 		[[ $MONERO_VER != "" && $MONERO_OLD = "true" ]]&& printf " [Monero] "
@@ -214,8 +214,8 @@ print_Upgrade()
 		[[ $P2POOL_VER != "" && $P2POOL_OLD = "true" ]]&& printf " [P2Pool] "
 		echo;echo
 	else
-		$bwhite; printf "All packages: "
-		$bgreen; echo "up to date"; $off
+		BWHITE; printf "All packages: "
+		BGREEN; echo "up to date"; OFF
 		exit 1
 	fi
 }
@@ -223,22 +223,22 @@ print_Upgrade()
 print_Install()
 {
 	if [[ $MONERO_VER = "" || $XMRIG_VER = "" || $P2POOL_VER = "" ]]; then
-		$bwhite; printf "Packages to install: " ;$off
+		BWHITE; printf "Packages to install: " ;OFF
 
 		[[ $MONERO_VER = "" ]]&& printf " [Monero] "
 		[[ $XMRIG_VER = "" ]]&& printf " [XMRig] "
 		[[ $P2POOL_VER = "" ]]&& printf " [P2Pool] "
 		echo;echo
 	else
-		$bwhite; printf "All packages: "
-		$bgreen; echo "already installed"; $off
+		BWHITE; printf "All packages: "
+		BGREEN; echo "already installed"; OFF
 		exit 1
 	fi
 }
 
 print_Remove()
 {
-		$bwhite; printf "Packages to remove: " ;$off
+		BWHITE; printf "Packages to remove: " ;OFF
 		[[ $MONERO_VER != "" ]]&& printf " [Monero] "
 		[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
 		[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "

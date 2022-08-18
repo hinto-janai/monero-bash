@@ -29,7 +29,7 @@
 
 systemd_Template()
 {
-$off; echo "Creating [${SERVICE}]..."
+OFF; echo "Creating [${SERVICE}]..."
 prompt_Sudo
 error_Sudo
 
@@ -69,7 +69,7 @@ sudo rm -r "$tmpService"
 permission_Systemd
 
 # RELOAD SYSTEMD
-$off; echo "Reloading [systemd]..."
+OFF; echo "Reloading [systemd]..."
 sudo systemctl daemon-reload
 }
 
@@ -81,14 +81,14 @@ systemd_Edit()
 	prompt_Sudo;error_Sudo
 	if [[ -z $EDITOR ]]; then
 		print_Warn "No default \$EDITOR found!"
-		$off; printf "Pick editor [nano, vim, emacs, etc] (default=nano): "
+		OFF; printf "Pick editor [nano, vim, emacs, etc] (default=nano): "
 		read EDITOR
 		[[ -z $EDITOR || $EDITOR = "default" ]] && EDITOR="nano"
 	fi
 
 	sudo "$EDITOR" "$sysd/$SERVICE"
 	if [[ $? = 0 ]]; then
-		$off; echo "Reloading [systemd]..."
+		OFF; echo "Reloading [systemd]..."
 		sudo systemctl daemon-reload
 	else
 		print_Error "systemd changes failed"

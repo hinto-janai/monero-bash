@@ -55,15 +55,15 @@ prompt_Sudo()
 prompt_PriceAPI_IP()
 {
 	if [[ $PRICE_API_IP_WARNING = "true" ]]; then
-		$off; echo -n "Edit "
-		$ired; echo -n "PRICE_API_IP_WARNING "
-		$off; echo -n "in "
-		$ired; echo -n "monero-bash.conf "
-		$off; echo "to silence this warning"
+		OFF; echo -n "Edit "
+		IRED; echo -n "PRICE_API_IP_WARNING "
+		OFF; echo -n "in "
+		IRED; echo -n "monero-bash.conf "
+		OFF; echo "to silence this warning"
 		echo
-		$off; echo -n "This will expose your IP to: "
-		$ired; echo "https://cryptocompare.com"
-		$off; echo -n "Continue? (y/N) "
+		OFF; echo -n "This will expose your IP to: "
+		IRED; echo "https://cryptocompare.com"
+		OFF; echo -n "Continue? (y/N) "
 		Yes(){ :;}
 		No(){ echo "Exiting..." ;exit 1;}
 		prompt_NOyes

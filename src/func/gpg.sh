@@ -73,26 +73,26 @@ gpg_import_All()
 
 gpg_Diff()
 {
-	$bwhite; echo -n "The LOCAL and ONLINE gpg keys of "
-	$bred; echo -n "$GPG_OWNER "
-	$bwhite; echo "are different!" ;$off
-	$bblue; echo -n "LOCAL: "
-	$off; echo "$installDirectory/gpg/${GPG_OWNER}.asc"
-	$bgreen; echo -n "ONLINE: "
-	$off; echo "$GPG_PUB_KEY"
+	BWHITE; echo -n "The LOCAL and ONLINE gpg keys of "
+	BRED; echo -n "$GPG_OWNER "
+	BWHITE; echo "are different!" ;OFF
+	BBLUE; echo -n "LOCAL: "
+	OFF; echo "$installDirectory/gpg/${GPG_OWNER}.asc"
+	BGREEN; echo -n "ONLINE: "
+	OFF; echo "$GPG_PUB_KEY"
 	while true ;do
-		$bwhite; echo -n "What to do? [show / pick / skip] " ;$off
+		BWHITE; echo -n "What to do? [show / pick / skip] " ;OFF
 		read OPTION
 		case $OPTION in
 			show)
-				$bblue; echo "LOCAL KEY:"
-				$off; echo "$LOCAL"
-				$bgreen; echo "ONLINE KEY:"
-				$off; echo "$ONLINE"
+				BBLUE; echo "LOCAL KEY:"
+				OFF; echo "$LOCAL"
+				BGREEN; echo "ONLINE KEY:"
+				OFF; echo "$ONLINE"
 				;;
 			pick)
 				while true; do
-					$bwhite; echo -n "Which key to pick? [local / online] " ;$off
+					BWHITE; echo -n "Which key to pick? [local / online] " ;OFF
 					read KEYPICK
 					case $KEYPICK in
 						local) gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc" && break ;;
@@ -103,7 +103,7 @@ gpg_Diff()
 				break
 				;;
 			skip)
-				$bwhite; echo "Skipping..."
+				BWHITE; echo "Skipping..."
 				echo
 				break
 				;;
@@ -119,7 +119,7 @@ gpg_Overwrite()
 	prompt_Sudo
 	error_Sudo
 	safety_HashList
-	$bwhite; echo "Overwriting LOCAL keys..." ;$off
+	BWHITE; echo "Overwriting LOCAL keys..." ;OFF
 	trap "trap_Hash" 1 2 3 6 15
 	wget -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
 	code_Wget

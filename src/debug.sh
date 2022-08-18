@@ -30,8 +30,8 @@
 # invoke a monero-bash function directly
 DEBUG_04e3be9()
 {
-	$bred; echo "@@@@@@   DEBUG MODE - BE CAREFUL   @@@@@@"
-	$iwhite; echo -n "function to execute: " ;$off
+	BRED; echo "@@@@@@   DEBUG MODE - BE CAREFUL   @@@@@@"
+	IWHITE; echo -n "function to execute: " ;OFF
 	read command
 	"$command"
 }
@@ -79,11 +79,11 @@ CHECK_HASH_LIST_TEMPLATE()
 		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
 			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
 			if [[ $? = "0" ]]; then
-				$bgreen; printf "[  OK  ] "
-				$white; echo "$i"
+				BGREEN; printf "[  OK  ] "
+				WHITE; echo "$i"
 			else
-				$bred; printf "[FAILED] "
-				$white; echo "$i"
+				BRED; printf "[FAILED] "
+				WHITE; echo "$i"
 				hashFail="true"
 			fi
 		fi
@@ -94,11 +94,11 @@ CHECK_HASH_LIST()
 	# monero-bash hash
 	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
 	if [[ $? = "0" ]]; then
-		$bgreen; printf "[  OK  ] "
-		$white; echo "monero-bash"
+		BGREEN; printf "[  OK  ] "
+		WHITE; echo "monero-bash"
 	else
-		$bred; printf "[FAILED] "
-		$white; echo "monero-bash"
+		BRED; printf "[FAILED] "
+		WHITE; echo "monero-bash"
 		hashFail="true"
 	fi
 
@@ -115,13 +115,13 @@ CHECK_HASH_LIST()
 	CHECK_HASH_LIST_TEMPLATE
 
 	if [[ $hashFail = "true" ]]; then
-		$bred; echo -n "monero-bash error: "
-		$bwhite; echo "hash check has failed"
-		$white; echo "Exiting for safety..."
+		BRED; echo -n "monero-bash error: "
+		BWHITE; echo "hash check has failed"
+		WHITE; echo "Exiting for safety..."
 		exit 1
 	else
-		$bwhite; echo -n "[monero-bash] "
-		$bgreen; echo "HASH CHECK OK!" ;$off
+		BWHITE; echo -n "[monero-bash] "
+		BGREEN; echo "HASH CHECK OK!" ;OFF
 	fi
 }
 
@@ -135,11 +135,11 @@ QUIET_HASH_LIST_TEMPLATE()
 		fi
 	done
 	if [[ $localHashFail = "true" ]]; then
-		$bred; printf "[FAILED] "
-		$white; echo "$NAME"
+		BRED; printf "[FAILED] "
+		WHITE; echo "$NAME"
 	else
-		$bgreen; printf "[  OK  ] "
-		$white; echo "$NAME"
+		BGREEN; printf "[  OK  ] "
+		WHITE; echo "$NAME"
 	fi
 }
 QUIET_HASH_LIST()
@@ -147,11 +147,11 @@ QUIET_HASH_LIST()
 	# monero-bash hash
 	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
 	if [[ $? = "0" ]]; then
-		$bgreen; printf "[  OK  ] "
-		$white; echo "monero-bash"
+		BGREEN; printf "[  OK  ] "
+		WHITE; echo "monero-bash"
 	else
-		$bred; printf "[FAILED] "
-		$white; echo "monero-bash"
+		BRED; printf "[FAILED] "
+		WHITE; echo "monero-bash"
 		hashFail="true"
 	fi
 
@@ -173,12 +173,12 @@ QUIET_HASH_LIST()
 	QUIET_HASH_LIST_TEMPLATE
 
 	if [[ $hashFail = "true" ]]; then
-		$bred; echo -n "[monero-bash error] "
-		$bwhite; echo "hash check has failed"
-		$white; echo "Exiting for safety..."
+		BRED; echo -n "[monero-bash error] "
+		BWHITE; echo "hash check has failed"
+		WHITE; echo "Exiting for safety..."
 		exit 1
 	else
-		$bwhite; echo -n "[monero-bash] "
-		$bgreen; echo "HASH CHECK OK!" ;$off
+		BWHITE; echo -n "[monero-bash] "
+		BGREEN; echo "HASH CHECK OK!" ;OFF
 	fi
 }

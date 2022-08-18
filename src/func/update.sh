@@ -31,18 +31,18 @@ update_Template()
 {
 	version_Update
 	if [[ "$NAME_VER" != "$NewVer" ]]; then
-		$bwhite; echo -n "$NAME_SPACED"
-		$bred; echo -n "$NAME_VER "
-		$bwhite; echo -n "-> "
-		$bgreen; echo "$NewVer"
+		BWHITE; echo -n "$NAME_SPACED"
+		BRED; echo -n "$NAME_VER "
+		BWHITE; echo -n "-> "
+		BGREEN; echo "$NewVer"
 		updateFound="true"
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
 		PRODUCE_HASH_LIST &>/dev/null
 	else
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 		PRODUCE_HASH_LIST &>/dev/null
-		$bwhite; echo -n "$NAME_SPACED"
-		$bgreen; echo "$NAME_VER"
+		BWHITE; echo -n "$NAME_SPACED"
+		BGREEN; echo "$NAME_VER"
 	fi
 }
 
@@ -78,20 +78,20 @@ update_All()
 {
 	prompt_Sudo
 	error_Sudo
-	$bwhite; printf "%s\n\n" "### Fetching pkg meta-data ###"
+	BWHITE; printf "%s\n\n" "### Fetching pkg meta-data ###"
 	update_MoneroBash
 	[[ $MONERO_VER != "" ]]&& update_Monero
 	[[ $XMRIG_VER != "" ]]&& update_XMRig
 	[[ $P2POOL_VER != "" ]]&& update_P2Pool
     if [[ $updateFound = "true" ]]; then
         echo
-        $off; echo -n "Updates found, type: "
-        $byellow; echo -n "[monero-bash upgrade] "
-        $off; echo "to upgrade all"
-        $off
+        OFF; echo -n "Updates found, type: "
+        BYELLOW; echo -n "[monero-bash upgrade] "
+        OFF; echo "to upgrade all"
+        OFF
 		exit 0
 	else
-		$bgreen; printf "\n%s\n" "### All package up-to-date ###"
-		$off; exit 1
+		BGREEN; printf "\n%s\n" "### All package up-to-date ###"
+		OFF; exit 1
     fi
 }

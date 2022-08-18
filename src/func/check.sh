@@ -29,9 +29,9 @@
 check_Price()
 {
 	prompt_PriceAPI_IP
-	$ired; echo "XMR price: " ;$off
+	IRED; echo "XMR price: " ;OFF
 	wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR" \
 		| tr -d "{\"}" | tr "," "\n" | sed 's/:/: /g'
 	echo
-	$bred; echo "XMR: 1"
+	BRED; echo "XMR: 1"
 }

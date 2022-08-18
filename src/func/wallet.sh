@@ -83,7 +83,7 @@ wallet_Template()
 {
 	# WALLET NAME
 	while true ;do
-		$off; echo -n "New wallet name: " ;$iwhite
+		OFF; echo -n "New wallet name: " ;IWHITE
 		read walletName
 		if [[ "$walletName" = *" "* || "$walletName" = "" ]]; then
 			print_Error "Wallet name cannot be empty or have spaces"
@@ -94,10 +94,10 @@ wallet_Template()
 
 	# WALLET PASS
 	while true; do
-		$off; echo -n "Wallet password: "
+		OFF; echo -n "Wallet password: "
 		read -s walletPassword
 		echo
-		$off; echo -n "Enter password again: "
+		OFF; echo -n "Enter password again: "
 		read -s walletPasswordAgain
 		echo
 		if [[ "$walletPassword" = "$walletPasswordAgain" ]]; then
@@ -113,9 +113,9 @@ wallet_Create()
 
 	# WALLET SEED LANGUAGE
 	while true ;do
-		$ired; echo "Monero seed languages:" ;$iwhite
+		IRED; echo "Monero seed languages:" ;IWHITE
 		print_SeedLanguageList
-		$off; echo -n "Pick seed language: " ;$iwhite
+		OFF; echo -n "Pick seed language: " ;IWHITE
 		read seedLanguage
 			case "$seedLanguage" in
 				"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;
@@ -135,7 +135,7 @@ wallet_Create()
 		done
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";$off
+	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";OFF
 	createWallet="true"
 	wallet_Start
 }
@@ -143,11 +143,11 @@ wallet_Create()
 # creation of view-only wallet
 wallet_View()
 {
-	$bred; echo "Creating [view] wallet..." ;$off
+	BRED; echo "Creating [view] wallet..." ;OFF
 	wallet_Template
 
 	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";$off
+	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";OFF
 	createView="true"
 	wallet_Start
 }
@@ -155,12 +155,12 @@ wallet_View()
 # recovery of wallet
 wallet_Recover()
 {
-	$bred; echo "Recovering wallet..." ;$off
+	BRED; echo "Recovering wallet..." ;OFF
 	wallet_Template
 
 	# SEED INPUT
 	while true ;do
-		$off; echo -n "Seed (24/25 words): "
+		OFF; echo -n "Seed (24/25 words): "
 		read -r walletSeed ; echo
 		case $walletSeed in
 			"") print_Error "Empty input" ;;
@@ -175,7 +175,7 @@ wallet_Recover()
 					fi
 					((n++))
 				done
-				$bwhite; echo -n "Is this correct? (Y/n) "
+				BWHITE; echo -n "Is this correct? (Y/n) "
 				local YES_NO
 				read -r YES_NO
 				case $YES_NO in
@@ -188,7 +188,7 @@ wallet_Recover()
 	# CONFIRM SEED
 
 	# START monero-wallet-cli WITH RECOVERY VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";$off
+	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";OFF
 	recoverWallet="true"
 	wallet_Start
 }
@@ -196,15 +196,15 @@ wallet_Recover()
 # if wallet name happens to be "new/view/recover"
 wallet_Collision()
 {
-	$off; echo "Wallet name is similar to option..."
+	OFF; echo "Wallet name is similar to option..."
 	while true ;do
-	$iblue; printf "SELECT "
-	$off; printf "or "
-	$ired; printf "CREATE? " ;$off
+	IBLUE; printf "SELECT "
+	OFF; printf "or "
+	IRED; printf "CREATE? " ;OFF
 	read selectCreate
 		case $selectCreate in
 			select|Select|SELECT)
-				$off; echo "Selecting $walletSelection..."
+				OFF; echo "Selecting $walletSelection..."
 				echo -n "Password: "
 				read -s walletPassword && echo
 				wallet_Start
@@ -221,7 +221,7 @@ wallet_Collision()
 wallet_Count()
 {
 	walletCount="$(ls "$wallets" | grep -v ".keys" | wc -l)"
-	$byellow; echo -n "$walletCount " ;$bwhite
+	BYELLOW; echo -n "$walletCount " ;BWHITE
 	if [[ $walletCount = 1 ]]; then
 		echo "wallet found:"
 		echo
@@ -246,7 +246,7 @@ wallet_List()
 	if [[ $walletList = "" ]]; then
 		echo
 	else
-		$bwhite; echo "$(wallet_list_pretty)"
+		BWHITE; echo "$(wallet_list_pretty)"
 		echo
 	fi
 }

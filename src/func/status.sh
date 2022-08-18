@@ -50,16 +50,16 @@ status_Watch() {
 
 status_System()
 {
-	$bblue; printf "System      | "
-	$iwhite; echo "$(uptime -p)"
+	BBLUE; printf "System      | "
+	IWHITE; echo "$(uptime -p)"
 	echo
 }
 
 status_Template()
 {
-	$bwhite; printf "[${NAME_PRETTY}] " ;$off
+	BWHITE; printf "[${NAME_PRETTY}] " ;OFF
 	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
-		$bgreen; echo "ONLINE" ;$off
+		BGREEN; echo "ONLINE" ;OFF
 
 		# ps stats
 		ps -o "| %C | %t |" -p $(pgrep $DIRECTORY/$PROCESS -f)
@@ -68,7 +68,7 @@ status_Template()
 		EXTRA_STATS
 		echo
 	else
-		$bred; echo "OFFLINE" ;$off
+		BRED; echo "OFFLINE" ;OFF
 		echo
 	fi
 }
@@ -174,12 +174,12 @@ status_Monero()
 		database_size=$(echo "$database_size" | awk '{print $1 / 1000000000}')
 
 		# print
-		$bwhite; printf "Size        | "; printf "\e[0m%s\e[97m%s\e[0m%s\n" "[" "$database_size GB" "]"
-		$bwhite; printf "Height      | "; printf "\e[0m%s${percent_color}%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
+		BWHITE; printf "Size        | "; printf "\e[0m%s\e[97m%s\e[0m%s\n" "[" "$database_size GB" "]"
+		BWHITE; printf "Height      | "; printf "\e[0m%s${percent_color}%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
 			"[" "$height" "/" "$target_height" "] (" "${height_percent}%" ") on [" "$nettype" "]"
-		$bwhite; printf "TX Pool     | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
-		$bwhite; printf "Net Hash    | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
-		$bwhite; printf "Connections | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "]"
+		BWHITE; printf "TX Pool     | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
+		BWHITE; printf "Net Hash    | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
+		BWHITE; printf "Connections | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "]"
 	}
 	status_Template
 }
@@ -458,37 +458,37 @@ status_P2Pool()
 				print_Warn "[WALLET] not found in [monero-bash.conf]"
 			fi
 		fi
-		$bwhite; printf "Wallet        | "
-		$off; echo "[${WALLET:0:6}...${WALLET: -6}]"
+		BWHITE; printf "Wallet        | "
+		OFF; echo "[${WALLET:0:6}...${WALLET: -6}]"
 
 
 		# print EFFORT
-		$bwhite; printf "Effort        | "; $off
-		$off; echo -n "[average: ${averageEffort}%] "
-		$off; echo "[current: ${currentEffort}%]"
+		BWHITE; printf "Effort        | "; OFF
+		OFF; echo -n "[average: ${averageEffort}%] "
+		OFF; echo "[current: ${currentEffort}%]"
 
 		# print HASHRATE
-		$bwhite; printf "Hashrate      | "; $off
+		BWHITE; printf "Hashrate      | "; OFF
 		printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "15s" "/" "1h" "/" "24h"
 		printf "\e[0m[\e[0;93m%s\e[0m] " "$p2pHash_15m H/s"
 		printf "\e[0m[\e[0;94m%s\e[0m] " "$p2pHash_1h H/s"
 		printf "\e[0m[\e[0;95m%s\e[0m]\n" "$p2pHash_24h H/s"
 
 		# print SIDECHAIN
-		$bwhite; printf "Side-Chain    | "
+		BWHITE; printf "Side-Chain    | "
 		if [[ -e $installDirectory/src/mini/mini_now ]]; then
-			$off; echo "[P2Pool Mini]"
+			OFF; echo "[P2Pool Mini]"
 		else
-			$off; echo "[P2Pool Main] (default)"
+			OFF; echo "[P2Pool Main] (default)"
 		fi
 
 		# print CONNECTIONS
-		$bwhite; printf "Connections   | "; $off
-		$off; echo "[${connections}] "
-		$bwhite; echo "--------------| "
+		BWHITE; printf "Connections   | "; OFF
+		OFF; echo "[${connections}] "
+		BWHITE; echo "--------------| "
 
 		# print SHARES FOUND
-		$bpurple; printf "Shares found  | "
+		BPURPLE; printf "Shares found  | "
 		printf "\e[0m%s\e[0;95m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
 			"$sharesFound shares" \
@@ -503,7 +503,7 @@ status_P2Pool()
 			"]"
 
 		# print PAYOUTS FOUND
-		$bcyan; printf "Total payouts | "
+		BCYAN; printf "Total payouts | "
 		printf "\e[0m%s\e[0;96m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
 			"$payoutTotal payouts" \
@@ -518,7 +518,7 @@ status_P2Pool()
 			"]"
 
 		# print XMR
-		$bgreen; printf "XMR received  | "
+		BGREEN; printf "XMR received  | "
 		printf "\e[0m%s\e[0;92m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
 			"[" \
 			"$xmrTotal XMR" \
@@ -533,7 +533,7 @@ status_P2Pool()
 			"]"
 
 		# print LATEST SHARE
-		$bblue; printf "Latest share  | "; $off
+		BBLUE; printf "Latest share  | "; OFF
 		declare -a latestShare=($(echo "$LOG" | tac | grep -m1 "SHARE FOUND" | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
 		# [0] = day
 		# [1] = time
@@ -550,7 +550,7 @@ status_P2Pool()
 		echo
 
 		# print LATEST PAYOUT
-		$byellow; printf "Latest payout | "; $off
+		BYELLOW; printf "Latest payout | "; OFF
 		declare -a latestPayout=($(echo "$LOG" | grep "You received a payout of" | tail -1 | sed 's/NOTICE  //; s/P2Pool //'))
 		# [0] = day
 		# [1] = time
@@ -574,12 +574,12 @@ status_XMRig()
 	EXTRA_STATS()
 	{
 		# WALLET (in xmrig.json)
-		$bwhite; printf "Wallet       | " ;$off
+		BWHITE; printf "Wallet       | " ;OFF
 		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '", ')"
 		[[ -z $wallet ]] && echo || echo "[${wallet:0:6}...${wallet: -6}]"
 
 		# POOL
-		$bpurple; printf "Pool         | " ;$off
+		BPURPLE; printf "Pool         | " ;OFF
 		local xmrigPool=$(grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')
 		echo "[${xmrigPool}]"
 
@@ -593,14 +593,14 @@ status_XMRig()
 		# [5] = #
 		# [6] = (#
 		# [7] = ms)
-		$bblue; printf "Latest share | "
+		BBLUE; printf "Latest share | "
 		if [[ $shares ]]; then
 			shares[1]=${shares[1]//.*/]}
 			shares[3]=${shares[3]//(}
 			shares[3]=${shares[3]//)}
 			shares[6]=${shares[6]//(}
 			shares[7]=${shares[7]//)}
-			$off; echo -n "${shares[0]} ${shares[1]} [${shares[2]} ${shares[3]}] [${shares[4]} ${shares[5]}] [${shares[6]} ${shares[7]}]"
+			OFF; echo -n "${shares[0]} ${shares[1]} [${shares[2]} ${shares[3]}] [${shares[4]} ${shares[5]}] [${shares[6]} ${shares[7]}]"
 		fi
 		echo
 
@@ -615,10 +615,10 @@ status_XMRig()
 		# [6] = max
 		# [7] = #
 		# [8] = H/s
-		$byellow; printf "Hashrate     | "
+		BYELLOW; printf "Hashrate     | "
 		if [[ $hashrate ]]; then
 			hashrate[1]=${hashrate[1]//.*/]}
-			$off; echo -n "${hashrate[0]} ${hashrate[1]} "
+			OFF; echo -n "${hashrate[0]} ${hashrate[1]} "
 			[[ ${hashrate[2]} != 'n/a' ]] && hashrate[2]="${hashrate[2]} H/s"
 			[[ ${hashrate[3]} != 'n/a' ]] && hashrate[3]="${hashrate[3]} H/s"
 			[[ ${hashrate[4]} != 'n/a' ]] && hashrate[4]="${hashrate[4]} H/s"

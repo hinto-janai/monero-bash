@@ -38,8 +38,8 @@ download_Template()
 	HTML="false"
 	DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	if [[ $? != "0" ]]; then
-		$ired; echo "GitHub API error detected..."
-		$off; echo "Trying GitHub HTML filter instead..."
+		IRED; echo "GitHub API error detected..."
+		OFF; echo "Trying GitHub HTML filter instead..."
 		DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
 		API="false"
 		HTML="true"

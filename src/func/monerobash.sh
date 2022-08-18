@@ -29,44 +29,44 @@
 ###################################################   START OF INSTALL FUNCTION   ###################################################
 monerobash_Install()
 {
-	$bred; echo "#-----------------------------------------------------------------#"
-	$bred; echo -n "#                 "
-	$bred; echo -n "monero-bash $MONERO_BASH_VER installation"
-	$bred; echo "                 #"
-	$bred; echo "#-----------------------------------------------------------------#"
+	BRED; echo "#-----------------------------------------------------------------#"
+	BRED; echo -n "#                 "
+	BRED; echo -n "monero-bash $MONERO_BASH_VER installation"
+	BRED; echo "                 #"
+	BRED; echo "#-----------------------------------------------------------------#"
 
 while true ;do
 	# $HOME/.bitmonero check
 	if [[ -d "$HOME/.bitmonero" ]]; then
-		$bwhite; echo "Monero data folder detected!"
-		$off; echo -n "Use "
-		$byellow; echo -n "[${HOME}/.bitmonero]"
-		$off; echo -n "? (Y/n): "
+		BWHITE; echo "Monero data folder detected!"
+		OFF; echo -n "Use "
+		BYELLOW; echo -n "[${HOME}/.bitmonero]"
+		OFF; echo -n "? (Y/n): "
 		Yes(){ alreadyFoundDataPath="true" ;}
 		No(){ :;}
 		prompt_YESno
 	fi
 	if [[ $alreadyFoundDataPath != "true" ]]; then
-		$bwhite; echo -n "Monero data path [Enter for default]: " ;$iwhite
+		BWHITE; echo -n "Monero data path [Enter for default]: " ;IWHITE
 		read inputData
 	fi
 
 	# Data Path Confirmation
 	if [[ $alreadyFoundDataPath = "true" ]]; then
-		$bwhite; echo -n "Data path: "
-		$byellow; echo "[${HOME}/.bitmonero]"
-		$off; echo -n "Is this okay? (Y/n) "
+		BWHITE; echo -n "Data path: "
+		BYELLOW; echo "[${HOME}/.bitmonero]"
+		OFF; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
 	else
-		$bwhite; echo -n "Data path: "
+		BWHITE; echo -n "Data path: "
 		if [[ $inputData ]]; then
-			$byellow; echo "$inputData"
+			BYELLOW; echo "$inputData"
 		else
-			$byellow; echo "$HOME/.bitmonero"
+			BYELLOW; echo "$HOME/.bitmonero"
 		fi
-		$off; echo -n "Is this okay? (Y/n) "
+		OFF; echo -n "Is this okay? (Y/n) "
 		Yes(){ echo "Data path set!" ;yes="true";}
 		No(){ :;}
 		prompt_YESno
@@ -76,9 +76,9 @@ done
 
 # MB ALIAS
 if [[ ! -e /usr/local/bin/mb && ! -h /usr/local/bin/mb ]]; then
-	$byellow; printf "%s\n" "Symlink creation: [monero-bash] -> [mb]"
-	$bwhite; printf "%s" "This allows you use monero-bash like so: "
-	$bcyan; printf "%s\n" "[mb update && mb upgrade]"; $off
+	BYELLOW; printf "%s\n" "Symlink creation: [monero-bash] -> [mb]"
+	BWHITE; printf "%s" "This allows you use monero-bash like so: "
+	BCYAN; printf "%s\n" "[mb update && mb upgrade]"; OFF
 	printf "%s" "Create symlink? (Y/n) "
 	read -r YES_NO
 	case $YES_NO in
@@ -95,12 +95,12 @@ fi
 
 # INSTALLATION INFORMATION
 local i
-$bred; printf "%s" "#"
+BRED; printf "%s" "#"
 for ((i=0; i < 65; i++)); do
 	read -r -t 0.01 || true
 	printf "%s" "-"
 done
-printf "%s\n\n" "#"; $off
+printf "%s\n\n" "#"; OFF
 printf "\e[0m%s\e[1;93m%s\n" \
 	"Install     | " "/usr/local/share/monero-bash" \
 	"PATH        | " "/usr/local/bin/monero-bash"
@@ -116,19 +116,19 @@ fi
 echo
 
 # Installation Prompt
-	$bwhite; echo -n "Start "
-	$bred; echo -n "[monero-bash] "
-	$bwhite; echo -n "install? (Y/n) "
-	Yes(){ $off; echo "Starting..." ;}
-	No(){ $off; echo "Exiting..." ;exit;}
+	BWHITE; echo -n "Start "
+	BRED; echo -n "[monero-bash] "
+	BWHITE; echo -n "install? (Y/n) "
+	Yes(){ OFF; echo "Starting..." ;}
+	No(){ OFF; echo "Exiting..." ;exit;}
 	prompt_YESno
 	prompt_Sudo
 	error_Exit "Sudo is required to install monero-bash"
 
 # Check if already installed
 if [[ -e /usr/local/share/monero-bash ]]; then
-	$bred; printf "ERROR: "
-	$bwhite; echo "/usr/local/share/monero-bash already detected!"
+	BRED; printf "ERROR: "
+	BWHITE; echo "/usr/local/share/monero-bash already detected!"
 	exit
 fi
 
@@ -197,17 +197,17 @@ PRODUCE_HASH_LIST
 #                       End
 #
 echo
-$bred; echo "#-----------------------------------------------------------------#"
-$bred; echo "#                monero-bash installation complete                #"
-$bred; echo "#-----------------------------------------------------------------#"
-$off; echo -n "Install     | "; $byellow; echo "/usr/local/share/monero-bash"
-$off; echo -n "Packages    | "; $byellow; echo "/usr/local/share/monero-bash/bin"
-$off; echo -n "PATH        | "; $byellow; echo "/usr/local/bin/monero-bash"
+BRED; echo "#-----------------------------------------------------------------#"
+BRED; echo "#                monero-bash installation complete                #"
+BRED; echo "#-----------------------------------------------------------------#"
+OFF; echo -n "Install     | "; BYELLOW; echo "/usr/local/share/monero-bash"
+OFF; echo -n "Packages    | "; BYELLOW; echo "/usr/local/share/monero-bash/bin"
+OFF; echo -n "PATH        | "; BYELLOW; echo "/usr/local/bin/monero-bash"
 if [[ $INSTALL_SYMLINK = true ]]; then
-	$off; echo -n "Symlink     | "; $byellow; echo "/usr/local/bin/mb"
+	OFF; echo -n "Symlink     | "; BYELLOW; echo "/usr/local/bin/mb"
 fi
-$off; echo -n "User folder | "; $byellow; echo "$dotMoneroBash"
-$off; echo -n "Monero data | "; $byellow
+OFF; echo -n "User folder | "; BYELLOW; echo "$dotMoneroBash"
+OFF; echo -n "Monero data | "; BYELLOW
 if [[ $inputData ]]; then
 	echo "$inputData"
 else
@@ -216,15 +216,15 @@ fi
 echo
 
 if [[ $INSTALL_SYMLINK = true ]]; then
-	$off; echo -n "Type: "
-	$bcyan; echo -n "[monero-bash help] "
-	$off; echo -n "OR "
-	$bcyan; echo -n "[mb help] "
-	$off; echo "to get started"
+	OFF; echo -n "Type: "
+	BCYAN; echo -n "[monero-bash help] "
+	OFF; echo -n "OR "
+	BCYAN; echo -n "[mb help] "
+	OFF; echo "to get started"
 else
-	$off; echo -n "Type: "
-	$bcyan; echo -n "[monero-bash help] "
-	$off; echo "to get started"
+	OFF; echo -n "Type: "
+	BCYAN; echo -n "[monero-bash help] "
+	OFF; echo "to get started"
 fi
 exit 0
 }
@@ -232,31 +232,31 @@ exit 0
 
 monerobash_Uninstall()
 {
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-	$bwhite; echo -n "@   "
-	$bred; echo -n "THIS WILL UNINSTALL monero-bash, DELETE /.monero-bash/ AND EVERYTHING INSIDE IT"
-	$bwhite; echo "   @"
-	$bwhite; echo -n "@                         "
-	$bred; echo -n "It will NOT delete \$HOME/.bitmonero"
-	$bwhite; echo "                         @"
-	$bwhite; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	BWHITE; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+	BWHITE; echo -n "@   "
+	BRED; echo -n "THIS WILL UNINSTALL monero-bash, DELETE /.monero-bash/ AND EVERYTHING INSIDE IT"
+	BWHITE; echo "   @"
+	BWHITE; echo -n "@                         "
+	BRED; echo -n "It will NOT delete \$HOME/.bitmonero"
+	BWHITE; echo "                         @"
+	BWHITE; echo "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 	print_Size
-	$bwhite; echo -n "Uninstall "
-	$ired; echo -n "monero-bash? "
-	$bwhite; echo -n "(y/N) "
+	BWHITE; echo -n "Uninstall "
+	IRED; echo -n "monero-bash? "
+	BWHITE; echo -n "(y/N) "
 	Yes()
 	{
 		# if wallets are found, warn user
 		walletCount="$(ls "$wallets" | wc -l)"
 		if [[ "$walletCount" -gt 0 ]]; then
 			echo
-			$bwhite; echo -n "@@@@@@@@@@@@"
-			$bred; echo -n "      WALLETS FOUND      "
-			$bwhite; echo "@@@@@@@@@@@@"
-			$bwhite; ls "$wallets"
-			$bred; echo -n "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) " ;$bwhite
+			BWHITE; echo -n "@@@@@@@@@@@@"
+			BRED; echo -n "      WALLETS FOUND      "
+			BWHITE; echo "@@@@@@@@@@@@"
+			BWHITE; ls "$wallets"
+			BRED; echo -n "ARE YOU SURE YOU WANT TO UNINSTALL? (y/N) " ;BWHITE
 			Yes(){ : ;}
-			No(){ $off; echo "Exiting..." ;exit;}
+			No(){ OFF; echo "Exiting..." ;exit;}
 			prompt_NOyes
 		fi
 		prompt_Sudo
@@ -266,9 +266,9 @@ monerobash_Uninstall()
 		for i in {5..0} ;do
 			tput sc
 			if [[ "$i" = "0" ]]; then
-				$bred; echo -n "Uninstalling..."
+				BRED; echo -n "Uninstalling..."
 			else
-				$bred; echo -n "Uninstalling in $i..."
+				BRED; echo -n "Uninstalling in $i..."
 			fi
 			sleep 1
 			if [[ $i != "0" ]]; then
@@ -321,6 +321,6 @@ monerobash_Uninstall()
 				fi
 		print_GreenHash "monero-bash has been uninstalled"
 	}
-	No(){ $off; echo "Exiting..." ;exit;}
+	No(){ OFF; echo "Exiting..." ;exit;}
 	prompt_NOyes
 }

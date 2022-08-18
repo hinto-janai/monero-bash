@@ -146,12 +146,12 @@ if [[ $interactive = "true" ]]; then
 	fi
 
 	# SHOW WALLETS, SELECT
-	$white; wallet_Count ; wallet_List
+	WHITE; wallet_Count ; wallet_List
 	while true ;do
-		$byellow; printf "Select wallet "
-		$white; printf "or "
-		$bpurple; printf "[new / view / recover]"
-		$white; printf ": "
+		BYELLOW; printf "Select wallet "
+		WHITE; printf "or "
+		BPURPLE; printf "[new / view / recover]"
+		WHITE; printf ": "
 		read walletSelection
 
 		for i in ${walletList[*]}; do
@@ -162,10 +162,10 @@ if [[ $interactive = "true" ]]; then
 					wallet_Collision
 			# ELSE, START WALLET NORMALLY IF IT EXISTS
 			elif [[ $walletSelection = $i ]]; then
-				$white; printf "Password: "
+				WHITE; printf "Password: "
 				read -s walletPassword
 				printf "\n\n"
-				printf "\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletSelection]";$off
+				printf "\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletSelection]";OFF
 				wallet_Start
 			fi
 		done
@@ -176,7 +176,7 @@ if [[ $interactive = "true" ]]; then
 			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
 			recover|Recover|RECOVER|"[recover]"|"[Recover]") wallet_Recover ; break ;;
 			"") print_Error "Empty input" ;;
-			*) $ired; print_Error "Wallet does not exist" ;;
+			*) IRED; print_Error "Wallet does not exist" ;;
 		esac
 	done
 	exit
@@ -311,31 +311,31 @@ if [[ $options = "true" ]]; then
 			process_Disable
 			;;
 		upgrade)
-			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&$iblue&& echo "Verbosely upgrading...!" ;$off
-			[[ $* = *"force"* ]]&& FORCE_UPGRADE="true" &&$ired&& echo "Forcefully upgrading...!" ;$off
+			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&IBLUE&& echo "Verbosely upgrading...!" ;OFF
+			[[ $* = *"force"* ]]&& FORCE_UPGRADE="true" &&IRED&& echo "Forcefully upgrading...!" ;OFF
 			UPGRADE_LIST=${2//verbose}
 			UPGRADE_LIST=${UPGRADE_LIST//force}
 			case $UPGRADE_LIST in
 				*"bash"*)
-					$bwhite; echo -n "Upgrade [monero-bash]? (Y/n) " ;$off
+					BWHITE; echo -n "Upgrade [monero-bash]? (Y/n) " ;OFF
 					Yes(){ upgrade_MoneroBash ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				*"daemon"*|*"monero"*|*"Monero"*)
-					$bwhite; echo -n "Upgrade [Monero]? (Y/n) " ;$off
+					BWHITE; echo -n "Upgrade [Monero]? (Y/n) " ;OFF
 					Yes(){ upgrade_Monero ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				*"xmr"*|*"Xmr"*|*"XMR"*)
-					$bwhite; echo -n "Upgrade [XMRig]? (Y/n) " ;$off
+					BWHITE; echo -n "Upgrade [XMRig]? (Y/n) " ;OFF
 					Yes(){ upgrade_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				*"p2p"*|*"P2P"*|*"P2p"*)
-					$bwhite; echo -n "Upgrade [P2Pool]? (Y/n) " ;$off
+					BWHITE; echo -n "Upgrade [P2Pool]? (Y/n) " ;OFF
 					Yes(){ upgrade_P2Pool ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
@@ -345,7 +345,7 @@ if [[ $options = "true" ]]; then
 						upgrade_Force
 					else
 						print_Upgrade
-						$bwhite; echo -n "Upgrade? (Y/n) " ;$off
+						BWHITE; echo -n "Upgrade? (Y/n) " ;OFF
 						Yes(){ upgrade_All ;}
 						No(){ echo "Exiting..." ;exit;}
 						prompt_YESno
@@ -358,35 +358,35 @@ if [[ $options = "true" ]]; then
 			esac
 			;;
 		install)
-			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&$iblue&& echo "Verbosely installing...!" ;$off
+			[[ $* = *"verbose"* ]]&& VERBOSE="true" &&IBLUE&& echo "Verbosely installing...!" ;OFF
 			case $2 in
 				*"bash"*|*"Bash"*|*"BASH"*)
-					$bwhite; echo -n "Install [monero-bash]? (Y/n) " ;$off
+					BWHITE; echo -n "Install [monero-bash]? (Y/n) " ;OFF
 					Yes(){ echo "install_MoneroBash" ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				monero|Monero|MONERO)
-					$bwhite; echo -n "Install [Monero]? (Y/n) " ;$off
+					BWHITE; echo -n "Install [Monero]? (Y/n) " ;OFF
 					Yes(){ install_Monero ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
-					$bwhite; echo -n "Install [XMRig]? (Y/n) " ;$off
+					BWHITE; echo -n "Install [XMRig]? (Y/n) " ;OFF
 					Yes(){ install_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				*"p2p"*|*"P2P"*|*"P2p"*)
-					$bwhite; echo -n "Install [P2Pool]? (Y/n) " ;$off
+					BWHITE; echo -n "Install [P2Pool]? (Y/n) " ;OFF
 					Yes(){ install_P2Pool ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				all|All|ALL)
 					print_Install
-					$bwhite; echo -n "Install? (Y/n) " ;$off
+					BWHITE; echo -n "Install? (Y/n) " ;OFF
 					Yes(){ install_All ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
@@ -400,32 +400,32 @@ if [[ $options = "true" ]]; then
 		remove)
 			case $2 in
 				*"bash"*|*"Bash"*|*"BASH"*)
-					$bwhite; echo -n "Remove [monero-bash]? (Y/n) " ;$off
+					BWHITE; echo -n "Remove [monero-bash]? (Y/n) " ;OFF
 					Yes(){ remove_MoneroBash ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				monero|Monero|MONERO)
-					$bwhite; echo -n "Remove [Monero]? (Y/n) " ;$off
+					BWHITE; echo -n "Remove [Monero]? (Y/n) " ;OFF
 					Yes(){ remove_Monero ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
-					$bwhite; echo -n "Remove [XMRig]? (Y/n) " ;$off
+					BWHITE; echo -n "Remove [XMRig]? (Y/n) " ;OFF
 					Yes(){ remove_XMRig ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				*"p2p"*|*"P2P"*|*"P2p"*)
-					$bwhite; echo -n "Remove [P2Pool]? (Y/n) " ;$off
+					BWHITE; echo -n "Remove [P2Pool]? (Y/n) " ;OFF
 					Yes(){ remove_P2Pool ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
 				all|All|ALL)
 					print_Remove
-					$bwhite; echo -n "Remove? (Y/n) " ;$off
+					BWHITE; echo -n "Remove? (Y/n) " ;OFF
 					Yes(){ remove_All ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
@@ -437,10 +437,10 @@ if [[ $options = "true" ]]; then
 			esac
 			;;
 		*)
-			$bred; echo -n "[monero-bash] "
-			$iwhite; echo "Invalid option!"
-			$off; echo -n "For help, type: "
-			$bcyan; echo "monero-bash help"; $off
+			BRED; echo -n "[monero-bash] "
+			IWHITE; echo "Invalid option!"
+			OFF; echo -n "For help, type: "
+			BCYAN; echo "monero-bash help"; OFF
 	esac
 	exit
 fi

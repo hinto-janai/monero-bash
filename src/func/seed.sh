@@ -33,18 +33,18 @@ seed_Create()
 ###########################################################################################   LANGUAGE SELECTION
 
 # WARNING
-$bred; echo -n "[THIS IS AN EXPERIMENTAL FEATURE] "
-$bwhite; echo "Using [monero-wallet-cli] to generate a seed is highly recommended"
-$off; echo
+BRED; echo -n "[THIS IS AN EXPERIMENTAL FEATURE] "
+BWHITE; echo "Using [monero-wallet-cli] to generate a seed is highly recommended"
+OFF; echo
 
 # INTERACTIVE
 if [[ $seedOptions != "true" ]]; then
 
 # WALLET SEED LANGUAGE
 while true ;do
-	$ired; echo "Monero seed languages:" ;$iwhite
+	IRED; echo "Monero seed languages:" ;IWHITE
 	print_SeedLanguageList
-	$off; echo -n "Pick seed language: " ;$iwhite
+	OFF; echo -n "Pick seed language: " ;IWHITE
 	read seedLanguage
 	case "$seedLanguage" in
 		"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;

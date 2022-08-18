@@ -41,7 +41,7 @@ mine_Start()
 		define_P2Pool;process_Start
 		define_XMRig;process_Start
 		printf "Watch with: "
-		$bwhite; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;$off
+		BWHITE; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;OFF
 	fi
 }
 
@@ -73,7 +73,7 @@ mine_Hugepages()
 {
     # set default if not specified in monero-bash.conf
     [[ -z $HUGEPAGES ]] && HUGEPAGES="3072"
-    $bwhite; echo "Setting hugepage: $HUGEPAGES" ;$off
+    BWHITE; echo "Setting hugepage: $HUGEPAGES" ;OFF
     sudo sysctl vm.nr_hugepages="$HUGEPAGES" > /dev/null
     error_Continue "Could not set hugepages..."
 }
@@ -81,14 +81,14 @@ mine_Hugepages()
 mine_Config()
 {
 	while :; do
-    $bred; echo "#-----------------------------------------#"
-    $bred; echo "#   P2Pool & XMRig mining configuration   #"
-    $bred; echo "#-----------------------------------------#"
+    BRED; echo "#-----------------------------------------#"
+    BRED; echo "#   P2Pool & XMRig mining configuration   #"
+    BRED; echo "#-----------------------------------------#"
 
 	# wallet + daemon ip + pool ip + mini config
 	unset -v WALLET IP RPC ZMQ POOL MINI LOG OUT_PEERS IN_PEERS
 	while :; do
-		$bwhite; printf "WALLET ADDRESS: " ;$off
+		BWHITE; printf "WALLET ADDRESS: " ;OFF
 		read -r WALLET
 		if [[ $WALLET ]]; then
 			break
@@ -98,61 +98,61 @@ mine_Config()
 	done
 	echo
 
-	$uyellow; $byellow; printf "%s\n" "Hit [enter] to select the [default] if you don't know what to input."
-	$iwhite; printf "Pool IP [default: 127.0.0.1:3333]        | " ;$off
+	UYELLOW; BYELLOW; printf "%s\n" "Hit [enter] to select the [default] if you don't know what to input."
+	IWHITE; printf "Pool IP [default: 127.0.0.1:3333]        | " ;OFF
 	read -r POOL
-	$iwhite; printf "Monero Node IP [default: 127.0.0.1]      | " ;$off
+	IWHITE; printf "Monero Node IP [default: 127.0.0.1]      | " ;OFF
 	read -r DAEMON_IP
-	$iwhite; printf "Monero RPC port [default: 18081]         | " ;$off
+	IWHITE; printf "Monero RPC port [default: 18081]         | " ;OFF
 	read -r DAEMON_RPC
-	$iwhite; printf "Monero ZMQ port [default: 18083]         | " ;$off
+	IWHITE; printf "Monero ZMQ port [default: 18083]         | " ;OFF
 	read -r DAEMON_ZMQ
-	$iwhite; printf "P2Pool OUT peers (10-1000) [default: 10] | " ;$off
+	IWHITE; printf "P2Pool OUT peers (10-1000) [default: 10] | " ;OFF
 	read -r OUT_PEERS
-	$iwhite; printf "P2Pool IN peers (10-1000) [default: 10]  | " ;$off
+	IWHITE; printf "P2Pool IN peers (10-1000) [default: 10]  | " ;OFF
 	read -r IN_PEERS
-	$iwhite; printf "P2Pool Log Level (0-6) [default: 3]      | " ;$off
+	IWHITE; printf "P2Pool Log Level (0-6) [default: 3]      | " ;OFF
 	read -r LOG_LEVEL
-	$iwhite; printf "Use P2Pool Mini-Pool? (Y/n)              | " ;$off
+	IWHITE; printf "Use P2Pool Mini-Pool? (Y/n)              | " ;OFF
 	Yes(){ MINI="true" ;}
 	No(){ MINI="false" ;}
 	prompt_YESno
 	echo
 
 	# repeat & confirm user input
-	$bblue; printf "WALLET ADDRESS   | " ;$off; echo "$WALLET"
+	BBLUE; printf "WALLET ADDRESS   | " ;OFF; echo "$WALLET"
 
-	$bblue; printf "POOL IP          | " ;$off
+	BBLUE; printf "POOL IP          | " ;OFF
 	[[ $POOL ]] || POOL="127.0.0.1:3333"
 	echo "$POOL"
 
-	$bblue; printf "MONERO NODE IP   | " ;$off
+	BBLUE; printf "MONERO NODE IP   | " ;OFF
 	[[ $DAEMON_IP ]] || DAEMON_IP="127.0.0.1"
 	echo "$DAEMON_IP"
 
-	$bblue; printf "MONERO RPC PORT  | " ;$off
+	BBLUE; printf "MONERO RPC PORT  | " ;OFF
 	[[ $DAEMON_RPC ]] || DAEMON_RPC="18081"
 	echo "$DAEMON_RPC"
 
-	$bblue; printf "MONERO ZMQ PORT  | " ;$off
+	BBLUE; printf "MONERO ZMQ PORT  | " ;OFF
 	[[ $DAEMON_ZMQ ]] || DAEMON_ZMQ="18083"
 	echo "$DAEMON_ZMQ"
 
-	$bblue; printf "P2POOL OUT PEERS | " ;$off
+	BBLUE; printf "P2POOL OUT PEERS | " ;OFF
 	[[ $IN_PEERS ]] || IN_PEERS="10"
 	echo "$IN_PEERS"
 
-	$bblue; printf "P2POOL IN PEERS  | " ;$off
+	BBLUE; printf "P2POOL IN PEERS  | " ;OFF
 	[[ $OUT_PEERS ]] || OUT_PEERS="10"
 	echo "$OUT_PEERS"
 
-	$bblue; printf "P2POOL LOG LEVEL | " ;$off
+	BBLUE; printf "P2POOL LOG LEVEL | " ;OFF
 	[[ $LOG_LEVEL ]] || LOG_LEVEL="3"
 	echo "$LOG_LEVEL"
 
-	$bblue; printf "P2POOL MINI      | " ;$off; echo "$MINI"
+	BBLUE; printf "P2POOL MINI      | " ;OFF; echo "$MINI"
 
-	$bwhite; printf "Use these settings? (Y/n) "
+	BWHITE; printf "Use these settings? (Y/n) "
 
 	# set user input if yes, repeat if no
 	Yes()
@@ -196,9 +196,9 @@ mine_Config()
 		fi
 		PRODUCE_HASH_LIST
 		echo
-		$bgreen; echo "Mining configuration complete!"
-		$off; echo -n "To get started: "
-		$bwhite; echo "[monero-bash start all]"
+		BGREEN; echo "Mining configuration complete!"
+		OFF; echo -n "To get started: "
+		BWHITE; echo "[monero-bash start all]"
 	}
 	No(){ :; }
 	local yn

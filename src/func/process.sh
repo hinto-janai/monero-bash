@@ -51,7 +51,7 @@ process_Start_Template()
 
 	# START PROCESS IF NOT ALREADY ALIVE
 	if pgrep $PROCESS &>/dev/null ; then
-        $bred; echo "[${PROCESS}] already detected!" ;$off
+        BRED; echo "[${PROCESS}] already detected!" ;OFF
 		return 1
     else
 		missing_config_"$NAME_FUNC"
@@ -82,7 +82,7 @@ process_Start_Template()
 		fi
 
 		# START PROCESS
-		$bblue; echo "Starting [${PROCESS}]..." ;$off
+		BBLUE; echo "Starting [${PROCESS}]..." ;OFF
 		COMMANDS
 		error_Exit "Could not start [${PROCESS}]"
 	fi
@@ -94,8 +94,8 @@ process_Stop_Template()
 	if pgrep $PROCESS &>/dev/null ; then
 		COMMANDS
 	else
-		$off; echo -n "[${PROCESS}] "
-		$bred; echo "not online" ;$off
+		OFF; echo -n "[${PROCESS}] "
+		BRED; echo "not online" ;OFF
 	fi
 }
 
@@ -131,17 +131,17 @@ process_Restart()
 
 	# RESTART
 	if pgrep $PROCESS &>/dev/null ; then
-		$byellow; echo "Restarting [${PROCESS}]..." ;$off
+		BYELLOW; echo "Restarting [${PROCESS}]..." ;OFF
 		if sudo systemctl restart "$SERVICE"; then
-			$bblue; echo "Restarted [${PROCESS}]!" ;$off
+			BBLUE; echo "Restarted [${PROCESS}]!" ;OFF
 			return 0
 		else
-			$bred; printf "%s\n\n" "[${PROCESS}] restart failed!"; $off
+			BRED; printf "%s\n\n" "[${PROCESS}] restart failed!"; OFF
 			return 1
 		fi
 	else
-		$off; echo -n "[${PROCESS}] "
-		$bred; echo "not online" ;$off
+		OFF; echo -n "[${PROCESS}] "
+		BRED; echo "not online" ;OFF
 	fi
 }
 
@@ -159,7 +159,7 @@ process_Stop()
 {
 	COMMANDS()
 	{
-		$bred; echo "Stopping [${PROCESS}] gracefully..." ;$off
+		BRED; echo "Stopping [${PROCESS}] gracefully..." ;OFF
 		sudo systemctl stop "$SERVICE" &
 		for i in {1..30} ;do
 			if [[ "$i" = "30" ]]; then
@@ -184,7 +184,7 @@ process_Kill()
 	prompt_Sudo;error_Sudo
 	COMMANDS()
 	{
-		$ired; echo "Sending kill signal to [${PROCESS}]..."
+		IRED; echo "Sending kill signal to [${PROCESS}]..."
 		sudo systemctl kill "$SERVICE"
 	}
 	process_Stop_Template
@@ -283,11 +283,11 @@ process_Enable() {
 	prompt_Sudo;error_Sudo
 	missing_systemd_"$NAME_FUNC"
 	if sudo systemctl enable "$SERVICE"; then
-		$bblue; printf "%s" "[${PROCESS}] "
-		$iwhite; printf "%s\n\n" "enabled, it will auto-start in the background on boot!"; $off
+		BBLUE; printf "%s" "[${PROCESS}] "
+		IWHITE; printf "%s\n\n" "enabled, it will auto-start in the background on boot!"; OFF
 		return 0
 	else
-		$bred; printf "%s\n\n" "[${PROCESS}] enable failed!"; $off
+		BRED; printf "%s\n\n" "[${PROCESS}] enable failed!"; OFF
 		return 1
 	fi
 }
@@ -296,11 +296,11 @@ process_Disable() {
 	prompt_Sudo;error_Sudo
 	missing_systemd_"$NAME_FUNC"
 	if sudo systemctl disable "$SERVICE"; then
-		$bred; printf "%s" "[${PROCESS}] "
-		$iwhite; printf "%s\n\n" "disabled, it will NOT auto-start on boot!"; $off
+		BRED; printf "%s" "[${PROCESS}] "
+		IWHITE; printf "%s\n\n" "disabled, it will NOT auto-start on boot!"; OFF
 		return 0
 	else
-		$bred; printf "%s\n\n" "[${PROCESS}] disable failed!"; $off
+		BRED; printf "%s\n\n" "[${PROCESS}] disable failed!"; OFF
 		return 1
 	fi
 }

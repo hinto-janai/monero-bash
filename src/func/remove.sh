@@ -29,8 +29,8 @@
 remove_Template()
 {
 	if [[ "$NAME_VER" = "" ]]; then
-		$off; echo -n "$NAME_PRETTY: "
-		$ired; echo "is not installed"
+		OFF; echo -n "$NAME_PRETTY: "
+		IRED; echo "is not installed"
 	else
 		# sudo, trap
 		prompt_Sudo;error_Sudo
@@ -61,9 +61,9 @@ remove_Monero()
 
 remove_MoneroBash()
 {
-	$iwhite; echo -n "type: "
-	$bred; echo -n "monero-bash uninstall "
-	$iwhite; echo "to remove monero-bash"
+	IWHITE; echo -n "type: "
+	BRED; echo -n "monero-bash uninstall "
+	IWHITE; echo "to remove monero-bash"
 }
 
 remove_XMRig()

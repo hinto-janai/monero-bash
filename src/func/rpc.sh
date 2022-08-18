@@ -90,7 +90,7 @@ wget \
 	--post-data=$payload
 echo
 if [[ $DAEMON_RPC_VERBOSE = true ]]; then
-	$bwhite; printf "DAEMON_RPC_IP: " ;$off; echo "$DAEMON_RPC_IP"
-	$bwhite; printf "PAYLOAD: " ;$off; echo "$payload"
+	BWHITE; printf "DAEMON_RPC_IP: " ;OFF; echo "$DAEMON_RPC_IP"
+	BWHITE; printf "PAYLOAD: " ;OFF; echo "$payload"
 fi
 }

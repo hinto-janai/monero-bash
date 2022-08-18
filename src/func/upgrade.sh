@@ -47,11 +47,11 @@ upgrade_Pre()
 
 	# CHECK IF ALREADY INSTALLED/UP TO DATE
 	if [[ -z $NAME_VER && $INSTALL != true ]]; then
-		$off; echo -n "$NAME_PRETTY: "
-		$ired; echo "is not installed"
+		OFF; echo -n "$NAME_PRETTY: "
+		IRED; echo "is not installed"
 	elif [[ $NAME_OLD != true && $FORCE_UPGRADE != true ]]; then
-		$off; echo -n "$NAME_PRETTY: "
-		$bgreen; echo "up to date" ;$off
+		OFF; echo -n "$NAME_PRETTY: "
+		BGREEN; echo "up to date" ;OFF
 	else
 
 		# ELSE, START UPGRADE
@@ -81,12 +81,12 @@ upgrade_Template()
 	fi
 	tar -xf "$tmp/$tarFile" -C "$tmp"
 	code_Tar
-	$off; echo -n "[Extract] "
-	$igreen; echo "OK" ;$off
+	OFF; echo -n "[Extract] "
+	IGREEN; echo "OK" ;OFF
 	rm -f "$tmp/$tarFile"
 	error_Exit "rm - error"
-	$off; echo -n "[Cleanup] "
-	$igreen; echo "OK" ;$off
+	OFF; echo -n "[Cleanup] "
+	IGREEN; echo "OK" ;OFF
 
 	# TEMP FOLDER FOR OLD PACKAGE
 	folderName="$(ls $tmp)"
@@ -160,11 +160,11 @@ upgrade_Template()
 	esac
 
 	if [[ $INSTALL = true ]]; then
-		$off; echo -n "[Install] "
-		$igreen; echo "OK" ;$off
+		OFF; echo -n "[Install] "
+		IGREEN; echo "OK" ;OFF
 	else
-		$off; echo -n "[Upgrade] "
-		$igreen; echo "OK" ;$off
+		OFF; echo -n "[Upgrade] "
+		IGREEN; echo "OK" ;OFF
 	fi
 	upgrade_Post
 }
@@ -179,8 +179,8 @@ upgrade_Post()
 	version_Template
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
-	$off; echo -n "[${NAME_PRETTY}] "
-	$igreen; echo "$NewVer" ;$off
+	OFF; echo -n "[${NAME_PRETTY}] "
+	IGREEN; echo "$NewVer" ;OFF
 	[[ $INSTALL = true ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	permission_All
@@ -250,13 +250,13 @@ upgrade_All()
 
 upgrade_Force()
 {
-	$bwhite; printf "Packages to upgrade: " ;$off
+	BWHITE; printf "Packages to upgrade: " ;OFF
 	[[ $MONERO_BASH_VER != "" ]]&& printf " [monero-bash] "
 	[[ $MONERO_VER != "" ]]&& printf " [Monero] "
 	[[ $XMRIG_VER != "" ]]&& printf " [XMRig] "
 	[[ $P2POOL_VER != "" ]]&& printf " [P2Pool] "
 	echo;echo
-	$bwhite; echo -n "Upgrade? (Y/n) " ;$off
+	BWHITE; echo -n "Upgrade? (Y/n) " ;OFF
 	Yes()
 	{
 		if [[ $MONERO_BASH_VER ]]; then
