@@ -1,14 +1,14 @@
 # v1.8.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
-* **RPC** Updated help list with modern RPC calls: `monero-bash rpc help`
-* **Watch** More vibrant text colors are supported 
-* **Watch** Current date/time & process state will be printed and updated live
-* **Status** New command to watch refreshing status: `monero-bash watch status`
-* **Status** Monero info is now fetched around `25x` faster using the RPC IP in `monero-bash.conf`. If not found, the fallbacks are:
-	1. `rpc-bind-ip/port` in `monerod.conf`
+* **RPC:** Updated help list with modern RPC calls: `monero-bash rpc help`
+* **Watch:** Any key press will now exit
+* **Watch:** More vibrant text colors are supported 
+* **Watch:** Date/time & process state will be printed and updated live
+* **Status:** New command to watch refreshing status: `monero-bash watch status`
+* **Status:** Monero info is now fetched using the RPC IP in `monero-bash.conf`, this is around `25x` faster. If no IP is found, the fallbacks are:
+	1. `rpc-bind-ip` & `rpc-bind-port` in `monerod.conf`
 	2. `localhost:18081`
-	3. Reverting back to the old `./monerod status` (very slow)
 
 ## Fixes
 

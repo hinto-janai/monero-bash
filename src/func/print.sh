@@ -285,7 +285,6 @@ echo -e "$(cat <<EOF
     get_version
     hard_fork_info
     on_get_block_hash
-    on_getblockhash
     prune_blockchain
     relay_tx
     rpc_access_account

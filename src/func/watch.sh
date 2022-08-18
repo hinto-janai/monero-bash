@@ -44,15 +44,15 @@ watch_Template()
 	# divided by 2 to account for line wraps.
 	# 1 line that line wraps still counts as 1 line,
 	# this makes it so bottom messages won't be seen.
-	unset -v HALF_LINES STATS
-	local DOT_COLOR HALF_LINES STATS IFS=$'\n'
-	HALF_LINES=$(($(tput lines) / 2))
+	unset -v STATS
+	local WATCH_LINES DOT_COLOR STATS IFS=$'\n'
+	WATCH_LINES=$(tput lines)
 	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
 	# need sudo for xmrig journals
 	if [[ $SERVICE = "monero-bash-xmrig.service" ]]; then
 		while :; do
-			STATS=$(sudo journalctl -u $SERVICE --output cat | tail -n $HALF_LINES)
+			STATS=$(sudo journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat)
 			SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE}";;
@@ -61,14 +61,13 @@ watch_Template()
 				*) DOT_COLOR="\e[1;93m???: ${SERVICE}";;
 			esac
 			clear
-			printf "\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m\n\n" "$(date)"
 			echo -e "$STATS"
-#			printf "\n\e[1;95m%s" "[Press any key to exit] "
+			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m" "$(date)"
 			read -r -s -n 1 -t 1 && exit 0
 		done
 	else
 		while :; do
-			STATS=$(journalctl -u $SERVICE --output cat | tail -n $HALF_LINES)
+			STATS=$(journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat)
 			SYSTEMD_STATS=$(systemctl status $SERVICE)
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE}";;
@@ -77,9 +76,8 @@ watch_Template()
 				*) DOT_COLOR="\e[1;93m???: ${SERVICE}";;
 			esac
 			clear
-			printf "\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m\n\n" "$(date)"
 			echo -e "$STATS"
-#			printf "\n\e[1;95m%s" "[Press any key to exit] "
+			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m" "$(date)"
 			read -r -s -n 1 -t 1 && exit 0
 		done
 	fi
