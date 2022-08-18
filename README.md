@@ -17,31 +17,37 @@
 ## About
 **monero-bash is a Linux CLI wrapper for: [`Monero`](https://github.com/monero-project/monero) | [`P2Pool`](https://github.com/SChernykh/p2pool) | [`XMRig`](https://github.com/xmrig/xmrig)**
 
-***A few video demos of its features:***
+***A few video demos:***
 
-<details>
-<summary>Wallet menu</summary>
+*	<details>
+	<summary>Wallet menu</summary>
 
-https://user-images.githubusercontent.com/101352116/184435540-6505d8d3-8cf0-4d72-a414-506f0abca57f.mp4
-</details>
+	https://user-images.githubusercontent.com/101352116/184435540-6505d8d3-8cf0-4d72-a414-506f0abca57f.mp4
+	</details>
 
-<details>
-<summary>Package manager</summary>
+*	<details>
+	<summary>Package manager</summary>
 
-https://user-images.githubusercontent.com/101352116/184544224-4698de80-9818-41d5-89d3-a0a1b8dc7add.mp4
-</details>
+	https://user-images.githubusercontent.com/101352116/184544224-4698de80-9818-41d5-89d3-a0a1b8dc7add.mp4
+	</details>
 
-<details>
-<summary>P2Pool + XMRig mining</summary>
+*	<details>
+	<summary>P2Pool + XMRig mining</summary>
 
-https://user-images.githubusercontent.com/101352116/184544237-87b2c2ee-9f32-48d4-83cd-85138b2a2146.mp4
-</details>
+	https://user-images.githubusercontent.com/101352116/184544237-87b2c2ee-9f32-48d4-83cd-85138b2a2146.mp4
+	</details>
 
-<details>
-<summary>Background mining with systemd</summary>
+*	<details>
+	<summary>Background mining with systemd</summary>
 
-https://user-images.githubusercontent.com/101352116/184544242-36a199fc-ae05-4174-a820-b33246efda1d.mp4
-</details>
+	https://user-images.githubusercontent.com/101352116/184544242-36a199fc-ae05-4174-a820-b33246efda1d.mp4
+	</details>
+
+*	<details>
+	<summary>Watching live process stats</summary>
+
+	https://user-images.githubusercontent.com/101352116/185268613-22bf3436-d1e1-4e70-a61a-1cf0e2654913.mp4
+	</details>
 
 [This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
 
