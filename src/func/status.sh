@@ -66,10 +66,10 @@ status_Template()
 		echo "----------------------"
 		# process specific stats
 		EXTRA_STATS
-		echo
+		printf "\n"
 	else
 		BRED; echo "OFFLINE" ;OFF
-		echo
+		printf "\n"
 	fi
 }
 
@@ -554,9 +554,10 @@ status_P2Pool()
 		# [7] = %
 		if [[ $latestShare ]]; then
 			latestShare[1]=${latestShare[1]//.*}
-			echo -n "[${latestShare[0]} ${latestShare[1]}] [block ${latestShare[3]}] [${latestShare[4]} ${latestShare[5]}] [${latestShare[6]} ${latestShare[7]}]" || echo
+			echo "[${latestShare[0]} ${latestShare[1]}] [block ${latestShare[3]}] [${latestShare[4]} ${latestShare[5]}] [${latestShare[6]} ${latestShare[7]}]"
+		else
+			echo
 		fi
-		echo
 
 		# print LATEST PAYOUT
 		BYELLOW; printf "Latest payout | "; OFF
@@ -634,7 +635,7 @@ status_XMRig()
 			printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "10s" "/" "60s" "/" "15m"
 			printf "\e[0m[\e[0;93m%s\e[0m] " "${hashrate[2]}"
 			printf "\e[0m[\e[0;94m%s\e[0m] " "${hashrate[3]}"
-			printf "\e[0m[\e[0;95m%s\e[0m]\n" "${hashrate[4]}"
+			printf "\e[0m[\e[0;95m%s\e[0m] " "${hashrate[4]}"
 		fi
 		echo
 	}

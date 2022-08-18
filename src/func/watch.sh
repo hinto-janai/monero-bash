@@ -51,7 +51,7 @@ watch_Template()
 	local WATCH_LINES DOT_COLOR STATS IFS=$'\n' VAR_1 VAR_2
 	[[ $STATUS_LIST ]] || watch_Create_List
 	[[ $CURRENT ]] || declare -g CURRENT=1
-	WATCH_LINES=$(tput lines)
+	[[ $WATCH_LINES ]] || WATCH_LINES=$(tput lines)
 	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
 	# need sudo for xmrig journals
@@ -62,12 +62,12 @@ watch_Template()
 			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: inactive"*) [[ $PROC_UPTIME ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(not using systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: failed"*) [[ $PROC_UPTIME ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(not using systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY}";;
 			esac
 			echo -e "$STATS"
-			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+			printf "\n\e[${WATCH_LINES};0\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
@@ -89,13 +89,14 @@ watch_Template()
 			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
+				# if process is detected, but not with systemd (foreground)
+				*"Active: inactive"*) [[ $PROC_UPTIME != '...' ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: failed"*) [[ $PROC_UPTIME != '...' ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY} $NAME_VER";;
 			esac
 			clear
 			echo -e "$STATS"
-			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+			printf "\n\e[${WATCH_LINES};0\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
@@ -122,6 +123,7 @@ watch_Status() {
 	unset -v COL STATS VAR_1 VAR_2
 	[[ $STATUS_LIST ]] || watch_Create_List
 	[[ $CURRENT ]] || declare -g CURRENT=0
+	WATCH_LINES=$(tput lines)
 	if [[ $MONERO_BASH_OLD = true ]]; then
 		COL="\e[1;91m"
 	else
@@ -135,6 +137,8 @@ watch_Status() {
 		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
 		clear
 		echo -e "$STATS"
+		echo nani
+		printf "\e[${WATCH_LINES};0"
 		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 		# exit on any input unless [left] or [right] escape codes
@@ -149,7 +153,6 @@ watch_Status() {
 		elif [[ $VAR_1 || $VAR_1 = $'\x0a' ]]; then
 				exit 0
 		fi
-		[[ $XMRIG_VER ]] && prompt_Sudo
 	done
 }
 
@@ -201,10 +204,11 @@ watch_Prev() {
 watch_Uptime() {
 	if PROC_UPTIME=$(pgrep $DIRECTORY/$PROCESS -f); then
 		PROC_UPTIME=$(ps -o "%t" -p $PROC_UPTIME)
+		printf "%s" "${PROC_UPTIME//[!0-9:-]}"
 	else
-		PROC_UPTIME=00:00:00
+		PROC_UPTIME='...'
+		printf "%s" "$PROC_UPTIME"
 	fi
-	printf "%s" "${PROC_UPTIME//[!0-9:]}"
 }
 
 # calculate list for 1/4
