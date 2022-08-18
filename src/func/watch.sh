@@ -40,6 +40,9 @@
 
 watch_Template()
 {
+	if [[ $XMRIG_VER ]]; then
+		prompt_Sudo; error_Sudo
+	fi
 	# tput lines = available lines detected terminal
 	# divided by 2 to account for line wraps.
 	# 1 line that line wraps still counts as 1 line,
@@ -57,9 +60,9 @@ watch_Template()
 			STATS=$(sudo journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat)
 			SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
 			case "$SYSTEMD_STATS" in
-				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE}";;
-				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${SERVICE}";;
-				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${SERVICE}";;
+				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${SERVICE} $NAME_VER";;
+				*"Active: inactive"*) DOT_COLOR="\e[1;91mOFFLINE: ${SERVICE} $NAME_VER";;
+				*"Active: failed"*) DOT_COLOR="\e[1;91mFAILED: ${SERVICE} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${SERVICE}";;
 			esac
 			clear
@@ -68,7 +71,7 @@ watch_Template()
 		echo "$CURRENT"
 			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
 			# exit on any input unless [left] or [right] escape codes
-			read -r -s -n 1 -t 1 VAR_1
+			read -r -s -N 1 -t 1 VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
 				read -r -s -n 2 -t 0.00001 VAR_2
 				case "$VAR_2" in
@@ -76,7 +79,7 @@ watch_Template()
 					'[D') watch_Prev ;;
 					*) exit 0;;
 				esac
-			elif [[ $VAR_1 ]]; then
+			elif [[ $VAR_1 || $VAR_1 = $'\x0a' ]]; then
 					exit 0
 			fi
 		done
@@ -96,7 +99,7 @@ watch_Template()
 		echo "$CURRENT"
 			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
 			# exit on any input unless [left] or [right] escape codes
-			read -r -s -n 1 -t 1 VAR_1
+			read -r -s -N 1 -t 1 VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
 				read -r -s -n 2 -t 0.00001 VAR_2
 				case "$VAR_2" in
@@ -104,16 +107,20 @@ watch_Template()
 					'[D') watch_Prev ;;
 					*) exit 0;;
 				esac
-			elif [[ $VAR_1 ]]; then
+			elif [[ $VAR_1 || $VAR_1 = $'\x0a' ]]; then
 					exit 0
 			fi
 		done
+		[[ $XMRIG_VER ]] && prompt_Sudo
 	fi
 }
 
 # Watch [monero-bash status] at 1-second intervals. Thanks for the idea u/austinspringer64
 # https://www.reddit.com/r/Monero/comments/wqp62v/comment/ikoijbh/?utm_source=reddit&utm_medium=web2x&context=3
 watch_Status() {
+	if [[ $XMRIG_VER ]]; then
+		prompt_Sudo; error_Sudo
+	fi
 	unset -v COL STATS VAR_1 VAR_2
 	[[ $STATUS_LIST ]] || watch_Create_List
 	[[ $CURRENT ]] || declare -g CURRENT=0
@@ -128,14 +135,14 @@ watch_Status() {
 		# loading [monero-bash status] into memory every loop
 		local STATS=$(status_Watch)
 		clear
+		echo -e "$STATS"
 		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;94m%s\e[0;97m%s\e[1;97m%s\e[1;35m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "System: " "$(uptime -p)" "] [" "Time: " "$(date)" "]"
-		echo -e "$STATS"
 
 		echo "${STATUS_LIST[@]}"
 		echo "$CURRENT"
 		# exit on any input unless [left] or [right] escape codes
-		read -r -s -n 1 -t 1 VAR_1
+		read -r -s -N 1 -t 1 VAR_1
 		if [[ $VAR_1 = $'\e' ]]; then
 			read -r -s -n 2 -t 0.00001 VAR_2
 			case "$VAR_2" in
@@ -143,9 +150,10 @@ watch_Status() {
 				'[D') watch_Prev ;;
 				*) exit 0;;
 			esac
-		elif [[ $VAR_1 ]]; then
+		elif [[ $VAR_1 || $VAR_1 = $'\x0a' ]]; then
 				exit 0
 		fi
+		[[ $XMRIG_VER ]] && prompt_Sudo
 	done
 }
 

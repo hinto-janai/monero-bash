@@ -49,7 +49,7 @@ prompt_NOyes()
 
 prompt_Sudo()
 {
-	sudo echo -n
+	sudo -v
 }
 
 prompt_PriceAPI_IP()
