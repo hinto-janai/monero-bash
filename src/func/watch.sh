@@ -26,17 +26,42 @@
 
 
 # watch functions - for watching output of the systemd services created
-# by monero-bash, e.g. "monero-bash-xmrig.service"
+# by monero-bash, e.g. "monero-bash-xmrig.service" or general status.
 #
-# This used to use `watch` from core-utils but
-# since it didn't support more than 8-bit color
-# its output was pretty ugly. These functions
-# simulate `watch` by:
+# This used to use `watch` from core-utils but since that didn't support
+# more than 8-bit color its output was pretty ugly. These functions
+# simulate `watch` (and improve on it) by basically:
 #     1. buffering the output into a variable
 #     2. clearing the screen
 #     3. printing variable
-#     4. sleeping
+#     4. sleeping (read -t 1, not sleep)
 #     5. repeat
+#
+# This also used to be a lot simpler originally but I wanted to
+# implement some other cool things so I had to solve some issues:
+#     -----------------------------------------------------------------
+#     1. capturing and reading [<-] [->] input
+#     -----------------------------------------------------------------
+#     2. context switching with [<-] [->] with a counter [x/y]
+#     -----------------------------------------------------------------
+#     3. somehow keeping that counter [x/y] state between switches
+#     -----------------------------------------------------------------
+#     4. dealing with counter overflow: right key on [3/3] should go to
+#        [1/3] and left key on [1/3] should go to [3/3].
+#        (the fact arrays start at 0 really made my brain hurt here)
+#     -----------------------------------------------------------------
+#     5. knowing exactly WHICH [x] we are out of [y] on the initial
+#        command. for example, user inputs: `monero-bash status p2pool`
+#        okay, what number do I print as x in [x/y]? [3/3]?
+#        how do I know that it isn't the only installed
+#        package so it should be [2/2]? stuff like this.
+#     -----------------------------------------------------------------
+#     6. keeping the status bar on the very last $LINE in terminal
+#     -----------------------------------------------------------------
+#     7. know if process is online but NOT with systemd
+#
+# The actual code is a mess because I just wanted it to work,
+# and now that it works I'm too scared to touch it :)
 
 watch_Template()
 {
@@ -47,11 +72,12 @@ watch_Template()
 	# divided by 2 to account for line wraps.
 	# 1 line that line wraps still counts as 1 line,
 	# this makes it so bottom messages won't be seen.
-	unset -v WATCH_LINES DOT_COLOR STATS IFS VAR_1 VAR_2
+	unset -v WATCH_LINES DOT_COLOR STATS IFS VAR_1 VAR_2 STATUS_LIST
 	local WATCH_LINES DOT_COLOR STATS IFS=$'\n' VAR_1 VAR_2
-	[[ $STATUS_LIST ]] || watch_Create_List
-	[[ $CURRENT ]] || declare -g CURRENT=1
-	[[ $WATCH_LINES ]] || WATCH_LINES=$(tput lines)
+	watch_Create_List
+	watch_First
+	WATCH_LINES=$(tput lines)
+	STAT_AMOUNT=$(watch_Amount)
 	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
 	# need sudo for xmrig journals
@@ -59,15 +85,16 @@ watch_Template()
 		while :; do
 			sudo -v
 			STATS=$(sudo journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat) SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
-			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
+			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date)
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: inactive"*) [[ $PROC_UPTIME ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(not using systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: failed"*) [[ $PROC_UPTIME ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(not using systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: inactive"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
+				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY}";;
 			esac
+			clear
 			echo -e "$STATS"
-			printf "\n\e[${WATCH_LINES};0\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
@@ -86,17 +113,17 @@ watch_Template()
 		while :; do
 			[[ $XMRIG_VER ]] && sudo -v
 			STATS=$(journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat) SYSTEMD_STATS=$(systemctl status $SERVICE)
-			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
+			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(date)
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
 				# if process is detected, but not with systemd (foreground)
-				*"Active: inactive"*) [[ $PROC_UPTIME != '...' ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER";;
-				*"Active: failed"*) [[ $PROC_UPTIME != '...' ]] && DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER";;
+				*"Active: inactive"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
+				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY} $NAME_VER";;
 			esac
 			clear
 			echo -e "$STATS"
-			printf "\n\e[${WATCH_LINES};0\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
@@ -120,26 +147,25 @@ watch_Status() {
 	if [[ $XMRIG_VER ]]; then
 		prompt_Sudo; error_Sudo
 	fi
-	unset -v COL STATS VAR_1 VAR_2
-	[[ $STATUS_LIST ]] || watch_Create_List
-	[[ $CURRENT ]] || declare -g CURRENT=0
+	unset -v COL STATS VAR_1 VAR_2 STATUS_LIST
+	watch_Create_List
+	declare -g CURRENT=0
 	WATCH_LINES=$(tput lines)
+	STAT_AMOUNT=$(watch_Amount)
 	if [[ $MONERO_BASH_OLD = true ]]; then
 		COL="\e[1;91m"
 	else
 		COL="\e[1;92m"
 	fi
-	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash status" "]"; exit 0' EXIT
+	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash watch" "]"; exit 0' EXIT
 	while :; do
 		[[ $XMRIG_VER ]] && sudo -v
 		# use status_Watch() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
-		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(date) STAT_AMOUNT=$(watch_Amount)
+		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(date)
 		clear
 		echo -e "$STATS"
-		echo nani
-		printf "\e[${WATCH_LINES};0"
-		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+		printf "\e[${WATCH_LINES};0H\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 		# exit on any input unless [left] or [right] escape codes
 		read -r -s -N 1 -t 1 VAR_1
@@ -211,30 +237,56 @@ watch_Uptime() {
 	fi
 }
 
+watch_First() {
+	# FIRST_WATCH from parser
+	if [[ $FIRST_WATCH = true ]]; then
+		declare -g CURRENT
+		case $NAME_PRETTY in
+			Monero) CURRENT=1;;
+			P2Pool) [[ $MONERO_VER ]] && CURRENT=2 || CURRENT=1;;
+			XMRig)
+				if [[ $MONERO_VER && $P2POOL_VER ]]; then
+					CURRENT=3
+				elif [[ $MONERO_VER || $P2POOL_VER ]]; then
+					CURRENT=2
+				else
+					CURRENT=1
+				fi;;
+		esac
+		unset -v FIRST_WATCH
+	fi
+}
+
 # calculate list for 1/4
 watch_Amount() {
 	# process amount = 1
 	if [[ ${#STATUS_LIST[@]} = 1 ]]; then
 		printf "%s" "1/1"
+		return
 	else
 		# process amount -gt 1
 		printf "%s" "$((CURRENT+1))/${#STATUS_LIST[@]}"
 	fi
 }
+
+watch_Check_Installed() { [[ -z $NAME_VER ]] && print_Error_Exit "[${NAME_PRETTY}] isn't installed!"; }
 watch_Monero()
 {
 	define_Monero
+	watch_Check_Installed
 	watch_Template
 }
 
 watch_XMRig()
 {
 	define_XMRig
+	watch_Check_Installed
 	watch_Template
 }
 
 watch_P2Pool()
 {
 	define_P2Pool
+	watch_Check_Installed
 	watch_Template
 }

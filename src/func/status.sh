@@ -382,12 +382,16 @@ status_P2Pool()
 			print_Warn "Consider restarting P2Pool. It will regenerate necessary files."
 		fi
 
-		local sharesFound p2pHash_15m p2pHash_1h p2pHash_24h averageEffort currentEffort connections
+		local sharesFound sharesFoundApi sharesFoundLog p2pHash_15m p2pHash_1h p2pHash_24h averageEffort currentEffort connections latestPayout latestShare
 		# SHARES FOUND
 		case $LOG_LEVEL in
 			0)
-				sharesFound=$(grep -o "\"shares_found\":[0-9]\+" $p2poolApi 2>/dev/null)
-				sharesFound=${sharesFound//*:};;
+				sharesFoundLog="$(echo "$LOG" | grep -c "SHARE FOUND")"
+				sharesFoundApi=$(grep -o "\"shares_found\":[0-9]\+" $p2poolApi 2>/dev/null)
+				sharesFoundApi=${sharesFound//*:}
+				# if api shares != log shares, i'm trusting my own data over the api, sorry mr.chernykh
+				[[ $sharesFoundApi = "$sharesFoundLog" ]] && sharesFound="$sharesFoundApi" || sharesFound="$sharesFoundLog"
+				;;
 			*)
 				sharesFound="$(echo "$LOG" | grep -c "SHARE FOUND")";;
 		esac

@@ -282,12 +282,12 @@ if [[ $options = "true" ]]; then
 			process_Full
 			;;
 		watch)
+			declare -g FIRST_WATCH=true
 			case $2 in
 				*"daemon"*|*"monero"*) watch_Monero ;;
 				*"xmr"*) watch_XMRig ;;
 				*"p2p"*) watch_P2Pool ;;
-				*stat*) watch_Status;;
-				*) print_Error_Exit "Pick: <status/monero/xmrig/p2pool>" ;;
+				*) watch_Status;;
 			esac
 			;;
 		enable)

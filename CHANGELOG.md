@@ -1,9 +1,9 @@
 # v1.8.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
-* **Watch:** More vibrant text colors are supported 
-* **Watch:** New command to watch refreshing status: `monero-bash watch status`
-* **Watch:** [<-] [->] Left/Right arrow keys will switch between different processes, any other key will exit
+* **Watch:** 8-bit color -> 256-bit color
+* **Watch:** New command to watch refreshing stats: `monero-bash watch`
+* **Watch:** **[<-] [->]** Left/Right arrow keys will switch between different processes, any other key will exit
 * **Watch:** Package version, date, process uptime & state will be printed and updated live
 * **RPC:** Updated help list with modern RPC calls: `monero-bash rpc help`
 * **Status:** Monero info is now fetched using the RPC IP in `monero-bash.conf`, this is around `25x` faster. If no IP is found, the fallbacks are:

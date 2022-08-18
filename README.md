@@ -10,7 +10,8 @@
 * [Usage](#Usage)
 	- [Wallet](#Wallet)
 	- [Config](#Config)
-	- [P2Pool Mining](#p2pool-mining)
+	- [Mining](#Mining)
+	- [Watch](#Watch)
 	- [Commands](#Commands)
 * [FAQ](#FAQ)
 
@@ -32,22 +33,11 @@
 	</details>
 
 *	<details>
-	<summary>P2Pool + XMRig mining</summary>
+	<summary>Mining & watching live stats</summary>
 
-	https://user-images.githubusercontent.com/101352116/184544237-87b2c2ee-9f32-48d4-83cd-85138b2a2146.mp4
+	https://user-images.githubusercontent.com/101352116/185520243-eaeed5dc-2454-40f3-8b1f-4ea18f40c1cf.mp4
 	</details>
 
-*	<details>
-	<summary>Background mining with systemd</summary>
-
-	https://user-images.githubusercontent.com/101352116/184544242-36a199fc-ae05-4174-a820-b33246efda1d.mp4
-	</details>
-
-*	<details>
-	<summary>Watching live process stats</summary>
-
-	https://user-images.githubusercontent.com/101352116/185268613-22bf3436-d1e1-4e70-a61a-1cf0e2654913.mp4
-	</details>
 
 [This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
 
@@ -149,20 +139,24 @@ monero-bash comes with pre-configured/optimized configuration files:
 * [`p2pool.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/p2pool.conf)
 * [`xmrig.json`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/xmrig.json)
 
-P2Pool does not currently have native support for a configuration file, so monero-bash uses its self-created `p2pool.conf`. Processes that are started in the background (`monero-bash start <process>`) will also respect their config files, for example: If you set `MINI=true` in `p2pool.conf`, `monero-bash start p2pool` will start P2Pool on the mini sidechain. And of course, a process will use the config file if started directly (`monero-bash full <process>`).
+P2Pool does not have native support for a config file, so monero-bash uses its self-created `p2pool.conf`.
+
+Processes that are started in the background (`monero-bash start <process>`) will also respect their config files. For example: If you set `MINI=true` in `p2pool.conf`, `monero-bash start p2pool` will start P2Pool on the mini sidechain.
 
 ---
 
-### P2Pool Mining
+### Mining
+These instructions (and monero-bash itself) is built around running your own P2Pool, with XMRig pointed at it, [click here for more info.](https://github.com/SChernykh/p2pool) However you can use whatever combination you'd like: only Monero for a node/wallet, only P2Pool, etc.
+
 ***Warning:***
 * Wallet addresses are public on P2Pool! It is recommended to create a seperate mining wallet.
 * You are using your own nodes to mine. Both the Monero & P2Pool nodes have to be fully synced!
 
-To start mining on P2Pool:
+**To start mining on P2Pool with XMRig:**
 1. Install all the packages: `monero-bash install all`
 2. Configure basic mining settings: `monero-bash config`
-3. You can then start all processes in the background: `monero-bash start all`
-4. And watch them live with: `monero-bash watch <status/monero/p2pool/xmrig>`
+3. Start all processes in the background: `monero-bash start all`
+4. And watch them live with: `monero-bash watch status`
 
 It may be useful to download `screen` or `tmux` so you can open multiple terminals and use:
 ```
@@ -170,6 +164,22 @@ monero-bash full <monero/p2pool/xmrig>
 ```
 This allows you to interact with the processes directly AND have them in a background terminal.  
 Unfortunately, you cannot interact directly with a `systemd` background process.
+
+---
+
+### Watch
+To watch live status output:
+```
+monero-bash watch
+```
+Or a specific (background) process:
+```
+monero-bash watch <process>
+```
+They all connect to each other! Press the LEFT/RIGHT arrow keys to switch processes. To just print a static status page, you can:
+```
+monero-bash status
+```
 
 ---
 
@@ -187,23 +197,23 @@ install <all/pkg> [verbose]           install <all> or a specific package
 remove  <all/pkg>                     remove <all> or a specific package
 
 config                                configure P2Pool+XMRig mining settings
-full    <monero/xmrig/p2pool>         start the process directly attached (foreground)
-start   <all/monero/xmrig/p2pool>     start process with systemd (background)
-stop    <all/monero/xmrig/p2pool>     gracefully stop the process
-kill    <all/monero/xmrig/p2pool>     forcefully kill the process
-restart <all/monero/xmrig/p2pool>     restart the process
-enable  <all/monero/xmrig/p2pool>     enable the process to auto-start on boot
-disable <all/monero/xmrig/p2pool>     disable the process from auto-starting on boot
-reset   <bash/monero/xmrig/p2pool>    reset your configs/systemd to default
-watch   <status/monero/xmrig/p2pool>  watch live output of stats/processes
-edit    <monero/xmrig/p2pool>         edit systemd service file
+full    <monero/p2pool/xmrig>         start the process directly attached (foreground)
+start   <all/monero/p2pool/xmrig>     start process with systemd (background)
+stop    <all/monero/p2pool/xmrig>     gracefully stop the process
+kill    <all/monero/p2pool/xmrig>     forcefully kill the process
+restart <all/monero/p2pool/xmrig>     restart the process
+enable  <all/monero/p2pool/xmrig>     enable the process to auto-start on boot
+disable <all/monero/p2pool/xmrig>     disable the process from auto-starting on boot
+reset   <bash/monero/p2pool/xmrig>    reset your configs/systemd to default
+edit    <monero/p2pool/xmrig>         edit systemd service file
+watch   [monero] [p2pool] [xmrig]     watch live status or a specific process
 
 rpc     [help]                        send a RPC call to monerod (or type help for help)
 seed    [language]                    generate random 25-word Monero seed
 list                                  list wallets
 size                                  show size of monero-bash folders
 price                                 fetch price data from cryptocompare.com API
-status                                print status of all running processes
+status                                print status of all installed packages
 version                               print versions of installed packages
 
 backup                                encrypt & backup /wallets/ -> backup.tar.gpg
