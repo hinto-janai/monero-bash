@@ -45,7 +45,7 @@ status_Watch() {
 	[[ $MONERO_VER ]] && status_Monero
 	[[ $P2POOL_VER ]] && status_P2Pool
 	[[ $XMRIG_VER ]]  && status_XMRig
-	exit 0
+	return 0
 }
 
 status_System()

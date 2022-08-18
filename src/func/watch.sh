@@ -44,8 +44,10 @@ watch_Template()
 	# divided by 2 to account for line wraps.
 	# 1 line that line wraps still counts as 1 line,
 	# this makes it so bottom messages won't be seen.
-	unset -v STATS
-	local WATCH_LINES DOT_COLOR STATS IFS=$'\n'
+	unset -v WATCH_LINES DOT_COLOR STATS IFS VAR_1 VAR_2
+	local WATCH_LINES DOT_COLOR STATS IFS=$'\n' VAR_1 VAR_2
+	[[ $STATUS_LIST ]] || watch_Create_List
+	[[ $CURRENT ]] || declare -g CURRENT=1
 	WATCH_LINES=$(tput lines)
 	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
@@ -62,8 +64,21 @@ watch_Template()
 			esac
 			clear
 			echo -e "$STATS"
+		echo "${STATUS_LIST[@]}"
+		echo "$CURRENT"
 			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
-			read -r -s -n 1 -t 1 && exit 0
+			# exit on any input unless [left] or [right] escape codes
+			read -r -s -n 1 -t 1 VAR_1
+			if [[ $VAR_1 = $'\e' ]]; then
+				read -r -s -n 2 -t 0.00001 VAR_2
+				case "$VAR_2" in
+					'[C') watch_Next ;;
+					'[D') watch_Prev ;;
+					*) exit 0;;
+				esac
+			elif [[ $VAR_1 ]]; then
+					exit 0
+			fi
 		done
 	else
 		while :; do
@@ -77,8 +92,21 @@ watch_Template()
 			esac
 			clear
 			echo -e "$STATS"
+		echo "${STATUS_LIST[@]}"
+		echo "$CURRENT"
 			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
-			read -r -s -n 1 -t 1 && exit 0
+			# exit on any input unless [left] or [right] escape codes
+			read -r -s -n 1 -t 1 VAR_1
+			if [[ $VAR_1 = $'\e' ]]; then
+				read -r -s -n 2 -t 0.00001 VAR_2
+				case "$VAR_2" in
+					'[C') watch_Next ;;
+					'[D') watch_Prev ;;
+					*) exit 0;;
+				esac
+			elif [[ $VAR_1 ]]; then
+					exit 0
+			fi
 		done
 	fi
 }
@@ -86,6 +114,9 @@ watch_Template()
 # Watch [monero-bash status] at 1-second intervals. Thanks for the idea u/austinspringer64
 # https://www.reddit.com/r/Monero/comments/wqp62v/comment/ikoijbh/?utm_source=reddit&utm_medium=web2x&context=3
 watch_Status() {
+	unset -v COL STATS VAR_1 VAR_2
+	[[ $STATUS_LIST ]] || watch_Create_List
+	[[ $CURRENT ]] || declare -g CURRENT=0
 	if [[ $MONERO_BASH_OLD = true ]]; then
 		COL="\e[1;91m"
 	else
@@ -93,16 +124,73 @@ watch_Status() {
 	fi
 	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash status" "]"; exit 0' EXIT
 	while :; do
-		# use status_All() instead of re-invoking and
+		# use status_Watch() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
 		local STATS=$(status_Watch)
 		clear
 		printf "\e[1;97m%s${COL}%s\e[1;97m%s\e[1;94m%s\e[0;97m%s\e[1;97m%s\e[1;35m%s\e[0;97m%s\e[1;97m%s\e[0m\n\n" \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "System: " "$(uptime -p)" "] [" "Time: " "$(date)" "]"
 		echo -e "$STATS"
-#		printf "\n\e[1;95m%s" "[Press any key to exit] "
-		read -r -s -n 1 -t 1 && exit 0
+
+		echo "${STATUS_LIST[@]}"
+		echo "$CURRENT"
+		# exit on any input unless [left] or [right] escape codes
+		read -r -s -n 1 -t 1 VAR_1
+		if [[ $VAR_1 = $'\e' ]]; then
+			read -r -s -n 2 -t 0.00001 VAR_2
+			case "$VAR_2" in
+				'[C') watch_Next ;;
+				'[D') watch_Prev ;;
+				*) exit 0;;
+			esac
+		elif [[ $VAR_1 ]]; then
+				exit 0
+		fi
 	done
+}
+
+watch_Create_List() {
+# create list of installed packages to
+# cycle through with [left] & [right]
+	declare -a -g STATUS_LIST
+	STATUS_LIST=(Status)
+	[[ $MONERO_VER ]] && STATUS_LIST=(${STATUS_LIST[@]} Monero)
+	[[ $P2POOL_VER ]] && STATUS_LIST=(${STATUS_LIST[@]} P2Pool)
+	[[ $XMRIG_VER ]]  && STATUS_LIST=(${STATUS_LIST[@]} XMRig)
+}
+
+watch_Next() {
+	# if only 1 thing in list, do nothing
+	if [[ ${#STATUS_LIST[@]} = 1 ]]; then
+		:
+	# if the next array element exists, next
+	elif [[ ${STATUS_LIST[$((CURRENT+1))]} ]]; then
+		((CURRENT++))
+		watch_${STATUS_LIST[$CURRENT]}
+	# else return to 0 (status)
+	else
+		CURRENT=0
+		watch_Status
+	fi
+}
+
+watch_Prev() {
+	# if only 1 thing in list, do nothing
+	if [[ ${#STATUS_LIST[@]} = 1 ]]; then
+		:
+	# if current is 0, go to -1
+	elif [[ $CURRENT = 0 ]]; then
+		CURRENT=$((${#STATUS_LIST[@]}-1))
+		watch_${STATUS_LIST[-1]}
+	# if it's status, watch status
+	elif [[ ${STATUS_LIST[$((CURRENT-1))]} = status ]]; then
+		CURRENT=0
+		watch_Status
+	# else, goto prev
+	else
+		CURRENT=$((CURRENT-1))
+		watch_${STATUS_LIST[$CURRENT]}
+	fi
 }
 
 watch_Monero()
