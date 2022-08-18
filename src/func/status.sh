@@ -462,9 +462,9 @@ status_P2Pool()
 		# print HASHRATE
 		$bwhite; printf "Hashrate      | "; $off
 		printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "15s" "/" "1h" "/" "24h"
-		$iyellow; echo -n "[$p2pHash_15m H/s] "
-		$iblue; echo -n "[$p2pHash_1h H/s] "
-		$ipurple; echo "[$p2pHash_24h H/s]"
+		printf "\e[0m[\e[0;93m%s\e[0m] " "$p2pHash_15m H/s"
+		printf "\e[0m[\e[0;94m%s\e[0m] " "$p2pHash_1h H/s"
+		printf "\e[0m[\e[0;95m%s\e[0m]\n" "$p2pHash_24h H/s"
 
 		# print SIDECHAIN
 		$bwhite; printf "Side-Chain    | "
@@ -615,9 +615,9 @@ status_XMRig()
 			[[ ${hashrate[3]} != 'n/a' ]] && hashrate[3]="${hashrate[3]} H/s"
 			[[ ${hashrate[4]} != 'n/a' ]] && hashrate[4]="${hashrate[4]} H/s"
 			printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "10s" "/" "60s" "/" "15m"
-			$iyellow; echo -n "[${hashrate[2]}] "
-			$iblue; echo -n "[${hashrate[3]}] "
-			$ipurple; echo -n "[${hashrate[4]}]"
+			printf "\e[0m[\e[0;93m%s\e[0m] " "${hashrate[2]}"
+			printf "\e[0m[\e[0;94m%s\e[0m] " "${hashrate[3]}"
+			printf "\e[0m[\e[0;95m%s\e[0m]\n" "${hashrate[4]}"
 		fi
 		echo
 	}
