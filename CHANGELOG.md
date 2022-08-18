@@ -1,6 +1,7 @@
 # v1.8.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
+* **RPC** Updated help list with modern RPC calls: `monero-bash rpc help`
 * **Watch** More vibrant text colors are supported 
 * **Watch** Current date/time & process state will be printed and updated live
 * **Status** New command to watch refreshing status: `monero-bash watch status`

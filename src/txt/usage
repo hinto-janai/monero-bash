@@ -19,7 +19,7 @@ reset   <bash/monero/xmrig/p2pool>    reset your configs/systemd to default
 watch   <status/monero/xmrig/p2pool>  watch live output of stats/processes
 edit    <monero/xmrig/p2pool>         edit systemd service file
 
-rpc                                   send a JSON RPC call to monerod
+rpc     [help]                        send a RPC call to monerod (or type help for help)
 seed    [language]                    generate random 25-word Monero seed
 list                                  list wallets
 size                                  show size of monero-bash folders

@@ -83,10 +83,6 @@ if [ -n "$1" ]; then
 fi
 payload="$payload}"
 
-if [[ $DAEMON_RPC_VERBOSE = "true" ]]; then
-	$bwhite; printf "DAEMON_RPC_IP: " ;$off; echo "$DAEMON_RPC_IP"
-	$bwhite; printf "PAYLOAD: " ;$off; echo "$payload"
-fi
 wget \
 	-qO- \
 	"$DAEMON_RPC_IP" \
@@ -94,4 +90,8 @@ wget \
 	--post-data=$payload
 code_Wget
 echo
+if [[ $DAEMON_RPC_VERBOSE = true ]]; then
+	$bwhite; printf "DAEMON_RPC_IP: " ;$off; echo "$DAEMON_RPC_IP"
+	$bwhite; printf "PAYLOAD: " ;$off; echo "$payload"
+fi
 }

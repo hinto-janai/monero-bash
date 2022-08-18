@@ -198,11 +198,11 @@ if [[ $options = "true" ]]; then
 		help) print_Usage ;;
 		config) mine_Config ;;
 		rpc)
-			if [[ $2 != "" ]]; then
+			if [[ -z $2 || $2 = help ]]; then
+				print_rpc_Usage | less -R
+			else
 				shift
 				rpc_Daemon "$@"
-			else
-				print_rpc_Usage
 			fi
 			;;
 		seed)

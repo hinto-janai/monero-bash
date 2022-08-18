@@ -259,29 +259,44 @@ echo -e "$(cat <<EOF
     DEFAULT IP/PORT = 127.0.0.1:18081
     CURRENT IP/PORT = $DAEMON_RPC_IP
 \033[1;37mJSON RPC Methods\033[0m
+    add_aux_pow
+    banned
+    calc_pow
+    flush_cache
+    flush_txpool
+    generateblocks
+    get_alternate_chains
+    get_bans
+    get_block
     get_block_count
-    on_get_block_hash
-    get_block_template
-    submit_block
-    get_last_block_header
     get_block_header_by_hash
     get_block_header_by_height
     get_block_headers_range
-    get_block
-    get_connections
-    get_info
-    hard_fork_info
-    set_bans
-    get_bans
-    get_output_histogram
-    get_version
+    get_block_template
     get_coinbase_tx_sum
+    get_connections
     get_fee_estimate
-    get_alternate_chains
-    relay_tx
-    sync_info
-    get_txpool_backlog
+    get_info
+    get_last_block_header
+    get_miner_data
     get_output_distribution
+    get_output_histogram
+    get_txpool_backlog
+    get_version
+    hard_fork_info
+    on_get_block_hash
+    on_getblockhash
+    prune_blockchain
+    relay_tx
+    rpc_access_account
+    rpc_access_data
+    rpc_access_info
+    rpc_access_pay
+    rpc_access_submit_nonce
+    rpc_access_tracking
+    set_bans
+    submit_block
+    sync_info
 EOF
 )"
 }
