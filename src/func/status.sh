@@ -150,7 +150,7 @@ status_Monero()
 			target_height=$height
 			height_percent="100"
 		else
-			height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2}')
+			height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2 * 100}')
 			height_percent=${height_percent:0:5}
 		fi
 		height_percent_int=${height_percent//.*}

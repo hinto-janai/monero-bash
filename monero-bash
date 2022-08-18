@@ -206,7 +206,10 @@ if [[ $options = "true" ]]; then
 			fi
 			;;
 		seed)
-			[[ $2 != "" ]]&& seedOptions="true" && seedLanguage="$2"
+			if [[ $2 ]]; then
+				seedOptions="true"
+				seedLanguage="$2"
+			fi
 			seed_Create
 			;;
 		edit)
@@ -284,7 +287,7 @@ if [[ $options = "true" ]]; then
 				*"xmr"*) watch_XMRig ;;
 				*"p2p"*) watch_P2Pool ;;
 				*stat*) watch_Status;;
-				*) print_Error_Exit "Pick: <monero/xmrig/p2pool>" ;;
+				*) print_Error_Exit "Pick: <status/monero/xmrig/p2pool>" ;;
 			esac
 			;;
 		enable)

@@ -62,7 +62,7 @@ watch_Template()
 			esac
 			clear
 			echo -e "$STATS"
-			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m" "$(date)"
+			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
 			read -r -s -n 1 -t 1 && exit 0
 		done
 	else
@@ -77,7 +77,7 @@ watch_Template()
 			esac
 			clear
 			echo -e "$STATS"
-			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m" "$(date)"
+			printf "\n\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[0;97m%s\e[1;97m]\e[0m " "$(date)"
 			read -r -s -n 1 -t 1 && exit 0
 		done
 	fi
