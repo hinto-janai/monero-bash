@@ -141,12 +141,13 @@ monero-bash comes with pre-configured/optimized configuration files:
 
 P2Pool does not have native support for a config file, so monero-bash uses its self-created `p2pool.conf`.
 
-Processes that are started in the background (`monero-bash start <process>`) will also respect their config files. For example: If you set `MINI=true` in `p2pool.conf`, `monero-bash start p2pool` will start P2Pool on the mini sidechain.
+Processes that are started in the background (`monero-bash start <process>`) will also respect their config files.  
+For example: If you set `MINI=true` in `p2pool.conf`, `monero-bash start p2pool` will start P2Pool on the mini sidechain.
 
 ---
 
 ### Mining
-These instructions (and monero-bash itself) is built around running your own P2Pool, with XMRig pointed at it, [click here for more info.](https://github.com/SChernykh/p2pool) However you can use whatever combination you'd like: only Monero for a node/wallet, only P2Pool, etc.
+These instructions (and monero-bash itself) is built around running your own P2Pool, with XMRig pointed at it, [click here for more info.](https://github.com/SChernykh/p2pool) However you can use any combination you'd like: only Monero, only P2Pool, etc.
 
 ***Warning:***
 * Wallet addresses are public on P2Pool! It is recommended to create a seperate mining wallet.
@@ -176,7 +177,7 @@ Or a specific (background) process:
 ```
 monero-bash watch <process>
 ```
-They all connect to each other! Press the LEFT/RIGHT arrow keys to switch processes. To just print a static status page, you can:
+Press the ***LEFT/RIGHT*** arrow keys to switch processes. To just print a static status page, you can:
 ```
 monero-bash status
 ```
