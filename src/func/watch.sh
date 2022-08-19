@@ -99,7 +99,7 @@ watch_Template()
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
-				read -r -s -n 2 -t 0.00001 VAR_2
+				read -r -s -N 2 -t 1 VAR_2
 				case "$VAR_2" in
 					'[C') watch_Next ;;
 					'[D') watch_Prev ;;
@@ -128,7 +128,7 @@ watch_Template()
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t 1 VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
-				read -r -s -n 2 -t 0.00001 VAR_2
+				read -r -s -N 2 -t 1 VAR_2
 				case "$VAR_2" in
 					'[C') watch_Next ;;
 					'[D') watch_Prev ;;
@@ -170,7 +170,7 @@ watch_Status() {
 		# exit on any input unless [left] or [right] escape codes
 		read -r -s -N 1 -t 1 VAR_1
 		if [[ $VAR_1 = $'\e' ]]; then
-			read -r -s -n 2 -t 0.00001 VAR_2
+			read -r -s -N 2 -t 1 VAR_2
 			case "$VAR_2" in
 				'[C') watch_Next ;;
 				'[D') watch_Prev ;;
