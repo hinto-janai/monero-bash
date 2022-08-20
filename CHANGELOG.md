@@ -1,3 +1,11 @@
+# v1.8.2
+**REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
+## Updates
+## Fixes
+* **Process** `monero-bash start all` will ignore non-installed packages
+
+---
+
 # v1.8.1
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
@@ -12,6 +20,8 @@
 
 ## Fixes
 * **systemd:** Processes will only restart on failure, with 5 second delay
+
+---
 
 # v1.8.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
@@ -40,6 +50,8 @@
 * **Seed:** Non-english seeds will be `24` words instead of `25` to prevent incorrect CRC issue
 * **Git:** Branches have been cleaned & squashed: `709` -> `348` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
 
+---
+
 # v1.7.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
@@ -55,6 +67,7 @@
 * `monero-bash seed`: Fixed, but still experimental
 * Safety: Using a non-GNU/Linux OS or a Bash version less than v5 will error & exit
 
+---
 
 # v1.6.0 - RECOMMENDED UPDATE
 ## Updates
@@ -71,6 +84,8 @@
 * **Misc**
 	- Fix text coloring issues
 
+---
+
 # v1.5.3
 ## Updates
 * **Config**
@@ -83,6 +98,7 @@
 * **Install**
 	- `monero-bash` properly errors out if not installed on GNU/Linux
 
+---
 
 # v1.5.2
 ## Updates
@@ -96,6 +112,7 @@
 * **Wallet**
 	- slightly more robust wallet name parsing
 
+---
 
 # v1.5.1
 ## Updates
@@ -106,6 +123,7 @@
 * **RPC**
 	- fixed contacting other monerod's for RPC calls
 
+---
 
 # v1.5
 ## Updates
@@ -132,6 +150,7 @@
 	- mini pool fix - reconfigure with `monero-bash config` or edit `p2pool.json`
 	- `p2pool.cache/p2pool_peers.txt` are kept between upgrades for faster sync
 
+---
 
 # v1.4.1
 ## Updates
@@ -149,6 +168,7 @@
 * **Process**
 	- `xmrig` hugepage = 1280, the rest are 1024
 
+---
 
 # v1.4
 ## Updates
@@ -168,6 +188,7 @@
 * **Error**
 	- error messages are more helpful
 
+---
 
 # v1.3
 ## Updates
@@ -178,6 +199,7 @@
 * **Process**
 	- `monero-bash full p2pool` properly works now
 
+---
 
 # v1.2.2
 ## Fixes
@@ -194,6 +216,7 @@
 * **Wallet**
 	- Fixed infinite error printing during wallet_Collision function
 
+---
 
 # v1.2
 ## Updates
@@ -204,12 +227,14 @@
 * **Process**
 	- `monero-bash <command> daemon` can also be invoked with `monero-bash <command> <monero/monerod>`
 
+---
 
 # v1.1.2
 ## Fixes
 * **INSTALL FIX**
 	- Hashlist is properly produced during install
 
+---
 
 # v1.1.1 - BROKEN INSTALL DO NOT USE
 ## Updates
@@ -222,6 +247,7 @@
 	- `monero-bash status` only prints status of installed packages
 	- More stats for `XMRig`
 
+---
 
 # v1.1.0
 ## Updates
@@ -237,11 +263,13 @@
 	- If `monero-bash gpg` is toggled on, keys will automatically be imported on installation/upgrade of package
 	- `monero-bash gpg <author/package/all>` to select which keys to import manually
 
+---
 
 # v1.0.0
 ## Official Release
 * See the [main repo](https://github.com/hinto-janaiyo/monero-bash) for all information on monero-bash
 
+---
 
 # v0.7
 ## Updates
@@ -268,6 +296,7 @@
 ## To be added
 * RPC/Daemon API integration
 
+---
 
 # v0.6.1
 ## Updates
@@ -286,6 +315,7 @@
 * systemd intergrated, but not invokable
 * `watch` command works, but not invokable
 
+---
 
 # v0.6
 ## Updates
@@ -303,6 +333,7 @@
 * systemd intergrated, but not invokable
 * `watch` command works, but not invokable
 
+---
 
 # v0.5
 ## Updates
