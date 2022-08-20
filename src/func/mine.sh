@@ -29,17 +29,17 @@
 
 mine_Start()
 {
-	missing_Monero
-	missing_XMRig
-	missing_P2Pool
+	[[ $MONERO_VER ]] && missing_Monero
+	[[ $P2POOL_VER ]] && missing_P2Pool
+	[[ $XMRIG_VER ]]  && missing_XMRig
 	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
 		printf "%s\n" "First time detected! Entering configure mode."
 		mine_Config
 	else
 		[[ $AUTO_HUGEPAGES = "true" ]] && mine_Hugepages
-		define_Monero;process_Start
-		define_P2Pool;process_Start
-		define_XMRig;process_Start
+		[[ $MONERO_VER ]] && define_Monero && process_Start
+		[[ $P2POOL_VER ]] && define_P2Pool && process_Start
+		[[ $XMRIG_VER ]]  && define_XMRig && process_Start
 		printf "Watch with: "
 		BWHITE; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;OFF
 	fi
@@ -48,25 +48,25 @@ mine_Start()
 mine_Stop()
 {
 	prompt_Sudo;error_Sudo
-	define_Monero;process_Stop
-	define_P2Pool;process_Stop
-	define_XMRig;process_Stop
+	[[ $MONERO_VER ]] && define_Monero && process_Stop
+	[[ $P2POOL_VER ]] && define_P2Pool && process_Stop
+	[[ $XMRIG_VER ]]  && define_XMRig && process_Stop
 }
 
 mine_Restart()
 {
 	prompt_Sudo;error_Sudo
-	define_Monero;process_Restart
-	define_P2Pool;process_Restart
-	define_XMRig;process_Restart
+	[[ $MONERO_VER ]] && define_Monero && process_Restart
+	[[ $P2POOL_VER ]] && define_P2Pool && process_Restart
+	[[ $XMRIG_VER ]]  && define_XMRig && process_Restart
 }
 
 mine_Kill()
 {
 	prompt_Sudo;error_Sudo
-	define_Monero;process_Kill
-	define_P2Pool;process_Kill
-	define_XMRig;process_Kill
+	[[ $MONERO_VER ]] && define_Monero && process_Kill
+	[[ $P2POOL_VER ]] && define_P2Pool && process_Kill
+	[[ $XMRIG_VER ]]  && define_XMRig && process_Kill
 }
 
 mine_Hugepages()
