@@ -2,12 +2,28 @@
 #
 # script to create new monero-bash releases
 set -e
+sudo -v
+
+# check path
+case $PWD in
+	*/monero-bash) :;;
+	*/monero-bash/utils) cd ..;;
+	*) echo "wrong path"; exit 1;;
+esac
 
 # git folder
 path="$HOME/git/monero-bash"
 
+# create hashlist
+if ! ./monero-bash DEBUG_04e3be9 CHECK_HASH_LIST; then
+	./monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST
+	git add .
+	git commit -m '!!'
+	git rebase -i HEAD~1 && git push -f
+fi
+
 # copy to tmp
-rm -fr "/tmp/monero-bash"
+[[ -d /tmp/monero-bash ]] && rm -fr "/tmp/monero-bash"
 cp -fr "$path" "/tmp/"
 
 # remove non-release files

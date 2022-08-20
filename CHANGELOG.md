@@ -1,6 +1,7 @@
 # v1.8.2
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
+
 ## Fixes
 * **Process** `monero-bash start all` will ignore non-installed packages
 

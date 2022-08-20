@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# re-create hashfile
+set -ex
+sudo -v
+
+./monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST
+./monero-bash DEBUG_04e3be9 QUIET_HASH_LIST
+git add .
+git commit -m '!!'
