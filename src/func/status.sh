@@ -153,7 +153,7 @@ status_Monero()
 			# prevent dividing by 0
 			# $height gets found first
 			# before $target_height
-			if [[ $target_height = 0 ]]; then
+			if [[ $target_height -lt 2694035 ]]; then
 				height_percent=???
 			else
 				height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2 * 100}')
