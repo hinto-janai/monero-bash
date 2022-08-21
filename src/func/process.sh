@@ -45,7 +45,12 @@ process_Start_Template()
 		read YES_NO
 		case $YES_NO in
 			y|Y|yes|Yes|YES|"") mine_Config; exit;;
-			*) echo "Skipping...";;
+			*)
+				trap 'trap_Mining; exit' 1 2 3 6 15
+				echo "Skipping..."
+				sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=false@" "$state"
+				PRODUCE_HASH_LIST
+				;;
 		esac
 	fi
 

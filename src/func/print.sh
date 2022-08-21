@@ -101,6 +101,40 @@ print_Version()
 	[[ $VERSION_OLD = true ]] && return 1 || return 0
 }
 
+print_Installed_Version()
+{
+	BWHITE; echo -n "monero-bash | "
+	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
+		BRED; echo "$MONERO_BASH_VER"
+	else
+		BGREEN; echo "$MONERO_BASH_VER"
+	fi
+	if [[ $MONERO_VER ]]; then
+		BWHITE; echo -n "Monero      | "
+		if [[ $MONERO_OLD = "true" ]]; then
+			BRED; echo "$MONERO_VER"
+		else
+			BGREEN; echo "$MONERO_VER"
+		fi
+	fi
+	if [[ $XMRIG_VER ]]; then
+		BWHITE; echo -n "XMRig       | "
+		if [[ $XMRIG_OLD = "true" ]]; then
+			BRED; echo "$XMRIG_VER"
+		else
+			BGREEN; echo "$XMRIG_VER"
+		fi
+	fi
+	if [[ $P2POOL_VER ]]; then
+		BWHITE; echo -n "P2Pool      | "
+		if [[ $P2POOL_OLD = "true" ]]; then
+			BRED; echo "$P2POOL_VER"
+		else
+			BGREEN; echo "$P2POOL_VER"
+		fi
+	fi
+}
+
 print_Usage()
 {
     BWHITE; echo -n "USAGE: "

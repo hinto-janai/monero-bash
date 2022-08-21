@@ -30,7 +30,7 @@
 status_All()
 {
 	print_MoneroBashTitle
-	print_Version
+	print_Installed_Version
 	status_System
 	[[ $MONERO_VER ]] && status_Monero
 	[[ $P2POOL_VER ]] && status_P2Pool

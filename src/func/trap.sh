@@ -99,3 +99,11 @@ trap_Hash()
 	PRODUCE_HASH_LIST
 	exit
 }
+
+# turn off mining prompt
+trap_Mining() {
+	trap_Template
+	error_Trap "WRITING TO STATE"
+	sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=false@" "$state"
+	PRODUCE_HASH_LIST
+}

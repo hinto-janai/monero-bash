@@ -72,6 +72,8 @@ watch_Template()
 	# divided by 2 to account for line wraps.
 	# 1 line that line wraps still counts as 1 line,
 	# this makes it so bottom messages won't be seen.
+	warning::watch_refresh_rate
+	[[ $WATCH_REFRESH_RATE ]] || WATCH_REFRESH_RATE=1
 	unset -v WATCH_LINES DOT_COLOR STATS IFS VAR_1 VAR_2 STATUS_LIST
 	local WATCH_LINES DOT_COLOR STATS IFS=$'\n' VAR_1 VAR_2
 	watch_Create_List
@@ -97,7 +99,7 @@ watch_Template()
 			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
-			read -r -s -N 1 -t 1 VAR_1
+			read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
 				read -r -s -N 2 -t 1 VAR_2
 				case "$VAR_2" in
@@ -126,7 +128,7 @@ watch_Template()
 			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
-			read -r -s -N 1 -t 1 VAR_1
+			read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
 				read -r -s -N 2 -t 1 VAR_2
 				case "$VAR_2" in
@@ -147,6 +149,8 @@ watch_Status() {
 	if [[ $XMRIG_VER ]]; then
 		prompt_Sudo; error_Sudo
 	fi
+	warning::watch_refresh_rate
+	[[ $WATCH_REFRESH_RATE ]] || WATCH_REFRESH_RATE=1
 	unset -v COL STATS VAR_1 VAR_2 STATUS_LIST
 	watch_Create_List
 	declare -g CURRENT=0
@@ -168,7 +172,7 @@ watch_Status() {
 		printf "\e[${WATCH_LINES};0H\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
 		# exit on any input unless [left] or [right] escape codes
-		read -r -s -N 1 -t 1 VAR_1
+		read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 		if [[ $VAR_1 = $'\e' ]]; then
 			read -r -s -N 2 -t 1 VAR_2
 			case "$VAR_2" in
