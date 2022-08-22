@@ -2,6 +2,7 @@
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
 * **Watch** `WATCH_REFRESH_RATE` setting in `monero-bash.conf` will change the second refresh interval of `monero-bash watch`
+* **Watch** -more efficient (libjson)
 
 ## Fixes
 * **Status** Only versions of installed packages will be listed

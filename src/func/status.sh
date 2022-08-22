@@ -133,20 +133,21 @@ status_Monero()
 			return 1
 		fi
 
-		# filter 'get_info' rpc call
-		local height height_percent percent_color incoming outgoing rpc synchronized nettype synchronized target_height tx_pool_size net_hash database_size
-		height=$(echo "$GET_INFO" | grep "\"height\":")
-		height=${height//[!0-9]}
-		target_height=$(echo "$GET_INFO" | grep "\"target_height\":")
-		target_height=${target_height//[!0-9]}
-		incoming=$(echo "$GET_INFO" | grep "\"incoming_connections_count\":")
-		incoming=${incoming//[!0-9]}
-		outgoing=$(echo "$GET_INFO" | grep "\"outgoing_connections_count\":")
-		outgoing=${outgoing//[!0-9]}
-		rpc=$(echo "$GET_INFO" | grep "\"rpc_connections_count\":")
-		rpc=${rpc//[!0-9]}
-		synchronized=$(echo "$GET_INFO" | grep "\"synchronized\":")
-		if [[ $synchronized = *true* ]]; then
+		# turn 'get_info' rpc JSON values into variables.
+		# this uses: https://github.com/hinto-janaiyo/libjson
+		local i IFS=$'\n'
+		for i in $(echo "$GET_INFO" | json::var); do
+			declare $i
+		done
+
+		# cleanup 'get_info' variables
+		local height height_percent height_percent_int percent_color incoming outgoing rpc synchronized nettype synchronized target_height tx_pool_size net_hash database_size
+		height=${result_height//[!0-9]}
+		target_height=${result_target_height//[!0-9]}
+		incoming=${result_incoming_connections_count//[!0-9]}
+		outgoing=${result_outgoing_connections_count//[!0-9]}
+		rpc=${result_rpc_connections_count//[!0-9]}
+		if [[ $result_synchronized = *true* ]]; then
 			target_height=$height
 			height_percent="100"
 		else
@@ -170,16 +171,12 @@ status_Monero()
 		else
 			percent_color="\e[93m"
 		fi
-		nettype=$(echo "$GET_INFO" | grep "\"nettype\":")
-		nettype=${nettype//*:}
+		nettype=${result_nettype//*:}
 		nettype=${nettype//[![:alnum:]]}
-		tx_pool_size=$(echo "$GET_INFO" | grep "\"tx_pool_size\":")
-		tx_pool_size=${tx_pool_size//[!0-9]}
-		net_hash=$(echo "$GET_INFO" | grep "\"difficulty\":")
-		net_hash=${net_hash//[!0-9]}
+		tx_pool_size=${result_tx_pool_size//[!0-9]}
+		net_hash=${result_difficulty//[!0-9]}
 		net_hash=$(echo "$net_hash" | awk '{print $1 / 120000000000}')
-		database_size=$(echo "$GET_INFO" | grep "\"database_size\":")
-		database_size=${database_size//[!0-9]}
+		database_size=${result_database_size//[!0-9]}
 		database_size=$(echo "$database_size" | awk '{print $1 / 1000000000}')
 
 		# print
