@@ -377,81 +377,92 @@ status_P2Pool()
 		if [[ ! -e $p2poolApi ]]; then
 			print_Warn "P2Pool API file was not found, stats will be inaccurate!"
 			print_Warn "Consider restarting P2Pool. It will regenerate necessary files."
+		else
+			# put api file into memory
+			p2poolJson=(<$p2poolApi)
 		fi
 
-		local sharesFound sharesFoundApi sharesFoundLog p2pHash_15m p2pHash_1h p2pHash_24h averageEffort currentEffort connections latestPayout latestShare IFS=' '
+		# turn 'stats' p2pool JSON values into variables.
+		# this uses: https://github.com/hinto-janaiyo/libjson
+		local i IFS=$'\n'
+		for i in $(echo "$p2poolJson" | json::var); do
+			declare $i
+		done
+
+		local sharesFound sharesFoundApi sharesFoundLog latestPayout latestShare IFS=' '
 		# SHARES FOUND
 		case $LOG_LEVEL in
 			0)
 				sharesFoundLog="$(echo "$LOG" | grep -c "SHARE FOUND")"
-				sharesFoundApi=$(grep -o "\"shares_found\":[0-9]\+" $p2poolApi 2>/dev/null)
-				sharesFoundApi=${sharesFound//*:}
+				sharesFoundApi=${shares_found}
 				# if api shares != log shares, i'm trusting my own data over the api, sorry mr.chernykh
 				[[ $sharesFoundApi = "$sharesFoundLog" ]] && sharesFound="$sharesFoundApi" || sharesFound="$sharesFoundLog"
 				;;
 			*)
 				sharesFound="$(echo "$LOG" | grep -c "SHARE FOUND")";;
 		esac
-		# HASHRATE
-		p2pHash_15m=$(grep -o "\"hashrate_15m\":[0-9]\+\|\"hashrate_15m\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
-		p2pHash_1h=$(grep -o "\"hashrate_1h\":[0-9]\+\|\"hashrate_1h\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
-		p2pHash_24h=$(grep -o "\"hashrate_24h\":[0-9]\+\|\"hashrate_24h\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
-		p2pHash_15m=${p2pHash_15m//*:}
-		p2pHash_1h=${p2pHash_1h//*:}
-		p2pHash_24h=${p2pHash_24h//*:}
-		# EFFORT
-		averageEffort=$(grep -o "\"average_effort\":[0-9]\+\|\"average_effort\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
-		currentEffort=$(grep -o "\"current_effort\":[0-9]\+\|\"current_effort\":[0-9]\+.[0-9]\+" $p2poolApi 2>/dev/null)
-		averageEffort=${averageEffort//*:}
-		currentEffort=${currentEffort//*:}
-		[[ $sharesFound = 0 ]] && averageEffort=0
-		# CONNECTIONS
-		connections=$(grep -o "\"incoming_connections\":[0-9]\+" $p2poolApi 2>/dev/null)
-		connections=${connections//*:}
+		[[ $sharesFound = 0 ]] && average_effort=0
 		# DEFAULT TO 0
-		[[ $sharesFound ]]   || sharesFound=0
-		[[ $p2pHash_15m ]]   || p2pHash_15m=0
-		[[ $p2pHash_1h ]]    || p2pHash_1h=0
-		[[ $p2pHash_24h ]]   || p2pHash_24h=0
-		[[ $averageEffort ]] || averageEffort=0
-		[[ $currentEffort ]] || currentEffort=0
-		[[ $connections ]]   || connections=0
+		[[ $sharesFound ]]    || sharesFound=0
+		[[ $hashrate_15m ]]   || hashrate_15m=0
+		[[ $hashrate_1h ]]    || hashrate_1h=0
+		[[ $hashrate_24h ]]   || hashrate_24h=0
+		[[ $average_effort ]] || average_effort=0
+		[[ $current_effort ]] || current_effort=0
+		[[ $connections ]]    || connections=0
 
+		local xmrColumn processUnixTime processHours sharesPerHour sharesPerDay payoutTotal payoutPerHour payoutPerDay xmrTotal xmrPerHour xmrPerDay
 		# XMR COLUMN
-		local xmrColumn="$(echo "$LOG" | grep -o "You received a payout of [0-9]\+.[0-9]\+ XMR")"
-		local xmrColumn="$(echo "$xmrColumn" | grep -o "[0-9]\+.[0-9]\+")"
-
-		# hour calculation
-		local processUnixTime="$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)"
-		local processHours="$(echo "$processUnixTime" "60" "60" | awk '{printf "%.7f\n", $1 / $2 / $3 }')"
-		[[ $processHours = 0 ]] && processHours="1"
-
-		# day calculation
-		local processDays="$(echo "$processHours" "24" | awk '{printf "%.7f\n", $1 / $2 }')"
-
-		# SHARES/hour & SHARES/day
-		local sharesPerHour="$(echo "$sharesFound" "$processHours" | awk '{printf "%.7f\n", $1 / $2 }')"
-		local sharesPerDay="$(echo "$sharesFound" "$processDays" | awk '{printf "%.7f\n", $1 / $2 }')"
-
-		# payout calculation
+		xmrColumn=$(echo "$LOG" | grep -o "You received a payout of [0-9]\+.[0-9]\+ XMR")
+		xmrColumn=$(echo "$xmrColumn" | grep -o "[0-9]\+.[0-9]\+")
 		if [[ $xmrColumn ]]; then
-			local payoutTotal="$(echo "$xmrColumn" | wc -l)"
-			local payoutPerHour="$(echo "$payoutTotal" "$processHours" | awk '{printf "%.7f\n", $1 / $2 }')"
-			local payoutPerDay="$(echo "$payoutTotal" "$processDays" | awk '{printf "%.7f\n", $1 / $2 }')"
+			payoutTotal=$(echo "$xmrColumn" | wc -l)
 		else
-			local payoutTotal=0
-			local payoutPerHour=0.0000000
-			local payoutPerDay=0.0000000
+			payoutTotal=0
+			payoutPerHour=0.0000000
+			payoutPerDay=0.0000000
 		fi
+		# -- sharesPerHour -----> awkList[0]
+		# $1 = sharesFound
+		# $2 = processHours
+		# -- sharesPerDay ------> awkList[1]
+		# $3 = processDays
+		# -- payoutPerHour -----> awkList[2]
+		# $4 = payoutTotal
+		# $5 = processHours
+		# -- payoutPerDay ------> awkList[3]
+		#
+		# This is for keeping track of what input
+		# is fed into AWK. This would obviously be
+		# better if I just wrote this in AWK but..
+		# I don't actually know how to write AWK,
+		# I only know how to use with it with Bash... :D
+		# I'm sure this would make Brian Kernighan cry.
+		# hour calculation
+		processUnixTime=$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)
+		processHours=$(echo "$processUnixTime" | awk '{printf "%.7f\n", $1 / 60 / 60 }')
+		[[ $processHours = 0 ]] && processHours=1
+
+		# create awk list (array)
+		declare -a awkList
+		awkList=($(echo "$sharesFound" "$processHours" "$processHours" "$sharesFound" "$processDays" "$payoutTotal" \
+			| awk '{printf "%.7f %.7f %.7f %.7f", $1/$2, $1/$4/24, $5/$2, $5/$4}'))
+		# SHARES/hour & SHARES/day
+		declare -n sharesPerHour=awkList[0]
+		declare -n sharesPerDay=awkList[1]
+		# payout calculation
+		declare -n payoutPerHour=awkList[2]
+		declare -n payoutPerDay=awkList[3]
 		# xmr calculation
 		if [[ $xmrColumn ]]; then
-			local xmrTotal="$(echo "$xmrColumn" | awk '{SUM+=$1}END{printf "%.7f\n", SUM }')"
-			local xmrPerHour="$(echo "$xmrTotal" "$processHours" | awk '{printf "%.7f\n", $1 / $2 }')"
-			local xmrPerDay="$(echo "$xmrTotal" "$processDays" | awk '{printf "%.7f\n", $1 / $2 }')"
+			xmrTotal=$(echo "$xmrColumn" | awk '{SUM+=$1}END{printf "%.7f\n", SUM }')
+			declare -a xmrList=($(echo "$xmrTotal" "$processHours" "$processDays" | awk '{printf "%.7f %.7f", $1/$2, $1/$4}'))
+			declare -n xmrPerHour=xmrList[0]
+			declare -n xmrPerDay=xmrList[1]
 		else
-			local xmrTotal=0
-			local xmrPerHour=0.0000000
-			local xmrPerDay=0.0000000
+			xmrTotal=0
+			xmrPerHour=0.0000000
+			xmrPerDay=0.0000000
 		fi
 
 		# print WALLET
@@ -474,15 +485,15 @@ status_P2Pool()
 
 		# print EFFORT
 		BWHITE; printf "Effort        | "; OFF
-		OFF; echo -n "[average: ${averageEffort}%] "
-		OFF; echo "[current: ${currentEffort}%]"
+		OFF; echo -n "[average ${average_effort}%] "
+		OFF; echo "[current ${current_effort}%]"
 
 		# print HASHRATE
 		BWHITE; printf "Hashrate      | "; OFF
 		printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "15s" "/" "1h" "/" "24h"
-		printf "\e[0m[\e[0;93m%s\e[0m] " "$p2pHash_15m H/s"
-		printf "\e[0m[\e[0;94m%s\e[0m] " "$p2pHash_1h H/s"
-		printf "\e[0m[\e[0;95m%s\e[0m]\n" "$p2pHash_24h H/s"
+		printf "\e[0m[\e[0;93m%s\e[0m] " "$hashrate_15m H/s"
+		printf "\e[0m[\e[0;94m%s\e[0m] " "$hashrate_1h H/s"
+		printf "\e[0m[\e[0;95m%s\e[0m]\n" "$hashrate_24h H/s"
 
 		# print SIDECHAIN
 		BWHITE; printf "Side-Chain    | "
