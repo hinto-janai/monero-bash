@@ -96,8 +96,8 @@ watch_Template()
 			esac
 			clear
 			echo -e "$STATS"
-			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
-				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
+			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
@@ -125,8 +125,8 @@ watch_Template()
 			esac
 			clear
 			echo -e "$STATS"
-			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
-				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
+			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
+				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
@@ -170,7 +170,7 @@ watch_Status() {
 		clear
 		echo -e "$STATS"
 		printf "\e[${WATCH_LINES};0H\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
-			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [" "$STAT_AMOUNT" "]"
+			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
 		# exit on any input unless [left] or [right] escape codes
 		read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 		if [[ $VAR_1 = $'\e' ]]; then

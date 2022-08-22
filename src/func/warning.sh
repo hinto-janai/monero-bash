@@ -28,7 +28,7 @@
 # Small warning messages
 
 warning::watch_refresh_rate() {
-	if [[ $WATCH_REFRESH_RATE -gt 10 || $WATCH_REFRESH_RATE = 0 ]]; then
+	if [[ $WATCH_REFRESH_RATE -gt 60 || $WATCH_REFRESH_RATE = 0 ]]; then
 		print_Warn "[\$WATCH_REFRESH_RATE] has an invalid value! Falling back to [1]"
 		declare -g WATCH_REFRESH_RATE=1
 	fi

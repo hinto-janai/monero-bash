@@ -379,7 +379,7 @@ status_P2Pool()
 			print_Warn "Consider restarting P2Pool. It will regenerate necessary files."
 		else
 			# put api file into memory
-			p2poolJson=(<$p2poolApi)
+			p2poolJson=$(<${p2poolApi})
 		fi
 
 		# turn 'stats' p2pool JSON values into variables.
@@ -422,31 +422,21 @@ status_P2Pool()
 			payoutPerHour=0.0000000
 			payoutPerDay=0.0000000
 		fi
-		# -- sharesPerHour -----> awkList[0]
-		# $1 = sharesFound
-		# $2 = processHours
-		# -- sharesPerDay ------> awkList[1]
-		# $3 = processDays
-		# -- payoutPerHour -----> awkList[2]
-		# $4 = payoutTotal
-		# $5 = processHours
-		# -- payoutPerDay ------> awkList[3]
-		#
-		# This is for keeping track of what input
-		# is fed into AWK. This would obviously be
-		# better if I just wrote this in AWK but..
-		# I don't actually know how to write AWK,
-		# I only know how to use with it with Bash... :D
-		# I'm sure this would make Brian Kernighan cry.
-		# hour calculation
+		# process hour calculation
 		processUnixTime=$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)
 		processHours=$(echo "$processUnixTime" | awk '{printf "%.7f\n", $1 / 60 / 60 }')
 		[[ $processHours = 0 ]] && processHours=1
 
+		# The below would obviously be better if I
+		# just wrote this in AWK but I don't actually
+		# know how to write AWK, I only know how
+		# to interact with it with Bash... :D
+		# I'm sure this would make Brian Kernighan cry.
+
 		# create awk list (array)
 		declare -a awkList
-		awkList=($(echo "$sharesFound" "$processHours" "$processHours" "$sharesFound" "$processDays" "$payoutTotal" \
-			| awk '{printf "%.7f %.7f %.7f %.7f", $1/$2, $1/$4/24, $5/$2, $5/$4}'))
+		awkList=($(echo "$sharesFound" "$processHours" "$payoutTotal" \
+			| awk '{printf "%.7f %.7f %.7f %.7f", $1/$2, $1/$2/24, $3/$2, $3/$2/24}'))
 		# SHARES/hour & SHARES/day
 		declare -n sharesPerHour=awkList[0]
 		declare -n sharesPerDay=awkList[1]
@@ -455,10 +445,11 @@ status_P2Pool()
 		declare -n payoutPerDay=awkList[3]
 		# xmr calculation
 		if [[ $xmrColumn ]]; then
-			xmrTotal=$(echo "$xmrColumn" | awk '{SUM+=$1}END{printf "%.7f\n", SUM }')
-			declare -a xmrList=($(echo "$xmrTotal" "$processHours" "$processDays" | awk '{printf "%.7f %.7f", $1/$2, $1/$4}'))
-			declare -n xmrPerHour=xmrList[0]
-			declare -n xmrPerDay=xmrList[1]
+			declare -a xmrList
+			xmrList=($(echo "$xmrColumn" "$processHours" | awk '{SUM+=$1}END{printf "%.7f %.7f %.7f", SUM, SUM/$2, SUM/$2/24}'))
+			declare -n xmrTotal=xmrList[0]
+			declare -n xmrPerHour=xmrList[1]
+			declare -n xmrPerDay=xmrList[2]
 		else
 			xmrTotal=0
 			xmrPerHour=0.0000000
