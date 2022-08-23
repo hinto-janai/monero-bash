@@ -47,8 +47,8 @@ cat > $tmpService/$SERVICE <<EOM
 [Unit]
 Description=$SERVICE
 After=network.target
-StartLimitBurst=50
 StartLimitIntervalSec=300
+StartLimitBurst=5
 [Service]
 # Basics
 User=$USER
@@ -65,9 +65,9 @@ Restart=on-failure
 RestartSec=5s
 # Open file limit
 $FILE_LIMIT
-# Wait 30 seconds before sending SIGTERM
+# Wait 35 seconds before sending SIGTERM
 KillSignal=SIGTERM
-TimeoutStopSec=30s
+TimeoutStopSec=35s
 SendSIGKILL=yes
 # Security Hardening
 PrivateTmp=yes
@@ -80,7 +80,7 @@ $PROTECT_KERNEL_MODULES
 ProtectKernelLogs=yes
 ProtectProc=invisible
 ProtectControlGroups=yes
-ProtectKernelTunables=yes
+$PROTECT_KERNEL_TUNABLES
 ProtectSystem=strict
 ProtectHome=read-only
 $BIND_PATHS
@@ -123,7 +123,7 @@ systemd_Edit()
 
 systemd_Monero()
 {
-	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR PROTECT_KERNEL_TUNABLES
 	COMMAND="$binMonero/monerod --config-file $config/monerod.conf --non-interactive"
 	ENV_FILE="#EnvironmentFile= #none"
 	ENV_LINE="#EnvironmentFile= #none"
@@ -131,6 +131,7 @@ systemd_Monero()
 	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet="
 	PROTECT_CLOCK="ProtectClock=yes"
 	PROTECT_KERNEL_MODULES="ProtectKernelModules=yes"
+	PROTECT_KERNEL_TUNABLES="ProtectKernelTunables=yes"
 	define_Monero
 	if ! DATA_DIR=$(grep "^data-dir=/.*$" $config/monerod.conf); then
 		DATA_DIR="$HOME/.bitmonero"
@@ -142,7 +143,7 @@ systemd_Monero()
 
 systemd_XMRig()
 {
-	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES
+	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES
 	COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file=$binXMRig/xmrig-log"
 	USER="root"
 	ENV_FILE="#EnvironmentFile= #none"
@@ -151,14 +152,15 @@ systemd_XMRig()
 	CAPABILITY_BOUNDING_SET="#CapabilityBoundingSet= #XMRig needs this disabled for max hashrate"
 	PROTECT_CLOCK="#ProtectClock=yes #XMRig needs this disabled for max hashrate"
 	PROTECT_KERNEL_MODULES="#ProtectKernelModules=yes #XMRig needs this disabled for max hashrate"
-	BIND_PATHS="BindPaths=$binXMRig $config"
+	PROTECT_KERNEL_TUNABLES="#ProtectKernelTunables=yes #XMRig needs this disabled for max hashrate"
+	BIND_PATHS="BindPaths=$binXMRig $xmrigConf"
 	define_XMRig
 	systemd_Template
 }
 
 systemd_P2Pool()
 {
-	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES
 	COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
 	ENV_FILE="EnvironmentFile=$config/p2pool.conf"
 	ENV_LINE="EnvironmentFile=$API/mini"
@@ -166,6 +168,7 @@ systemd_P2Pool()
 	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet="
 	PROTECT_CLOCK="ProtectClock=yes"
 	PROTECT_KERNEL_MODULES="ProtectKernelModules=yes"
+	PROTECT_KERNEL_TUNABLES="ProtectKernelTunables=yes"
 	BIND_PATHS="BindPaths=$binP2Pool"
 	define_P2Pool
 	# 2022-08-14 Backwards compatibility with

@@ -203,9 +203,9 @@ ProtectSystem=strict         Mounts /usr/, /etc/, and /boot/ as read-only for th
 ProtectHome=read-only        Mounts /home/ as read-only for the process
 BindPaths=...                Allows CERTAIN directories to be read from/written to
 ```
-In the event of fatal process bugs like remote code execution, these settings will lessen the damage done. Some of the settings are tweaked to allow for slightly more permissions, like for `Monero` to be able to write to its data folder.
+In the event of fatal process bugs like remote code execution, these settings will lessen the damage done.
 
-**Note: `XMRig` is ran as `root` for the MSR hashrate boost, but it is still restricted in what it can see/do to your system.**
+**Note: `XMRig` is ran as `root` for the MSR hashrate boost. Although it is still heavily restricted with these settings, they are not perfect. Unless you consider XMRig malware, you should be more concerned about programs with much larger attack surfaces: internet-facing applications like Monero/P2Pool nodes.**
 
 ---
 

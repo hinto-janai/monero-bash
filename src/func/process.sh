@@ -84,117 +84,39 @@ process_Start_Template()
 			rm -rf "$binXMRig/xmrig-log"
 			touch "$binXMRig/xmrig-log"
 			chmod 700 "$binXMRig/xmrig-log"
-		# START PROCESS
-		BBLUE; echo "Starting [${PROCESS}]..." ;OFF
-		COMMANDS
-		error_Exit "Could not start [${PROCESS}]"
+			# START/RESTART PROCESS
+			COMMANDS
 		fi
 	fi
 }
 
-process_Stop_Template()
-{
-	prompt_Sudo;error_Sudo
-	local OUTPUT=$(sudo systemctl status $PROCESS)
-	if pgrep $PROCESS &>/dev/null; then
-		COMMANDS
-	elif [[ $OUTPUT = *"Active: inactive"* ]]; then
-		COMMANDS
-	else
-		OFF; echo -n "[${PROCESS}] "
-		BRED; echo "not online" ;OFF
-	fi
+process_Start() {
+	[[ -z $NAME_VER ]] && print_Error_Exit "[${NAME_PRETTY}] not installed"
+	BBLUE; echo "Starting [${PROCESS}]..." ;OFF
+	missing_systemd_"$NAME_FUNC"
+	sudo systemctl start "$SERVICE"
+	process_Start_Template
 }
 
 process_Restart()
 {
-	prompt_Sudo;error_Sudo
-	missing_config_"$NAME_FUNC"
-
-	# REFRESH LOGS
-	if [[ $NAME_PRETTY = "P2Pool" ]]; then
-		[[ -e "$binP2Pool/p2pool.log" ]] && rm -rf "$binP2Pool/p2pool.log"
-		[[ -e "$binP2Pool/local/stats" ]] && rm -rf "$binP2Pool/local/stats"
-		mkdir -p "$binP2Pool/local" "$installDirectory/src/mini"
-		touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
-		chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
-		# mini state
-		if [[ $MINI = true ]]; then
-			echo "MINI_FLAG='--mini'" > "$API/mini"
-			touch "$API/mini_now"
-		elif [[ $MINI = false ]]; then
-			echo "MINI_FLAG=" > "$API/mini"
-			[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
-		else
-			echo "MINI_FLAG=" > "$API/mini"
-			[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
-			print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
-		fi
-	elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
-		rm -rf "$binXMRig/xmrig-log"
-		touch "$binXMRig/xmrig-log"
-		chmod 700 "$binXMRig/xmrig-log"
-	fi
-
-	# RESTART
-	if pgrep $PROCESS &>/dev/null ; then
-		BYELLOW; echo "Restarting [${PROCESS}]..." ;OFF
-		if sudo systemctl restart "$SERVICE"; then
-			BBLUE; echo "Restarted [${PROCESS}]!" ;OFF
-			return 0
-		else
-			BRED; printf "%s\n\n" "[${PROCESS}] restart failed!"; OFF
-			return 1
-		fi
+	COMMANDS() {
+	BYELLOW; echo "Restarting [${PROCESS}]..." ;OFF
+	if sudo systemctl restart "$SERVICE"; then
+		BBLUE; echo "Restarted [${PROCESS}]!" ;OFF
+		return 0
 	else
-		OFF; echo -n "[${PROCESS}] "
-		BRED; echo "not online" ;OFF
+		BRED; printf "%s\n" "[${PROCESS}] restart failed!"; OFF
+		return 1
 	fi
-}
-
-process_Start()
-{
-	COMMANDS()
-	{
-		missing_systemd_"$NAME_FUNC"
-		sudo systemctl start "$SERVICE"
 	}
 	process_Start_Template
 }
 
 process_Stop()
 {
-	COMMANDS()
-	{
-		BRED; echo "Stopping [${PROCESS}] gracefully..." ;OFF
-		sudo systemctl stop "$SERVICE" &
-		for i in {1..30} ;do
-			if [[ "$i" = "30" ]]; then
-				echo
-				print_Warn "[${PROCESS}] not responding, killing..."
-				process_Kill
-			fi
-			if pgrep $PROCESS &>/dev/null ;then
-				echo -n "."
-			else
-				echo "."
-				break
-			fi
-			sleep 1
-		done
-	}
-	process_Stop_Template
-}
-
-process_Kill()
-{
-	prompt_Sudo;error_Sudo
-	COMMANDS()
-	{
-		IRED; echo "Sending kill signal to [${PROCESS}]..."
-		sudo systemctl kill "$SERVICE"
-	}
-	process_Stop_Template
+	BRED; echo "Stopping [${PROCESS}] gracefully..." ;OFF
+	sudo systemctl stop "$SERVICE"
 }
 
 process_Full()
@@ -291,10 +213,10 @@ process_Enable() {
 	missing_systemd_"$NAME_FUNC"
 	if sudo systemctl enable "$SERVICE"; then
 		BBLUE; printf "%s" "[${PROCESS}] "
-		IWHITE; printf "%s\n\n" "enabled, it will auto-start in the background on boot!"; OFF
+		IWHITE; printf "%s\n" "enabled, it will auto-start in the background on boot!"; OFF
 		return 0
 	else
-		BRED; printf "%s\n\n" "[${PROCESS}] enable failed!"; OFF
+		BRED; printf "%s\n" "[${PROCESS}] enable failed!"; OFF
 		return 1
 	fi
 }
@@ -304,10 +226,10 @@ process_Disable() {
 	missing_systemd_"$NAME_FUNC"
 	if sudo systemctl disable "$SERVICE"; then
 		BRED; printf "%s" "[${PROCESS}] "
-		IWHITE; printf "%s\n\n" "disabled, it will NOT auto-start on boot!"; OFF
+		IWHITE; printf "%s\n" "disabled, it will NOT auto-start on boot!"; OFF
 		return 0
 	else
-		BRED; printf "%s\n\n" "[${PROCESS}] disable failed!"; OFF
+		BRED; printf "%s\n" "[${PROCESS}] disable failed!"; OFF
 		return 1
 	fi
 }
