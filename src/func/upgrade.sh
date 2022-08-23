@@ -112,7 +112,8 @@ upgrade_Template()
 		sudo -u "$USER" cp -fr "$tmp/$folderName/config" "$installDirectory"
 		sudo -u "$USER" cp -fr "$tmp/$folderName/gpg" "$installDirectory"
 		sudo -u "$USER" cp -fr "$old/src/txt/state" "$state"
-		sudo -u "$USER" cp -fr "$old/src/mini" "$installDirectory/src/"
+		sudo -u "$USER" cp -fr "$old/src/api" "$installDirectory/src/"
+		[[ -d "$old/src/mini" ]] && sudo -u "$USER" cp -fr "$old/src/mini" "$installDirectory/src/"
 	else
 
 	# INSTALL FOR EVERYTHING ELSE

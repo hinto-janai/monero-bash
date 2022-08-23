@@ -62,41 +62,43 @@ process_Start_Template()
 		missing_config_"$NAME_FUNC"
 
 		# REFRESH LOGS
-		if [[ $NAME_PRETTY = "P2Pool" ]]; then
+		if [[ $NAME_PRETTY = P2Pool ]]; then
 			[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
 			[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
-			mkdir -p "$binP2Pool/local" "$installDirectory/src/mini"
+			mkdir -p "$binP2Pool/local" "$API"
 			touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 			chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 			# mini state
 			if [[ $MINI = true ]]; then
-				echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
-				touch "$installDirectory/src/mini/mini_now"
+				echo "MINI_FLAG='--mini'" > "$API/mini"
+				touch "$API/mini_now"
 			elif [[ $MINI = false ]]; then
-				echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
-				[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+				echo "MINI_FLAG=" > "$API/mini"
+				[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
 			else
-				echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
-				[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+				echo "MINI_FLAG=" > "$API/mini"
+				[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
 				print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
 			fi
-		elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then
+		elif [[ $NAME_PRETTY = XMRig && -e "$binXMRig/xmrig-log" ]]; then
 			rm -rf "$binXMRig/xmrig-log"
 			touch "$binXMRig/xmrig-log"
 			chmod 700 "$binXMRig/xmrig-log"
-		fi
-
 		# START PROCESS
 		BBLUE; echo "Starting [${PROCESS}]..." ;OFF
 		COMMANDS
 		error_Exit "Could not start [${PROCESS}]"
+		fi
 	fi
 }
 
 process_Stop_Template()
 {
 	prompt_Sudo;error_Sudo
-	if pgrep $PROCESS &>/dev/null ; then
+	local OUTPUT=$(sudo systemctl status $PROCESS)
+	if pgrep $PROCESS &>/dev/null; then
+		COMMANDS
+	elif [[ $OUTPUT = *"Active: inactive"* ]]; then
 		COMMANDS
 	else
 		OFF; echo -n "[${PROCESS}] "
@@ -118,14 +120,14 @@ process_Restart()
 		chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 		# mini state
 		if [[ $MINI = true ]]; then
-			echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
-			touch "$installDirectory/src/mini/mini_now"
+			echo "MINI_FLAG='--mini'" > "$API/mini"
+			touch "$API/mini_now"
 		elif [[ $MINI = false ]]; then
-			echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
-			[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+			echo "MINI_FLAG=" > "$API/mini"
+			[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
 		else
-			echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
-			[[ -e "$installDirectory/src/mini/mini_now" ]] && rm -rf "$installDirectory/src/mini/mini_now"
+			echo "MINI_FLAG=" > "$API/mini"
+			[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
 			print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
 		fi
 	elif [[ $NAME_PRETTY = "XMRig" && -e "$binXMRig/xmrig-log" ]]; then

@@ -262,16 +262,6 @@ if [[ $options = "true" ]]; then
 			esac
 			process_Restart
 			;;
-		kill)
-			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;;
-				*"xmr"*) define_XMRig;;
-				*"p2p"*) define_P2Pool;;
-				all) mine_Kill; exit ;;
-				*) print_Error_Exit "Pick: <all/monero/p2pool/xmrig>" ;;
-			esac
-			process_Kill
-			;;
 		full)
 			case $2 in
 				*"daemon"*|*"monero"*) define_Monero;;

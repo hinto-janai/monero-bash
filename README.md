@@ -12,6 +12,7 @@
 	- [Config](#Config)
 	- [Mining](#Mining)
 	- [Watch](#Watch)
+	- [Security](#Security)
 	- [Commands](#Commands)
 * [FAQ](#FAQ)
 
@@ -184,6 +185,30 @@ monero-bash status
 
 ---
 
+## Security
+Processes started with systemd aka `monero-bash start <process>` will utilize systemd's sandboxing and security features. **These are completely bypassed if you start them regularly with `monero-bash full <process>`, you are relying on your own security measures in that instance.** Here are the options set in the service files:
+```
+PrivateTmp=yes               Mounts a private /tmp/ folder for the process
+NoNewPrivileges=yes          The process (and its children) cannot escalate privileges
+ProcSubset=pid               The process can only see its own /proc/ directory
+RestrictRealtime=yes         Disallows realtime scheduling
+CapabilityBoundingSet=...    Controls certain system capabilities the process has
+ProtectClock=...             Disallows changing the systems clock
+ProtectKernelModules=...     Disallows loading kernel modules
+ProtectKernelLogs=yes        Disallows accessing the kernel log ring buffer
+ProtectProc=invisible        Processes owned by other users in /proc/ are hidden from the process
+ProtectControlGroups=yes     /sys/fs/cgroup/ will be made read-only
+ProtectKernelTunables=yes    Disallows changing kernel variables
+ProtectSystem=strict         Mounts /usr/, /etc/, and /boot/ as read-only for the process
+ProtectHome=read-only        Mounts /home/ as read-only for the process
+BindPaths=...                Allows CERTAIN directories to be read from/written to
+```
+In the event of fatal process bugs like remote code execution, these settings will lessen the damage done. Some of the settings are tweaked to allow for slightly more permissions, like for `Monero` to be able to write to its data folder.
+
+**Note: `XMRig` is ran as `root` for the MSR hashrate boost, but it is still restricted in what it can see/do to your system.**
+
+---
+
 ### Commands
 ```
 USAGE: monero-bash <argument> [optional]
@@ -201,7 +226,6 @@ config                                configure P2Pool+XMRig mining settings
 full    <monero/p2pool/xmrig>         start the process directly attached (foreground)
 start   <all/monero/p2pool/xmrig>     start process with systemd (background)
 stop    <all/monero/p2pool/xmrig>     gracefully stop the process
-kill    <all/monero/p2pool/xmrig>     forcefully kill the process
 restart <all/monero/p2pool/xmrig>     restart the process
 enable  <all/monero/p2pool/xmrig>     enable the process to auto-start on boot
 disable <all/monero/p2pool/xmrig>     disable the process from auto-starting on boot

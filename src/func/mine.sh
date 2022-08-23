@@ -29,20 +29,12 @@
 
 mine_Start()
 {
-	[[ $MONERO_VER ]] && missing_Monero
-	[[ $P2POOL_VER ]] && missing_P2Pool
-	[[ $XMRIG_VER ]]  && missing_XMRig
-	if [[ "$MINE_UNCONFIGURED" = "true" ]]; then
-		printf "%s\n" "First time detected! Entering configure mode."
-		mine_Config
-	else
-		[[ $AUTO_HUGEPAGES = "true" ]] && mine_Hugepages
-		[[ $MONERO_VER ]] && define_Monero && process_Start
-		[[ $P2POOL_VER ]] && define_P2Pool && process_Start
-		[[ $XMRIG_VER ]]  && define_XMRig && process_Start
+	[[ $AUTO_HUGEPAGES = true ]] && mine_Hugepages
+	[[ $MONERO_VER ]] && missing_Monero && define_Monero && process_Start
+	[[ $P2POOL_VER ]] && missing_P2Pool && define_P2Pool && process_Start
+	[[ $XMRIG_VER ]]  && missing_XMRig && define_XMRig && process_Start
 		printf "Watch with: "
 		BWHITE; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;OFF
-	fi
 }
 
 mine_Stop()
@@ -59,14 +51,6 @@ mine_Restart()
 	[[ $MONERO_VER ]] && define_Monero && process_Restart
 	[[ $P2POOL_VER ]] && define_P2Pool && process_Restart
 	[[ $XMRIG_VER ]]  && define_XMRig && process_Restart
-}
-
-mine_Kill()
-{
-	prompt_Sudo;error_Sudo
-	[[ $MONERO_VER ]] && define_Monero && process_Kill
-	[[ $P2POOL_VER ]] && define_P2Pool && process_Kill
-	[[ $XMRIG_VER ]]  && define_XMRig && process_Kill
 }
 
 mine_Hugepages()
@@ -190,9 +174,9 @@ mine_Config()
 		sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=false@" "$state"
 		# p2pool mini state
 		if [[ $MINI = true ]]; then
-			sudo -u "$USER" echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
+			sudo -u "$USER" echo "MINI_FLAG='--mini'" > "$API/mini"
 		else
-			sudo -u "$USER" echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+			sudo -u "$USER" echo "MINI_FLAG=" > "$API/mini"
 		fi
 		PRODUCE_HASH_LIST
 		echo

@@ -47,18 +47,43 @@ cat > $tmpService/$SERVICE <<EOM
 [Unit]
 Description=$SERVICE
 After=network.target
-
+StartLimitBurst=50
+StartLimitIntervalSec=300
 [Service]
+# Basics
 User=$USER
 Group=$USER
 Type=simple
+# Environment
 $ENV_FILE
 $ENV_LINE
+# Command
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
+# Restart
 Restart=on-failure
 RestartSec=5s
-
+# Open file limit
+$FILE_LIMIT
+# Wait 30 seconds before sending SIGTERM
+KillSignal=SIGTERM
+TimeoutStopSec=30s
+SendSIGKILL=yes
+# Security Hardening
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProcSubset=pid
+RestrictRealtime=yes
+$CAPABILITY_BOUNDING_SET
+$PROTECT_CLOCK
+$PROTECT_KERNEL_MODULES
+ProtectKernelLogs=yes
+ProtectProc=invisible
+ProtectControlGroups=yes
+ProtectKernelTunables=yes
+ProtectSystem=strict
+ProtectHome=read-only
+$BIND_PATHS
 [Install]
 WantedBy=multi-user.target
 EOM
@@ -98,23 +123,51 @@ systemd_Edit()
 
 systemd_Monero()
 {
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR
+	COMMAND="$binMonero/monerod --config-file $config/monerod.conf --non-interactive"
+	ENV_FILE="#EnvironmentFile= #none"
+	ENV_LINE="#EnvironmentFile= #none"
+	FILE_LIMIT="LimitNOFILE=16384"
+	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet="
+	PROTECT_CLOCK="ProtectClock=yes"
+	PROTECT_KERNEL_MODULES="ProtectKernelModules=yes"
 	define_Monero
-	local COMMAND="$binMonero/monerod --config-file $config/monerod.conf --non-interactive"
+	if ! DATA_DIR=$(grep "^data-dir=/.*$" $config/monerod.conf); then
+		DATA_DIR="$HOME/.bitmonero"
+		print_Warn "[data-dir] not found in [monerod.conf], falling back to [Monero]'s default: [$HOME/.bitmonero]"
+	fi
+	BIND_PATHS="BindPaths=$binMonero ${DATA_DIR/*=}"
 	systemd_Template
 }
 
 systemd_XMRig()
 {
+	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES
+	COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file=$binXMRig/xmrig-log"
+	USER="root"
+	ENV_FILE="#EnvironmentFile= #none"
+	ENV_LINE="#EnvironmentFile= #none"
+	FILE_LIMIT="#LimitNOFILE=4096 #XMRig doesn't need more files"
+	CAPABILITY_BOUNDING_SET="#CapabilityBoundingSet= #XMRig needs this disabled for max hashrate"
+	PROTECT_CLOCK="#ProtectClock=yes #XMRig needs this disabled for max hashrate"
+	PROTECT_KERNEL_MODULES="#ProtectKernelModules=yes #XMRig needs this disabled for max hashrate"
+	BIND_PATHS="BindPaths=$binXMRig $config"
 	define_XMRig
-	local USER="root"
-	local COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file=$binXMRig/xmrig-log"
 	systemd_Template
 }
 
 systemd_P2Pool()
 {
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES
+	COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
+	ENV_FILE="EnvironmentFile=$config/p2pool.conf"
+	ENV_LINE="EnvironmentFile=$API/mini"
+	FILE_LIMIT="LimitNOFILE=16384"
+	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet="
+	PROTECT_CLOCK="ProtectClock=yes"
+	PROTECT_KERNEL_MODULES="ProtectKernelModules=yes"
+	BIND_PATHS="BindPaths=$binP2Pool"
 	define_P2Pool
-	local COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
 	# 2022-08-14 Backwards compatibility with
 	# old [monero-bash.conf] p2pool settings.
 	# WALLET
@@ -197,15 +250,13 @@ systemd_P2Pool()
 	fi
 	# mini
 	if [[ $MINI = true ]]; then
-		echo "MINI_FLAG='--mini'" > "$installDirectory/src/mini/flag"
+		echo "MINI_FLAG='--mini'" > "$API/mini"
 	elif [[ $MINI = false ]]; then
-		echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+		echo "MINI_FLAG=" > "$API/mini"
 	else
-		echo "MINI_FLAG=" > "$installDirectory/src/mini/flag"
+		echo "MINI_FLAG=" > "$API/mini"
 		print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
 	fi
-	local ENV_FILE="EnvironmentFile=$config/p2pool.conf"
-	local ENV_LINE="EnvironmentFile=$installDirectory/src/mini/flag"
 	systemd_Template
 }
 

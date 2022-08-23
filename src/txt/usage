@@ -11,7 +11,6 @@ config                                configure P2Pool+XMRig mining settings
 full    <monero/p2pool/xmrig>         start the process directly attached (foreground)
 start   <all/monero/p2pool/xmrig>     start process with systemd (background)
 stop    <all/monero/p2pool/xmrig>     gracefully stop the process
-kill    <all/monero/p2pool/xmrig>     forcefully kill the process
 restart <all/monero/p2pool/xmrig>     restart the process
 enable  <all/monero/p2pool/xmrig>     enable the process to auto-start on boot
 disable <all/monero/p2pool/xmrig>     disable the process from auto-starting on boot

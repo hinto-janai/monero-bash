@@ -150,7 +150,7 @@ trap "" 1 2 3 6 15
 	[[ -d "$installDirectory/docs" ]]&& sudo rm -r "$installDirectory/docs"
 	[[ -d "$installDirectory/.old" ]]&& sudo rm -r "$installDirectory/.old"
 	[[ -d "$installDirectory/tests" ]]&& sudo rm -r "$installDirectory/tests"
-	[[ -d "$installDirectory/utils" ]]&& sudo rm -r "$installDirectory/tests"
+	[[ -d "$installDirectory/utils" ]]&& sudo rm -r "$installDirectory/utils"
 
 # Moving to /usr/local/
 	print_GreenHash "Installing monero-bash in /usr/local/share/monero-bash/"

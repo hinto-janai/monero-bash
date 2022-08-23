@@ -1,13 +1,16 @@
 # v1.8.2
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
-* **Watch:** More efficient, runs smoother on slower/mining computers
+* **Watch:** More efficient, runs smoother on slower computers
 * **Watch:** Added `WATCH_REFRESH_RATE` in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf) which changes second interval of `monero-bash watch`
+* **systemd:** [Services are now hardened & sandboxed, see more info here](https://github.com/hinto-janaiyo/monero-bash#Security)
 
 ## Fixes
 * **Status:** Only installed packages versions will be listed
 * **Process:** `monero-bash start all` will ignore non-installed packages
 * **Process:** First time configuration prompt won't appear afterwards if skipped
+* **Process:** Fixed `monero-bash stop <process>` sometimes not detecting systemd process
+* **Process:** `kill` command deprecated, `stop` will reliably auto-kill after 30-seconds
 
 ---
 
