@@ -28,7 +28,7 @@ cp -fr "$path" "/tmp/"
 
 # remove non-release files
 cd "/tmp/monero-bash"
-rm -rf docs .git tests .gitignore LICENSE README.md external lib LICENSE
+rm -rf docs .git tests .gitignore LICENSE README.md external lib LICENSE utils
 mv -f CHANGELOG.md /tmp/CHANGELOG.md
 
 # version
@@ -42,12 +42,14 @@ cd "/tmp"
 [[ -e SHA256SUM.asc ]]&& rm SHA256SUM.asc
 
 # tar
-tar -cf "$v" "monero-bash"
+rand=$((EPOCHSECONDS-RANDOM*4))
+date=$(date -d @${rand})
+tar -cpf "$v" "monero-bash" --owner=hinto --group=hinto --mtime="$date"
 rm -rf monero-bash
 
 # hash + sign
 sha256sum "$v" > SHA256SUM
-gpg --clearsign SHA256SUM
+gpg --clearsign --faked-system-time=${rand} SHA256SUM
 rm SHA256SUM
 mv SHA256SUM.asc SHA256SUM
 

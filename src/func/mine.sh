@@ -29,12 +29,14 @@
 
 mine_Start()
 {
+	prompt_Sudo;error_Sudo
 	[[ $AUTO_HUGEPAGES = true ]] && mine_Hugepages
 	[[ $MONERO_VER ]] && missing_Monero && define_Monero && process_Start
 	[[ $P2POOL_VER ]] && missing_P2Pool && define_P2Pool && process_Start
 	[[ $XMRIG_VER ]]  && missing_XMRig && define_XMRig && process_Start
-		printf "Watch with: "
-		BWHITE; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;OFF
+	printf "Watch with: "
+	BWHITE; echo "[monero-bash watch <monero/p2pool/xmrig>]" ;OFF
+	return 0
 }
 
 mine_Stop()
@@ -43,6 +45,7 @@ mine_Stop()
 	[[ $MONERO_VER ]] && define_Monero && process_Stop
 	[[ $P2POOL_VER ]] && define_P2Pool && process_Stop
 	[[ $XMRIG_VER ]]  && define_XMRig && process_Stop
+	return 0
 }
 
 mine_Restart()
@@ -51,6 +54,7 @@ mine_Restart()
 	[[ $MONERO_VER ]] && define_Monero && process_Restart
 	[[ $P2POOL_VER ]] && define_P2Pool && process_Restart
 	[[ $XMRIG_VER ]]  && define_XMRig && process_Restart
+	return 0
 }
 
 mine_Hugepages()

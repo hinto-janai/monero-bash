@@ -88,7 +88,8 @@ wget \
 	"$DAEMON_RPC_IP" \
 	--header='Content-Type:application/json' \
 	--post-data=$payload
-echo
+wget_Code || echo
+
 if [[ $DAEMON_RPC_VERBOSE = true ]]; then
 	BWHITE; printf "DAEMON_RPC_IP: " ;OFF; echo "$DAEMON_RPC_IP"
 	BWHITE; printf "PAYLOAD: " ;OFF; echo "$payload"

@@ -28,7 +28,7 @@
 
 missing_Template()
 {
-	[[ ! -e "$DIR" ]]&& print_Error_Exit "$THING missing!"
+	[[ -e "$DIR" ]] || print_Error_Exit "$THING missing!"
 }
 
 missing_Monero()
@@ -134,17 +134,19 @@ missing_config_P2Pool()
 missing_config_All()
 {
 	missing_config_MoneroBash
-	[[ $MONERO_VER != "" ]]&& missing_config_Monero && missing_config_Wallet
-	[[ $XMRIG_VER != "" ]]&& missing_config_XMRig
-	[[ $P2POOL_VER != "" ]]&& missing_config_P2Pool
+	if [[ $MONERO_VER ]]; then
+		missing_config_Monero
+		missing_config_Wallet
+	fi
+	[[ $P2POOL_VER ]] && missing_config_P2Pool
+	[[ $XMRIG_VER ]] && missing_config_XMRig
 }
 
 missing_systemd_Template()
 {
 	# if pkg is installed but no service file:
-	if [[ "$NAME_VER" != "" && ! -f $sysd/$SERVICE ]]; then
+	if [[ $NAME_VER && ! -f $sysd/$SERVICE ]]; then
 		print_Warn "${SERVICE} missing!"
-		echo "Creating default..."
 		systemd_"$NAME_FUNC"
 	fi
 }

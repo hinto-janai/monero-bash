@@ -28,6 +28,8 @@
 
 process_Start_Template()
 {
+	[[ -z $NAME_VER ]] && print_Error_Exit "[${NAME_PRETTY}] not installed"
+
 	# SUDO NOT NEEDED FOR MONEROD
 	if [[ $NAME_PRETTY != "Monero" ]]; then
 		prompt_Sudo;error_Sudo
@@ -55,68 +57,97 @@ process_Start_Template()
 	fi
 
 	# START PROCESS IF NOT ALREADY ALIVE
-	if pgrep $PROCESS &>/dev/null ; then
-        BRED; echo "[${PROCESS}] already detected!" ;OFF
-		return 1
-    else
-		missing_config_"$NAME_FUNC"
-
-		# REFRESH LOGS
-		if [[ $NAME_PRETTY = P2Pool ]]; then
-			[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
-			[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
-			mkdir -p "$binP2Pool/local" "$MB_API"
-			touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
-			chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
-			# mini state
-			if [[ $MINI = true ]]; then
-				echo "MINI_FLAG='--mini'" > "$MB_API/mini"
-				touch "$MB_API/mini_now"
-			elif [[ $MINI = false ]]; then
-				echo "MINI_FLAG=" > "$MB_API/mini"
-				[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
-			else
-				echo "MINI_FLAG=" > "$MB_API/mini"
-				[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
-				print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
-			fi
-		elif [[ $NAME_PRETTY = XMRig && -e "$binXMRig/xmrig-log" ]]; then
-			rm -rf "$binXMRig/xmrig-log"
-			touch "$binXMRig/xmrig-log"
-			chmod 700 "$binXMRig/xmrig-log"
-			# START/RESTART PROCESS
-			COMMANDS
+	if [[ $SYSD_START = true ]]; then
+		if sudo systemctl status $SERVICE &>/dev/null; then
+			BRED; echo "[${PROCESS}] already detected!" ;OFF
+			return 1
+		fi
+	elif [[ $SYSD_RESTART != true ]]; then
+		if pgrep $PROCESS &>/dev/null; then
+	        BRED; echo "[${PROCESS}] already detected!" ;OFF
+			return 1
 		fi
 	fi
+
+	missing_config_"$NAME_FUNC"
+
+	# REFRESH LOGS
+	if [[ $NAME_PRETTY = P2Pool ]]; then
+		[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
+		[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
+		mkdir -p "$binP2Pool/local" "$MB_API"
+		touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
+		chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
+		# mini state
+		if [[ $MINI = true ]]; then
+			echo "MINI_FLAG='--mini'" > "$MB_API/mini"
+			touch "$MB_API/mini_now"
+		elif [[ $MINI = false ]]; then
+			echo "MINI_FLAG=" > "$MB_API/mini"
+			[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
+		else
+			echo "MINI_FLAG=" > "$MB_API/mini"
+			[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
+			print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
+		fi
+	elif [[ $NAME_PRETTY = XMRig && -e "$binXMRig/xmrig-log" ]]; then
+		rm -rf "$binXMRig/xmrig-log"
+		touch "$binXMRig/xmrig-log"
+		chmod 700 "$binXMRig/xmrig-log"
+	fi
+	# START/RESTART PROCESS
+	COMMANDS
 }
 
-process_Start() {
-	[[ -z $NAME_VER ]] && print_Error_Exit "[${NAME_PRETTY}] not installed"
-	BBLUE; echo "Starting [${PROCESS}]..." ;OFF
-	missing_systemd_"$NAME_FUNC"
-	sudo systemctl start "$SERVICE"
+process_Start()
+{
+	COMMANDS() {
+		prompt_Sudo;error_Sudo
+		BBLUE; echo "Starting [${PROCESS}]..." ;OFF
+		missing_systemd_"$NAME_FUNC"
+		sudo systemctl start "$SERVICE"
+	}
+	local SYSD_START=true
 	process_Start_Template
 }
 
 process_Restart()
 {
 	COMMANDS() {
-	BYELLOW; echo "Restarting [${PROCESS}]..." ;OFF
-	if sudo systemctl restart "$SERVICE"; then
-		BBLUE; echo "Restarted [${PROCESS}]!" ;OFF
-		return 0
-	else
-		BRED; printf "%s\n" "[${PROCESS}] restart failed!"; OFF
-		return 1
-	fi
+		prompt_Sudo;error_Sudo
+		BYELLOW; echo "Restarting [${PROCESS}]..." ;OFF
+		if sudo systemctl restart "$SERVICE"; then
+			BBLUE; echo "Restarted [${PROCESS}]!" ;OFF
+			return 0
+		else
+			BRED; printf "%s\n" "[${PROCESS}] restart failed!"; OFF
+			return 1
+		fi
 	}
+	local SYSD_RESTART=true
 	process_Start_Template
 }
 
 process_Stop()
 {
+	prompt_Sudo;error_Sudo
+	local i=1
 	BRED; echo "Stopping [${PROCESS}] gracefully..." ;OFF
-	sudo systemctl stop "$SERVICE"
+	sudo systemctl stop "$SERVICE" &
+	local SYSD_STATE=$(sudo systemctl status $SERVICE | grep -m1 "Active:")
+	while [[ $SYSD_STATE != *"Active: inactive (dead)"* ]]; do
+		if [[ $i = 35 ]]; then
+			echo
+			print_Warn "[${PROCESS}] not responding, sending SIGTERM..."
+			break
+		fi
+		printf "%s" "."
+		read -s -r -t 1
+		((i++))
+		local SYSD_STATE=$(sudo systemctl status $SERVICE | grep -m1 "Active:")
+	done
+	echo
+	return 0
 }
 
 process_Full()

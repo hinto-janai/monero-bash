@@ -185,14 +185,21 @@ monero-bash status
 
 ---
 
-## Security
-Processes started with systemd aka `monero-bash start <process>` will utilize systemd's sandboxing and security features. **These are completely bypassed if you start them regularly with `monero-bash full <process>`, you are relying on your own security measures in that instance.** Here are the options set in the service files:
+### Security
+Fun fact: Docker uses the exact same Linux namespace primitives as systemd, _both are not VMs,_ both directly use the host kernel for "sandboxing".
+
+Processes started with systemd aka `monero-bash start` will utilize [systemd's security features.](https://www.freedesktop.org/software/systemd/man/systemd.exec.html) **These are completely bypassed if you start processes directly with `monero-bash full`, you are relying on your own security measures in that instance.**
+
+Here are the options set in the service files:
 ```
 PrivateTmp=yes               Mounts a private /tmp/ folder for the process
 NoNewPrivileges=yes          The process (and its children) cannot escalate privileges
 ProcSubset=pid               The process can only see its own /proc/ directory
 RestrictRealtime=yes         Disallows realtime scheduling
+RestrictNamespaces=true      Restricts access to Linux namespace functionality for the process
 CapabilityBoundingSet=...    Controls certain system capabilities the process has
+PrivateUsers=true            Creates a new user namespace for the executed processes
+ProtectHostname=true         Creates a new UTS namespace for the executed process + disallows hostname changes
 ProtectClock=...             Disallows changing the systems clock
 ProtectKernelModules=...     Disallows loading kernel modules
 ProtectKernelLogs=yes        Disallows accessing the kernel log ring buffer
@@ -203,9 +210,9 @@ ProtectSystem=strict         Mounts /usr/, /etc/, and /boot/ as read-only for th
 ProtectHome=read-only        Mounts /home/ as read-only for the process
 BindPaths=...                Allows CERTAIN directories to be read from/written to
 ```
-In the event of fatal process bugs like remote code execution, these settings will lessen the damage done.
+In the event of fatal process bugs like remote code execution, these settings will prevent or at the very least lessen the damage done.
 
-**Note: `XMRig` is ran as `root` for the MSR hashrate boost. Although it is still heavily restricted with these settings, they are not perfect. Unless you consider XMRig malware, you should be more concerned about programs with much larger attack surfaces: internet-facing applications like Monero/P2Pool nodes.**
+**Note: `XMRig` is ran as `root` for the MSR hashrate boost.** Although it is still heavily restricted with these settings, they are not perfect. Unless you consider XMRig malware, you should be more concerned with programs that have much more realistic attack surfaces: constant internet-facing applications like Monero/P2Pool nodes, or any other software on your computer in the same vein.
 
 ---
 
