@@ -163,7 +163,7 @@ systemd_P2Pool()
 	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES
 	COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
 	ENV_FILE="EnvironmentFile=$config/p2pool.conf"
-	ENV_LINE="EnvironmentFile=$API/mini"
+	ENV_LINE="EnvironmentFile=$MB_API/mini"
 	FILE_LIMIT="LimitNOFILE=16384"
 	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet="
 	PROTECT_CLOCK="ProtectClock=yes"
@@ -253,11 +253,11 @@ systemd_P2Pool()
 	fi
 	# mini
 	if [[ $MINI = true ]]; then
-		echo "MINI_FLAG='--mini'" > "$API/mini"
+		echo "MINI_FLAG='--mini'" > "$MB_API/mini"
 	elif [[ $MINI = false ]]; then
-		echo "MINI_FLAG=" > "$API/mini"
+		echo "MINI_FLAG=" > "$MB_API/mini"
 	else
-		echo "MINI_FLAG=" > "$API/mini"
+		echo "MINI_FLAG=" > "$MB_API/mini"
 		print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
 	fi
 	systemd_Template

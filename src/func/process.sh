@@ -65,19 +65,19 @@ process_Start_Template()
 		if [[ $NAME_PRETTY = P2Pool ]]; then
 			[[ -e "$binP2Pool/p2pool.log" ]] && rm "$binP2Pool/p2pool.log"
 			[[ -e "$binP2Pool/local/stats" ]] && rm "$binP2Pool/local/stats"
-			mkdir -p "$binP2Pool/local" "$API"
+			mkdir -p "$binP2Pool/local" "$MB_API"
 			touch "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 			chmod 600 "$binP2Pool/p2pool.log" "$binP2Pool/local/stats"
 			# mini state
 			if [[ $MINI = true ]]; then
-				echo "MINI_FLAG='--mini'" > "$API/mini"
-				touch "$API/mini_now"
+				echo "MINI_FLAG='--mini'" > "$MB_API/mini"
+				touch "$MB_API/mini_now"
 			elif [[ $MINI = false ]]; then
-				echo "MINI_FLAG=" > "$API/mini"
-				[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
+				echo "MINI_FLAG=" > "$MB_API/mini"
+				[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
 			else
-				echo "MINI_FLAG=" > "$API/mini"
-				[[ -e "$API/mini_now" ]] && rm -f "$API/mini_now"
+				echo "MINI_FLAG=" > "$MB_API/mini"
+				[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
 				print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
 			fi
 		elif [[ $NAME_PRETTY = XMRig && -e "$binXMRig/xmrig-log" ]]; then

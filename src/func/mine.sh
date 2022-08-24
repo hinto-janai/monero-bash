@@ -174,9 +174,9 @@ mine_Config()
 		sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=false@" "$state"
 		# p2pool mini state
 		if [[ $MINI = true ]]; then
-			sudo -u "$USER" echo "MINI_FLAG='--mini'" > "$API/mini"
+			sudo -u "$USER" echo "MINI_FLAG='--mini'" > "$MB_API/mini"
 		else
-			sudo -u "$USER" echo "MINI_FLAG=" > "$API/mini"
+			sudo -u "$USER" echo "MINI_FLAG=" > "$MB_API/mini"
 		fi
 		PRODUCE_HASH_LIST
 		echo

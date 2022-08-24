@@ -488,7 +488,7 @@ status_P2Pool()
 
 		# print SIDECHAIN
 		BWHITE; printf "Side-Chain    | "
-		if [[ -e $API/mini_now ]]; then
+		if [[ -e $MB_API/mini_now ]]; then
 			OFF; echo "[P2Pool Mini]"
 		else
 			OFF; echo "[P2Pool Main] (default)"

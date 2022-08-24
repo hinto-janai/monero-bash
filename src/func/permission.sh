@@ -37,8 +37,8 @@ permission_DotMoneroBash()
 permission_InstallDirectory()
 {
 	sudo chmod -R 700 "$installDirectory"
-	sudo chmod -R 600 "$installDirectory/config" "$installDirectory/src/txt" "$API"
-	sudo chmod 700 "$installDirectory/config" "$installDirectory/src/txt" "$API"
+	sudo chmod -R 600 "$installDirectory/config" "$installDirectory/src/txt" "$MB_API"
+	sudo chmod 700 "$installDirectory/config" "$installDirectory/src/txt" "$MB_API"
 	sudo chown -R "$USER:$USER" "$installDirectory"
 }
 
