@@ -2,7 +2,7 @@
 ## Updates
 *
 ## Fixes
-*
+* **RPC:** Fix `wget_Code: command not found` from appearing
 
 ---
 
