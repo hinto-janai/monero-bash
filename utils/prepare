@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+# prepare new [monero-bash] version in:
+# 1. README.md
+# 2. CHANGELOG.md
+# 3. src/txt/state
+
+# $1 = new_version
+set -ex
+sudo -v
+[[ $1 = v* ]]
+
+# check dir
+if [[ $PWD = */monero-bash ]]; then
+	:
+elif [[ $PWD = */monero-bash/utils ]]; then
+	cd ..
+else
+	echo "wrong dir"
+	exit 1
+fi
+
+# get old MONERO_BASH_VER
+source src/txt/state
+
+# sed change
+sed -i "s/$MONERO_BASH_VER/$1/g" README.md
+sed -i "s/MONERO_BASH_VER=$MONERO_BASH_VER/MONERO_BASH_VER=$1/g" src/txt/state
+
+# changelog
+cat << EOM > CHANGELOG.md.new
+# $1
+## Updates
+*
+## Fixes
+*
+
+---
+
+EOM
+cat CHANGELOG.md >> CHANGELOG.md.new
+mv -f CHANGELOG.md.new CHANGELOG.md
+
+# hash + git commit
+./monero-bash DEBUG_04e3be9 PRODUCE_HASH_LIST
+./monero-bash DEBUG_04e3be9 QUIET_HASH_LIST
+git add .
+git commit -m "prepare $1"

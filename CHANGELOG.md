@@ -1,3 +1,11 @@
+# v1.8.3
+## Updates
+*
+## Fixes
+*
+
+---
+
 # v1.8.2
 [**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)  
 **You can also use `monero-bash reset <process>` to reset your configs to the new default.**
