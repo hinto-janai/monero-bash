@@ -70,7 +70,7 @@
 
 ## Install
 [**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
-```
+```bash
 tar -xf monero-bash-v1.8.3.tar
 cd monero-bash
 ./monero-bash
@@ -79,7 +79,7 @@ This will start the interactive install process into `/usr/local/share/monero-ba
 
 It is recommended to verify the hash and PGP signature before installation.  
 Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify:
-```
+```bash
 sha256sum -c SHA256SUM
 gpg --import hinto-janaiyo.asc
 gpg --verify SHA256SUM
@@ -88,7 +88,7 @@ gpg --verify SHA256SUM
 ---
 
 **To install with git:**
-```
+```bash
 git clone https://github.com/hinto-janaiyo/monero-bash
 cd monero-bash
 ./monero-bash
@@ -102,7 +102,7 @@ ALWAYS clone the main branch, the other branches are not tested
 monero-bash uninstall
 ```
  Or manually remove everything:
-```
+```bash
 rm -r ~/.monero-bash
 sudo rm /usr/local/bin/monero-bash
 sudo rm -r /usr/local/share/monero-bash
@@ -123,7 +123,7 @@ To open the wallet menu, type: `monero-bash`. You will have 4 options:
 
 For safety reasons, there is no built-in way to **delete** a wallet.  
 You'll have to manually remove the files inside the wallet folder, for example:
-```
+```bash
 rm ~/.monero-bash/wallets/MY_WALLET
 rm ~/.monero-bash/wallets/MY_WALLET.keys
 ```
@@ -158,14 +158,13 @@ These instructions (and monero-bash itself) is built around running your own P2P
 1. Install all the packages: `monero-bash install all`
 2. Configure basic mining settings: `monero-bash config`
 3. Start all processes in the background: `monero-bash start all`
-4. And watch them live with: `monero-bash watch status`
+4. And watch them live with: `monero-bash watch`
 
-It may be useful to download `screen` or `tmux` so you can open multiple terminals and use:
+Unfortunately, you cannot interact directly with a `systemd` background process so it may be useful to download `screen` or `tmux` so you can open multiple terminals and use:
 ```
 monero-bash full <monero/p2pool/xmrig>
 ```
-This allows you to interact with the processes directly AND have them in a background terminal.  
-Unfortunately, you cannot interact directly with a `systemd` background process.
+This allows you to interact with the processes directly AND have them in a background terminal.
 
 ---
 

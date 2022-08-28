@@ -85,7 +85,7 @@ cd "$installDirectory"
 
 # Source files, exit on failure
 if ! source "$installDirectory/src/source.sh"; then
-	printf "\033[1;31mMONERO BASH: SOURCING ERROR\n"
+	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] SOURCING FAIL"
 	exit 1
 fi
 
@@ -123,19 +123,21 @@ if [[ $FIRST_TIME = "true" ]]; then
 	exit
 fi
 
-# Even more safety checks
-if [[ $FIRST_TIME != "true" ]]; then
-	safety_User
-	safety_DotMoneroBash
-	missing_Wallets
-	missing_config_Folder
-	missing_config_All
-	missing_systemd_All
+safety_User
+safety_DotMoneroBash
+missing_Wallets
+missing_config_Folder
+missing_config_All
+missing_systemd_All
+
+# Parse/source config files
+if ! parse_Config; then
+	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] CONFIG SOURCE FAIL"
+	exit 1
 fi
 
 # Interactive/option check
-[[ $1 = "" ]]&& interactive="true"
-[[ $1 != "" ]]&& options="true"
+[[ $1 ]] && interactive="true" || options="true"
 
 # Interactive Wallet Selection
 if [[ $interactive = "true" ]]; then
@@ -273,6 +275,7 @@ if [[ $options = "true" ]]; then
 			;;
 		watch)
 			declare -g FIRST_WATCH=true
+			shopt -s checkwinsize
 			case $2 in
 				*"daemon"*|*"monero"*) watch_Monero ;;
 				*"xmr"*) watch_XMRig ;;

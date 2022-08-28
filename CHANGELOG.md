@@ -3,6 +3,7 @@
 *
 ## Fixes
 * **RPC:** Fix `wget_Code: command not found` from appearing
+* **Config:** Safer parsing of config files
 
 ---
 

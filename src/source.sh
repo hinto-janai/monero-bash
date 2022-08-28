@@ -27,26 +27,20 @@
 # MASTER SOURCE FILE
 
 # global variables
-source "$installDirectory/src/var.sh" 2>/dev/null || varMissing="true"
+source "$installDirectory/src/var.sh" &>/dev/null || varMissing="true"
 
 # global functions
 for functions in $installDirectory/src/func/*.sh; do
-	source "$functions" 2>/dev/null || funcMissing="true"
+	source "$functions" &>/dev/null || funcMissing="true"
 done
 
 # debug file
-source "$installDirectory/src/debug.sh" 2>/dev/null || debugMissing="true"
+source "$installDirectory/src/debug.sh" &>/dev/null || debugMissing="true"
 
 # state file
-source "$installDirectory/src/txt/state" 2>/dev/null || stateMissing="true"
+source "$installDirectory/src/txt/state" &>/dev/null || stateMissing="true"
 
 # hashlist file
 if [[ ! -f "$installDirectory/src/txt/hashlist" ]]; then
 	hashlistMissing="true"
 fi
-
-# monero-bash config
-source "$config/monero-bash.conf" 2>/dev/null || configMissing="true"
-
-# p2pool config
-source "$config/p2pool.conf" 2>/dev/null || configMissing="true"
