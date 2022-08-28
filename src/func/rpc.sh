@@ -88,7 +88,11 @@ wget \
 	"$DAEMON_RPC_IP" \
 	--header='Content-Type:application/json' \
 	--post-data=$payload
-code_Wget || echo
+if [[ $? != 0 ]]; then
+	print_Error "Monero RPC connection failed"
+else
+	echo
+fi
 
 if [[ $DAEMON_RPC_VERBOSE = true ]]; then
 	BWHITE; printf "DAEMON_RPC_IP: " ;OFF; echo "$DAEMON_RPC_IP"

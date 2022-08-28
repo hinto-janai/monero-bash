@@ -1,9 +1,10 @@
 # v1.8.3
 ## Updates
-*
+* **Edit/Reset:** New option to specifically reset either `[config]` or `[systemd]`: `monero-bash reset p2pool systemd`
+* **Help** Color-coded help commands: `monero-bash help`
+
 ## Fixes
-* **RPC:** Fix `wget_Code: command not found` from appearing
-* **Config:** Safer parsing of config files
+* **RPC:** Fixed trailing text from appearing
 
 ---
 

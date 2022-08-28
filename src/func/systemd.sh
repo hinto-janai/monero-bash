@@ -110,28 +110,6 @@ OFF; echo "Reloading [systemd]..."
 sudo systemctl daemon-reload
 }
 
-systemd_Edit()
-{
-	if [[ $NAME_VER = "" ]]; then
-		print_Error_Exit "[${NAME_PRETTY}] is not installed"
-	fi
-	prompt_Sudo;error_Sudo
-	if [[ -z $EDITOR ]]; then
-		print_Warn "No default \$EDITOR found!"
-		OFF; printf "Pick editor [nano, vim, emacs, etc] (default=nano): "
-		read EDITOR
-		[[ -z $EDITOR || $EDITOR = "default" ]] && EDITOR="nano"
-	fi
-
-	sudo "$EDITOR" "$sysd/$SERVICE"
-	if [[ $? = 0 ]]; then
-		OFF; echo "Reloading [systemd]..."
-		sudo systemctl daemon-reload
-	else
-		print_Error "systemd changes failed"
-	fi
-}
-
 systemd_Monero()
 {
 	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR PROTECT_KERNEL_TUNABLES PRIVATE_USERS

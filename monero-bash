@@ -137,7 +137,7 @@ if ! parse_Config; then
 fi
 
 # Interactive/option check
-[[ $1 ]] && interactive="true" || options="true"
+[[ $1 ]] && options=true || interactive=true
 
 # Interactive Wallet Selection
 if [[ $interactive = "true" ]]; then
@@ -216,22 +216,53 @@ if [[ $options = "true" ]]; then
 			;;
 		edit)
 			case $2 in
-				*"daemon"*|*"monero"*) define_Monero;;
-				*"xmr"*) define_XMRig;;
-				*"p2p"*) define_P2Pool;;
-				*) print_Error_Exit "Pick: <monero/p2pool/xmrig>" ;;
-			esac
-			systemd_Edit
-			;;
-		reset)
-			case $2 in
-				*"bash"*)define_MoneroBash;;
+				*bash*) define_MoneroBash;;
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
 				*) print_Error_Exit "Pick: <bash/monero/p2pool/xmrig>" ;;
 			esac
-			reset_Template
+			[[ $NAME_VER ]] || print_Error_Exit "$NAME_PRETTY isn't installed"
+			if [[ $2 = *bash* && -z $3 ]]; then
+				edit_Config
+			else
+				case $3 in
+					config) edit_Config;;
+					systemd)
+						if [[ $2 = *bash* ]]; then
+							print_Error_Exit "monero-bash does not have a systemd file"
+						else
+							edit_Systemd
+						fi
+						;;
+					*) print_Error_Exit "Pick a file to edit: <config/systemd>"
+				esac
+			fi
+			;;
+		reset)
+			case $2 in
+				*"bash"*) define_MoneroBash;;
+				*"daemon"*|*"monero"*) define_Monero;;
+				*"xmr"*) define_XMRig;;
+				*"p2p"*) define_P2Pool;;
+				*) print_Error_Exit "Pick: <bash/monero/p2pool/xmrig>" ;;
+			esac
+			[[ $NAME_VER ]] || print_Error_Exit "$NAME_PRETTY isn't installed"
+			if [[ $2 = *bash* && -z $3 ]]; then
+				reset_Config
+			else
+				case $3 in
+					config) reset_Config;;
+					systemd)
+						if [[ $2 = *bash* ]]; then
+							print_Error_Exit "monero-bash does not have a systemd file"
+						else
+							reset_Systemd
+						fi
+						;;
+					*) print_Error_Exit "Pick a file to edit: <config/systemd>"
+				esac
+			fi
 			;;
 		start)
 			shift

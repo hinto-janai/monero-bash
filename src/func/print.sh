@@ -137,25 +137,25 @@ print_Installed_Version()
 
 print_Size()
 {
-	OFF; echo -n "monero-bash install: " ;BYELLOW
-	du -h "$installDirectory"  --exclude="$installDirectory/bin" | tail -n 1 | awk '{print $1}'
-	OFF; echo -n "/.monero-bash/: " ;BYELLOW
-	du -h "$dotMoneroBash" | tail -n 1 | awk '{print $1}'
+	OFF; echo -n "[$installDirectory] " ;BYELLOW
+	du -hs "$installDirectory"  --exclude="$installDirectory/bin" | awk '{print $1}'
+	OFF; echo -n "[$dotMoneroBash] " ;BYELLOW
+	du -hs "$dotMoneroBash" | awk '{print $1}'
 	if [[ -d "$bitMonero" ]]; then
-		OFF; echo -n "$bitMonero/: " ;BYELLOW
-		du -h "$bitMonero" | tail -n 1 | awk '{print $1}'
+		OFF; echo -n "[$bitMonero] " ;BYELLOW
+		du -hs "$bitMonero" | awk '{print $1}'
 	fi
-	if [[ $MONERO_VER != "" ]]; then
-		OFF; echo -n "Monero: " ;BYELLOW
-		du -h "$binMonero" | tail -n 1 | awk '{print $1}'
-	fi
-	if [[ $XMRIG_VER != "" ]]; then
-		OFF; echo -n "XMRig: " ;BYELLOW
-		du -h "$binXMRig" | tail -n 1 | awk '{print $1}'
+	if [[ $MONERO_VER ]]; then
+		OFF; echo -n "[Monero] " ;BYELLOW
+		du -hs "$binMonero" | awk '{print $1}'
 	fi
 	if [[ $P2POOL_VER != "" ]]; then
-		OFF; echo -n "P2Pool: " ;BYELLOW
-		du -h "$binP2Pool" | tail -n 1 | awk '{print $1}'
+		OFF; echo -n "[P2Pool] " ;BYELLOW
+		du -hs "$binP2Pool" | awk '{print $1}'
+	fi
+	if [[ $XMRIG_VER ]]; then
+		OFF; echo -n "[XMRig] " ;BYELLOW
+		du -hs "$binXMRig" | awk '{print $1}'
 	fi
 }
 
@@ -324,49 +324,48 @@ EOF
 )"
 }
 
-
-print_Usage()
-{
-    BWHITE; echo -n "USAGE: "
-    BRED; echo -n "monero-bash "
-    BYELLOW; echo -n "<argument> "
-    BPURPLE; echo "[optional]" ;OFF
-    echo
-    cat "$installDirectory/src/txt/usage"
-}
-
 print_Usage() {
-printf "${BWHITE}%s${BRED}%s${BYELLOW}%s${BPURPLE}%s${OFF}\n" "USAGE: " "monero-bash " "<argument> " "[optional]"
-
-monero-bash                                           open wallet menu
-uninstall                                             uninstall ALL OF monero-bash
-
-update                                                check for package updates
-upgrade [force|verbose]                               upgrade all out-of-date packages
-upgrade <pkg> [force|verbose]                         upgrade a specific package
-install <all/pkg> [verbose]                           install <all> or a specific package
-remove  <all/pkg>                                     remove <all> or a specific package
-
-config                                                configure P2Pool+XMRig mining settings
-full    <monero/p2pool/xmrig>                         start the process directly attached (foreground)
-start   <all/monero/p2pool/xmrig>                     start process with systemd (background)
-stop    <all/monero/p2pool/xmrig>                     gracefully stop the process
-restart <all/monero/p2pool/xmrig>                     restart the process
-enable  <all/monero/p2pool/xmrig>                     enable the process to auto-start on boot
-disable <all/monero/p2pool/xmrig>                     disable the process from auto-starting on boot
-reset   <bash/monero/p2pool/xmrig> [config|systemd]   reset your configs/systemd to default
-edit    <monero/p2pool/xmrig> [config|systemd]        edit systemd service file
-watch   [monero|p2pool|xmrig]                         watch live status or a specific process
-
-rpc     [help]                                        send a RPC call to monerod (or type help for help)
-seed    [language]                                    generate random 25-word Monero seed
-list                                                  list wallets
-size                                                  show size of monero-bash folders
-price                                                 fetch price data from cryptocompare.com API
-status                                                print status of all installed packages
-version                                               print versions of installed packages
-
-backup                                                encrypt & backup [wallets] -> [backup.tar.gpg]
-decrypt                                               decrypt [backup.tar.gpg] -> [backup]
-
-help                                                  show this help message
+	printf "${BWHITE}%s${BRED}%s${OFF}%s${BYELLOW}%s${BPURPLE}%s\n\n" \
+	"USAGE: " "monero-bash " "command " "<argument> " "[optional]"
+	printf "${OFF}%s\n" \
+		"monero-bash                                           Open wallet menu" \
+		"uninstall                                             Uninstall ALL OF monero-bash"
+	echo;printf "${OFF}%s\n" \
+		"update                                                Check for package updates"
+	printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
+		"upgrade " "[force] [verbose]" "                             Upgrade all out-of-date packages"
+	printf "${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"upgrade " "<package> " "[force] [verbose]" "                   Upgrade a specific package" \
+		"install " "<all/package> " "[verbose]" "                       Install <all> or a specific package"
+	printf "${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"remove  " "<all/package>" "                                 Remove <all> or a specific package"
+	echo
+	printf "${OFF}%s\n" \
+		"config                                                Configure P2Pool+XMRig mining settings"
+	printf "${OFF}%s${BYELLOW}%s${OFF}%s\n" \
+		"full    " "<monero/p2pool/xmrig>" "                         Start the process directly attached (foreground)" \
+		"start   " "<all/monero/p2pool/xmrig>" "                     Start process with systemd (background)" \
+		"stop    " "<all/monero/p2pool/xmrig>" "                     Gracefully stop the systemd process" \
+		"restart " "<all/monero/p2pool/xmrig>" "                     Restart the systemd process" \
+		"enable  " "<all/monero/p2pool/xmrig>" "                     Enable the process to auto-start on boot" \
+		"disable " "<all/monero/p2pool/xmrig>" "                     Disable the process from auto-starting on boot"
+	printf "${OFF}%s${BYELLOW}%s${BPURPLE}%s${OFF}%s\n" \
+		"reset   " "<bash/monero/p2pool/xmrig> " "[config|systemd]" "   Reset your configs/systemd to default" \
+		"edit    " "<bash/monero/p2pool/xmrig> " "[config|systemd]" "   Edit config/systemd service file"
+	printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
+		"watch   " "[monero|p2pool|xmrig]" "                         Watch live status or a specific process"
+	echo;printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
+		"rpc     " "[help]" "                                        Send a RPC call to monerod" \
+		"seed    " "[language]" "                                    Generate random 25-word Monero seed"
+	printf "${OFF}%s\n" \
+		"list                                                  List wallets" \
+		"size                                                  Show size of monero-bash folders" \
+		"price                                                 Fetch price data from cryptocompare.com API" \
+		"status                                                Print status of all installed packages" \
+		"version                                               Print versions of installed packages"
+	echo;printf "${OFF}%s\n" \
+		"backup                                                Encrypt & backup [wallets] -> [backup.tar.gpg]" \
+		"decrypt                                               Decrypt [backup.tar.gpg] -> [backup]"
+	echo;printf "${OFF}%s\n" \
+		"help                                                  Show this help message"
+}

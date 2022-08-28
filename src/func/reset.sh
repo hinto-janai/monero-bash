@@ -27,56 +27,65 @@
 # for overwriting current (old) configs with new ones from "$installDirectory/config"
 # and old systemd services with new ones
 
-reset_Template()
+reset_Config()
 {
+	case $NAME_PRETTY in
+		Monero) RESET_FILE="monerod.conf & monero-wallet-cli.conf";;
+		monero-bash) RESET_FILE=monero-bash.conf;;
+		XMRig) RESET_FILE=xmrig.json;;
+		P2Pool) RESET_FILE=p2pool.conf;;
+	esac
+
 	# PROMPT
-	if [[ $NAME_PRETTY = "monero-bash" ]]; then
-		BRED; printf "This will overwrite your current "
-		BWHITE; echo -n "[${NAME_PRETTY}] "
-		BRED; echo "config with a new default version"
-	else
-		BRED; printf "This will overwrite your current "
-		BWHITE; echo -n "[${NAME_PRETTY}] "
-		BRED; echo "configs & systemd services with a new default version"
-	fi
+	BRED; printf "This will overwrite your current "
+	BWHITE; echo -n "[$RESET_FILE] "
+	BRED; echo "with a new default version"
 	BWHITE; printf "Continue? (y/N) " ;OFF
 	Yes(){ echo "Resetting..." ;}
-	No(){ echo "Exiting..." ;exit;}
+	No(){ echo "Exiting..." ;exit 1;}
 	prompt_NOyes
 
-	# SAFETY
-	prompt_Sudo;error_Sudo
-	safety_HashList
 	trap "" 1 2 3 6 15
-	[[ "$NAME_VER" = "" ]]&& echo "$NAME_PRETTY isn't installed" && exit
-
 	# OVERWRITE
 	case $NAME_PRETTY in
 		Monero)
 			echo "Resetting [$config/monerod.conf]..."
-			sudo -u "$USER" cp -f "$installDirectory/config/monerod.conf" "$config/monerod.conf"
+			cp -f "$installDirectory/config/monerod.conf" "$config/monerod.conf"
 			echo "Resetting [$config/monero-wallet-cli.conf]..."
-			sudo -u "$USER" cp -f "$installDirectory/config/monero-wallet-cli.conf" "$config/monero-wallet-cli.conf"
-			systemd_"$NAME_FUNC"
+			cp -f "$installDirectory/config/monero-wallet-cli.conf" "$config/monero-wallet-cli.conf"
 			;;
 		monero-bash)
 			echo "Resetting [$config/monero-bash.conf]..."
-			sudo -u "$USER" cp -f "$installDirectory/config/monero-bash.conf" "$config/monero-bash.conf"
+			cp -f "$installDirectory/config/monero-bash.conf" "$config/monero-bash.conf"
 			;;
 		XMRig)
 			echo "Resetting [$xmrigConf]..."
-			sudo -u "$USER" cp -f "$installDirectory/config/xmrig.json" "$xmrigConf"
-			systemd_"$NAME_FUNC"
-			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"
-			PRODUCE_HASH_LIST
+			cp -f "$installDirectory/config/xmrig.json" "$xmrigConf"
 			;;
 		P2Pool)
 			echo "Resetting [$config/p2pool.conf]..."
-			sudo -u "$USER" cp -f "$installDirectory/config/p2pool.conf" "$config/p2pool.conf"
-			systemd_"$NAME_FUNC"
-			sudo -u "$USER" sed -i "s@.*MINE_UNCONFIGURED.*@MINE_UNCONFIGURED=\"true\"@" "$state"
-			PRODUCE_HASH_LIST
+			cp -f "$installDirectory/config/p2pool.conf" "$config/p2pool.conf"
 			;;
 	esac
-	BGREEN; echo "Reset complete"; OFF
+	BGREEN; echo "Reset OK"; OFF
+}
+
+reset_Systemd()
+{
+	# PROMPT
+	BRED; printf "This will overwrite your current "
+	BWHITE; echo -n "[$NAME_PRETTY] "
+	BRED; echo "systemd service with a new default version"
+	BWHITE; printf "Continue? (y/N) " ;OFF
+	Yes(){ echo "Resetting..." ;}
+	No(){ echo "Exiting..." ;exit 1;}
+	prompt_NOyes
+
+	trap "" 1 2 3 6 15
+	if systemd_${NAME_FUNC}; then
+		BGREEN; echo "Reset OK"; OFF
+	else
+		BRED; echo "Reset FAIL"; OFF
+		return 1
+	fi
 }
