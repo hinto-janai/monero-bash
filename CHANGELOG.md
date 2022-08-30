@@ -1,10 +1,11 @@
 # v1.8.3
 ## Updates
-* **Edit/Reset:** New option to specifically reset either `[config]` or `[systemd]`: `monero-bash reset p2pool systemd`
-* **Help** Color-coded help commands: `monero-bash help`
+* **Edit/Reset:** New options to specifically edit/reset either `[config]` or `[systemd]`
+* **Help:** Color-coded help screen
 
 ## Fixes
-* **RPC:** Fixed trailing text from appearing
+* **Config:** Values are handled more strictly/safely
+* **RPC:** Fixed trailing error text
 
 ---
 

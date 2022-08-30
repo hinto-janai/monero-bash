@@ -81,8 +81,7 @@ missing_config_Folder()
 		print_Warn "$config missing!"
 		echo "Creating default config folder..."
 		build_Config
-		source "$config/monero-bash.conf" &>/dev/null
-		[[ -e "$config/p2pool.conf" ]] && source "$config/p2pool.conf" &>/dev/null
+		parse_Config
 	fi
 }
 
@@ -92,6 +91,7 @@ missing_config_Template()
 		print_Warn "[${conf}] missing!"
 		echo "Creating default [${conf}]..."
 		cp "$installDirectory/config/$conf" "$config/$conf"
+		parse_Config
 	fi
 }
 
@@ -112,8 +112,6 @@ missing_config_MoneroBash()
 {
 	local conf="monero-bash.conf"
 	missing_config_Template
-	source "$config/monero-bash.conf" &>/dev/null
-	[[ -e "$config/p2pool.conf" ]] && source "$config/p2pool.conf" &>/dev/null
 }
 
 
@@ -127,8 +125,6 @@ missing_config_P2Pool()
 {
 	local conf="p2pool.conf"
 	missing_config_Template
-	source "$config/monero-bash.conf" &>/dev/null
-	[[ -e "$config/p2pool.conf" ]] && source "$config/p2pool.conf" &>/dev/null
 }
 
 missing_config_All()

@@ -147,7 +147,7 @@ upgrade_Template()
 	case $NAME_PRETTY in
 		monero-bash)
 			[[ -e $config/monero-bash.conf ]] || cp "$installDirectory"/config/monero-bash.conf "$config/"
-			source "$config/monero-bash.conf"
+			parse_Config
 			;;
 		Monero)
 			[[ -e $config/monerod.conf ]] || cp "$installDirectory"/config/monerod.conf "$config/"
@@ -155,7 +155,7 @@ upgrade_Template()
 			;;
 		P2Pool)
 			[[ -e $config/p2pool.conf ]] || cp "$installDirectory"/config/p2pool.conf "$config/"
-			source "$config/p2pool.conf"
+			parse_Config
 			;;
 		XMRig) [[ -e $config/xmrig.json ]] || cp "$installDirectory"/config/xmrig.json "$config/";;
 	esac

@@ -162,8 +162,7 @@ mine_Config()
 				-i -e "s/^LOG_LEVEL=.*$/LOG_LEVEL=${LOG_LEVEL}/" "$config/p2pool.conf"
 
 		# re-source
-		source "$config/monero-bash.conf" &>/dev/null
-		source "$config/p2pool.conf" &>/dev/null
+		parse_Config
 
 		# re-create systemd file
 		systemd_P2Pool
