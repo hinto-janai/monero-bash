@@ -1,11 +1,12 @@
 # v1.8.3
 ## Updates
-* **Edit/Reset:** New options to specifically edit/reset either `[config]` or `[systemd]`
-* **Help:** Color-coded help screen
+* **Edit/Reset:** New option to specifically edit/reset either `[config]` or `[systemd]`
+* **Help:** Color-coded help screen: `monero-bash help`
 
 ## Fixes
-* **Config:** Values are handled more strictly/safely
 * **RPC:** Fixed trailing error text
+* **Config:** Values are handled more strictly/safely
+* **systemd:** Warning will be printed if an old service file is detected
 
 ---
 

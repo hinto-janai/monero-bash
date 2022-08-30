@@ -90,11 +90,23 @@ process_Start_Template()
 			[[ -e "$MB_API/mini_now" ]] && rm -f "$MB_API/mini_now"
 			print_Warn "[MINI] not found in [p2pool.conf], falling back to [P2Pool]'s default: [false]"
 		fi
+		# backwards compatability (check for --stratum-api)
+		if ! grep "stratum-api" "${sysd}/${SERVICE}" --quiet; then
+			print_Warn "[stratum-api] option not found in [$SERVICE], stats will be inaccurate!"
+			print_Warn "Consider regenerating the [${NAME_PRETTY}] systemd file: [monero-bash reset ${PROJECT} systemd]"
+		fi
 	elif [[ $NAME_PRETTY = XMRig && -e "$binXMRig/xmrig-log" ]]; then
 		rm -rf "$binXMRig/xmrig-log"
 		touch "$binXMRig/xmrig-log"
 		chmod 700 "$binXMRig/xmrig-log"
 	fi
+
+	# warn against old service without security
+	if ! grep "## Security Hardening" "${sysd}/${SERVICE}" --quiet; then
+		print_Warn "Newer security hardening options were not found in: [${SERVICE}]"
+		print_Warn "Consider regenerating the [${NAME_PRETTY}] systemd file: [monero-bash reset ${PROJECT} systemd]"
+	fi
+
 	# START/RESTART PROCESS
 	COMMANDS
 }
