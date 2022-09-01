@@ -101,3 +101,10 @@ safety::bash() {
 		exit 1
 	fi
 }
+
+# check for 64bit
+# only invoked during the intial [monero-bash] install
+safety::64bit() {
+	local UNAME=$(uname -m)
+	[[ $UNAME != *'x86_64'* ]] && print_Error_Exit "Non-64bit computer detected, monero-bash only supports 64bit!"
+}

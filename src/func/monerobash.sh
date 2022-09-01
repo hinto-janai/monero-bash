@@ -29,6 +29,9 @@
 ###################################################   START OF INSTALL FUNCTION   ###################################################
 monerobash_Install()
 {
+	# 64-bit check
+	safety_64bit
+
 	BRED; echo "#-----------------------------------------------------------------#"
 	BRED; echo -n "#                 "
 	BRED; echo -n "monero-bash $MONERO_BASH_VER installation"
