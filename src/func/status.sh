@@ -136,9 +136,7 @@ status_Monero()
 		# turn 'get_info' rpc JSON values into variables.
 		# this uses: https://github.com/hinto-janaiyo/libjson
 		local i IFS=$'\n'
-		for i in $(echo "$GET_INFO" | json::var); do
-			declare $i
-		done
+		declare $(echo "$GET_INFO" | json::var)
 
 		# cleanup 'get_info' variables
 		local height height_percent height_percent_int percent_color incoming outgoing rpc synchronized nettype synchronized target_height tx_pool_size net_hash database_size
