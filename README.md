@@ -71,7 +71,7 @@
 ## Install
 [**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```bash
-tar -xf monero-bash-v1.8.3.tar
+tar -xf monero-bash-v1.8.4.tar
 cd monero-bash
 ./monero-bash
 ```
