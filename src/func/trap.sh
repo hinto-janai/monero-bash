@@ -49,6 +49,21 @@ trap_Post()
 	version_Template
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+	case $NAME_PRETTY in
+		monero-bash|P2Pool)
+			[[ $NAME_PRETTY = monero-bash ]] && local CONFIG_FILE=monero-bash.conf
+			[[ $NAME_PRETTY = P2Pool ]] && local CONFIG_FILE=p2pool.conf
+			CONFIG_OLD=$(<"$config/$CONFIG_FILE")
+			CONFIG_MERGE=$(config::merge "$config/$CONFIG_FILE" "$installDirectory/config/$CONFIG_FILE")
+			if [[ $CONFIG_OLD = "$CONFIG_MERGE" ]]; then
+				echo "[$CONFIG_FILE] No updates detected"
+			elif [[ $CONFIG_MERGE ]]; then
+				echo "[$CONFIG_FILE] Merging old+new"
+				echo "$CONFIG_MERGE" > "$config/$CONFIG_FILE"
+			else
+				print_Warn "Merging old+new [$CONFIG_FILE] failed"
+			fi
+	esac
 	[[ "$INSTALL" = "true" ]]&& systemd_"$NAME_FUNC"
 	PRODUCE_HASH_LIST
 	sudo chown -R $USER "$installDirectory"

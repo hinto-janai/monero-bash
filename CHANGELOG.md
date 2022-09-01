@@ -1,6 +1,7 @@
 # v1.8.4
 ## Updates
-*
+* **Config** `monero-bash.conf/p2pool.conf` are now automatically upgraded (merged with old config) through the package manager
+
 ## Fixes
 *
 

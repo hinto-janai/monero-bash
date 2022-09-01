@@ -69,113 +69,30 @@ config::grep() (
 	# loop over arguments
 	until [[ $# = 0 ]]; do
 		# loop over file per argument given
-		case $1 in
-			ip)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=localhost$ || $i =~ ^${2}=[[:alnum:].]+'.'[[:alnum:]]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			port)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=localhost':'[0-9]+$ || $i =~ ^${2}=[[:alnum:].]+'.'[[:alnum:]]+':'[0-9]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			int)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=[0-9]+$ || $i =~ ^${2}=-[0-9]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			pos)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=[0-9]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			neg)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=-[0-9]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			bool)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=true$ || $i =~ ^${2}=false$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			char)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=[[:alnum:]._-]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			path)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=[[:alnum:]./_-]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			proto)
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=[[:alpha:]]+://[[:alnum:]./?=_%:-]+$ || $i =~ ^${2}=[[:alpha:]]+://[[:alnum:]./?=_%:-]+':'[0-9]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			web)
-				LIBCONFIG_RANGE="$1"
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}='http://'[[:alnum:]./?=_%:-]+$ || $i =~ ^${2}='https://'[[:alnum:]./?=_%:-]+$ || $i =~ ^${2}='www.'[[:alnum:]./?=_%:-]+$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-			\[*\]*)
-				LIBCONFIG_RANGE="$1"
-				for i in ${LIBCONFIG_ARRAY[@]}; do
-					if [[ $i != ${2}* ]]; then
-						continue
-					elif [[ $i =~ ^${2}=${LIBCONFIG_RANGE}$ ]]; then
-						LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}")
-					fi
-				done
-				shift 2;;
-		esac
+		for i in ${LIBCONFIG_ARRAY[@]}; do
+			# continue if basic pattern does not match
+			[[ $i = ${2}* ]] || continue
+			# else case the data type and check for match
+			case $1 in
+				ip) [[ $i =~ ^${2}=localhost$ || $i =~ ^${2}=[[:alnum:].]+'.'[[:alnum:]]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				port) [[ $i =~ ^${2}=localhost':'[0-9]+$ || $i =~ ^${2}=[[:alnum:].]+'.'[[:alnum:]]+':'[0-9]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				int) [[ $i =~ ^${2}=[0-9]+$ || $i =~ ^${2}=-[0-9]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				pos) [[ $i =~ ^${2}=[0-9]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				neg) [[ $i =~ ^${2}=-[0-9]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				bool) [[ $i =~ ^${2}=true$ || $i =~ ^${2}=false$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				char) [[ $i =~ ^${2}=[[:alnum:]._-]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				path) [[ $i =~ ^${2}=[[:alnum:]./_-]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				proto) [[ $i =~ ^${2}=[[:alpha:]]+://[[:alnum:]./?=_%:-]+$ || $i =~ ^${2}=[[:alpha:]]+://[[:alnum:]./?=_%:-]+':'[0-9]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				web) [[ $i =~ ^${2}='http://'[[:alnum:]./?=_%:-]+$ || $i =~ ^${2}='https://'[[:alnum:]./?=_%:-]+$ || $i =~ ^${2}='www.'[[:alnum:]./?=_%:-]+$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				\[*\]*|\(*\)*) LIBCONFIG_RANGE="$1" && [[ $i =~ ^${2}=${LIBCONFIG_RANGE}$ ]] && LIBCONFIG_OUTPUT+=("${2//-/_}=${i/*=/}");;
+				*) return 7;;
+			esac
+		done
+		shift 2
 	done
 
 	# return error on nothing found
-	[[ $LIBCONFIG_OUTPUT ]] || return 7
+	[[ $LIBCONFIG_OUTPUT ]] || return 8
 
 	# determine output type
 	case $LIBCONFIG_OUTPUT_TYPE in
