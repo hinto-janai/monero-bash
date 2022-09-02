@@ -87,7 +87,7 @@ watch_Template()
 		while :; do
 			sudo -v
 			STATS=$(sudo journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat) SYSTEMD_STATS=$(sudo systemctl status $SERVICE)
-			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(printf "%(%Y-%b-%e %X %Z)T")
+			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(printf "%(%F %X %Z)T")
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
 				*"Active: inactive"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mOFFLINE: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
@@ -115,7 +115,7 @@ watch_Template()
 		while :; do
 			[[ $XMRIG_VER ]] && sudo -v
 			STATS=$(journalctl --no-pager -n $WATCH_LINES -u $SERVICE --output cat) SYSTEMD_STATS=$(systemctl status $SERVICE)
-			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(printf "%(%Y-%b-%e %X %Z)T")
+			STAT_UPTIME=$(watch_Uptime) STAT_DATE=$(printf "%(%F %X %Z)T")
 			case "$SYSTEMD_STATS" in
 				*"Active: active"*) DOT_COLOR="\e[1;92mONLINE: ${NAME_PRETTY} $NAME_VER";;
 				# if process is detected, but not with systemd (foreground)
@@ -166,7 +166,7 @@ watch_Status() {
 		[[ $XMRIG_VER ]] && sudo -v
 		# use status_Watch() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
-		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(printf "%(%Y-%b-%e %X %Z)T")
+		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(printf "%(%F %X %Z)T")
 		clear
 		echo -e "$STATS"
 		printf "\e[${WATCH_LINES};0H\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
