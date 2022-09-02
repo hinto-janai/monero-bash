@@ -134,6 +134,7 @@ upgrade_Template()
 			[[ -f "$old/$FOLDER/p2pool.cache" ]] && mv -f "$old/$FOLDER/p2pool.cache" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/p2pool_peers.txt" ]] && mv -f "$old/$FOLDER/p2pool_peers.txt" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/p2pool.log" ]] && mv -f "$old/$FOLDER/p2pool.log" "$DIRECTORY"
+			[[ -f "$old/$FOLDER/p2pool.blocks" ]] && mv -f "$old/$FOLDER/p2pool.blocks" "$DIRECTORY"
 			[[ -f "$old/$FOLDER/local/stats" ]] && mkdir -p "$DIRECTORY/local" && mv -f "$old/$FOLDER/local/stats" "$DIRECTORY"
 		fi
 		if [[ -d $DIRECTORY && $trapSet = true ]]; then
