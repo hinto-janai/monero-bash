@@ -89,9 +89,9 @@ update_All()
         BYELLOW; echo -n "[monero-bash upgrade] "
         OFF; echo "to upgrade all"
         OFF
-		exit 0
+		return 0
 	else
 		BGREEN; printf "\n%s\n" "### All package up-to-date ###"
-		OFF; exit 1
+		OFF; return 1
     fi
 }

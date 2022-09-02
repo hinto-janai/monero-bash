@@ -1,10 +1,10 @@
 # v1.8.4
 ## Updates
 * **Config:** `monero-bash.conf/p2pool.conf` are now automatically upgraded (merged with old config) through the package manager
-* **Watch:** A new screen buffer is started, CTRL+C will now return you the your original terminal instead of clearing
+* **Watch:** A new screen buffer is used, exiting will now return to your original terminal instead of clearing
 
 ## Fixes
-*
+* **Watch:** Fixed date spacing
 
 ---
 

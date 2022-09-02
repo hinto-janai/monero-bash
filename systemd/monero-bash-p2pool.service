@@ -1,0 +1,56 @@
+[Unit]
+Description=monero-bash-p2pool.service
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+## Basics
+User=$USER
+Group=$USER
+Type=simple
+
+## Environment
+EnvironmentFile=/home/$USER/.monero-bash/config/p2pool.conf
+EnvironmentFile=/usr/local/share/monero-bash/src/api/mini
+
+## Command
+ExecStart=/usr/local/share/monero-bash/bin/p2pool/p2pool --data-api /usr/local/share/monero-bash/bin/p2pool --stratum-api --host $DAEMON_IP --wallet $WALLET --loglevel $LOG_LEVEL $MINI_FLAG --rpc-port $DAEMON_RPC --zmq-port $DAEMON_ZMQ --out-peers $OUT_PEERS --in-peers $IN_PEERS
+WorkingDirectory=/usr/local/share/monero-bash/bin/p2pool
+
+## Restart
+Restart=on-failure
+RestartSec=5s
+
+## Open file limit
+LimitNOFILE=16384
+
+## Wait 35 seconds before sending SIGTERM
+KillSignal=SIGTERM
+TimeoutStopSec=35s
+SendSIGKILL=true
+
+## Security Hardening
+## If this service isn't working well (low hashrate, can't connect)
+## you might want to disable some (or all) of the settings below:
+CapabilityBoundingSet=~CAP_NET_ADMIN CAP_SYS_PTRACE CAP_SYS_ADMIN CAP_KILL CAP_SYS_PACCT CAP_SYS_BOOT CAP_SYS_CHROOT CAP_LEASE CAP_MKNOD CAP_CHOWN CAP_FSETID CAP_SETFCAP CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_SYS_TIME CAP_IPC_LOCK CAP_LINUX_IMMUTABLE CAP_FOWNER CAP_IPC_OWNER CAP_SYS_RESOURCE CAP_SYS_NICE
+ProtectProc=invisible
+ProtectControlGroups=true
+ProtectHostname=true
+ProtectClock=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectKernelTunables=true
+RestrictRealtime=true
+RestrictNamespaces=true
+PrivateUsers=true
+## These ones shouldn't affect performance and
+## probably should be left on for security reasons.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+BindPaths=/usr/local/share/monero-bash/bin/p2pool
+
+[Install]
+WantedBy=multi-user.target

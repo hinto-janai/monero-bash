@@ -102,9 +102,30 @@ safety::bash() {
 	fi
 }
 
-# check for 64bit
-# only invoked during the intial [monero-bash] install
-safety::64bit() {
-	local UNAME=$(uname -m)
-	[[ $UNAME != *'x86_64'* ]] && print_Error_Exit "Non-64bit computer detected, monero-bash only supports 64bit!"
+# check for x86_64bit
+# only invoked during the initial [monero-bash] install
+safety::x86_64() {
+	[[ $(uname -m) = x86_64 ]] || print_Error_Exit "Non-x86_64 computer detected, refusing to continue"
+}
+
+# check for sane environment
+# variables and set as readonly.
+safety::env() {
+    # $HOME
+    case "$HOME" in
+        "/home/$USER") :;;
+        *) print_Error_Exit "Dangerous \$HOME variable detected, refusing to start";;
+    esac
+    # $USER
+    case "$USER" in
+        "${HOME/\/home\/}") :;;
+        *) print_Error_Exit "Dangerous \$USER variable detected, refusing to start";;
+    esac
+    # $PATH
+    case "$PATH" in
+        */usr/bin*) :;;
+        */bin*) :;;
+        *) print_Error_Exit "Dangerous \$PATH variable detected, refusing to start";;
+    esac
+    declare -gxr HOME USER PATH
 }

@@ -27,9 +27,10 @@
 # install functions
 install_Template()
 {
-	if [[ "$NAME_VER" != "" ]]; then
+	if [[ $NAME_VER ]]; then
 		OFF; echo -n "$NAME_PRETTY ($NAME_VER) "
 		OFF; echo "is already installed"
+		exit 1
 	else
 		local INSTALL="true"
 		upgrade_"$NAME_FUNC"

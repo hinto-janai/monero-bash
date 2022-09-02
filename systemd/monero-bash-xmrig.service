@@ -1,0 +1,56 @@
+[Unit]
+Description=monero-bash-xmrig.service
+After=network-online.target
+StartLimitIntervalSec=300
+StartLimitBurst=5
+
+[Service]
+## Basics
+User=root
+Group=root
+Type=simple
+
+## Environment
+#EnvironmentFile= #none
+#EnvironmentFile= #none
+
+## Command
+ExecStart=/usr/local/share/monero-bash/bin/xmrig/xmrig --config /home/$USER/.monero-bash/config/xmrig.json --log-file=/usr/local/share/monero-bash/bin/xmrig/xmrig-log
+WorkingDirectory=/usr/local/share/monero-bash/bin/xmrig
+
+## Restart
+Restart=on-failure
+RestartSec=5s
+
+## Open file limit
+#LimitNOFILE=4096 #Disabled for XMRig
+
+## Wait 35 seconds before sending SIGTERM
+KillSignal=SIGTERM
+TimeoutStopSec=35s
+SendSIGKILL=true
+
+## Security Hardening
+## If this service isn't working well (low hashrate, can't connect)
+## you might want to disable some (or all) of the settings below:
+CapabilityBoundingSet=~CAP_NET_ADMIN CAP_SYS_PTRACE CAP_SYS_ADMIN CAP_KILL CAP_SYS_PACCT CAP_SYS_BOOT CAP_SYS_CHROOT CAP_LEASE CAP_MKNOD CAP_CHOWN CAP_FSETID CAP_SETFCAP CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_SYS_TIME CAP_IPC_LOCK CAP_LINUX_IMMUTABLE CAP_FOWNER CAP_IPC_OWNER CAP_SYS_RESOURCE CAP_SYS_NICE
+ProtectProc=invisible
+ProtectControlGroups=true
+#RestrictRealtime=true #Disabled for XMRig
+#RestrictNamespaces=true #Disabled for XMRig
+#ProtectHostname=true #Disabled for XMRig
+#ProtectClock=true #Disabled for XMRig
+#ProtectKernelModules=true #Disabled for XMRig
+#ProtectKernelLogs=true #Disabled for XMRig
+#ProtectKernelTunables=true #Disabled for XMRig
+#PrivateUsers=true #Disabled for XMRig
+## These ones shouldn't affect performance and
+## probably should be left on for security reasons.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+BindPaths=/usr/local/share/monero-bash/bin/xmrig /home/$USER/.monero-bash/config/xmrig.json
+
+[Install]
+WantedBy=multi-user.target

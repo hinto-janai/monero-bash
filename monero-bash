@@ -35,7 +35,7 @@
 # |---------------|--------------------------------------------|
 # | src/func/     | all the functions [monero-bash] uses       |
 # | src/txt/      | text files to store long-term on disk      |
-# | src/source.sh | master source file that sources everything |
+# | src/source.sh | master source file that sources vars/funcs |
 # | src/debug.sh  | debugging functions                        |
 # | src/var.sh    | frequently used GLOBAL variables           |
 
@@ -43,9 +43,10 @@
 # ---------------------------------
 # 1. User inputs [monero-bash <something>]
 # 2. [monero-bash] sources -> [src/source.sh]
-# 3. [source.sh] sources -> EVERYTHING (functions, state, user config, etc)
-# 4. A whole bunch of safety checks
-# 5. Parse & execute user input (update, wallet, etc)
+# 3. [source.sh] sources -> functions, state, vars
+# 4. parse_Config() parses user configs safely
+# 5. A whole bunch of safety checks
+# 6. Parse & execute user input (update, wallet, etc)
 
 # 2022-08-14 [v1.8.0]
 # -------------------
@@ -117,24 +118,25 @@ if [[ -p /dev/stdin ]]; then
 	print_Error_Exit "no stdin/pipe support!"
 fi
 
+# Parse/source config files
+if ! parse_Config; then
+	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] Config source failure"
+	exit 1
+fi
+
 # Installation
 if [[ $FIRST_TIME = "true" ]]; then
 	monerobash_Install
 	exit
 fi
 
+safety::env
 safety_User
 safety_DotMoneroBash
 missing_Wallets
 missing_config_Folder
 missing_config_All
 missing_systemd_All
-
-# Parse/source config files
-if ! parse_Config; then
-	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] CONFIG SOURCE FAIL"
-	exit 1
-fi
 
 # Interactive/option check
 [[ $1 ]] && options=true || interactive=true
@@ -386,7 +388,7 @@ if [[ $options = "true" ]]; then
 			case $2 in
 				*"bash"*|*"Bash"*|*"BASH"*)
 					BWHITE; echo -n "Install [monero-bash]? (Y/n) " ;OFF
-					Yes(){ echo "install_MoneroBash" ;}
+					Yes(){ install_MoneroBash ;}
 					No(){ echo "Exiting..." ;exit;}
 					prompt_YESno
 					;;
@@ -461,10 +463,9 @@ if [[ $options = "true" ]]; then
 			esac
 			;;
 		*)
-			BRED; echo -n "[monero-bash] "
-			IWHITE; echo "Invalid option!"
-			OFF; echo -n "For help, type: "
-			BCYAN; echo "monero-bash help"; OFF
+			print_Error "Invalid option!"
+			printf "${OFF}%s${BYELLOW}%s${OFF}\n" "For help, type: " "[monero-bash help]"
+			exit 1
 	esac
 	exit
 fi

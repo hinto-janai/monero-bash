@@ -77,20 +77,23 @@ TimeoutStopSec=35s
 SendSIGKILL=true
 
 ## Security Hardening
-PrivateTmp=true
-NoNewPrivileges=true
-$PROC_SUBSET
-RestrictRealtime=true
-RestrictNamespaces=true
-ProtectHostname=true
-$CAPABILITY_BOUNDING_SET
+## If this service isn't working well (low hashrate, can't connect)
+## you might want to disable some (or all) of the settings below:
+CapabilityBoundingSet=~CAP_NET_ADMIN CAP_SYS_PTRACE CAP_SYS_ADMIN CAP_KILL CAP_SYS_PACCT CAP_SYS_BOOT CAP_SYS_CHROOT CAP_LEASE CAP_MKNOD CAP_CHOWN CAP_FSETID CAP_SETFCAP CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_SYS_TIME CAP_IPC_LOCK CAP_LINUX_IMMUTABLE CAP_FOWNER CAP_IPC_OWNER CAP_SYS_RESOURCE CAP_SYS_NICE
+$PROTECT_PROC
+$PROTECT_CONTROL_GROUPS
+$PROTECT_HOSTNAME
 $PROTECT_CLOCK
 $PROTECT_KERNEL_MODULES
-ProtectKernelLogs=true
-ProtectProc=invisible
-ProtectControlGroups=true
+$PROTECT_KERNEL_LOGS
 $PROTECT_KERNEL_TUNABLES
+$RESTRICT_REAL_TIME
+$RESTRICT_NAMESPACES
 $PRIVATE_USERS
+## These ones shouldn't affect performance and
+## probably should be left on for security reasons.
+NoNewPrivileges=true
+PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
 $BIND_PATHS
@@ -112,16 +115,22 @@ sudo systemctl daemon-reload
 
 systemd_Monero()
 {
-	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR PROTECT_KERNEL_TUNABLES PRIVATE_USERS
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME
 	COMMAND="$binMonero/monerod --config-file $config/monerod.conf --non-interactive"
 	ENV_FILE="#EnvironmentFile= #none"
 	ENV_LINE="#EnvironmentFile= #none"
 	FILE_LIMIT="LimitNOFILE=16384"
-	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet="
 	PROTECT_CLOCK="ProtectClock=true"
 	PROTECT_KERNEL_MODULES="ProtectKernelModules=true"
 	PROTECT_KERNEL_TUNABLES="ProtectKernelTunables=true"
 	PRIVATE_USERS="PrivateUsers=true"
+	PROTECT_KERNEL_LOGS="ProtectKernelLogs=true"
+	PROTECT_PROC="ProtectProc=invisible"
+	PROTECT_CONTROL_GROUPS="ProtectControlGroups=true"
+	RESTRICT_REAL_TIME="RestrictRealtime=true"
+	RESTRICT_NAMESPACES="RestrictNamespaces=true"
+	PROTECT_HOSTNAME="ProtectHostname=true"
+
 	define_Monero
 	if ! DATA_DIR=$(grep "^data-dir=/.*$" $config/monerod.conf); then
 		DATA_DIR="$HOME/.bitmonero"
@@ -133,36 +142,43 @@ systemd_Monero()
 
 systemd_XMRig()
 {
-	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS
+	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME
 	COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file=$binXMRig/xmrig-log"
 	USER="root"
 	ENV_FILE="#EnvironmentFile= #none"
 	ENV_LINE="#EnvironmentFile= #none"
-	FILE_LIMIT="#LimitNOFILE=4096 #XMRig doesn't need more files"
-	CAPABILITY_BOUNDING_SET="CapabilityBoundingSet=~CAP_NET_ADMIN CAP_SYS_PTRACE CAP_SYS_ADMIN CAP_KILL CAP_SYS_PACCT CAP_SYS_BOOT CAP_SYS_CHROOT CAP_LEASE CAP_MKNOD CAP_CHOWN CAP_FSETID CAP_SETFCAP CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_SYS_TIME CAP_IPC_LOCK CAP_LINUX_IMMUTABLE CAP_FOWNER CAP_IPC_OWNER CAP_SYS_RESOURCE CAP_SYS_NICE"
-	PROTECT_CLOCK="#ProtectClock=true #XMRig needs this disabled for max hashrate"
-	PROTECT_KERNEL_MODULES="#ProtectKernelModules=true #XMRig needs this disabled for max hashrate"
-	PROTECT_KERNEL_TUNABLES="#ProtectKernelTunables=true #XMRig needs this disabled for max hashrate"
-	PRIVATE_USERS="#PrivateUsers=true #XMRig needs this disabled for max hashrate"
+	FILE_LIMIT="#LimitNOFILE=4096 #Disabled for XMRig"
+	PROTECT_CLOCK="#ProtectClock=true #Disabled for XMRig"
+	PROTECT_KERNEL_MODULES="#ProtectKernelModules=true #Disabled for XMRig"
+	PROTECT_KERNEL_TUNABLES="#ProtectKernelTunables=true #Disabled for XMRig"
+	PRIVATE_USERS="#PrivateUsers=true #Disabled for XMRig"
 	BIND_PATHS="BindPaths=$binXMRig $xmrigConf"
+	PROTECT_KERNEL_LOGS="#ProtectKernelLogs=true #Disabled for XMRig"
+	PROTECT_PROC="ProtectProc=invisible"
+	PROTECT_CONTROL_GROUPS="ProtectControlGroups=true"
+	RESTRICT_REAL_TIME="#RestrictRealtime=true #Disabled for XMRig"
+	RESTRICT_NAMESPACES="#RestrictNamespaces=true #Disabled for XMRig"
+	PROTECT_HOSTNAME="#ProtectHostname=true #Disabled for XMRig"
 	# Debian's [systemd] is old as hell and
 	# still has a bug that prevents this
 	# option being used correctly. It stops
 	# XMRig from launching so, disable it
 	# only on Debian machines.
-	if [[ $(uname -a) = *Debian* ]]; then
-		print_Warn "Debian detected: systemd's [ProcSubset] will be DISABLED for XMRig to prevent a Debian-specific bug"
-		PROC_SUBSET="#ProcSubset=pid #This machine was detected as Debian. This option is disabled to avoid a Debian-specific bug."
-	else
-		PROC_SUBSET="ProcSubset=pid"
-	fi
+#	if [[ $(uname -a) = *Debian* ]]; then
+#		print_Warn "Debian detected: systemd's [ProcSubset] will be DISABLED for XMRig to prevent a Debian-specific bug"
+#		PROC_SUBSET="#ProcSubset=pid #This machine was detected as Debian. This option is disabled to avoid a Debian-specific bug."
+#	else
+#		PROC_SUBSET="ProcSubset=pid"
+#	fi
+	# [2022-09-02 Update]
+	# Setting 'BindReadOnlyPaths=/proc' fixes this
 	define_XMRig
 	systemd_Template
 }
 
 systemd_P2Pool()
 {
-	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME
 	COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
 	ENV_FILE="EnvironmentFile=$config/p2pool.conf"
 	ENV_LINE="EnvironmentFile=$MB_API/mini"
@@ -173,6 +189,12 @@ systemd_P2Pool()
 	PROTECT_KERNEL_TUNABLES="ProtectKernelTunables=true"
 	PRIVATE_USERS="PrivateUsers=true"
 	BIND_PATHS="BindPaths=$binP2Pool"
+	PROTECT_KERNEL_LOGS="ProtectKernelLogs=true"
+	PROTECT_PROC="ProtectProc=invisible"
+	PROTECT_CONTROL_GROUPS="ProtectControlGroups=true"
+	RESTRICT_REAL_TIME="RestrictRealtime=true"
+	RESTRICT_NAMESPACES="RestrictNamespaces=true"
+	PROTECT_HOSTNAME="ProtectHostname=true"
 	define_P2Pool
 	# 2022-08-14 Backwards compatibility with
 	# old [monero-bash.conf] p2pool settings.
