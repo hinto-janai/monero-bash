@@ -15,7 +15,7 @@ upgrade_Template()
 	BRED; echo "MONERO-BASH DEV INSTALL" ;OFF
 
 	cd "$tmp"
-	git clone https://github.com/hinto-janaiyo/monero-bash
+	cp -r $HOME/git/monero-bash "$tmp"
 	cd monero-bash
 	git checkout $BRANCH
 	NewVer="monero-bash-dev-$(git rev-parse --short HEAD)"

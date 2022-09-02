@@ -80,7 +80,11 @@ watch_Template()
 	watch_First
 	WATCH_LINES=$(tput lines)
 	STAT_AMOUNT=$(watch_Amount)
-	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
+	# create alternate screen buffer
+	printf "\e[?1049h"
+	# hide user input
+	stty -echo
+	trap 'stty echo; printf "\e[?1049l\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
 	# need sudo for xmrig journals
 	if [[ $SERVICE = "monero-bash-xmrig.service" ]]; then
@@ -94,7 +98,7 @@ watch_Template()
 				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY}";;
 			esac
-			clear
+			printf "\e[2J\e[H"
 			echo -e "$STATS"
 			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
@@ -161,7 +165,11 @@ watch_Status() {
 	else
 		COL="\e[1;92m"
 	fi
-	trap 'clear; printf "\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash watch" "]"; exit 0' EXIT
+	# create alternate screen buffer
+	printf "\e[?1049h"
+	# hide user input
+	stty -echo
+	trap 'stty echo; printf "\e[?1049l\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash watch" "]"; exit 0' EXIT
 	while :; do
 		[[ $XMRIG_VER ]] && sudo -v
 		# use status_Watch() instead of re-invoking and

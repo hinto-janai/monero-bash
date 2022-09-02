@@ -1,6 +1,7 @@
 # v1.8.4
 ## Updates
-* **Config** `monero-bash.conf/p2pool.conf` are now automatically upgraded (merged with old config) through the package manager
+* **Config:** `monero-bash.conf/p2pool.conf` are now automatically upgraded (merged with old config) through the package manager
+* **Watch:** A new screen buffer is started, CTRL+C will now return you the your original terminal instead of clearing
 
 ## Fixes
 *
