@@ -24,19 +24,5 @@
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
 
-# fetch price data
+#header_Random() {
 
-check_Price()
-{
-	[[ $USE_TOR = true ]] && torsocks_init || prompt_PriceAPI_IP
-	RED; echo "--- XMR fiat price ---" ;OFF
-	# use TOR if enabled
-	if [[ $USE_TOR = true ]]; then
-		local PRICE=$(torsocks_func --address "$TOR_IP" --port "$TOR_PORT" wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
-	else
-		local PRICE=$(wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
-	fi
-	# filter
-	echo $PRICE | tr -d "{\"}" | tr "," "\n" | sed 's/:/ | /g'
-	echo
-}

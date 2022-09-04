@@ -24,7 +24,7 @@
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
 
-# Parsing config files safely.
+# Parse config files safely.
 parse_Config() {
 	# [monero-bash.conf]
 	declare -g $(config::grep "$config/monero-bash.conf" \
@@ -33,6 +33,10 @@ parse_Config() {
 		bool   AUTO_UPDATE          \
 		bool   PRICE_API_IP_WARNING \
 		pos    WATCH_REFRESH_RATE   \
+		bool   USE_TOR              \
+		port   TOR_PROXY            \
+		bool   TEST_TOR             \
+		bool   FAKE_HTTP_HEADERS    \
 		port   DAEMON_RPC_IP        \
 		bool   DAEMON_RPC_VERBOSE   \
 		bool   AUTO_HUGEPAGES       \
@@ -43,12 +47,18 @@ parse_Config() {
 	[[ $AUTO_STOP_DAEMON ]]     || declare -g AUTO_STOP_DAEMON=false
 	[[ $AUTO_UPDATE ]]          || declare -g AUTO_UPDATE=false
 	[[ $PRICE_API_IP_WARNING ]] || declare -g PRICE_API_IP_WARNING=false
+	[[ $USE_TOR ]]              || declare -g USE_TOR=false
+	[[ $TOR_PROXY ]]            || declare -g TOR_PROXY=127.0.0.1:9050
+	[[ $TEST_TOR ]]             || declare -g TEST_TOR=false
+	[[ $FAKE_HTTP_HEADERS ]]    || declare -g FAKE_HTTP_HEADERS=false
 	[[ $DAEMON_RPC_IP ]]        || declare -g DAEMON_RPC_IP=127.0.0.1:18081
 	[[ $DAEMON_RPC_VERBOSE ]]   || declare -g DAEMON_RPC_VERBOSE=false
 	[[ $AUTO_HUGEPAGES ]]       || declare -g AUTO_HUGEPAGES=false
 	[[ $HUGEPAGES ]]            || declare -g HUGEPAGES=3072
 	# range [1-60]
 	[[ $WATCH_REFRESH_RATE -ge 1 && $WATCH_REFRESH_RATE -le 60 ]] || declare -g WATCH_REFRESH_RATE=1
+	# split tor ip/port
+	[[ $TOR_PROXY ]] && declare -g TOR_IP=${TOR_PROXY/:*} TOR_PORT=${TOR_PROXY/*:}
 
 	# [p2pool.conf]
 	[[ $P2POOL_VER ]] || return 0

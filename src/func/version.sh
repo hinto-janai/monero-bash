@@ -47,18 +47,29 @@ version_Template()
 # invoked by "monero-bash update"
 version_Update()
 {
-	LINK="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+	if [[ $USE_TOR = true ]]; then
+		LINK="$(torsocks_func wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+	else
+		LINK="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+	fi
 	if [[ $? != "0" && "$HTML" != "true" ]]; then
 		IRED; echo "GitHub API error detected..."
 		OFF; echo "Trying GitHub HTML filter instead..."
 		HTML="true"
 	fi
 	if [[ "$HTML" = "true" ]]; then
-		NewVer="$(wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
-			| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
-			| awk '{print $1}' | head -n1 \
-			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
-		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
+		if [[ $USE_TOR = true ]]; then
+			NewVer="$(torsocks_func wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
+				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+				| awk '{print $1}' | head -n1 \
+				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+		else
+			NewVer="$(wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
+				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+				| awk '{print $1}' | head -n1 \
+				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+		fi
+		[[ $NewVer ]] || error_Exit "GitHub HTML filter failed..."
 	else
 		NewVer="$(echo "$LINK" | grep "tag_name" | awk '{print $2}' | tr -d '",')"
 	fi

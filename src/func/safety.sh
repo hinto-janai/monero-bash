@@ -127,5 +127,8 @@ safety::env() {
         */bin*) :;;
         *) print_Error_Exit "Dangerous \$PATH variable detected, refusing to start";;
     esac
-    declare -gxr HOME USER PATH
+	# Path isn't declared as READONLY because
+	# it needs to be edited when using Tor
+	# (getcap is in /usr/sbin which isn't in PATH for Debian)
+    declare -gxr HOME USER
 }

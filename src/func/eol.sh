@@ -32,10 +32,18 @@
 ___END___OF___LIFE___() {
 	API="false"
 	HTML="true"
-	if ! DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
-	    DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
-	    API="false"
-	    HTML="true"
+	if [[ $USE_TOR = true ]]; then
+		if ! DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
+		    DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+		    API="false"
+		    HTML="true"
+		fi
+	else
+		if ! DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
+		    DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+		    API="false"
+		    HTML="true"
+		fi
 	fi
 	version_Template
 	if [[ $NewVer != v1* ]]; then

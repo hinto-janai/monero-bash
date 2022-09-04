@@ -127,6 +127,7 @@ watch_Template()
 			esac
 			# create alternate screen buffer + hide cursor (only if first time)
 			clear
+			echo -e "$STATS"
 			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
 			# exit on any input unless [left] or [right] escape codes

@@ -32,7 +32,11 @@
 gpg_import_Template()
 {
 	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
-	local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
+	if [[ $USE_TOR = true ]]; then
+		local ONLINE="$(torsocks_func wget -qO- "$GPG_PUB_KEY")"
+	else
+		local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
+	fi
 	if [[ "$LOCAL" = "$ONLINE" ]]; then
 		gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
 	else

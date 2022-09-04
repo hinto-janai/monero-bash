@@ -65,6 +65,9 @@ upgrade_Pre()
 
 upgrade_Template()
 {
+	# Show if using Tor
+	[[ $USE_TOR = true ]] && torsocks_init
+
 	# DOWNLOAD
 	print_BlueHash "Downloading [$NAME_PRETTY]"
 	download_Template

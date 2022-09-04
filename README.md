@@ -7,13 +7,14 @@
 * [Features](#Features)
 * [Distro Coverage](#Distro-Coverage)
 * [Install](#Install)
+* [Commands](#Commands)
 * [Usage](#Usage)
 	- [Wallet](#Wallet)
 	- [Config](#Config)
 	- [Mining](#Mining)
 	- [Watch](#Watch)
 	- [Security](#Security)
-	- [Commands](#Commands)
+	- [Tor](#Tor)
 * [FAQ](#FAQ)
 
 ## About
@@ -49,6 +50,7 @@
 * ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
 * 📈 **`STATUS`** Display stat (CPU usage, P2Pool shares, Hashrate, etc)
 * 👁️ **`WATCH`** Watch live output of processes or general status
+* 🧅 **`TOR`** Route package downloads through TOR
 * 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
 * 🔒 **`GPG`** Encrypt and backup your wallets
 
@@ -110,6 +112,44 @@ sudo rm /etc/systemd/system/monero-bash*
 sudo rm /etc/systemd/system/multi-user.target.wants/monero-bash*
 ```
 THIS WILL DELETE YOUR WALLETS - remember to move them before uninstalling!
+
+## Commands
+```
+USAGE: monero-bash command <argument> [optional]
+
+monero-bash                                           Open wallet menu
+uninstall                                             Uninstall ALL OF monero-bash
+
+update                                                Check for package updates
+upgrade [force|verbose]                               Upgrade all out-of-date packages
+upgrade <package> [force|verbose]                     Upgrade a specific package
+install <all/package> [verbose]                       Install <all> or a specific package
+remove  <all/package>                                 Remove <all> or a specific package
+
+config                                                Configure P2Pool+XMRig mining settings
+full    <monero/p2pool/xmrig>                         Start the process directly attached (foreground)
+start   <all/monero/p2pool/xmrig>                     Start process with systemd (background)
+stop    <all/monero/p2pool/xmrig>                     Gracefully stop the systemd process
+restart <all/monero/p2pool/xmrig>                     Restart the systemd process
+enable  <all/monero/p2pool/xmrig>                     Enable the process to auto-start on boot
+disable <all/monero/p2pool/xmrig>                     Disable the process from auto-starting on boot
+reset   <bash/monero/p2pool/xmrig> [config|systemd]   Reset your configs/systemd to default
+edit    <bash/monero/p2pool/xmrig> [config|systemd]   Edit config/systemd service file
+watch   [monero|p2pool|xmrig]                         Watch live status or a specific process
+
+rpc     [help]                                        Send a RPC call to monerod
+seed    [language]                                    Generate random 25-word Monero seed
+list                                                  List wallets
+size                                                  Show size of monero-bash folders
+price                                                 Fetch price data from cryptocompare.com API
+status                                                Print status of all installed packages
+version                                               Print versions of installed packages
+
+backup                                                Encrypt & backup [wallets] -> [backup.tar.gpg]
+decrypt                                               Decrypt [backup.tar.gpg] -> [backup]
+
+help                                                  Show this help message
+```
 
 ## Usage
 ### Wallet
@@ -215,43 +255,56 @@ In the event of fatal process bugs like remote code execution, these settings wi
 
 ---
 
-### Commands
+### Tor
+monero-bash's package manager supports routing all traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) It also allows faking the HTTP headers that you send. These options are found in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf).
 ```
-USAGE: monero-bash command <argument> [optional]
-
-monero-bash                                           Open wallet menu
-uninstall                                             Uninstall ALL OF monero-bash
-
-update                                                Check for package updates
-upgrade [force|verbose]                               Upgrade all out-of-date packages
-upgrade <package> [force|verbose]                     Upgrade a specific package
-install <all/package> [verbose]                       Install <all> or a specific package
-remove  <all/package>                                 Remove <all> or a specific package
-
-config                                                Configure P2Pool+XMRig mining settings
-full    <monero/p2pool/xmrig>                         Start the process directly attached (foreground)
-start   <all/monero/p2pool/xmrig>                     Start process with systemd (background)
-stop    <all/monero/p2pool/xmrig>                     Gracefully stop the systemd process
-restart <all/monero/p2pool/xmrig>                     Restart the systemd process
-enable  <all/monero/p2pool/xmrig>                     Enable the process to auto-start on boot
-disable <all/monero/p2pool/xmrig>                     Disable the process from auto-starting on boot
-reset   <bash/monero/p2pool/xmrig> [config|systemd]   Reset your configs/systemd to default
-edit    <bash/monero/p2pool/xmrig> [config|systemd]   Edit config/systemd service file
-watch   [monero|p2pool|xmrig]                         Watch live status or a specific process
-
-rpc     [help]                                        Send a RPC call to monerod
-seed    [language]                                    Generate random 25-word Monero seed
-list                                                  List wallets
-size                                                  Show size of monero-bash folders
-price                                                 Fetch price data from cryptocompare.com API
-status                                                Print status of all installed packages
-version                                               Print versions of installed packages
-
-backup                                                Encrypt & backup [wallets] -> [backup.tar.gpg]
-decrypt                                               Decrypt [backup.tar.gpg] -> [backup]
-
-help                                                  Show this help message
+USE_TOR             enable connections via Tor
+TOR_PROXY           Tor SOCKS proxy IP/port to use (default: 127.0.0.1:9050)
+FAKE_HTTP_HEADERS   sending random (common) fake HTTP headers instead of [Wget/VERSION]
 ```
+[`torsocks`](https://github.com/dgoulet/torsocks) is used to route the traffic through Tor, although it is not necessary to download, only access to a regular Tor SOCKS proxy is needed. Quick guides for installing and running Tor (only for proxy purposes, no relaying):
+
+*	<details>
+	<summary>Debian/Ubuntu/Pop!_OS/Linux Mint</summary>
+
+	```
+	sudo apt install tor
+	sudo systemd start tor.service
+	```
+	</details>
+*	<details>
+	<summary>Fedora</summary>
+
+	```
+	sudo dnf install tor
+	sudo systemd start tor.service
+	```
+	</details>
+*	<details>
+	<summary>Arch Linux/Manjaro</summary>
+
+	```
+	sudo pacman -S tor
+	sudo systemd start tor.service
+	```
+	</details>
+*	<details>
+	<summary>Gentoo</summary>
+
+	```
+	sudo emerge --ask net-vpn/tor
+	sudo systemd start tor.service
+	```
+	</details>
+
+**Things to note:**
+* If the torsocks shared library file is already detected on your computer (`/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`), it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/libtorsocks.so)
+
+* The actual wrapper script (`/usr/bin/torsocks`) has been [rewritten as a Bash function to reflect monero-bash use-cases (remove macOS code, TOR shell, etc)](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/torsocks.sh) and it will always be used over any system versions found.
+
+* The built-in torsocks shared library file is from `v2.3.0` with a SHA256 hash of `91464358f1358e3dfbf3968fad81a4fff95d6f3ce0961a1ba1ae7054b6998159`, this should match against Debian's (APT) version. You are free to replace it with your own (or just install torsocks), just make sure it is placed in the same path: `/usr/local/share/monero-bash/src/libtorsocks.so`
+
+* `monero-bash price` will also be routed though Tor if it is enabled
 
 ## FAQ
 <details>

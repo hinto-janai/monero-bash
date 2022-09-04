@@ -1,0 +1,6 @@
+[submodule "external/xmrpc"]
+	path = external/xmrpc
+	url = https://github.com/jtgrassie/xmrpc
+[submodule "external/torsocks"]
+	path = external/torsocks
+	url = https://github.com/dgoulet/torsocks

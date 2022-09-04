@@ -55,7 +55,7 @@ verify_Template()
 
 	# setting of the tmp file variables (and gpg)
 	tarFile="$(ls "$tmp")"
-	wget -q -P "$tmpHash" "$hashLink"
+	[[ $USE_TOR = true ]] && torsocks_func wget -q -P "$tmpHash" "$hashLink" || wget -q -P "$tmpHash" "$hashLink"
 	code_Wget
 	hashFile="$(ls "$tmpHash")"
 	sigFile="$hashFile"
@@ -81,7 +81,7 @@ verify_Template()
 			| grep "browser_download_url.*$SIG" \
 			| awk '{print $2}' | head -n1 | tr -d '"')"
 		fi
-		wget -q -P "$tmpSig" "$sigLink"
+		[[ $USE_TOR = true ]] && torsocks_func wget -q -P "$tmpSig" "$sigLink" || wget -q -P "$tmpSig" "$sigLink"
 		code_Wget
 		sigFile="$(ls "$tmpSig")"
 	fi
