@@ -1,7 +1,7 @@
 # v1.9.0
 ## Updates
 * **Tor Integration:** [All monero-bash connections can now be routed through Tor](https://github.com/hinto-janaiyo/monero-bash#Tor)
-* **HTTP Spoofing:** [Fake HTTP headers can now be set for better privacy](https://github.com/hinto-janaiyo/monero-bash#HTTPSpoofing)
+* **HTTP Spoofing:** [Fake HTTP headers can now be set to blend in with browsers](https://github.com/hinto-janaiyo/monero-bash#http-spoofing)
 * **Config:** `monero-bash.conf/p2pool.conf` are now automatically upgraded (merged with old config)
 * **Watch:** A new screen buffer is used, exiting will now return to your original terminal instead of clearing
 * **Tor:** New command to test Tor connection: `monero-bash tor`

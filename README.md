@@ -406,8 +406,8 @@ If you have a mainstream Linux distro you already have everything needed:
 See [Distro Coverage](#Distro-Coverage) for more info.
 
 **Optional:**
-	* `tor` is obviously required if using monero-bash's Tor options
-	* `screen` or `tmux` is nice to have for `monero-bash full <process>`
+* `tor` is obviously required if using monero-bash's Tor options
+* `screen` or `tmux` is nice to have for `monero-bash full <process>`
 
 ---
 
