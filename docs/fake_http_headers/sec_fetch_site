@@ -1,0 +1,9 @@
+cross-site
+same-origin
+same-site
+none
+
+SEC_FETCH_SITE[0]='cross-site'
+SEC_FETCH_SITE[1]='same-origin'
+SEC_FETCH_SITE[2]='same-site'
+SEC_FETCH_SITE[3]='none'

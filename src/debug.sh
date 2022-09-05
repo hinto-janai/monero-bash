@@ -49,7 +49,7 @@ LIST()
 PRODUCE_HASH_LIST_TEMPLATE()
 {
 	for i in $DIR/* ;do
-		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
+		if [[ -f "$i" && "$i" != "src/txt/hashlist" && "$i" != "src/txt/headers" ]]; then
 			sudo sha256sum $i >> "$hashlist"
 		fi
 	done

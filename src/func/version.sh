@@ -48,9 +48,9 @@ version_Template()
 version_Update()
 {
 	if [[ $USE_TOR = true ]]; then
-		LINK="$(torsocks_func wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		LINK="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	else
-		LINK="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		LINK="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	fi
 	if [[ $? != "0" && "$HTML" != "true" ]]; then
 		IRED; echo "GitHub API error detected..."
@@ -59,12 +59,12 @@ version_Update()
 	fi
 	if [[ "$HTML" = "true" ]]; then
 		if [[ $USE_TOR = true ]]; then
-			NewVer="$(torsocks_func wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
+			NewVer="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
 				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
 				| awk '{print $1}' | head -n1 \
 				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
 		else
-			NewVer="$(wget -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
+			NewVer="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
 				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
 				| awk '{print $1}' | head -n1 \
 				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"

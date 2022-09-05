@@ -34,9 +34,11 @@ parse_Config() {
 		bool   PRICE_API_IP_WARNING \
 		pos    WATCH_REFRESH_RATE   \
 		bool   USE_TOR              \
+		bool   TOR_QUIET            \
 		port   TOR_PROXY            \
 		bool   TEST_TOR             \
 		bool   FAKE_HTTP_HEADERS    \
+		bool   HTTP_HEADERS_VERBOSE \
 		port   DAEMON_RPC_IP        \
 		bool   DAEMON_RPC_VERBOSE   \
 		bool   AUTO_HUGEPAGES       \
@@ -50,7 +52,9 @@ parse_Config() {
 	[[ $USE_TOR ]]              || declare -g USE_TOR=false
 	[[ $TOR_PROXY ]]            || declare -g TOR_PROXY=127.0.0.1:9050
 	[[ $TEST_TOR ]]             || declare -g TEST_TOR=false
+	[[ $TOR_QUIET ]]            || declare -g TOR_QUIET=false
 	[[ $FAKE_HTTP_HEADERS ]]    || declare -g FAKE_HTTP_HEADERS=false
+	[[ $HTTP_HEADERS_VERBOSE ]] || declare -g HTTP_HEADERS_VERBOSE=false
 	[[ $DAEMON_RPC_IP ]]        || declare -g DAEMON_RPC_IP=127.0.0.1:18081
 	[[ $DAEMON_RPC_VERBOSE ]]   || declare -g DAEMON_RPC_VERBOSE=false
 	[[ $AUTO_HUGEPAGES ]]       || declare -g AUTO_HUGEPAGES=false

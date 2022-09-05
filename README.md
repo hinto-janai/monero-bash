@@ -50,7 +50,7 @@
 * ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
 * 📈 **`STATUS`** Display stat (CPU usage, P2Pool shares, Hashrate, etc)
 * 👁️ **`WATCH`** Watch live output of processes or general status
-* 🧅 **`TOR`** Route package downloads through TOR
+* 🧅 **`TOR`** Route package downloads through Tor
 * 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
 * 🔒 **`GPG`** Encrypt and backup your wallets
 
@@ -256,13 +256,17 @@ In the event of fatal process bugs like remote code execution, these settings wi
 ---
 
 ### Tor
-monero-bash's package manager supports routing all traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) It also allows faking the HTTP headers that you send. These options are found in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf).
+monero-bash supports routing its traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) This includes the package manager, RPC calls, and `monero-bash price`. HTTP header spoofing is also available. These options are found in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf).
 ```
-USE_TOR             enable connections via Tor
-TOR_PROXY           Tor SOCKS proxy IP/port to use (default: 127.0.0.1:9050)
-FAKE_HTTP_HEADERS   sending random (common) fake HTTP headers instead of [Wget/VERSION]
+USE_TOR                Enable connections via Tor
+TEST_TOR               Run tests to make sure Tor works before making any connections
+TOR_PROXY              Tor SOCKS proxy IP/port to use (default: 127.0.0.1:9050)
+FAKE_HTTP_HEADERS      Send random (weighted) HTTP headers
+HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
 ```
-[`torsocks`](https://github.com/dgoulet/torsocks) is used to route the traffic through Tor, although it is not necessary to download, only access to a regular Tor SOCKS proxy is needed. Quick guides for installing and running Tor (only for proxy purposes, no relaying):
+[`torsocks`](https://github.com/dgoulet/torsocks) is used to route the traffic through Tor, although it is not necessary to download, only access to a regular Tor SOCKS proxy is needed.
+
+**Quick commands for installing and running Tor (only for proxy purposes):**
 
 *	<details>
 	<summary>Debian/Ubuntu/Pop!_OS/Linux Mint</summary>
@@ -298,13 +302,20 @@ FAKE_HTTP_HEADERS   sending random (common) fake HTTP headers instead of [Wget/V
 	</details>
 
 **Things to note:**
-* If the torsocks shared library file is already detected on your computer (`/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`), it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/libtorsocks.so)
+* ***This ONLY affect monero-bash.*** This will not make your Monero node run through Tor, see [monerod.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf) & [monero-wallet-cli.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf) if you'd like to run Monero through Tor
 
-* The actual wrapper script (`/usr/bin/torsocks`) has been [rewritten as a Bash function to reflect monero-bash use-cases (remove macOS code, TOR shell, etc)](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/torsocks.sh) and it will always be used over any system versions found.
+* If the torsocks shared library file is already detected on your computer (`/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`), it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/libtorsocks.so)
 
-* The built-in torsocks shared library file is from `v2.3.0` with a SHA256 hash of `91464358f1358e3dfbf3968fad81a4fff95d6f3ce0961a1ba1ae7054b6998159`, this should match against Debian's (APT) version. You are free to replace it with your own (or just install torsocks), just make sure it is placed in the same path: `/usr/local/share/monero-bash/src/libtorsocks.so`
+* The built-in shared library file is from `torsocks v2.3.0` with a SHA256 hash of `91464358f1358e3dfbf3968fad81a4fff95d6f3ce0961a1ba1ae7054b6998159`, this should match against Debian's APT version. You are free to replace it with your own (or just install torsocks), just make sure it is placed in the same path: `/usr/local/share/monero-bash/src/libtorsocks.so`
 
-* `monero-bash price` will also be routed though Tor if it is enabled
+* The actual wrapper script (`/usr/bin/torsocks`) has been [rewritten as a Bash function and slightly changed to reflect monero-bash's use-case (remove macOS code, TOR shell, etc)](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/torsocks.sh) and it will always be used over any system versions found
+
+* Tor and fake HTTP headers will not be used for RPC calls sent to `localhost/127.0.0.1`
+
+* Some HTTP header values are favored more instead of being purely randomly selected, e.g. English is weighted more than other languages
+
+* The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/headers.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/headers.sh)
+
 
 ## FAQ
 <details>

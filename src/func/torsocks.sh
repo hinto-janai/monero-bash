@@ -129,33 +129,55 @@ torify_app()
 torsocks_init() {
 	[[ $TORSOCKS_INIT = ___SET___ ]] && return 0
 
-	printf "${BWHITE}${UWHITE}%s${BPURPLE}%s${OFF}\n" "Routing through " "TOR [${TOR_PROXY}]"
+	[[ $TOR_QUIET = true ]] || printf "${BWHITE}${UWHITE}%s${BPURPLE}%s${OFF}\n" "Routing through " "TOR [${TOR_PROXY}]"
 
 	# Check if [libtorsocks.so] exists (Arch Linux)
 	if [[ -e /usr/lib/torsocks/libtorsocks.so ]]; then
 		declare -g SHLIB="/usr/lib/torsocks/libtorsocks.so" || exit 11
-		printf "%s\n" "[libtorsocks.so] found, using system version"
+		[[ $TOR_QUIET = true ]] || printf "${OFF}%s${BGREEN}%s${OFF}\n" "[libtorsocks.so] system -> " "OK"
 	# For Debian
 	elif [[ -e /usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so ]]; then
 		declare -g SHLIB="/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so" || exit 12
-		printf "%s\n" "[libtorsocks.so] found, using system version"
-	# Else, use built-in [monero-bash] version
-	else
+		[[ $TOR_QUIET = true ]] || printf "${OFF}%s${BGREEN}%s${OFF}\n" "[libtorsocks.so] system -> " "OK"
+	# [monero-bash] builtin version
+	elif [[ -e /usr/local/share/monero-bash/src/libtorsocks.so ]]; then
 		declare -g SHLIB="/usr/local/share/monero-bash/src/libtorsocks.so" || exit 13
-		printf "%s\n" "[libtorsocks.so] not found, using builtin [monero-bash] version"
+		[[ $TOR_QUIET = true ]] || printf "${OFF}%s${BGREEN}%s${OFF}\n" "[libtorsocks.so] builtin -> " "OK"
+	else
+		printf "${OFF}%s${BRED}%s${OFF}\n" "[libtorsocks.so] no system or builtin found -> " "FAIL"
+		exit 1
 	fi
 
 	# Test Tor (if enabled)
 	if [[ $TEST_TOR = true ]]; then
-		printf "${OFF}%s" "[Testing TOR]"
-		if torsocks_func wget -qO- https://check.torproject.org | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
-			printf "${BGREEN}%s${OFF}\n" "OK"
+		# check systemd service
+		[[ $TOR_QUIET = true ]] || printf "${OFF}%s" "[Testing TOR 1/3] "
+		if systemctl status tor &>/dev/null; then
+			[[ $TOR_QUIET = true ]] || printf "%s${BGREEN}%s${OFF}\n" "systemd service -> " "OK"
 		else
-			printf "${BRED}%s${OFF}\n" "FAIL, EXITING FOR SAFETY"
+			printf "${BRED}%s${OFF}\n" "SYSTEMD TOR SERVICE NOT ONLINE, EXITING FOR SAFETY"
 			exit 14
+		fi
+		# check wget response (Tor is not an HTTP Proxy)
+		[[ $TOR_QUIET = true ]] || printf "${OFF}%s" "[Testing TOR 2/3] "
+		local TOR_WGET_TEST="$(wget -O- "$TOR_PROXY" 2>&1)"
+		if [[ $TOR_WGET_TEST = *"Tor is not an HTTP Proxy"* ]]; then
+			[[ $TOR_QUIET = true ]] || printf "%s${BGREEN}%s${OFF}\n" "SOCKS proxy -> " "OK"
+		else
+			printf "${BRED}%s${OFF}\n" "SOCKS PROXY FAIL, EXITING FOR SAFETY"
+			exit 15
+		fi
+		# check [https://check.torproject.org]
+		[[ $TOR_QUIET = true ]] || printf "${OFF}%s" "[Testing TOR 3/3] "
+		if torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://check.torproject.org | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
+			[[ $TOR_QUIET = true ]] || printf "%s${BGREEN}%s${OFF}\n" "check.torproject.org -> " "OK"
+		else
+			printf "${BRED}%s${OFF}\n" "check.torproject.org FAIL, EXITING FOR SAFETY"
+			exit 16
 		fi
 	fi
 
+	echo
 	[[ $TORSOCKS_INIT = ___SET___ ]] || declare -gr TORSOCKS_INIT=___SET___
 }
 

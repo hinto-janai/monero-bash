@@ -38,17 +38,17 @@ download_Template()
 	HTML="false"
 	# Use Tor if specified in [monero-bash.conf]
 	if [[ $USE_TOR = true ]]; then
-		DUMP="$(torsocks_func wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	else
-		DUMP="$(wget -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	fi
 	if [[ $? != "0" ]]; then
 		IRED; echo "GitHub API error detected..."
 		OFF; echo "Trying GitHub HTML filter instead..."
 		if [[ $USE_TOR = true ]]; then
-			DUMP="$(torsocks_func wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+			DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
 		else
-			DUMP="$(wget -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+			DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
 		fi
 		API="false"
 		HTML="true"
@@ -58,9 +58,9 @@ download_Template()
 	if [[ $downloadMonero = "true" ]]; then
 		LINK="https://downloads.getmonero.org/cli/linux64"
 		if [[ $USE_TOR = true ]]; then
-			torsocks_func wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
+			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		else
-			wget -P "$tmp" -q --show-progress --content-disposition "$LINK"
+			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -P "$tmp" -q --show-progress --content-disposition "$LINK"
 		fi
 		code_Wget
 	else
@@ -78,9 +78,9 @@ download_Template()
 				| tr -d '"')"
 		fi
 		if [[ $USE_TOR = true ]]; then
-			torsocks_func wget -P "$tmp" -q --show-progress "$LINK"
+			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -P "$tmp" -q --show-progress "$LINK"
 		else
-			wget -P "$tmp" -q --show-progress "$LINK"
+			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -P "$tmp" -q --show-progress "$LINK"
 		fi
 		code_Wget
 	fi

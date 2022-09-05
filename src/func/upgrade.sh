@@ -67,6 +67,8 @@ upgrade_Template()
 {
 	# Show if using Tor
 	[[ $USE_TOR = true ]] && torsocks_init
+	# HTTP headers
+	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
 
 	# DOWNLOAD
 	print_BlueHash "Downloading [$NAME_PRETTY]"
@@ -197,7 +199,7 @@ upgrade_Post()
 			if [[ $CONFIG_OLD = "$CONFIG_MERGE" ]]; then
 				echo "[$CONFIG_FILE] No updates detected"
 			elif [[ $CONFIG_MERGE ]]; then
-				echo "[$CONFIG_FILE] Merging old+new"
+				echo "[$CONFIG_FILE] Merging"
 				echo "$CONFIG_MERGE" > "$config/$CONFIG_FILE"
 			else
 				print_Warn "Merging old+new [$CONFIG_FILE] failed"

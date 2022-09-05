@@ -55,7 +55,7 @@ verify_Template()
 
 	# setting of the tmp file variables (and gpg)
 	tarFile="$(ls "$tmp")"
-	[[ $USE_TOR = true ]] && torsocks_func wget -q -P "$tmpHash" "$hashLink" || wget -q -P "$tmpHash" "$hashLink"
+	[[ $USE_TOR = true ]] && torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpHash" "$hashLink" || wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpHash" "$hashLink"
 	code_Wget
 	hashFile="$(ls "$tmpHash")"
 	sigFile="$hashFile"
@@ -81,11 +81,11 @@ verify_Template()
 			| grep "browser_download_url.*$SIG" \
 			| awk '{print $2}' | head -n1 | tr -d '"')"
 		fi
-		[[ $USE_TOR = true ]] && torsocks_func wget -q -P "$tmpSig" "$sigLink" || wget -q -P "$tmpSig" "$sigLink"
+		[[ $USE_TOR = true ]] && torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink" || wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink"
 		code_Wget
 		sigFile="$(ls "$tmpSig")"
 	fi
-	hashSTDOUT="$(wget -qO- "$hashLink")"
+	[[ $USE_TOR = true ]] && hashSTDOUT="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")" || hashSTDOUT="$(wget  "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")"
 
 	# comparison of hashes (and are we downloading p2pool?)
 	if [[ $downloadP2Pool = "true" ]]; then

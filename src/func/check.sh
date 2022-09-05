@@ -29,14 +29,14 @@
 check_Price()
 {
 	[[ $USE_TOR = true ]] && torsocks_init || prompt_PriceAPI_IP
-	RED; echo "--- XMR fiat price ---" ;OFF
+	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
+	BRED; echo "--- XMR fiat price ---" ;OFF
 	# use TOR if enabled
 	if [[ $USE_TOR = true ]]; then
-		local PRICE=$(torsocks_func --address "$TOR_IP" --port "$TOR_PORT" wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
+		local PRICE=$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
 	else
-		local PRICE=$(wget -qO- "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
+		local PRICE=$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
 	fi
 	# filter
 	echo $PRICE | tr -d "{\"}" | tr "," "\n" | sed 's/:/ | /g'
-	echo
 }

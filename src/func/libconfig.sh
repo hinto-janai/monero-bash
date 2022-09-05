@@ -128,9 +128,9 @@ config::merge() (
 	# line instead of invoking sed every loop
 	for i in ${LIBCONFIG_OLD[@]}; do
 		if [[ $i = *' '* ]]; then
-			LIBCONFIG_CMD+=("-e s/^${i/=*}.*$/${i/=*/=}\"${i/*=}\"/g")
+			LIBCONFIG_CMD+=("-e s/^${i/=*}.*$/${i/=*/=}\"${i/*=}\"/g" "-e s/^#\+${i/=*}.*$/${i/=*/=}\"${i/*=}\"/g")
 		else
-			LIBCONFIG_CMD+=("-e s/^${i/=*/=}.*$/${i}/g")
+			LIBCONFIG_CMD+=("-e s/^${i/=*/=}.*$/${i}/g" "-e s/^#\+${i/=*/=}.*$/${i}/g")
 		fi
 	done
 

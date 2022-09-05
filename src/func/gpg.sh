@@ -33,9 +33,9 @@ gpg_import_Template()
 {
 	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	if [[ $USE_TOR = true ]]; then
-		local ONLINE="$(torsocks_func wget -qO- "$GPG_PUB_KEY")"
+		local ONLINE="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY")"
 	else
-		local ONLINE="$(wget -qO- "$GPG_PUB_KEY")"
+		local ONLINE="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY")"
 	fi
 	if [[ "$LOCAL" = "$ONLINE" ]]; then
 		gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
@@ -125,7 +125,11 @@ gpg_Overwrite()
 	safety_HashList
 	BWHITE; echo "Overwriting LOCAL keys..." ;OFF
 	trap "trap_Hash" 1 2 3 6 15
-	wget -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+	if [[ $USE_TOR = true ]]; then
+		torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+	else
+		wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+	fi
 	code_Wget
 	PRODUCE_HASH_LIST
 	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
