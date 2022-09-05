@@ -1,11 +1,9 @@
 cors
 navigate
-no-cors
 same-origin
 websocket
 
 SEC_FETCH_MODE[0]='cors'
 SEC_FETCH_MODE[1]='navigate'
-SEC_FETCH_MODE[2]='no-cors'
-SEC_FETCH_MODE[3]='same-origin'
-SEC_FETCH_MODE[4]='websocket'
+SEC_FETCH_MODE[2]='same-origin'
+SEC_FETCH_MODE[3]='websocket'

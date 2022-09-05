@@ -35,6 +35,7 @@ SendSIGKILL=true
 ## you might want to disable some (or all) of the settings below:
 CapabilityBoundingSet=~CAP_NET_ADMIN CAP_SYS_PTRACE CAP_SYS_ADMIN CAP_KILL CAP_SYS_PACCT CAP_SYS_BOOT CAP_SYS_CHROOT CAP_LEASE CAP_MKNOD CAP_CHOWN CAP_FSETID CAP_SETFCAP CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_SYS_TIME CAP_IPC_LOCK CAP_LINUX_IMMUTABLE CAP_FOWNER CAP_IPC_OWNER CAP_SYS_RESOURCE CAP_SYS_NICE
 ProtectProc=invisible
+PrProcSubset=pid
 ProtectControlGroups=true
 ProtectHostname=true
 ProtectClock=true

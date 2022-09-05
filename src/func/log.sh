@@ -1,6 +1,6 @@
-# This file is part of [monero-bash]
+# This file is part of stdlib.sh - a standard library for Bash
 #
-# Copyright (c) 2022 hinto.janaiyo
+# Copyright (c) 2022 hinto.janaiyo <https://github.com/hinto-janaiyo>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -19,56 +19,29 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-#
-# Parts of this project are originally:
-# Copyright (c) 2019-2022, jtgrassie
-# Copyright (c) 2014-2022, The Monero Project
-# Copyright (c) 2011-2022, Dominic Tarr
-# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
-# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
-# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
-# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
-# install functions
-install_Template()
-{
-	if [[ $NAME_VER ]]; then
-		OFF; echo -n "$NAME_PRETTY ($NAME_VER) "
-		OFF; echo "is already installed"
-		exit 1
-	else
-		local INSTALL="true"
-		upgrade_"$NAME_FUNC"
-	fi
-}
+#git <stdlib/log.sh/4c8490f>
 
-install_MoneroBash()
-{
-	define_MoneroBash
-	install_Template
-}
+# log()
+# -----
+# print formatted
+# messages to the terminal.
+# the line is first cleared then
+# the message is printed. this is to
+# avoid previous messages (from log::prog)
+# from leaving traces. can take
+# multiple inputs, each input will
+# be formatted and print a newline.
 
-install_Monero()
-{
-	define_Monero
-	install_Template
-}
+log::ok() { printf "\r\e[2K\e[1;32m[  OK  ]\e[0m %s\n" "$@"; }
+log::info() { printf "\r\e[2K\e[1;37m[ INFO ]\e[0m %s\n" "$@"; }
+log::warn() { printf "\r\e[2K\e[1;33m[ WARN ]\e[0m %s\n" "$@"; }
+log::fail() { printf "\r\e[2K\e[1;31m[ FAIL ]\e[0m %s\n" "$@"; }
+log::danger() { printf "\r\e[2K\e[1;31m[DANGER]\e[0m %s\n" "$@"; }
 
-install_XMRig()
-{
-	define_XMRig
-	install_Template
-}
+# format with 8 spaces instead of []
+log::tab() { printf "\r\e[2K\e[0m         %s\n" "$@"; }
 
-install_P2Pool()
-{
-	define_P2Pool
-	install_Template
-}
-
-install_All()
-{
-	[[ $MONERO_VER = "" ]]&& install_Monero
-	[[ $XMRIG_VER = "" ]]&& install_XMRig
-	[[ $P2POOL_VER = "" ]]&& install_P2Pool
-}
+# do not print a newline, leave cursor at the end.
+# printing a different log:: will overwrite this one.
+log::prog() { printf "\r\e[2K\e[1;37m[ \e[0m....\e[1;37m ]\e[0m %s " "$@"; }

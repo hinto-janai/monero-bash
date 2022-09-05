@@ -25,7 +25,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
-
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 # This is the [main] script for [monero-bash].
 # It REQUIRES and takes a lot of safety precautions
@@ -118,16 +122,16 @@ if [[ -p /dev/stdin ]]; then
 	print_Error_Exit "no stdin/pipe support!"
 fi
 
-# Parse/source config files
-if ! parse_Config; then
-	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] Config source failure"
-	exit 1
-fi
-
 # Installation
 if [[ $FIRST_TIME = "true" ]]; then
 	monerobash_Install
 	exit
+fi
+
+# Parse/source config files
+if ! parse_Config; then
+	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] Config source failure"
+	exit 1
 fi
 
 safety::env
@@ -201,6 +205,12 @@ if [[ $options = "true" ]]; then
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		config) mine_Config ;;
+		tor)
+			USE_TOR=true TEST_TOR=true TOR_QUIET=false
+			[[ $TOR_PROXY ]] || { print_Warn "[TOR_PROXY] not found in [monero-bash], falling back to [localhost:9050]"; TOR_IP=localhost TOR_PORT=9050; }
+			torsocks_init
+			exit
+			;;
 		rpc)
 			if [[ -z $2 || $2 = help ]]; then
 				print_rpc_Usage | less -R
@@ -345,25 +355,25 @@ if [[ $options = "true" ]]; then
 				*"bash"*)
 					BWHITE; echo -n "Upgrade [monero-bash]? (Y/n) " ;OFF
 					Yes(){ upgrade_MoneroBash ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*"daemon"*|*"monero"*|*"Monero"*)
 					BWHITE; echo -n "Upgrade [Monero]? (Y/n) " ;OFF
 					Yes(){ upgrade_Monero ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*"xmr"*|*"Xmr"*|*"XMR"*)
 					BWHITE; echo -n "Upgrade [XMRig]? (Y/n) " ;OFF
 					Yes(){ upgrade_XMRig ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*"p2p"*|*"P2P"*|*"P2p"*)
 					BWHITE; echo -n "Upgrade [P2Pool]? (Y/n) " ;OFF
 					Yes(){ upgrade_P2Pool ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				""|all|All|ALL)
@@ -373,7 +383,7 @@ if [[ $options = "true" ]]; then
 						print_Upgrade
 						BWHITE; echo -n "Upgrade? (Y/n) " ;OFF
 						Yes(){ upgrade_All ;}
-						No(){ echo "Exiting..." ;exit;}
+						No(){ echo "Exiting..." ;exit 1;}
 						prompt_YESno
 					fi
 					;;
@@ -389,32 +399,32 @@ if [[ $options = "true" ]]; then
 				*"bash"*|*"Bash"*|*"BASH"*)
 					BWHITE; echo -n "Install [monero-bash]? (Y/n) " ;OFF
 					Yes(){ install_MoneroBash ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				monero|Monero|MONERO)
 					BWHITE; echo -n "Install [Monero]? (Y/n) " ;OFF
 					Yes(){ install_Monero ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
 					BWHITE; echo -n "Install [XMRig]? (Y/n) " ;OFF
 					Yes(){ install_XMRig ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*"p2p"*|*"P2P"*|*"P2p"*)
 					BWHITE; echo -n "Install [P2Pool]? (Y/n) " ;OFF
 					Yes(){ install_P2Pool ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				all|All|ALL)
 					print_Install
 					BWHITE; echo -n "Install? (Y/n) " ;OFF
 					Yes(){ install_All ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*)
@@ -428,32 +438,32 @@ if [[ $options = "true" ]]; then
 				*"bash"*|*"Bash"*|*"BASH"*)
 					BWHITE; echo -n "Remove [monero-bash]? (Y/n) " ;OFF
 					Yes(){ remove_MoneroBash ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				monero|Monero|MONERO)
 					BWHITE; echo -n "Remove [Monero]? (Y/n) " ;OFF
 					Yes(){ remove_Monero ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				xmrig|XMRig|XMRIG|Xmrig|xmr|Xmr)
 					BWHITE; echo -n "Remove [XMRig]? (Y/n) " ;OFF
 					Yes(){ remove_XMRig ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*"p2p"*|*"P2P"*|*"P2p"*)
 					BWHITE; echo -n "Remove [P2Pool]? (Y/n) " ;OFF
 					Yes(){ remove_P2Pool ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				all|All|ALL)
 					print_Remove
 					BWHITE; echo -n "Remove? (Y/n) " ;OFF
 					Yes(){ remove_All ;}
-					No(){ echo "Exiting..." ;exit;}
+					No(){ echo "Exiting..." ;exit 1;}
 					prompt_YESno
 					;;
 				*)

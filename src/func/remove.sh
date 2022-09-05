@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 # remove functions
 
@@ -34,22 +39,22 @@ remove_Template()
 	else
 		# sudo, trap
 		prompt_Sudo;error_Sudo
-		echo;safety_HashList
+		safety_HashList
 		trap "" 1 2 3 6 15
 
 		# removal
 		print_RedHash "Removing [$NAME_PRETTY]"
-		print_WhiteHash "${DIRECTORY}..."
+		printf "${BWHITE}%s${OFF}\n" "${DIRECTORY}..."
 		sudo rm -rf "$DIRECTORY"
-		print_WhiteHash "${SERVICE}..."
+		printf "${BWHITE}%s${OFF}\n" "${SERVICE}..."
 		sudo rm "$sysd/$SERVICE"
 
 		# updating state file
-		print_WhiteHash "Updating local state"
+		printf "${BWHITE}%s${OFF}\n" "Updating local state"
 		sudo sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\"\"@" "$state"
 		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
 		PRODUCE_HASH_LIST
-		print_RedHash "Removed [$NAME_PRETTY]"
+		printf "${BRED}%s${OFF}\n" "<######> Removed [$NAME_PRETTY]"
 	fi
 }
 

@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 # debugging tools for monero-bash
 # USE VERY CAREFULLY
@@ -91,6 +96,8 @@ CHECK_HASH_LIST_TEMPLATE()
 }
 CHECK_HASH_LIST()
 {
+	printf "${BWHITE}${UWHITE}%s${OFF}\n" "[monero-bash] hash integrity"
+
 	# monero-bash hash
 	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
 	if [[ $? = "0" ]]; then
@@ -120,8 +127,7 @@ CHECK_HASH_LIST()
 		WHITE; echo "Exiting for safety..."
 		exit 1
 	else
-		BWHITE; echo -n "[monero-bash] "
-		BGREEN; echo "HASH CHECK OK!" ;OFF
+		return 0
 	fi
 }
 
@@ -130,28 +136,21 @@ QUIET_HASH_LIST_TEMPLATE()
 {
 	for i in $DIR/* ;do
 		if [[ -f "$i" && "$i" != "src/txt/hashlist" ]]; then
-			grep "$i" "$hashlist" | sha256sum -c &>/dev/null
-			[[ $? != "0" ]]&& hashFail="true" && local localHashFail="true"
+			if ! grep "$i" "$hashlist" | sha256sum -c &>/dev/null; then
+				hashFail="true"
+				localHashFail="true"
+			fi
 		fi
 	done
-	if [[ $localHashFail = "true" ]]; then
-		BRED; printf "[FAILED] "
-		WHITE; echo "$NAME"
-	else
-		BGREEN; printf "[  OK  ] "
-		WHITE; echo "$NAME"
-	fi
+	[[ $localHashFail = true ]] && log::fail "$NAME"
 }
 QUIET_HASH_LIST()
 {
+#	printf "${BWHITE}${UWHITE}%s${OFF}\n" "[monero-bash] hash integrity"
+
 	# monero-bash hash
-	grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null
-	if [[ $? = "0" ]]; then
-		BGREEN; printf "[  OK  ] "
-		WHITE; echo "monero-bash"
-	else
-		BRED; printf "[FAILED] "
-		WHITE; echo "monero-bash"
+	if ! grep "monero-bash" "$hashlist" | sha256sum -c &>/dev/null; then
+		log::fail "monero-bash"
 		hashFail="true"
 	fi
 
@@ -173,12 +172,8 @@ QUIET_HASH_LIST()
 	QUIET_HASH_LIST_TEMPLATE
 
 	if [[ $hashFail = "true" ]]; then
-		BRED; echo -n "[monero-bash error] "
-		BWHITE; echo "hash check has failed"
-		WHITE; echo "Exiting for safety..."
-		exit 1
+		print_Error_Exit "hash check has failed, exiting for safety"
 	else
-		BWHITE; echo -n "[monero-bash] "
-		BGREEN; echo "HASH CHECK OK!" ;OFF
+		return 0
 	fi
 }

@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 
 # Safety checks so monero-bash doesn't blow something up
@@ -130,5 +135,7 @@ safety::env() {
 	# Path isn't declared as READONLY because
 	# it needs to be edited when using Tor
 	# (getcap is in /usr/sbin which isn't in PATH for Debian)
-    declare -gxr HOME USER
+	#
+	# USER also gets edited to root for XMRig, so no readonly
+    declare -gxr HOME
 }

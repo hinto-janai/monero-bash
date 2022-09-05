@@ -7,7 +7,7 @@
 #     - Remove the [realpath] lib that was originally used (https://github.com/mkropat/sh-realpath)
 #     - Add [libtorsocks.so] checks
 #     - Add [libtorsocks.so] backup (monero-bash/src/libtorsocks.so)
-#     - Transform in a function() instead of a script.sh
+#     - Transform to a function() instead of a script.sh
 #
 
 #-------------------------------------------------------------------------------- BEGIN ORIGINAL TORSOCKS SOURCE
@@ -88,9 +88,9 @@ set_ld_preload()
 
 torify_app()
 {
-	local app_path="$(command -v "$1")" || exit 1
-	local getcap="$(PATH="$PATH:/usr/sbin:/sbin" command -v getcap)" || exit 2
-	local caps= || exit 3
+	local app_path="$(command -v "$1")" || { print_Error "Torsocks error 1"; exit 1; }
+	local getcap="$(PATH="$PATH:/usr/sbin:/sbin" command -v getcap)" || { print_Error "Torsocks error 2"; exit 2; }
+	local caps= || { print_Error "Torsocks error 3"; exit 3; }
 
 	if [ -z "$1" ]; then
 		echo "Please provide an application to torify."
@@ -103,7 +103,7 @@ torify_app()
 	# This must be before torifying because getcap uses cap_get_file(3)
 	# via syscall(2) which breaks torsocks.
 	if [ -n "$getcap" ]; then
-		caps="$("$getcap" "$app_path" 2>/dev/null)" || exit 6
+		caps="$("$getcap" "$app_path" 2>/dev/null)" || { print_Error "Torsocks error 6"; exit 6; }
 	fi
 
 	# NEVER remove that line or else nothing it torified.
@@ -111,17 +111,17 @@ torify_app()
 
 	if [ -u "$app_path" ]; then
 		echo "ERROR: $1 is setuid. torsocks will not work on a setuid executable."
-		exit 7
+		{ print_Error "Torsocks error 7"; exit 7; }
 	elif [ -g "$app_path" ]; then
 		echo "ERROR: $1 is setgid. torsocks will not work on a setgid executable."
-		exit 8
+		{ print_Error "Torsocks error 8"; exit 8; }
 	elif [ -n "$caps" ]; then
 		printf "ERROR: %s gains the following elevated capabilities. torsocks will not work with privileged executables.\n%s" "$app_path" "$caps"
-		exit 9
+		{ print_Error "Torsocks error 9"; exit 9; }
 	fi
 
-	"$@" || exit 10
-	unset -v LD_PRELOAD || exit 11
+	"$@" || { print_Error "Torsocks error 10"; exit 10; }
+	unset -v LD_PRELOAD || { print_Error "Torsocks error 11"; exit 11; }
 }
 
 #-------------------------------------------------------------------------------- BEGIN [MONERO-BASH] MODIFICATIONS
@@ -129,66 +129,91 @@ torify_app()
 torsocks_init() {
 	[[ $TORSOCKS_INIT = ___SET___ ]] && return 0
 
-	[[ $TOR_QUIET = true ]] || printf "${BWHITE}${UWHITE}%s${BPURPLE}%s${OFF}\n" "Routing through " "TOR [${TOR_PROXY}]"
+	[[ $TOR_QUIET = true ]] || printf "${BWHITE}${UWHITE}%s${BPURPLE}%s${OFF}\n" "Routing through " "Tor [${TOR_PROXY}]"
 
 	# Check if [libtorsocks.so] exists (Arch Linux)
+	[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::prog "[1/6] libtorsocks.so" || log::prog "libtorsocks.so"; }
 	if [[ -e /usr/lib/torsocks/libtorsocks.so ]]; then
-		declare -g SHLIB="/usr/lib/torsocks/libtorsocks.so" || exit 11
-		[[ $TOR_QUIET = true ]] || printf "${OFF}%s${BGREEN}%s${OFF}\n" "[libtorsocks.so] system -> " "OK"
+		declare -g SHLIB="/usr/lib/torsocks/libtorsocks.so" || { print_Error "Torsocks error 12"; exit 12; }
+		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "[1/6] libtorsocks.so -> system" || log::ok "libtorsocks.so -> system"; }
 	# For Debian
 	elif [[ -e /usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so ]]; then
-		declare -g SHLIB="/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so" || exit 12
-		[[ $TOR_QUIET = true ]] || printf "${OFF}%s${BGREEN}%s${OFF}\n" "[libtorsocks.so] system -> " "OK"
+		declare -g SHLIB="/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so" || { print_Error "Torsocks error 13"; exit 13; }
+		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "[1/6] libtorsocks.so -> system" || log::ok "libtorsocks.so -> system"; }
 	# [monero-bash] builtin version
 	elif [[ -e /usr/local/share/monero-bash/src/libtorsocks.so ]]; then
-		declare -g SHLIB="/usr/local/share/monero-bash/src/libtorsocks.so" || exit 13
-		[[ $TOR_QUIET = true ]] || printf "${OFF}%s${BGREEN}%s${OFF}\n" "[libtorsocks.so] builtin -> " "OK"
+		declare -g SHLIB="/usr/local/share/monero-bash/src/libtorsocks.so" || { print_Error "Torsocks error 14"; exit 14; }
+		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "[1/6] libtorsocks.so -> system" || log::ok "libtorsocks.so -> system"; }
 	else
-		printf "${OFF}%s${BRED}%s${OFF}\n" "[libtorsocks.so] no system or builtin found -> " "FAIL"
-		exit 1
+		log::fail "[1/6] libtorsocks.so -> no system or builtin found" || log::fail "libtorsocks.so -> no system or builtin found"
+		exit 15
 	fi
 
 	# Test Tor (if enabled)
 	if [[ $TEST_TOR = true ]]; then
 		# check systemd service
-		[[ $TOR_QUIET = true ]] || printf "${OFF}%s" "[Testing TOR 1/3] "
-		if systemctl status tor &>/dev/null; then
-			[[ $TOR_QUIET = true ]] || printf "%s${BGREEN}%s${OFF}\n" "systemd service -> " "OK"
+		[[ $TOR_QUIET = true ]] || log::prog "[2/6] systemd service"
+		if [[ $TOR_IP = 127.0.0.1 || $TOR_IP = localhost ]]; then
+			if systemctl status tor &>/dev/null; then
+				[[ $TOR_QUIET = true ]] || log::ok "[2/6] systemd service"
+			else
+				log::fail "[2/6] SYSTEMD TOR SERVICE NOT ONLINE, EXITING FOR SAFETY"
+				exit 16
+			fi
 		else
-			printf "${BRED}%s${OFF}\n" "SYSTEMD TOR SERVICE NOT ONLINE, EXITING FOR SAFETY"
-			exit 14
+			[[ $TOR_QUIET = true ]] || log::warn "[2/6] Non-local Tor detected, skipping systemd check"
 		fi
 		# check wget response (Tor is not an HTTP Proxy)
-		[[ $TOR_QUIET = true ]] || printf "${OFF}%s" "[Testing TOR 2/3] "
-		local TOR_WGET_TEST="$(wget -O- "$TOR_PROXY" 2>&1)"
+		[[ $TOR_QUIET = true ]] || log::prog "[3/6] SOCKS Proxy"
+		case "$TOR_IP" in
+			localhost|127.0.0.1|192.168.*) local TOR_WGET_TEST="$(wget -O- "$TOR_PROXY" 2>&1)";;
+			*) local TOR_WGET_TEST="$(torsocks_func wget -O- "$TOR_PROXY" 2>&1)";;
+		esac
 		if [[ $TOR_WGET_TEST = *"Tor is not an HTTP Proxy"* ]]; then
-			[[ $TOR_QUIET = true ]] || printf "%s${BGREEN}%s${OFF}\n" "SOCKS proxy -> " "OK"
+			[[ $TOR_QUIET = true ]] || log::ok "[3/6] SOCKS Proxy"
 		else
-			printf "${BRED}%s${OFF}\n" "SOCKS PROXY FAIL, EXITING FOR SAFETY"
-			exit 15
+			log::fail "[3/6] SOCKS PROXY FAIL, EXITING FOR SAFETY"
+			exit 17
 		fi
 		# check [https://check.torproject.org]
-		[[ $TOR_QUIET = true ]] || printf "${OFF}%s" "[Testing TOR 3/3] "
-		if torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://check.torproject.org | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
-			[[ $TOR_QUIET = true ]] || printf "%s${BGREEN}%s${OFF}\n" "check.torproject.org -> " "OK"
+		[[ $TOR_QUIET = true ]] || log::prog "[4/6] <check.torproject.org>"
+		if local CHECK_TORPROJECT=$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://check.torproject.org); then
+			[[ $TOR_QUIET = true ]] || log::ok "[4/6] <check.torproject.org>"
 		else
-			printf "${BRED}%s${OFF}\n" "check.torproject.org FAIL, EXITING FOR SAFETY"
-			exit 16
+			log::fail "[4/6] Could not connect to <https://check.torproject.org>"
+			exit 18
+		fi
+		# Grep for success message
+		[[ $TOR_QUIET = true ]] || log::prog "[5/6] Tor external check"
+		if echo "$CHECK_TORPROJECT" | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
+			[[ $TOR_QUIET = true ]] || log::ok "[5/6] Tor external check"
+		else
+			log::fail "[5/6] <check.torproject.org> INDICATES TOR IS NOT PROPERLY CONFIGURED, EXITING FOR SAFETY"
+			exit 19
+		fi
+		# Grep for IP
+		[[ $TOR_QUIET = true ]] || log::prog "[6/6] Exit IP"
+		local IP_TORPROJECT=$(echo "$CHECK_TORPROJECT" | grep "Your IP address appears to be:")
+		IP_TORPROJECT=${IP_TORPROJECT//[!0-9.]}
+		if [[ $IP_TORPROJECT =~ [0-9.]+ ]]; then
+			[[ $TOR_QUIET = true ]] || log::ok "[6/6] Exit IP <${IP_TORPROJECT}>"
+		else
+			log::fail "[6/6] <${IP_TORPROJECT}> EXIT IP ERROR, EXITING FOR SAFETY"
+			exit 20
 		fi
 	fi
 
-	echo
 	[[ $TORSOCKS_INIT = ___SET___ ]] || declare -gr TORSOCKS_INIT=___SET___
 }
 
 torsocks_func() {
 	# Export [monero-bash.conf] variables
 	# Tor IP
-	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || exit 15
+	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || { print_Error "Torsocks error 21"; exit 21; }
 	# Tor Port
-	export TORSOCKS_TOR_PORT="$TOR_PORT" || exit 16
+	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 22"; exit 22; }
 	# Silence messages
-	export TORSOCKS_LOG_LEVEL=1 || exit 17
+	export TORSOCKS_LOG_LEVEL=1 || { print_Error "Torsocks error 23"; exit 23; }
 
 	# Torify
 	torify_app "$@"

@@ -19,6 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+#
+# Parts of this project are originally:
+# Copyright (c) 2019-2022, jtgrassie
+# Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
+
 
 #git <libconfig/libconfig.sh/99dc038>
 

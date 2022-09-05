@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 
 # functions FOR CREATING systemd .service files
@@ -81,6 +86,7 @@ SendSIGKILL=true
 ## you might want to disable some (or all) of the settings below:
 CapabilityBoundingSet=~CAP_NET_ADMIN CAP_SYS_PTRACE CAP_SYS_ADMIN CAP_KILL CAP_SYS_PACCT CAP_SYS_BOOT CAP_SYS_CHROOT CAP_LEASE CAP_MKNOD CAP_CHOWN CAP_FSETID CAP_SETFCAP CAP_SETUID CAP_SETGID CAP_SETPCAP CAP_SYS_TIME CAP_IPC_LOCK CAP_LINUX_IMMUTABLE CAP_FOWNER CAP_IPC_OWNER CAP_SYS_RESOURCE CAP_SYS_NICE
 $PROTECT_PROC
+$PROC_SUBSET
 $PROTECT_CONTROL_GROUPS
 $PROTECT_HOSTNAME
 $PROTECT_CLOCK
@@ -115,7 +121,7 @@ sudo systemctl daemon-reload
 
 systemd_Monero()
 {
-	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES DATA_DIR PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME PROC_SUBSET
 	COMMAND="$binMonero/monerod --config-file $config/monerod.conf --non-interactive"
 	ENV_FILE="#EnvironmentFile= #none"
 	ENV_LINE="#EnvironmentFile= #none"
@@ -125,7 +131,10 @@ systemd_Monero()
 	PROTECT_KERNEL_TUNABLES="ProtectKernelTunables=true"
 	PRIVATE_USERS="PrivateUsers=true"
 	PROTECT_KERNEL_LOGS="ProtectKernelLogs=true"
-	PROTECT_PROC="ProtectProc=invisible"
+	case "$(hostnamectl | grep "Operating System")" in
+		*Arch*|*Fedora*|*Gentoo*) PROTECT_PROC="ProtectProc=invisible" PROC_SUBSET="ProcSubset=pid";;
+		*) PROTECT_PROC="#ProtectProc=invisible #Disabled on Debian-based distros (systemd version too old)" PROC_SUBSET="#ProcSubset=pid #Disabled on Debian-based distros (systemd version too old)";;
+	esac
 	PROTECT_CONTROL_GROUPS="ProtectControlGroups=true"
 	RESTRICT_REAL_TIME="RestrictRealtime=true"
 	RESTRICT_NAMESPACES="RestrictNamespaces=true"
@@ -142,7 +151,7 @@ systemd_Monero()
 
 systemd_XMRig()
 {
-	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME
+	local USER COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME PROC_SUBSET
 	COMMAND="$binXMRig/xmrig --config $xmrigConf --log-file=$binXMRig/xmrig-log"
 	USER="root"
 	ENV_FILE="#EnvironmentFile= #none"
@@ -154,7 +163,10 @@ systemd_XMRig()
 	PRIVATE_USERS="#PrivateUsers=true #Disabled for XMRig"
 	BIND_PATHS="BindPaths=$binXMRig $xmrigConf"
 	PROTECT_KERNEL_LOGS="#ProtectKernelLogs=true #Disabled for XMRig"
-	PROTECT_PROC="ProtectProc=invisible"
+	case "$(hostnamectl | grep "Operating System")" in
+		*Arch*|*Fedora*|*Gentoo*) PROTECT_PROC="ProtectProc=invisible" PROC_SUBSET="ProcSubset=pid";;
+		*) PROTECT_PROC="#ProtectProc=invisible #Disabled on Debian-based distros (systemd version too old)" PROC_SUBSET="#ProcSubset=pid #Disabled on Debian-based distros (systemd version too old)";;
+	esac
 	PROTECT_CONTROL_GROUPS="ProtectControlGroups=true"
 	RESTRICT_REAL_TIME="#RestrictRealtime=true #Disabled for XMRig"
 	RESTRICT_NAMESPACES="#RestrictNamespaces=true #Disabled for XMRig"
@@ -178,7 +190,7 @@ systemd_XMRig()
 
 systemd_P2Pool()
 {
-	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME
+	local COMMAND ENV_FILE ENV_LINE FILE_LIMIT BIND_PATHS CAPABILITY_BOUNDING_SET PROTECT_CLOCK PROTECT_KERNEL_MODULES PROTECT_KERNEL_TUNABLES PRIVATE_USERS PROTECT_KERNEL_LOGS PROTECT_PROC PROTECT_CONTROL_GROUPS RESTRICT_REAL_TIME RESTRICT_NAMESPACES PROTECT_HOSTNAME PROC_SUBSET
 	COMMAND="$binP2Pool/p2pool --data-api $binP2Pool --stratum-api --host \$DAEMON_IP --wallet \$WALLET --loglevel \$LOG_LEVEL \$MINI_FLAG"
 	ENV_FILE="EnvironmentFile=$config/p2pool.conf"
 	ENV_LINE="EnvironmentFile=$MB_API/mini"
@@ -190,7 +202,10 @@ systemd_P2Pool()
 	PRIVATE_USERS="PrivateUsers=true"
 	BIND_PATHS="BindPaths=$binP2Pool"
 	PROTECT_KERNEL_LOGS="ProtectKernelLogs=true"
-	PROTECT_PROC="ProtectProc=invisible"
+	case "$(hostnamectl | grep "Operating System")" in
+		*Arch*|*Fedora*|*Gentoo*) PROTECT_PROC="ProtectProc=invisible" PROC_SUBSET="ProcSubset=pid";;
+		*) PROTECT_PROC="#ProtectProc=invisible #Disabled on Debian-based distros (systemd version too old)" PROC_SUBSET="#ProcSubset=pid #Disabled on Debian-based distros (systemd version too old)";;
+	esac
 	PROTECT_CONTROL_GROUPS="ProtectControlGroups=true"
 	RESTRICT_REAL_TIME="RestrictRealtime=true"
 	RESTRICT_NAMESPACES="RestrictNamespaces=true"

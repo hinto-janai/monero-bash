@@ -14,7 +14,9 @@
 	- [Mining](#Mining)
 	- [Watch](#Watch)
 	- [Security](#Security)
+* [Privacy](#Privacy)
 	- [Tor](#Tor)
+	- [HTTP Spoofing](#HTTP-Spoofing)
 * [FAQ](#FAQ)
 
 ## About
@@ -44,14 +46,14 @@
 [This project was funded by the Monero Community via the CCS, thanks to all who donated!](https://ccs.getmonero.org/proposals/monero-bash.html)
 
 ## Features
-* 📦 **`PKG MANAGER`** Manage the download/verification/upgrading of packages
+* 📦 **`PKG MANAGER`** Automatic download/verification/upgrading of packages
 * 💵 **`WALLET MENU`** Interactive menu for selecting/creating wallets
-* 👺 **`SYSTEMD`** Control ***monerod/p2pool/xmrig*** as background processes
+* 👺 **`SYSTEMD`** Control **monerod/p2pool/xmrig** as background processes
 * ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
-* 📈 **`STATUS`** Display stat (CPU usage, P2Pool shares, Hashrate, etc)
+* 📈 **`STATUS`** Display stats (CPU usage, P2Pool shares, Hashrate, etc)
 * 👁️ **`WATCH`** Watch live output of processes or general status
-* 🧅 **`TOR`** Route package downloads through Tor
-* 📋 **`RPC`** Interact with the ***monerod*** JSON-RPC interface
+* 🧅 **`TOR`** Route monero-bash connections through Tor
+* 📋 **`RPC`** Interact with the **monerod** JSON-RPC interface
 * 🔒 **`GPG`** Encrypt and backup your wallets
 
 ## Distro Coverage
@@ -73,7 +75,7 @@
 ## Install
 [**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
 ```bash
-tar -xf monero-bash-v1.8.4.tar
+tar -xf monero-bash-v1.9.0.tar
 cd monero-bash
 ./monero-bash
 ```
@@ -137,6 +139,7 @@ reset   <bash/monero/p2pool/xmrig> [config|systemd]   Reset your configs/systemd
 edit    <bash/monero/p2pool/xmrig> [config|systemd]   Edit config/systemd service file
 watch   [monero|p2pool|xmrig]                         Watch live status or a specific process
 
+tor                                                   Test Tor connection
 rpc     [help]                                        Send a RPC call to monerod
 seed    [language]                                    Generate random 25-word Monero seed
 list                                                  List wallets
@@ -253,35 +256,25 @@ In the event of fatal process bugs like remote code execution, these settings wi
 
 **Note: `XMRig` is ran as `root` for the MSR hashrate boost.** Although it is still heavily restricted with these settings, they are not perfect. Unless you consider XMRig malware, you should be more concerned with programs that have much more realistic attack surfaces: constant internet-facing applications like Monero/P2Pool nodes, or any other software on your computer in the same vein.
 
----
-
+## Privacy
 ### Tor
-monero-bash supports routing its traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) This includes the package manager, RPC calls, and `monero-bash price`. HTTP header spoofing is also available. These options are found in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf).
+monero-bash supports routing all of its traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
 ```
 USE_TOR                Enable connections via Tor
 TEST_TOR               Run tests to make sure Tor works before making any connections
+TOR_QUIET              Silence Tor set-up messages
 TOR_PROXY              Tor SOCKS proxy IP/port to use (default: 127.0.0.1:9050)
-FAKE_HTTP_HEADERS      Send random (weighted) HTTP headers
-HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
 ```
-[`torsocks`](https://github.com/dgoulet/torsocks) is used to route the traffic through Tor, although it is not necessary to download, only access to a regular Tor SOCKS proxy is needed.
+[`torsocks`](https://github.com/dgoulet/torsocks) is the backend library used to route the traffic through Tor, although it is not necessary to download, only access to a regular Tor SOCKS proxy is needed.
 
-**Quick commands for installing and running Tor (only for proxy purposes):**
+**Quick setup guide for Tor (only for proxy purposes):**
 
 *	<details>
 	<summary>Debian/Ubuntu/Pop!_OS/Linux Mint</summary>
 
 	```
 	sudo apt install tor
-	sudo systemd start tor.service
-	```
-	</details>
-*	<details>
-	<summary>Fedora</summary>
-
-	```
-	sudo dnf install tor
-	sudo systemd start tor.service
+	sudo systemctl start tor.service
 	```
 	</details>
 *	<details>
@@ -289,7 +282,15 @@ HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connectio
 
 	```
 	sudo pacman -S tor
-	sudo systemd start tor.service
+	sudo systemctl start tor.service
+	```
+	</details>
+*	<details>
+	<summary>Fedora</summary>
+
+	```
+	sudo dnf install tor
+	sudo systemctl start tor.service
 	```
 	</details>
 *	<details>
@@ -297,24 +298,39 @@ HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connectio
 
 	```
 	sudo emerge --ask net-vpn/tor
-	sudo systemd start tor.service
+	sudo systemctl start tor.service
 	```
 	</details>
 
 **Things to note:**
-* ***This ONLY affect monero-bash.*** This will not make your Monero node run through Tor, see [monerod.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf) & [monero-wallet-cli.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf) if you'd like to run Monero through Tor
+* ***This ONLY affects monero-bash.*** This will not make your Monero node run through Tor, see [monerod.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf) & [monero-wallet-cli.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf) if you'd like to run Monero through Tor
 
-* If the torsocks shared library file is already detected on your computer (`/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`), it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/libtorsocks.so)
+* If the torsocks shared object file is already detected on your computer: `/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`, it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/libtorsocks.so)
 
-* The built-in shared library file is from `torsocks v2.3.0` with a SHA256 hash of `91464358f1358e3dfbf3968fad81a4fff95d6f3ce0961a1ba1ae7054b6998159`, this should match against Debian's APT version. You are free to replace it with your own (or just install torsocks), just make sure it is placed in the same path: `/usr/local/share/monero-bash/src/libtorsocks.so`
+* The built-in shared object file is from `torsocks v2.3.0` with a SHA256 hash of `91464358f1358e3dfbf3968fad81a4fff95d6f3ce0961a1ba1ae7054b6998159`, this should match against Debian's APT version. You are free to replace it with your own (or just install torsocks), just make sure it is placed in the correct path: `/usr/local/share/monero-bash/src/libtorsocks.so`
 
-* The actual wrapper script (`/usr/bin/torsocks`) has been [rewritten as a Bash function and slightly changed to reflect monero-bash's use-case (remove macOS code, TOR shell, etc)](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/torsocks.sh) and it will always be used over any system versions found
+* The actual wrapper script `/usr/bin/torsocks` has been [rewritten and modified to reflect monero-bash's use-case (remove macOS code, Tor shell, etc)](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/torsocks.sh) and it will always be used over any system versions found
 
-* Tor and fake HTTP headers will not be used for RPC calls sent to `localhost/127.0.0.1`
+* Tor will not be used for RPC calls to `localhost/127.0.0.1/192.168.x.x`
+
+---
+
+### HTTP Spoofing
+monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with regular browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
+```
+FAKE_HTTP_HEADERS      Send random (weighted) browser-like HTTP headers instead of [Wget/VERSION]
+ONLY_USER_AGENT        Only send a random [User-Agent] instead of all the normal HTTP headers
+HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
+```
+
+**Things to note:**
+* ***Enabling this will occasionally cause connection errors.*** Enabling [ONLY_USER_AGENT] will help but at the cost of a less browser-like HTTP header
 
 * Some HTTP header values are favored more instead of being purely randomly selected, e.g. English is weighted more than other languages
 
-* The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/headers.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/headers.sh)
+* The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/header.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/header.sh)
+
+* Fake HTTP headers will not used for RPC calls to `localhost/127.0.0.1/192.168.x.x`
 
 
 ## FAQ
@@ -373,23 +389,28 @@ monero-bash install/upgrade <package> verbose
 </details>
 
 <details>
-<summary>I can't upgrade?</summary>
+<summary>Does monero-bash have dependencies?</summary>
 
 ---
 
-```
-monero-bash upgrade <package> force
-```
-Will forcefully upgrade, even if up to date
+**No**
 
-OR
+If you have a mainstream Linux distro you already have everything needed:
 
-```
-monero-bash remove <package> &&
-monero-bash install <package>
-```
+* `bash v5+`
+* `wget`
+* `systemd`
+* `GNU core utilities`
+* `Linux core utilities (util-linux)`
+
+See [Distro Coverage](#Distro-Coverage) for more info.
+
+**Optional:**
+	* `tor` is obviously required if using monero-bash's Tor options
+	* `screen` or `tmux` is nice to have for `monero-bash full <process>`
 
 ---
+
 </details>
 
 <details>
@@ -498,23 +519,26 @@ User folder:
 </details>
 
 <details>
-<summary>Does monero-bash have dependencies?</summary>
+<summary>Where are the fake HTTP headers sourced from?</summary>
 
 ---
 
-**No**
+[A combination of this recent list on Github](https://gist.github.com/pzb/b4b6f57144aea7827ae4) and the free listings on [whatismybrowser.com.](https://developers.whatismybrowser.com/useragents/explore) Their full list is behind a 50$ paywall...! Their free lists have 1000s of common User-Agents, but they do not provide an API or an easy way to scrape it cleanly, probably on purpose. If you know how to use `grep/sed` (or Python) though, then it's easy :)
 
-If you have a mainstream Linux distro you already have everything needed:
+The full list monero-bash uses (including more than just User-Agents) can be found in plain-text and Bash array form at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process can be found in the source code at [`src/func/header.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/header.sh)
 
-* `bash v5+`
-* `wget`
-* `systemd`
-* `GNU core utilities`
-* `Linux core utilities (util-linux)`
+---
 
-See [Distro Coverage](#Distro-Coverage) for more info.
+</details>
 
-Having either `screen` or `tmux` is nice to have for `monero-bash full <process>`, but it is optional.
+<details>
+<summary>Where are the 'monero-bash seed' mnemonics sourced from?</summary>
+
+---
+
+[The Monero GitHub repo.](https://github.com/monero-project/monero/tree/master/src/mnemonics)
+
+Plain-text and Bash array versions of the seed mnemonics for all languages can be found in this repo at [`docs/seed`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/seed) or directly in the code at [`src/func/seed.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/seed.sh)
 
 ---
 

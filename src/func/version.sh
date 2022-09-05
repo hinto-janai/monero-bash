@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 
 # order of operations:
@@ -42,6 +47,7 @@ version_Template()
 	else
 		NewVer="$(echo "$DUMP" | grep "tag_name" | awk '{print $2}' | tr -d '",')"
 	fi
+	[[ $NewVer != v* ]] && print_Error_Exit "[${NewVer}] Weird version found, exiting for safety..."
 }
 
 # invoked by "monero-bash update"
@@ -73,7 +79,6 @@ version_Update()
 	else
 		NewVer="$(echo "$LINK" | grep "tag_name" | awk '{print $2}' | tr -d '",')"
 	fi
-	# END OF LIFE WARNING
-	[[ $PROJECT = monero-bash && $NewVer != v1* ]] && ___END___OF___LIFE___
+	[[ $NewVer != v* ]] && print_Error_Exit "[${NewVer}] Weird version found, exiting for safety..."
 }
 

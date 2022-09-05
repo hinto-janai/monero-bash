@@ -23,11 +23,16 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 # Parse config files safely.
 parse_Config() {
 	# [monero-bash.conf]
-	declare -g $(config::grep "$config/monero-bash.conf" \
+	local CONFIG_GREP=$(config::grep "$config/monero-bash.conf" \
 		bool   AUTO_START_DAEMON    \
 		bool   AUTO_STOP_DAEMON     \
 		bool   AUTO_UPDATE          \
@@ -38,12 +43,15 @@ parse_Config() {
 		port   TOR_PROXY            \
 		bool   TEST_TOR             \
 		bool   FAKE_HTTP_HEADERS    \
+		bool   ONLY_USER_AGENT      \
 		bool   HTTP_HEADERS_VERBOSE \
 		port   DAEMON_RPC_IP        \
 		bool   DAEMON_RPC_VERBOSE   \
 		bool   AUTO_HUGEPAGES       \
 		int    HUGEPAGES
 	)
+	[[ $CONFIG_GREP ]] || printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] monero-bash.conf source failure"
+	declare -g $CONFIG_GREP
 	# default for empty values
 	[[ $AUTO_START_DAEMON ]]    || declare -g AUTO_START_DAEMON=false
 	[[ $AUTO_STOP_DAEMON ]]     || declare -g AUTO_STOP_DAEMON=false
@@ -66,7 +74,7 @@ parse_Config() {
 
 	# [p2pool.conf]
 	[[ $P2POOL_VER ]] || return 0
-	declare -g $(config::grep "$p2poolConf" \
+	CONFIG_GREP=$(config::grep "$p2poolConf" \
 		char  WALLET     \
 		bool  MINI       \
 		ip    DAEMON_IP  \
@@ -76,6 +84,8 @@ parse_Config() {
 		pos   IN_PEERS   \
 		[0-6] LOG_LEVEL
 	)
+	[[ $CONFIG_GREP ]] || printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] p2pool.conf source failure"
+	declare -g $CONFIG_GREP
 	# range [10-1000]
 	if [[ $OUT_PEERS ]]; then
 		[[ $OUT_PEERS -ge 10 && $OUT_PEERS -le 1000 ]] || declare -g OUT_PEERS=10

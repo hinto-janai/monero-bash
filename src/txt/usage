@@ -18,6 +18,7 @@ reset   <bash/monero/p2pool/xmrig> [config|systemd]   Reset your configs/systemd
 edit    <bash/monero/p2pool/xmrig> [config|systemd]   Edit config/systemd service file
 watch   [monero|p2pool|xmrig]                         Watch live status or a specific process
 
+tor                                                   Test Tor connection
 rpc     [help]                                        Send a RPC call to monerod
 seed    [language]                                    Generate random 25-word Monero seed
 list                                                  List wallets

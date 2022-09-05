@@ -83,9 +83,11 @@ if [ -n "$1" ]; then
 fi
 payload="$payload}"
 
-if [[ $USE_TOR = true && $DAEMON_RPC_IP != localhost* && $DAEMON_RPC_IP != 127.0.0.1* ]]; then
+[[ $FAKE_HTTP_HEADERS = true && $DAEMON_RPC_IP != localhost* && $DAEMON_RPC_IP != 127.0.0.1* && $DAEMON_RPC_IP != 192.168.* ]] && header_Random
+
+if [[ $USE_TOR = true && $DAEMON_RPC_IP != localhost* && $DAEMON_RPC_IP != 127.0.0.1* && $DAEMON_RPC_IP != 192.168.* ]]; then
 	torsocks_init
-	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
+	[[ $TOR_QUIET = true ]] || echo
 	torsocks_func wget \
 		-qO- \
 		"$DAEMON_RPC_IP" \
@@ -96,7 +98,7 @@ else
 		-qO- \
 		"$DAEMON_RPC_IP" \
 		--header='Content-Type:application/json' \
-		--post-data=$payload
+		"${WGET_HTTP_HEADERS[@]}" --post-data=$payload
 fi
 if [[ $? != 0 ]]; then
 	print_Error "Monero RPC connection failed"

@@ -4,3 +4,12 @@
 [submodule "external/torsocks"]
 	path = external/torsocks
 	url = https://github.com/dgoulet/torsocks
+[submodule "external/JSON.sh"]
+	path = external/JSON.sh
+	url = https://github.com/dominictarr/JSON.sh
+[submodule "external/libconfig"]
+	path = external/libconfig
+	url = https://github.com/hinto-janaiyo/libconfig
+[submodule "external/libjson"]
+	path = external/libjson
+	url = https://github.com/hinto-janaiyo/libjson

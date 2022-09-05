@@ -23,40 +23,45 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 # Print Functions
 print_GreenHash()
 {
-	BGREEN; echo "<######> $1" ;OFF
+	printf "${BGREEN}%s${OFF}\n" "<######> $1" ;OFF
 }
 
 print_BlueHash() {
-	BBLUE; echo "<######> $1" ;OFF
+	printf "${BBLUE}%s${OFF}\n" "<######> $1"
 }
 
 print_RedHash()
 {
-	BRED; echo "<######> $1" ;OFF
+	 printf "${BRED}%s${OFF}\n" "<######> $1"
 }
 
 print_WhiteHash()
 {
-	BWHITE; echo "<######> $1" ;OFF
+	 printf "${BWHITE}%s${OFF}\n" "<######> $1"
 }
 
 print_CyanHash()
 {
-	BCYAN; echo "<######> $1" ;OFF
+	 printf "${BCYAN}%s${OFF}\n" "<######> $1"
 }
 
 print_YellowHash()
 {
-	BYELLOW; echo "<######> $1" ;OFF
+	 printf "${BYELLOW}%s${OFF}\n" "<######> $1"
 }
 
 print_PurpleHash()
 {
-	BPURPLE; echo "<######> $1" ;OFF
+	 printf "${BPURPLE}%s${OFF}\n" "<######> $1"
 }
 
 print_MoneroBashTitle()
@@ -354,7 +359,9 @@ print_Usage() {
 		"edit    " "<bash/monero/p2pool/xmrig> " "[config|systemd]" "   Edit config/systemd service file"
 	printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
 		"watch   " "[monero|p2pool|xmrig]" "                         Watch live status or a specific process"
-	echo;printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
+	echo;printf "${OFF}%s\n" \
+		"tor                                                   Test Tor connection"
+	printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
 		"rpc     " "[help]" "                                        Send a RPC call to monerod" \
 		"seed    " "[language]" "                                    Generate random 25-word Monero seed"
 	printf "${OFF}%s\n" \

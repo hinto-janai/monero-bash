@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 
 # update functions
@@ -80,7 +85,7 @@ update_All()
 	error_Sudo
 	[[ $USE_TOR = true ]] && torsocks_init
 	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
-	BWHITE; printf "%s\n\n" "### Fetching pkg meta-data ###"
+	printf "${BBLUE}${UBLUE}%s\n${OFF}" "<###> Fetching package metadata <###>"
 	update_MoneroBash
 	[[ $MONERO_VER != "" ]]&& update_Monero
 	[[ $XMRIG_VER != "" ]]&& update_XMRig

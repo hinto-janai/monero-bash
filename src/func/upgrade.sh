@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 
 # order of operations:
@@ -56,7 +61,7 @@ upgrade_Pre()
 
 		# ELSE, START UPGRADE
 		prompt_Sudo ; error_Sudo
-		echo ; safety_HashList
+		safety_HashList
 		trap "trap_Tmp" 1 2 3 6
 		tmp_Create ; error_Exit "Could not create tmp folder"
 		upgrade_Template
@@ -70,6 +75,7 @@ upgrade_Template()
 	# HTTP headers
 	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
 
+	echo
 	# DOWNLOAD
 	print_BlueHash "Downloading [$NAME_PRETTY]"
 	download_Template
@@ -182,7 +188,7 @@ upgrade_Post()
 	sudo -u "$USER" rm -rf "$old"
 
 	# STATE UPDATE
-	print_WhiteHash "Updating local state"
+	print_CyanHash "Updating local state"
 	version_Template
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"

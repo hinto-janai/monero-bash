@@ -23,6 +23,11 @@
 # Parts of this project are originally:
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
+# Copyright (c) 2011-2022, Dominic Tarr
+# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
+# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
+# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
+# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 
 # watch functions - for watching output of the systemd services created
@@ -80,8 +85,6 @@ watch_Template()
 	watch_First
 	WATCH_LINES=$(tput lines)
 	STAT_AMOUNT=$(watch_Amount)
-	# create alternate screen buffer + hide user input
-	[[ $FIRST_WATCH = true ]] && stty -echo && printf "\e[?1049h"
 	trap 'stty echo; printf "\e[?1049l\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
 
 	# need sudo for xmrig journals
@@ -96,7 +99,7 @@ watch_Template()
 				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY}";;
 			esac
-			clear
+			printf "\e[2J\e[H"
 			echo -e "$STATS"
 			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
@@ -125,8 +128,7 @@ watch_Template()
 				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY} $NAME_VER";;
 			esac
-			# create alternate screen buffer + hide cursor (only if first time)
-			clear
+			printf "\e[2J\e[H"
 			echo -e "$STATS"
 			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
@@ -156,6 +158,7 @@ watch_Status() {
 	[[ $WATCH_REFRESH_RATE ]] || WATCH_REFRESH_RATE=1
 	unset -v COL STATS VAR_1 VAR_2 STATUS_LIST
 	watch_Create_List
+	watch_First
 	declare -g CURRENT=0
 	WATCH_LINES=$(tput lines)
 	STAT_AMOUNT=$(watch_Amount)
@@ -164,15 +167,13 @@ watch_Status() {
 	else
 		COL="\e[1;92m"
 	fi
-	# create alternate screen buffer + hide cursor + hide user input
-	[[ $FIRST_WATCH = true ]] && stty -echo && printf "\e[?1049h"
 	trap 'stty echo; printf "\e[?1049l\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash watch" "]"; exit 0' EXIT
 	while :; do
 		[[ $XMRIG_VER ]] && sudo -v
 		# use status_Watch() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
 		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(printf "%(%F %X %Z)T")
-		clear
+		printf "\e[2J\e[H"
 		echo -e "$STATS"
 		printf "\e[${WATCH_LINES};0H\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
 			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
@@ -262,6 +263,8 @@ watch_First() {
 					CURRENT=1
 				fi;;
 		esac
+		printf "\e[?1049h"
+		stty -echo
 		unset -v FIRST_WATCH
 	fi
 }
