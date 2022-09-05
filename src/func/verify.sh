@@ -24,6 +24,8 @@
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
 # Copyright (c) 2011-2022, Dominic Tarr
+#
+# Parts of this project are licensed under GPLv2:
 # Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
 # Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
 # Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
@@ -60,7 +62,11 @@ verify_Template()
 
 	# setting of the tmp file variables (and gpg)
 	tarFile="$(ls "$tmp")"
-	[[ $USE_TOR = true ]] && torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpHash" "$hashLink" || wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpHash" "$hashLink"
+	if [[ $USE_TOR = true ]]; then
+		torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpHash" "$hashLink"
+	else
+		wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpHash" "$hashLink"
+	fi
 	code_Wget
 	hashFile="$(ls "$tmpHash")"
 	sigFile="$hashFile"
@@ -86,11 +92,19 @@ verify_Template()
 			| grep "browser_download_url.*$SIG" \
 			| awk '{print $2}' | head -n1 | tr -d '"')"
 		fi
-		[[ $USE_TOR = true ]] && torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink" || wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink"
+		if [[ $USE_TOR = true ]]; then
+			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink"
+		else
+			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink"
+		fi
 		code_Wget
 		sigFile="$(ls "$tmpSig")"
 	fi
-	[[ $USE_TOR = true ]] && hashSTDOUT="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")" || hashSTDOUT="$(wget  "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")"
+	if [[ $USE_TOR = true ]]; then
+		hashSTDOUT="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")"
+	else
+		hashSTDOUT="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")"
+	fi
 
 	# comparison of hashes (and are we downloading p2pool?)
 	if [[ $downloadP2Pool = "true" ]]; then

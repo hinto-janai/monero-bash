@@ -24,6 +24,8 @@
 # Copyright (c) 2019-2022, jtgrassie
 # Copyright (c) 2014-2022, The Monero Project
 # Copyright (c) 2011-2022, Dominic Tarr
+#
+# Parts of this project are licensed under GPLv2:
 # Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
 # Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
 # Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
@@ -38,8 +40,8 @@ ___END___OF___LIFE___() {
 	API="false"
 	HTML="true"
 	if [[ $USE_TOR = true ]]; then
-		if ! DUMP="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
-		    DUMP="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+		if ! DUMP="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
+		    DUMP="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
 		    API="false"
 		    HTML="true"
 		fi
