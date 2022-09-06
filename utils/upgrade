@@ -1,24 +1,29 @@
 #!/usr/bin/env bash
 # for installing dev branch of monero-bash
 
-[[ -z $1 ]] && echo "specify branch" && exit
-BRANCH="$1"
+if [[ $1 ]]; then
+	BRANCH=$1
+	echo "[$1] branch selected"
+else
+	BRANCH=dev
+	echo "defaulting to [dev] branch"
+fi
 
 installDirectory="/usr/local/share/monero-bash"
-source $installDirectory/src/source || source $installDirectory/src/source.sh
+source $installDirectory/src/source.sh || source $installDirectory/src/source.sh
 
 # to bypass the v1.x.x EOL message
 NewVer=v1.0.0
 
 upgrade_Template()
 {
-	BRED; echo "MONERO-BASH DEV INSTALL" ;OFF
+	BRED; echo "MONERO-BASH [$BRANCH] INSTALL" ;OFF
 
 	cd "$tmp"
 	cp -r $HOME/git/monero-bash "$tmp"
 	cd monero-bash
 	git checkout $BRANCH
-	NewVer="monero-bash-dev-$(git rev-parse --short HEAD)"
+	NewVer="$(git rev-parse --short HEAD)"
 
 	# TEMP FOLDER FOR OLD PACKAGE
 	folderName="$(ls $tmp)"

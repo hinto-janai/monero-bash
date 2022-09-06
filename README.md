@@ -52,25 +52,21 @@
 * ⛏️ **`MINING`** Interactive mining configuration, ***built for P2Pool***
 * 📈 **`STATUS`** Display stats (CPU usage, P2Pool shares, Hashrate, etc)
 * 👁️ **`WATCH`** Watch live output of processes or general status
-* 🧅 **`TOR`** Route monero-bash connections through Tor
-* 📋 **`RPC`** Interact with the **monerod** JSON-RPC interface
+* 🧅 **`TOR`** Route connections through Tor
+* 📄 **`RPC`** **monerod** JSON-RPC interface
 * 🔒 **`GPG`** Encrypt and backup your wallets
 
 ## Distro Coverage
 | Linux Distribution                   | Version            | Status | Info |
 |--------------------------------------|--------------------|--------|------|
-| [Debian](https://www.debian.org)     | 11, 10             | ✅     |
-| [Ubuntu](https://ubuntu.com)         | LTS 22.04, 20.04   | ✅     |
-| [Pop!\_OS](https://pop.system76.com) | LTS 22.04, 20.04   | ✅     |
-| [Linux Mint](https://linuxmint.com)  | 21, 20.03          | ✅     |
-| [Fedora](https://getfedora.org)      | Workstation 36, 35 | ❌     | SELinux disables `systemd` functionality
-| [Arch Linux](https://archlinux.org)  |                    | ⚠️      | `wget` must be installed
-| [Manjaro](https://manjaro.org)       | 21.3.6             | ✅     |
-| [Gentoo](https://www.gentoo.org)     |                    | ❌     | `wget` & `systemd` must be installed
-
-***✅ = Works out the box***  
-***⚠️ = Small issues***  
-***❌ = Big issues***  
+| [Debian](https://www.debian.org)     | 11, 10             | 🟢     |
+| [Ubuntu](https://ubuntu.com)         | LTS 22.04, 20.04   | 🟢     |
+| [Pop!\_OS](https://pop.system76.com) | LTS 22.04, 20.04   | 🟢     |
+| [Linux Mint](https://linuxmint.com)  | 21, 20.03          | 🟢     |
+| [Fedora](https://getfedora.org)      | Workstation 36, 35 | 🔴     | SELinux disables `systemd` functionality
+| [Arch Linux](https://archlinux.org)  |                    | 🟡     | `wget` must be installed
+| [Manjaro](https://manjaro.org)       | 21.3.6             | 🟢     |
+| [Gentoo](https://www.gentoo.org)     |                    | 🔴     | `wget` & `systemd` must be installed
 
 ## Install
 [**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
@@ -262,8 +258,8 @@ monero-bash supports routing all of its traffic through the [Tor network.](https
 ```
 USE_TOR                Enable connections via Tor
 TEST_TOR               Run tests to make sure Tor works before making any connections
-TOR_QUIET              Silence Tor set-up messages
 TOR_PROXY              Tor SOCKS proxy IP/port to use (default: 127.0.0.1:9050)
+TOR_QUIET              Silence Tor set-up messages
 ```
 [`torsocks`](https://github.com/dgoulet/torsocks) is the backend library used to route the traffic through Tor, although it is not necessary to download, only access to a regular Tor SOCKS proxy is needed.
 
@@ -320,6 +316,7 @@ monero-bash has options to spoof the HTTP headers sent during connections such t
 ```
 FAKE_HTTP_HEADERS      Send random (weighted) browser-like HTTP headers instead of [Wget/VERSION]
 ONLY_USER_AGENT        Only send a random [User-Agent] instead of all the normal HTTP headers
+ONLY_WGET_CURL         Only use random [2016-2022] versions of Wget/Curl as the User-Agent
 HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
 ```
 
@@ -329,6 +326,8 @@ HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connectio
 * Some HTTP header values are favored more instead of being purely randomly selected, e.g. English is weighted more than other languages
 
 * The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/header.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/header.sh)
+
+* `ONLY_USER_AGENT` & `ONLY_WGET_CURL` will always be enabled when sending a (non-local) RPC call
 
 * Fake HTTP headers will not used for RPC calls to `localhost/127.0.0.1/192.168.x.x`
 

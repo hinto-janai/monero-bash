@@ -65,11 +65,11 @@ status_System()
 status_Template()
 {
 	BWHITE; printf "[${NAME_PRETTY}] " ;OFF
-	if pgrep $DIRECTORY/$PROCESS -f &>/dev/null ;then
+	if local PROCESS_ID=$(pgrep -f $DIRECTORY/$PROCESS);then
 		BGREEN; echo "ONLINE" ;OFF
 
 		# ps stats
-		ps -o "| %C | %t |" -p $(pgrep $DIRECTORY/$PROCESS -f)
+		ps -o "| %C | %t |" -p $PROCESS_ID
 		echo "----------------------"
 		# process specific stats
 		EXTRA_STATS

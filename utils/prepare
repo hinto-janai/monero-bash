@@ -32,6 +32,7 @@ cat << EOM > CHANGELOG.md.new
 # $1
 ## Updates
 *
+
 ## Fixes
 *
 

@@ -46,6 +46,7 @@ parse_Config() {
 		bool   TEST_TOR             \
 		bool   FAKE_HTTP_HEADERS    \
 		bool   ONLY_USER_AGENT      \
+		bool   ONLY_WGET_CURL       \
 		bool   HTTP_HEADERS_VERBOSE \
 		port   DAEMON_RPC_IP        \
 		bool   DAEMON_RPC_VERBOSE   \
@@ -64,6 +65,8 @@ parse_Config() {
 	[[ $TEST_TOR ]]             || declare -g TEST_TOR=false
 	[[ $TOR_QUIET ]]            || declare -g TOR_QUIET=false
 	[[ $FAKE_HTTP_HEADERS ]]    || declare -g FAKE_HTTP_HEADERS=false
+	[[ $ONLY_USER_AGENT ]]      || declare -g ONLY_USER_AGENT=false
+	[[ $ONLY_WGET_CURL ]]       || declare -g ONLY_WGET_CURL=false
 	[[ $HTTP_HEADERS_VERBOSE ]] || declare -g HTTP_HEADERS_VERBOSE=false
 	[[ $DAEMON_RPC_IP ]]        || declare -g DAEMON_RPC_IP=127.0.0.1:18081
 	[[ $DAEMON_RPC_VERBOSE ]]   || declare -g DAEMON_RPC_VERBOSE=false
