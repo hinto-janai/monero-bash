@@ -152,12 +152,12 @@ torsocks_init() {
 	# Test Tor (if enabled)
 	if [[ $TEST_TOR = true ]]; then
 		# check systemd service
-		[[ $TOR_QUIET = true ]] || log::prog "[2/6] systemd service"
+		[[ $TOR_QUIET = true ]] || log::prog "[2/6] <tor.service>"
 		if [[ $TOR_IP = 127.0.0.1 || $TOR_IP = localhost ]]; then
-			if systemctl status tor &>/dev/null; then
-				[[ $TOR_QUIET = true ]] || log::ok "[2/6] systemd service"
+			if systemctl status tor.service &>/dev/null; then
+				[[ $TOR_QUIET = true ]] || log::ok "[2/6] <tor.service>"
 			else
-				log::fail "[2/6] SYSTEMD TOR SERVICE NOT ONLINE, EXITING FOR SAFETY"
+				log::fail "[2/6] <tor.service> not online"
 				exit 16
 			fi
 		else
@@ -172,24 +172,26 @@ torsocks_init() {
 		if [[ $TOR_WGET_TEST = *"Tor is not an HTTP Proxy"* ]]; then
 			[[ $TOR_QUIET = true ]] || log::ok "[3/6] SOCKS Proxy"
 		else
-			log::fail "[3/6] SOCKS PROXY FAIL, EXITING FOR SAFETY"
+			log::fail "[3/6] SOCKS Proxy not detected"
 			exit 17
 		fi
 		# check [https://check.torproject.org]
 		[[ $TOR_QUIET = true ]] || log::prog "[4/6] <check.torproject.org>"
-		if local CHECK_TORPROJECT=$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://check.torproject.org); then
+		local CHECK_TORPROJECT || exit 18
+		if CHECK_TORPROJECT=$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://check.torproject.org); then
 			[[ $TOR_QUIET = true ]] || log::ok "[4/6] <check.torproject.org>"
 		else
 			log::fail "[4/6] Could not connect to <https://check.torproject.org>"
-			exit 18
+			exit 19
 		fi
 		# Grep for success message
 		[[ $TOR_QUIET = true ]] || log::prog "[5/6] Tor external check"
 		if echo "$CHECK_TORPROJECT" | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
 			[[ $TOR_QUIET = true ]] || log::ok "[5/6] Tor external check"
 		else
-			log::fail "[5/6] <check.torproject.org> INDICATES TOR IS NOT PROPERLY CONFIGURED, EXITING FOR SAFETY"
-			exit 19
+			log::fail "[5/6] Tor external check failed!"
+			log::fail "[5/6] <check.torproject.org> indicated Tor is not properly configured"
+			exit 20
 		fi
 		# Grep for IP
 		[[ $TOR_QUIET = true ]] || log::prog "[6/6] Exit IP"
@@ -198,8 +200,7 @@ torsocks_init() {
 		if [[ $IP_TORPROJECT =~ [0-9.]+ ]]; then
 			[[ $TOR_QUIET = true ]] || log::ok "[6/6] Exit IP <${IP_TORPROJECT}>"
 		else
-			log::fail "[6/6] <${IP_TORPROJECT}> EXIT IP ERROR, EXITING FOR SAFETY"
-			exit 20
+			log::warn "[6/6] <${IP_TORPROJECT}> Exit IP could not be found, continuing anyway"
 		fi
 	fi
 
@@ -209,11 +210,11 @@ torsocks_init() {
 torsocks_func() {
 	# Export [monero-bash.conf] variables
 	# Tor IP
-	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || { print_Error "Torsocks error 21"; exit 21; }
+	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || { print_Error "Torsocks error 20"; exit 20; }
 	# Tor Port
-	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 22"; exit 22; }
+	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 21"; exit 21; }
 	# Silence messages
-	export TORSOCKS_LOG_LEVEL=1 || { print_Error "Torsocks error 23"; exit 23; }
+	export TORSOCKS_LOG_LEVEL=1 || { print_Error "Torsocks error 22"; exit 22; }
 
 	# Torify
 	torify_app "$@"

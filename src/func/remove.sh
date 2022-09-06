@@ -46,9 +46,9 @@ remove_Template()
 
 		# removal
 		print_RedHash "Removing [$NAME_PRETTY]"
-		printf "${BWHITE}%s${OFF}\n" "${DIRECTORY}..."
+		printf "${BWHITE}%s${OFF}\n" "Removing [${DIRECTORY}]"
 		sudo rm -rf "$DIRECTORY"
-		printf "${BWHITE}%s${OFF}\n" "${SERVICE}..."
+		printf "${BWHITE}%s${OFF}\n" "Removing [${SERVICE}]"
 		sudo rm "$sysd/$SERVICE"
 
 		# updating state file

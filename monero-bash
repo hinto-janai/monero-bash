@@ -392,6 +392,7 @@ if [[ $options = "true" ]]; then
 				*)
 					print_Error "Pick a package or <all>"
 					print_Version
+					exit 1
 					;;
 			esac
 			;;
@@ -432,6 +433,7 @@ if [[ $options = "true" ]]; then
 				*)
 					print_Error "Pick a package or <all>"
 					print_Version
+					exit 1
 					;;
 			esac
 			;;
@@ -471,6 +473,7 @@ if [[ $options = "true" ]]; then
 				*)
 				print_Error "Pick a package or <all>"
 				print_Version
+				exit 1
 				;;
 			esac
 			;;

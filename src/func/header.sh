@@ -37,7 +37,7 @@
 # Some values (like language, encoding) are favored towards more common values.
 # See the very end of this function to see the selection process.
 header_Random() {
-	[[ HTTP_HEADERS_SET = ___SET___ ]] && return 0
+	[[ $HTTP_HEADERS_SET = ___SET___ ]] && return 0
 
 	local -a ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER
 

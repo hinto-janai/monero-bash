@@ -55,7 +55,7 @@ verify_Template()
 	elif [[ $API = true && $downloadMonero != true ]]; then
 		hashLink="$(echo "$DUMP" \
 			| json::var \
-			| grep "browser_download_url.*${SHA}")"
+			| grep -om1 "browser_download_url.*${SHA}")"
 		hashLink="${hashLink/*=}"
 	else
 		hashLink="https://www.getmonero.org/downloads/hashes.txt"
@@ -91,7 +91,7 @@ verify_Template()
 		elif [[ $API = true ]]; then
 			sigLink="$(echo "$DUMP" \
 				| json::var \
-				| grep "browser_download_url.*${SIG}")"
+				| grep -om1 "browser_download_url.*${SIG}")"
 			sigLink="${sigLink/*=}"
 		fi
 		if [[ $USE_TOR = true ]]; then
@@ -101,11 +101,6 @@ verify_Template()
 		fi
 		code_Wget
 		sigFile="$(ls "$tmpSig")"
-	fi
-	if [[ $USE_TOR = true ]]; then
-		hashSTDOUT="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")"
-	else
-		hashSTDOUT="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$hashLink")"
 	fi
 
 	# comparison of hashes (and are we downloading p2pool?)

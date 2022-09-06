@@ -110,6 +110,7 @@ else
 fi
 
 if [[ $DAEMON_RPC_VERBOSE = true ]]; then
+	echo
 	BWHITE; printf "DAEMON_RPC_IP: " ;OFF; echo "$DAEMON_RPC_IP"
 	BWHITE; printf "PAYLOAD: " ;OFF; echo "$payload"
 fi

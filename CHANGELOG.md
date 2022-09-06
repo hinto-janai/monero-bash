@@ -7,6 +7,7 @@
 ## Fixes
 * **Package manager:** The GitHub API returns 1-line JSON (sometimes) which causes parsing errors. This long standing issue was the cause of most update/upgrade failures, it is now fixed
 * **HTTP Spoofing:** Only set once when upgrading multiple packages
+* **Watch:** Spacing is auto-adjusted on terminal size changes
 
 ---
 

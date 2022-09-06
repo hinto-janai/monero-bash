@@ -65,7 +65,8 @@ status_System()
 status_Template()
 {
 	BWHITE; printf "[${NAME_PRETTY}] " ;OFF
-	if local PROCESS_ID=$(pgrep -f $DIRECTORY/$PROCESS);then
+	local PROCESS_ID
+	if PROCESS_ID=$(pgrep -f $DIRECTORY/$PROCESS);then
 		BGREEN; echo "ONLINE" ;OFF
 
 		# ps stats

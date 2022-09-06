@@ -88,6 +88,8 @@ watch_Template()
 	WATCH_LINES=$(tput lines)
 	STAT_AMOUNT=$(watch_Amount)
 	trap 'stty echo; printf "\e[?1049l\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "${SERVICE}" "]"; exit 0' EXIT
+	# Resize if terminal size changes
+	trap 'WATCH_LINES=$(tput lines)' WINCH
 
 	# need sudo for xmrig journals
 	if [[ $SERVICE = "monero-bash-xmrig.service" ]]; then
@@ -170,6 +172,8 @@ watch_Status() {
 		COL="\e[1;92m"
 	fi
 	trap 'stty echo; printf "\e[?1049l\e[1;97m%s\e[1;95m%s\e[1;97m%s\n" "[Exiting: " "monero-bash watch" "]"; exit 0' EXIT
+	# Resize if terminal size changes
+	trap 'WATCH_LINES=$(tput lines)' WINCH
 	while :; do
 		[[ $XMRIG_VER ]] && sudo -v
 		# use status_Watch() instead of re-invoking and
