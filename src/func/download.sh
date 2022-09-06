@@ -41,15 +41,15 @@
 download_Template()
 {
 	# if API fetch fails, use HTML dump instead
-	API="true"
-	HTML="false"
+	API=true
+	HTML=false
 	# Use Tor if specified in [monero-bash.conf]
 	if [[ $USE_TOR = true ]]; then
 		DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	else
 		DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	fi
-	if [[ $? != "0" ]]; then
+	if [[ $? != 0 ]]; then
 		IRED; echo "GitHub API error detected..."
 		OFF; echo "Trying GitHub HTML filter instead..."
 		if [[ $USE_TOR = true ]]; then
@@ -57,12 +57,12 @@ download_Template()
 		else
 			DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
 		fi
-		API="false"
-		HTML="true"
+		API=false
+		HTML=true
 	fi
 
 	# if downloading Monero, just use the static getmonero.org link
-	if [[ $downloadMonero = "true" ]]; then
+	if [[ $downloadMonero = true ]]; then
 		LINK="https://downloads.getmonero.org/cli/linux64"
 		if [[ $USE_TOR = true ]]; then
 			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -P "$tmp" -q --show-progress --content-disposition "$LINK"
@@ -73,7 +73,7 @@ download_Template()
 	else
 
 	# else, search for the download link on github
-		if [[ "$HTML" = "true" ]]; then
+		if [[ $HTML = true ]]; then
 			LINK="$(echo "$DUMP" \
 				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \
 				| awk '{print $1}' \
@@ -81,6 +81,7 @@ download_Template()
 				| sed 's@^@https://github.com@')"
 		else
 			LINK="$(echo "$DUMP" \
+				| json::var \
 				| grep -o "https://github.com/$AUTHOR/$PROJECT/releases/download/.*/$DOT_PKG" \
 				| tr -d '"')"
 		fi

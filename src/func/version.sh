@@ -37,17 +37,19 @@
 # 2. find the proper version number
 # 3. save it as $NewVer variable
 
-# invoked by "download_Template" function, reuses the "$DUMP" variable
+# invoked by upgrade_Template() function, reuses
+# the $DUMP variable set in download_Template()
 version_Template()
 {
-	if [[ "$HTML" = "true" ]]; then
+	if [[ $HTML = true ]]; then
 		NewVer="$(echo "$DUMP" \
 			| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
 			| awk '{print $1}' | head -n1 \
 			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
 		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
 	else
-		NewVer="$(echo "$DUMP" | grep "tag_name" | awk '{print $2}' | tr -d '",')"
+		NewVer="$(echo "$DUMP" | json::var | grep "tag_name")"
+		NewVer=${NewVer/*=}
 	fi
 	[[ $NewVer != v* ]] && print_Error_Exit "[${NewVer}] Weird version found, exiting for safety..."
 }
@@ -60,12 +62,12 @@ version_Update()
 	else
 		LINK="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
 	fi
-	if [[ $? != "0" && "$HTML" != "true" ]]; then
+	if [[ $? != 0 && $HTML != true ]]; then
 		IRED; echo "GitHub API error detected..."
 		OFF; echo "Trying GitHub HTML filter instead..."
 		HTML="true"
 	fi
-	if [[ "$HTML" = "true" ]]; then
+	if [[ $HTML = true ]]; then
 		if [[ $USE_TOR = true ]]; then
 			NewVer="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
 				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
@@ -79,7 +81,8 @@ version_Update()
 		fi
 		[[ $NewVer ]] || error_Exit "GitHub HTML filter failed..."
 	else
-		NewVer="$(echo "$LINK" | grep "tag_name" | awk '{print $2}' | tr -d '",')"
+		NewVer="$(echo "$LINK" | json::var | grep "tag_name")"
+		NewVer=${NewVer/*=}
 	fi
 	[[ $NewVer != v* ]] && print_Error_Exit "[${NewVer}] Weird version found, exiting for safety..."
 }

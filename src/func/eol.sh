@@ -37,19 +37,19 @@
 # is an old unsupported version.
 
 ___END___OF___LIFE___() {
-	API="false"
-	HTML="true"
+	API=false
+	HTML=true
 	if [[ $USE_TOR = true ]]; then
 		if ! DUMP="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
 		    DUMP="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
-		    API="false"
-		    HTML="true"
+		    API=false
+		    HTML=true
 		fi
 	else
 		if ! DUMP="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"; then
 		    DUMP="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
-		    API="false"
-		    HTML="true"
+		    API=false
+		    HTML=true
 		fi
 	fi
 	version_Template

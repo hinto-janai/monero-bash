@@ -81,6 +81,8 @@ upgrade_Template()
 	# DOWNLOAD
 	print_BlueHash "Downloading [$NAME_PRETTY]"
 	download_Template
+	# Get version
+	version_Template
 
 	# VERIFY
 	print_YellowHash "Verifying"
@@ -191,7 +193,6 @@ upgrade_Post()
 
 	# STATE UPDATE
 	print_CyanHash "Updating local state"
-	version_Template
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
 	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
 	OFF; echo -n "[${NAME_PRETTY}] "

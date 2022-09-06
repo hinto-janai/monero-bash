@@ -100,7 +100,7 @@ update_All()
         OFF
 		return 0
 	else
-		BGREEN; printf "\n%s\n" "### All package up-to-date ###"
-		OFF; return 1
+		printf "\n${BGREEN}%s${OFF}\n" "<####> All packages up-to-date <####>"
+		return 1
     fi
 }

@@ -45,17 +45,18 @@
 verify_Template()
 {
 	# api or html? (or are we downloading monero?)
-	if [[ "$HTML" = "true" && "$downloadMonero" != "true" ]]; then
+	if [[ $HTML = true && $downloadMonero != true ]]; then
 		hashLink="$(echo "$DUMP" \
 		| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SHA" \
 		| head -n1 \
 		| awk '{print $1}' \
 		| tr -d '"' \
 		| sed 's@^@https://github.com@')"
-	elif [[ "$API" = "true" && "$downloadMonero" != "true" ]]; then
+	elif [[ $API = true && $downloadMonero != true ]]; then
 		hashLink="$(echo "$DUMP" \
-			| grep "browser_download_url.*$SHA" \
-			| awk '{print $2}' | head -n1 | tr -d '"')"
+			| json::var \
+			| grep "browser_download_url.*${SHA}")"
+		hashLink="${hashLink/*=}"
 	else
 		hashLink="https://www.getmonero.org/downloads/hashes.txt"
 	fi
@@ -70,7 +71,7 @@ verify_Template()
 	code_Wget
 	hashFile="$(ls "$tmpHash")"
 	sigFile="$hashFile"
-	hashSTDOUT="$(cat "$tmpHash/$hashFile")"
+	hashSTDOUT="$(<"$tmpHash/$hashFile")"
 
     # check if gpg key is imported
     if ! gpg --list-keys "$FINGERPRINT" &>/dev/null ;then
@@ -79,18 +80,19 @@ verify_Template()
     fi
 
 	# xmrig author pls include the sig in the hash file
-	if [[ $downloadXMRig = "true" ]]; then
-		if [[ $HTML = "true" ]]; then
+	if [[ $downloadXMRig = true ]]; then
+		if [[ $HTML = true ]]; then
 			sigLink="$(echo "$DUMP" \
-			| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SIG" \
-			| head -n1 \
-			| awk '{print $1}' \
-			| tr -d '"' \
-			| sed 's@^@https://github.com@')"
-		elif [[ "$API" = "true" ]]; then
+				| grep -o "/$AUTHOR/$PROJECT/releases/download/.*/$SIG" \
+				| head -n1 \
+				| awk '{print $1}' \
+				| tr -d '"' \
+				| sed 's@^@https://github.com@')"
+		elif [[ $API = true ]]; then
 			sigLink="$(echo "$DUMP" \
-			| grep "browser_download_url.*$SIG" \
-			| awk '{print $2}' | head -n1 | tr -d '"')"
+				| json::var \
+				| grep "browser_download_url.*${SIG}")"
+			sigLink="${sigLink/*=}"
 		fi
 		if [[ $USE_TOR = true ]]; then
 			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -P "$tmpSig" "$sigLink"
@@ -115,21 +117,21 @@ verify_Template()
 	[[ -z $HASH ]] && error_Exit "Hash file was empty"
 	echo "$HASH" "$tmp/$tarFile" | sha256sum -c &>/dev/null
 	print_OKFAILED
-	if [[ "$verifyOK" != "true" ]]; then
+	if [[ $verifyOK != true ]]; then
 		LOCAL_HASH="$(sha256sum "$tmp/$tarFile" | awk '{print $1}' | tr -d " -")"
 		compromised_Hash
 	fi
 
 	# gpg check
-	if [[ $downloadXMRig = "true" ]]; then
+	if [[ $downloadXMRig = true ]]; then
 		gpg --verify "$tmpSig/$sigFile" "$tmpHash/$hashFile" &> "$tmpGPG"
 		print_GPG
 	else
 		gpg --verify "$tmpHash/$sigFile" &> "$tmpGPG"
 		print_GPG
 	fi
-	gpgSTDOUT="$(cat /tmp/monero-bash-gpg.*)"
-	if [[ "$gpgOK" != "true" ]]; then
+	gpgSTDOUT="$(</tmp/monero-bash-gpg.*)"
+	if [[ $gpgOK != true ]]; then
 		LOCAL_HASH="$(sha256sum "$tmp/$tarFile" | awk '{print $1}' | tr -d " -")"
 		compromised_GPG
 	fi

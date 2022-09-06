@@ -1,8 +1,9 @@
 # v1.9.1
 ## Updates
 *
+
 ## Fixes
-*
+* **Package manager:** The GitHub API returns 1-line JSON (sometimes) which causes parsing errors. This long standing issue was the cause of most update/upgrade failures, it is now fixed
 
 ---
 
