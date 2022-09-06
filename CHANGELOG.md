@@ -1,3 +1,11 @@
+# v1.9.1
+## Updates
+*
+## Fixes
+*
+
+---
+
 # v1.9.0
 ## Updates
 * **Tor Integration:** [All monero-bash connections can now be routed through Tor](https://github.com/hinto-janaiyo/monero-bash#Tor)
