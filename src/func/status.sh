@@ -390,10 +390,7 @@ status_P2Pool()
 
 		# turn 'stats' p2pool JSON values into variables.
 		# this uses: https://github.com/hinto-janaiyo/libjson
-		local i IFS=$'\n'
-		for i in $(echo "$p2poolJson" | json::var); do
-			declare $i
-		done
+		declare $(echo "$p2poolJson" | json::var)
 
 		local sharesFound sharesFoundApi sharesFoundLog latestPayout latestShare IFS=' '
 		# SHARES FOUND
@@ -431,7 +428,7 @@ status_P2Pool()
 		# process hour calculation
 		processUnixTime=$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)
 		processHours=$(echo "$processUnixTime" | awk '{printf "%.7f\n", $1 / 60 / 60 }')
-		[[ $processHours = 0 ]] && processHours=1
+		[[ $processHours = 0.0000000 ]] && processHours=1
 
 		# The below would obviously be better if I
 		# just wrote this in AWK but I don't actually
@@ -442,20 +439,14 @@ status_P2Pool()
 		# create awk list (array)
 		declare -a awkList
 		awkList=($(echo "$sharesFound" "$processHours" "$payoutTotal" \
-			| awk '{printf "%.7f %.7f %.7f %.7f", $1/$2, $1/$2/24, $3/$2, $3/$2/24}'))
-		# SHARES/hour & SHARES/day
-		declare -n sharesPerHour=awkList[0]
-		declare -n sharesPerDay=awkList[1]
-		# payout calculation
-		declare -n payoutPerHour=awkList[2]
-		declare -n payoutPerDay=awkList[3]
+			| awk '{printf "%.7f %.7f %.7f %.7f", $1/$2, ($1/$2)*24, $3/$2, ($3/$2)*24}'))
+		# SHARES/hour & SHARES/day, PAYOUT/hour & PAYOUT/day
+		declare -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] payoutPerHour=awkList[2] payoutPerDay=awkList[3]
 		# xmr calculation
 		if [[ $xmrColumn ]]; then
 			declare -a xmrList
-			xmrList=($(echo "$xmrColumn" "$processHours" | awk '{SUM+=$1}END{printf "%.7f %.7f %.7f", SUM, SUM/$2, SUM/$2/24}'))
-			declare -n xmrTotal=xmrList[0]
-			declare -n xmrPerHour=xmrList[1]
-			declare -n xmrPerDay=xmrList[2]
+			xmrList=($(echo "$xmrColumn" "$processHours" | awk '{SUM+=$1}END{printf "%.7f %.7f %.7f", SUM, SUM/$2, (SUM/$2)*24}'))
+			declare -n xmrTotal=xmrList[0] xmrPerHour=xmrList[1] xmrPerDay=xmrList[2]
 		else
 			xmrTotal=0
 			xmrPerHour=0.0000000
