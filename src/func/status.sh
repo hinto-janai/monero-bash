@@ -65,7 +65,7 @@ status_System()
 status_Template()
 {
 	BWHITE; printf "[${NAME_PRETTY}] " ;OFF
-	local PROCESS_ID
+	declare -g PROCESS_ID
 	if PROCESS_ID=$(pgrep -f $DIRECTORY/$PROCESS);then
 		BGREEN; echo "ONLINE" ;OFF
 
@@ -143,7 +143,6 @@ status_Monero()
 
 		# turn 'get_info' rpc JSON values into variables.
 		# this uses: https://github.com/hinto-janaiyo/libjson
-		local i IFS=$'\n'
 		declare $(echo "$GET_INFO" | json::var)
 
 		# cleanup 'get_info' variables
@@ -202,24 +201,27 @@ status_P2Pool()
 	EXTRA_STATS()
 	{
 		# Get p2pool.log into memory.
-		# Also ONLY look for logs after
-		# p2pool is fully synced.
-		local LOG="$(tac $DIRECTORY/p2pool.log | grep -m1 "SideChain SYNCHRONIZED")"
-		# Get time of sync (read wall of text for reason)
-		local SYNC_DAY="$(echo "$LOG" | grep -o "..-..-..-")"
-		local SYNC_TIME="$(echo "$LOG" | grep -o "..:..:..")"
-		local SYNC_1ST="$SYNC_DAY ${SYNC_TIME}"
+		local LOG=$(tac $DIRECTORY/p2pool.log)
+		# ONLY look for logs after p2pool is fully synced.
+		local SYNC_STATUS=$(echo "$LOG" | grep -m1 "SYNCHRONIZED")
+
+		if [[ $SYNC_STATUS = *"SYNCHRONIZED"* ]]; then
+			# Get time of sync (read wall of text below for reason)
+			local SYNC_DAY="$(echo "$SYNC_STATUS" | grep -o "..-..-..-")"
+			local SYNC_TIME="$(echo "$SYNC_STATUS" | grep -o "..:..:..")"
+			local SYNC_1ST="$SYNC_DAY ${SYNC_TIME}"
+			LOG="$(sed -n "/${SYNC_STATUS}/,/*/p" $DIRECTORY/p2pool.log)"
 
 		# Return error if P2Pool is not synced yet.
-		if [[ $LOG != *"SideChain SYNCHRONIZED"* ]]; then
+		else
 			# Return RPC error message if found
-			if RPC_LOG=$(tac $DIRECTORY/p2pool.log | grep -o -m1 "2.*get_info RPC request failed.*$"); then
+			if RPC_LOG=$(echo "$LOG" | grep -o -m1 "2.*get_info RPC request failed.*$"); then
 				printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "$RPC_LOG"
 				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [$DAEMON_IP]'s RPC server!"
 				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Is [$DAEMON_RPC] in [p2pool.conf] the correct port?"
 				return 1
 			# Return ZMQ error message if found
-			elif ZMQ_LOG=$(tac $DIRECTORY/p2pool.log | grep -o -m1 "2.*ZMQReader failed to connect to.*$"); then
+			elif ZMQ_LOG=$(echo "$LOG" | grep -o -m1 "2.*ZMQReader failed to connect to.*$"); then
 				printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "$ZMQ_LOG"
 				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "P2Pool failed to connect to [$DAEMON_IP]'s ZMQ server!"
 				printf "\e[1;91m%s\e[0;93m%s\e[0m\n" "Warning | " "Is [$DAEMON_ZMQ] in [p2pool.conf] the correct port?"
@@ -229,8 +231,6 @@ status_P2Pool()
 				printf "\e[1;91m%s\e[1;93m%s\e[0m\n" "Warning | " "P2Pool is not fully synced yet!"
 				return 1
 			fi
-		else
-			LOG="$(sed -n "/$LOG/,/*/p" $DIRECTORY/p2pool.log)"
 		fi
 
 		# P2Pool allowing miner connections during sync causes fake stats
@@ -319,12 +319,7 @@ status_P2Pool()
 		# 22:22:22 -> 22 22 22
 		SYNC_SPACE=(${SYNC_DAY//-/ } ${SYNC_TIME//:/ })
 		# Back into string because it's easier to read
-		local SYNC_YEAR=${SYNC_SPACE[0]}
-		local SYNC_MONTH=${SYNC_SPACE[1]}
-		local SYNC_DAY=${SYNC_SPACE[2]}
-        local SYNC_HOUR=${SYNC_SPACE[3]}
-        local SYNC_MINUTE=${SYNC_SPACE[4]}
-        local SYNC_SECOND=${SYNC_SPACE[5]}
+		local SYNC_YEAR=${SYNC_SPACE[0]} SYNC_MONTH=${SYNC_SPACE[1]} SYNC_DAY=${SYNC_SPACE[2]} SYNC_HOUR=${SYNC_SPACE[3]} SYNC_MINUTE=${SYNC_SPACE[4]} SYNC_SECOND=${SYNC_SPACE[5]}
 
         # Account for overflow (23:59:59 -> 00:00:00)
 		# Second
@@ -384,22 +379,18 @@ status_P2Pool()
 			print_Warn "P2Pool API file was not found, stats will be inaccurate!"
 			print_Warn "Consider restarting P2Pool. It will regenerate necessary files."
 		else
-			# put api file into memory
-			p2poolJson=$(<${p2poolApi})
+			# turn 'stats' p2pool JSON values into variables.
+			# this uses: https://github.com/hinto-janaiyo/libjson
+			local $(json::var < ${p2poolApi})
 		fi
-
-		# turn 'stats' p2pool JSON values into variables.
-		# this uses: https://github.com/hinto-janaiyo/libjson
-		declare $(echo "$p2poolJson" | json::var)
 
 		local sharesFound sharesFoundApi sharesFoundLog latestPayout latestShare IFS=' '
 		# SHARES FOUND
 		case $LOG_LEVEL in
 			0)
 				sharesFoundLog="$(echo "$LOG" | grep -c "SHARE FOUND")"
-				sharesFoundApi=${shares_found}
 				# if api shares != log shares, i'm trusting my own data over the api, sorry mr.chernykh
-				[[ $sharesFoundApi = "$sharesFoundLog" ]] && sharesFound="$sharesFoundApi" || sharesFound="$sharesFoundLog"
+				[[ $shares_found = "$sharesFoundLog" ]] && sharesFound="$shares_found" || sharesFound="$sharesFoundLog"
 				;;
 			*)
 				sharesFound="$(echo "$LOG" | grep -c "SHARE FOUND")";;
@@ -414,40 +405,34 @@ status_P2Pool()
 		[[ $current_effort ]] || current_effort=0
 		[[ $connections ]]    || connections=0
 
-		local xmrColumn processUnixTime processHours sharesPerHour sharesPerDay payoutTotal payoutPerHour payoutPerDay xmrTotal xmrPerHour xmrPerDay
-		# XMR COLUMN
+		local -a awkList
+		local xmrColumn processSeconds sharesPerHour sharesPerDay payoutTotal payoutPerHour payoutPerDay xmrTotal xmrPerHour xmrPerDay
+		# process second calculation (reuses PROCESS_ID from status_Template())
+		processSeconds=$(ps -p $PROCESS_ID -o etimes=)
+
+		# AWK LIST
 		xmrColumn=$(echo "$LOG" | grep -o "You received a payout of [0-9]\+.[0-9]\+ XMR")
-		xmrColumn=$(echo "$xmrColumn" | grep -o "[0-9]\+.[0-9]\+")
+		xmrColumn=${xmrColumn//[!0-9.$'\n']}
 		if [[ $xmrColumn ]]; then
 			payoutTotal=$(echo "$xmrColumn" | wc -l)
+			# create awk list of shares, xmr column
+			# [0] sharesPerHour
+			# [1] sharesPerDay
+			# [2] payoutPerHour
+			# [3] payoutPerDay
+			# [4] xmrTotal
+			# [5] xmrPerHour
+			# [6] xmrPerDay
+			xmrColumn=$(echo "$xmrColumn" | awk '{SUM+=$1}END{printf "%.7f", SUM}')
+			awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, $3/($2/60/60), ($3/($2/60/60))*24, $4, $4/($2/60/60), ($4/($2/60/60))*24}'))
+			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] payoutPerHour=awkList[2] payoutPerDay=awkList[3] xmrTotal=awkList[4] xmrPerHour=awkList[5] xmrPerDay=awkList[6]
 		else
+			awkList=($(echo "$sharesFound" "$processSeconds" | awk 'printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24'))
+			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1]
 			payoutTotal=0
 			payoutPerHour=0.0000000
 			payoutPerDay=0.0000000
-		fi
-		# process hour calculation
-		processUnixTime=$(ps -p $(pgrep $DIRECTORY/$PROCESS -f) -o etimes=)
-		processHours=$(echo "$processUnixTime" | awk '{printf "%.7f\n", $1 / 60 / 60 }')
-		[[ $processHours = 0.0000000 ]] && processHours=1
-
-		# The below would obviously be better if I
-		# just wrote this in AWK but I don't actually
-		# know how to write AWK, I only know how
-		# to interact with it with Bash... :D
-		# I'm sure this would make Brian Kernighan cry.
-
-		# create awk list (array)
-		declare -a awkList
-		awkList=($(echo "$sharesFound" "$processHours" "$payoutTotal" \
-			| awk '{printf "%.7f %.7f %.7f %.7f", $1/$2, ($1/$2)*24, $3/$2, ($3/$2)*24}'))
-		# SHARES/hour & SHARES/day, PAYOUT/hour & PAYOUT/day
-		declare -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] payoutPerHour=awkList[2] payoutPerDay=awkList[3]
-		# xmr calculation
-		if [[ $xmrColumn ]]; then
-			declare -a xmrList
-			xmrList=($(echo "$xmrColumn" "$processHours" | awk '{SUM+=$1}END{printf "%.7f %.7f %.7f", SUM, SUM/$2, (SUM/$2)*24}'))
-			declare -n xmrTotal=xmrList[0] xmrPerHour=xmrList[1] xmrPerDay=xmrList[2]
-		else
+			xmrColumn=0
 			xmrTotal=0
 			xmrPerHour=0.0000000
 			xmrPerDay=0.0000000
