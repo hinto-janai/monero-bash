@@ -57,7 +57,7 @@ upgrade_Pre()
 		OFF; echo -n "$NAME_PRETTY: "
 		IRED; echo "is not installed"
 	elif [[ $NAME_OLD != true && $FORCE_UPGRADE != true ]]; then
-		OFF; echo -n "$NAME_PRETTY: "
+		OFF; echo -n "[$NAME_PRETTY $NAME_VER] "
 		BGREEN; echo "up to date" ;OFF
 	else
 

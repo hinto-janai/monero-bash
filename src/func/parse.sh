@@ -45,6 +45,7 @@ parse_Config() {
 		port   TOR_PROXY            \
 		bool   TEST_TOR             \
 		bool   FAKE_HTTP_HEADERS    \
+		bool   TOR_BROWSER_MIMIC    \
 		bool   ONLY_USER_AGENT      \
 		bool   ONLY_WGET_CURL       \
 		bool   HTTP_HEADERS_VERBOSE \
@@ -65,6 +66,7 @@ parse_Config() {
 	[[ $TEST_TOR ]]             || declare -g TEST_TOR=false
 	[[ $TOR_QUIET ]]            || declare -g TOR_QUIET=false
 	[[ $FAKE_HTTP_HEADERS ]]    || declare -g FAKE_HTTP_HEADERS=false
+	[[ $TOR_BROWSER_MIMIC ]]    || declare -g TOR_BROWSER_MIMIC=false
 	[[ $ONLY_USER_AGENT ]]      || declare -g ONLY_USER_AGENT=false
 	[[ $ONLY_WGET_CURL ]]       || declare -g ONLY_WGET_CURL=false
 	[[ $HTTP_HEADERS_VERBOSE ]] || declare -g HTTP_HEADERS_VERBOSE=false

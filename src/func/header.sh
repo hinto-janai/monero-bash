@@ -38,9 +38,36 @@
 # See the very end of this function to see the selection process.
 header_Random() {
 	[[ $HTTP_HEADERS_SET = ___SET___ ]] && return 0
+	declare -ag WGET_HTTP_HEADERS || exit 99
 
-	local -a ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER
+	# Set [TOR_BROWSER_MIMIC] HTTP headers
+	if [[ $TOR_BROWSER_MIMIC = true ]]; then
+		# Exit if Tor is not detected
+		if [[ $USE_TOR != true ]]; then
+			print_Error "HTTP Header error, [USE_TOR] is not enabled."
+			print_Error "Pretending to be Tor browser without a Tor IP is quite fingerprintable."
+			print_Error_Exit "Exiting for your own safety :)"
+		fi
+	local ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER CACHE_CONTROL HOST CONNECTION UPGRADE_INSECURE_REQUESTS TE || exit 100
+		ACCEPT='text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+		# Accepting [gzip] encoding would be more natural
+		# but that would require uncompressing it on my end.
+		# Hopefully will create in [monero-bash v2].
+		ENCODING='identity'
+		LANGUAGE='en-US,en;q=0.5'
+		[[ $RANDOM -gt 16000 ]] && CACHE_CONTROL='max-age=0'
+		CONNECTION='keep-alive'
+		SEC_FETCH_DEST='document'
+		SEC_FETCH_MODE='navigate'
+		# 50% chance
+		[[ $RANDOM -gt 16000 ]] && SEC_FETCH_SITE='none' || SEC_FETCH_SITE='cross-site'
+		[[ $RANDOM -gt 16000 ]] && SEC_FETCH_USER='?1'
+		[[ $RANDOM -gt 16000 ]] && TE='trailers'
+		UPGRADE_INSECURE_REQUESTS='1'
+		USER_AGENT='Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0'
+	else
 
+	local -a ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER CACHE_CONTROL HOST CONNECTION UPGRADE_INSECURE_REQUESTS TE || exit 100
 	# ACCEPT
 	ACCEPT[0]='text/html,application/xhtml+xml,application/xml;q=0.5,image/avif,image/webp,*/*;q=0.5'
 	ACCEPT[1]='text/html,application/xhtml+xml,application/xml;q=0.5,image/avif,image/webp,*/*;q=0.6'
@@ -2045,19 +2072,19 @@ header_Random() {
 
 	# ENCODING
 	ENCODING[0]='gzip'
-	ENCODING[1]='gzip compress'
-	ENCODING[2]='gzip compress deflate'
-	ENCODING[3]='gzip compress deflate br'
-	ENCODING[4]='gzip compress deflate br identity'
+	ENCODING[1]='gzip, compress'
+	ENCODING[2]='gzip, compress, deflate'
+	ENCODING[3]='gzip, compress, deflate, br'
+	ENCODING[4]='gzip, compress, deflate, br, identity'
 	ENCODING[5]='compress'
-	ENCODING[6]='compress deflate'
-	ENCODING[7]='compress deflate br'
-	ENCODING[8]='compress deflate br identity'
+	ENCODING[6]='compress, deflate'
+	ENCODING[7]='compress, deflate, br'
+	ENCODING[8]='compress, deflate, br, identity'
 	ENCODING[9]='deflate'
-	ENCODING[10]='deflate br'
-	ENCODING[11]='deflate br identity'
+	ENCODING[10]='deflate, br'
+	ENCODING[11]='deflate, br, identity'
 	ENCODING[12]='br'
-	ENCODING[13]='br identity'
+	ENCODING[13]='br, identity'
 	ENCODING[14]='identity'
 
 	# LANGUAGE
@@ -10984,12 +11011,31 @@ header_Random() {
 
 	fi
 
+	fi
+
 	# Print headers if [HTTP_HEADERS_VERBOSE] is on
 	if [[ $HTTP_HEADERS_VERBOSE = true ]]; then
-		printf "${BYELLOW}${UYELLOW}%s${OFF}\n" "HTTP Headers"
-		if [[ $ONLY_USER_AGENT = true ]]; then
+		if [[ $TOR_BROWSER_MIMIC = true ]]; then
+			printf "${BYELLOW}${UYELLOW}%s${BPURPLE}%s${OFF}\n" "HTTP Headers " " Tor Browser Mode"
+			 printf "%s\n" \
+				"ACCEPT                    | $ACCEPT"         \
+				"ENCODING                  | $ENCODING"       \
+				"LANGUAGE                  | $LANGUAGE"       \
+				"CACHE_CONTROL             | $CACHE_CONTROL"  \
+				"CONNECTION                | $CONNECTION"     \
+				"SEC_FETCH_DEST            | $SEC_FETCH_DEST" \
+				"SEC_FETCH_MODE            | $SEC_FETCH_MODE" \
+				"SEC_FETCH_SITE            | $SEC_FETCH_SITE" \
+				"SEC_FETCH_USER            | $SEC_FETCH_USER" \
+				"TE                        | $TE"             \
+				"UPGRADE_INSECURE_REQUESTS | $UPGRADE_INSECURE_REQUESTS" \
+				"USER_AGENT                | $USER_AGENT"     \
+				""
+		elif [[ $ONLY_USER_AGENT = true ]]; then
+			printf "${BYELLOW}${UYELLOW}%s${BRED}%s${OFF}\n" "HTTP Headers "" User-Agent Mode"
 			printf "%s\n\n" "USER_AGENT | $USER_AGENT"
 		else
+			printf "${BYELLOW}${UYELLOW}%s${OFF}\n" "HTTP Headers"
 			printf "%s\n" \
 				"ACCEPT                    | $ACCEPT"         \
 				"CONNECTION                | $CONNECTION"     \
@@ -11006,19 +11052,32 @@ header_Random() {
 		fi
 	fi
 
-	declare -ag WGET_HTTP_HEADERS
-	if [[ $ONLY_USER_AGENT = true ]]; then
+	if [[ $TOR_BROWSER_MIMIC ]]; then
+		WGET_HTTP_HEADERS+=("--header=Accept: $ACCEPT") || exit 1
+		WGET_HTTP_HEADERS+=("--header=Accept-Encoding: $ENCODING") || exit 2
+		WGET_HTTP_HEADERS+=("--header=Accept-Language: $LANGUAGE") || exit 3
+		[[ $CACHE_CONTROL ]] && { WGET_HTTP_HEADERS+=("--header=Cache-Control: $CACHE_CONTROL") || exit 4; }
+		WGET_HTTP_HEADERS+=("--header=Connection: $CONNECTION") || exit 5
+		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Dest: $SEC_FETCH_DEST") || exit 6
+		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Site: $SEC_FETCH_SITE") || exit 7
+		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Mode: $SEC_FETCH_MODE") || exit 8
+		[[ $SEC_FETCH_USER ]] && { WGET_HTTP_HEADERS+=("--header=Sec-Fetch-User: $SEC_FETCH_USER") || exit 9; }
+		[[ $TE ]] && { WGET_HTTP_HEADERS+=("--header=TE: $TE") || exit 10; }
+		WGET_HTTP_HEADERS+=("--header=Upgrade-Insecure-Requests: $UPGRADE_INSECURE_REQUESTS") || exit 11
+		WGET_HTTP_HEADERS+=("--header=User-Agent: $USER_AGENT") || exit 12
+	elif [[ $ONLY_USER_AGENT = true ]]; then
 		WGET_HTTP_HEADERS=("--header=User-Agent: $USER_AGENT") || exit 10
 	else
 		WGET_HTTP_HEADERS+=("--header=Accept: $ACCEPT") || exit 1
 		WGET_HTTP_HEADERS+=("--header=Accept-Encoding: $ENCODING") || exit 2
 		WGET_HTTP_HEADERS+=("--header=Accept-Language: $LANGUAGE") || exit 3
 		WGET_HTTP_HEADERS+=("--header=Connection: $CONNECTION") || exit 3
-		WGET_HTTP_HEADERS+=("--header=Referer: $REFERER") || exit 4
-		WGET_HTTP_HEADERS+=("--header=DNT: $DNT") || exit 5
+		[[ $REFERER ]] && { WGET_HTTP_HEADERS+=("--header=Referer: $REFERER") || exit 4; }
+		[[ $DNT ]] && { WGET_HTTP_HEADERS+=("--header=DNT: $DNT") || exit 5; }
 		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Dest: $SEC_FETCH_DEST") || exit 6
 		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Mode: $SEC_FETCH_MODE") || exit 7
 		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Site: $SEC_FETCH_SITE") || exit 8
+		WGET_HTTP_HEADERS+=("--header=Upgrade-Insecure-Requests: $UPGRADE_INSECURE_REQUESTS") || exit 9
 		WGET_HTTP_HEADERS+=("--header=User-Agent: $USER_AGENT") || exit 9
 	fi
 

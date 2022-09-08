@@ -312,9 +312,10 @@ TOR_QUIET              Silence Tor set-up messages
 ---
 
 ### HTTP Spoofing
-monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with regular browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
+monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with web-browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
 ```
 FAKE_HTTP_HEADERS      Send random (weighted) browser-like HTTP headers instead of [Wget/VERSION]
+TOR_BROWSER_MIMIC      Mimic the HTTP headers that [Tor browser] sends and uses
 ONLY_USER_AGENT        Only send a random [User-Agent] instead of all the normal HTTP headers
 ONLY_WGET_CURL         Only use random [2016-2022] versions of Wget/Curl as the User-Agent
 HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
@@ -322,6 +323,8 @@ HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connectio
 
 **Things to note:**
 * ***Enabling this will occasionally cause connection errors.*** Enabling [ONLY_USER_AGENT] will help but at the cost of a less browser-like HTTP header
+
+* monero-bash will not proceed if `TOR_BROWSER_MIMIC` is enabled but Tor proxying is not
 
 * Some HTTP header values are favored more instead of being purely randomly selected, e.g. English is weighted more than other languages
 
