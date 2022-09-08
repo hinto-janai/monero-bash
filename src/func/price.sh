@@ -33,7 +33,7 @@
 
 # fetch price data
 
-check_Price()
+price_Check()
 {
 	[[ $USE_TOR = true ]] && torsocks_init || prompt_PriceAPI_IP
 	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random

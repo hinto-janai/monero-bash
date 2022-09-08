@@ -202,7 +202,7 @@ if [[ $options = "true" ]]; then
 		version) print_Version ;;
 		list) print_MoneroBashTitle && wallet_Count && wallet_List ;;
 		size) print_Size ;;
-		price) check_Price ;;
+		price) price_Check ;;
 		status) status_All ;;
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
