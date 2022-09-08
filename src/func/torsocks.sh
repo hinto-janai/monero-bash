@@ -169,12 +169,11 @@ torsocks_init() {
 			localhost|127.0.0.1|192.168.*) local TOR_WGET_TEST="$(wget -O- "$TOR_PROXY" 2>&1)";;
 			*) local TOR_WGET_TEST="$(torsocks_func wget -O- "$TOR_PROXY" 2>&1)";;
 		esac
-		if [[ $TOR_WGET_TEST = *"Tor is not an HTTP Proxy"* ]]; then
-			[[ $TOR_QUIET = true ]] || log::ok "[3/6] SOCKS Proxy"
-		else
-			log::fail "[3/6] SOCKS Proxy not detected"
-			exit 17
-		fi
+		# test tor proxy reponse
+		case "$TOR_WGET_TEST" in
+			*"Tor is not an HTTP Proxy"*|*"SOCKS Proxy"*|*"SOCKs proxy"*) [[ $TOR_QUIET = true ]] || log::ok "[3/6] SOCKS Proxy";;
+			*) log::fail "[3/6] SOCKS Proxy not detected"; exit 17;;
+		esac
 		# check [https://check.torproject.org]
 		[[ $TOR_QUIET = true ]] || log::prog "[4/6] <check.torproject.org>"
 		local CHECK_TORPROJECT || exit 18
