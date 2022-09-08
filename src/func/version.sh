@@ -46,7 +46,7 @@ version_Template()
 			| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
 			| awk '{print $1}' | head -n1 \
 			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
-		[[ $NewVer = "" ]]&& error_Exit "GitHub HTML filter failed..."
+		[[ $NewVer ]] || error_Exit "GitHub HTML filter failed..."
 	else
 		NewVer="$(echo "$DUMP" | json::var | grep "tag_name")"
 		NewVer=${NewVer/*=}
@@ -58,9 +58,17 @@ version_Template()
 version_Update()
 {
 	if [[ $USE_TOR = true ]]; then
-		LINK="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		if [[ $WGET_GZIP = true ]]; then
+			LINK="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" | gzip -d)"
+		else
+			LINK="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		fi
 	else
-		LINK="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		if [[ $WGET_GZIP = true ]]; then
+			LINK="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" | gzip -d)"
+		else
+			LINK="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		fi
 	fi
 	if [[ $? != 0 && $HTML != true ]]; then
 		IRED; echo "GitHub API error detected..."
@@ -69,16 +77,22 @@ version_Update()
 	fi
 	if [[ $HTML = true ]]; then
 		if [[ $USE_TOR = true ]]; then
-			NewVer="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
-				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
-				| awk '{print $1}' | head -n1 \
-				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+			if [[ $WGET_GZIP = true ]]; then
+				NewVer="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest | gzip -d)"
+			else
+				NewVer="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest)"
+			fi
 		else
-			NewVer="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest \
-				| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
-				| awk '{print $1}' | head -n1 \
-				| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')"
+			if [[ $WGET_GZIP = true ]]; then
+				NewVer="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest | gzip -d)"
+			else
+				NewVer="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://github.com/$AUTHOR/$PROJECT/releases/latest)"
+			fi
 		fi
+		NewVer=$(echo "$NewVer" \
+			| grep -o "/$AUTHOR/$PROJECT/releases/tag/.*\"" \
+			| awk '{print $1}' | head -n1 \
+			| sed "s@/$AUTHOR/$PROJECT/releases/tag/@@g" | tr -d '"')
 		[[ $NewVer ]] || error_Exit "GitHub HTML filter failed..."
 	else
 		NewVer="$(echo "$LINK" | json::var | grep "tag_name")"

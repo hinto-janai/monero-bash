@@ -39,21 +39,20 @@
 header_Random() {
 	[[ $HTTP_HEADERS_SET = ___SET___ ]] && return 0
 	declare -ag WGET_HTTP_HEADERS || exit 99
+	# If encoding is [gzip] then I have to
+	# know so I can decompress it later
+	declare -g WGET_GZIP || exit 100
 
 	# Set [TOR_BROWSER_MIMIC] HTTP headers
-	if [[ $TOR_BROWSER_MIMIC = true ]]; then
+	if [[ $TOR_BROWSER_MIMIC = true && $RPC_CALL != true ]]; then
 		# Exit if Tor is not detected
 		if [[ $USE_TOR != true ]]; then
 			print_Error "HTTP Header error, [USE_TOR] is not enabled."
-			print_Error "Pretending to be Tor browser without a Tor IP is quite fingerprintable."
-			print_Error_Exit "Exiting for your own safety :)"
+			print_Error_Exit "Pretending to be Tor browser without a Tor IP is quite fingerprintable."
 		fi
-	local ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER CACHE_CONTROL HOST CONNECTION UPGRADE_INSECURE_REQUESTS TE || exit 100
+	local ACCEPT LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER CACHE_CONTROL HOST CONNECTION UPGRADE_INSECURE_REQUESTS REFERER || exit 101
 		ACCEPT='text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
-		# Accepting [gzip] encoding would be more natural
-		# but that would require uncompressing it on my end.
-		# Hopefully will create in [monero-bash v2].
-		ENCODING='identity'
+		ENCODING='gzip, deflate, br'
 		LANGUAGE='en-US,en;q=0.5'
 		[[ $RANDOM -gt 16000 ]] && CACHE_CONTROL='max-age=0'
 		CONNECTION='keep-alive'
@@ -62,12 +61,27 @@ header_Random() {
 		# 50% chance
 		[[ $RANDOM -gt 16000 ]] && SEC_FETCH_SITE='none' || SEC_FETCH_SITE='cross-site'
 		[[ $RANDOM -gt 16000 ]] && SEC_FETCH_USER='?1'
-		[[ $RANDOM -gt 16000 ]] && TE='trailers'
 		UPGRADE_INSECURE_REQUESTS='1'
 		USER_AGENT='Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0'
-	else
 
-	local -a ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER CACHE_CONTROL HOST CONNECTION UPGRADE_INSECURE_REQUESTS TE || exit 100
+		# Referer 25% chance
+		if [[ $RANDOM -lt 8000 ]]; then
+			REFERER[0]='https://www.google.com'
+			REFERER[1]='https://www.duckduckgo.com'
+			REFERER[2]='https://www.startpage.com'
+			REFERER[3]='https://www.reddit.com'
+			REFERER[4]='https://www.twitter.com'
+			REFERER[5]='https://youtube.com'
+			REFERER[6]='https://yandex.ru'
+			REFERER[7]='https://out.reddit.com'
+			REFERER[8]='https://github.com'
+			REFERER[9]='https://facebook.com'
+			REFERER=${REFERER[$(shuf -i 0-9 -n 1)]}
+		fi
+
+	elif [[ $RPC_CALL != true ]]; then
+
+	local -a ACCEPT ENCODING LANGUAGE DNT REFERER USER_AGENT SEC_FETCH_DEST SEC_FETCH_MODE SEC_FETCH_SITE WGET_CURL_FAKE_HEADER CACHE_CONTROL HOST CONNECTION UPGRADE_INSECURE_REQUESTS || exit 102
 	# ACCEPT
 	ACCEPT[0]='text/html,application/xhtml+xml,application/xml;q=0.5,image/avif,image/webp,*/*;q=0.5'
 	ACCEPT[1]='text/html,application/xhtml+xml,application/xml;q=0.5,image/avif,image/webp,*/*;q=0.6'
@@ -6195,15 +6209,16 @@ header_Random() {
 	LANGUAGE[4104]='zh,ko;q=0.9,en-US;q=0.9'
 
 	# Referer
-	REFERER[0]='https://www.google.com/'
-	REFERER[1]='https://www.duckduckgo.com/'
-	REFERER[2]='https://www.startpage.com/'
-	REFERER[3]='https://www.reddit.com/'
-	REFERER[4]='https://www.twitter.com/'
-	REFERER[5]='https://youtube.com/'
-	REFERER[6]='https://yandex.ru/'
-	REFERER[7]='https://out.reddit.com/'
-	REFERER[8]='https://github.com/'
+	REFERER[0]='https://www.google.com'
+	REFERER[1]='https://www.duckduckgo.com'
+	REFERER[2]='https://www.startpage.com'
+	REFERER[3]='https://www.reddit.com'
+	REFERER[4]='https://www.twitter.com'
+	REFERER[5]='https://youtube.com'
+	REFERER[6]='https://yandex.ru'
+	REFERER[7]='https://out.reddit.com'
+	REFERER[8]='https://github.com'
+	REFERER[9]='https://facebook.com'
 
 	# SEC_FETCH_DEST
 	SEC_FETCH_DEST[0]='document'
@@ -10880,6 +10895,8 @@ header_Random() {
 	USER_AGENT[4654]='Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.9.2.13) Gecko/20101206 Red Hat/3.6-2.el5 Firefox/3.6.13'
 	USER_AGENT[4655]='Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/537.36 (KHTML, like Gecko)  Chrome/30.0.1599.114 Safari/537.36 Puffin/4.5.0IT'
 
+	elif [[ $RPC_CALL = true ]]; then
+
 	WGET_CURL_FAKE_HEADER[0]='Wget/1.15'
 	WGET_CURL_FAKE_HEADER[1]='Wget/1.16'
 	WGET_CURL_FAKE_HEADER[2]='Wget/1.16.1'
@@ -10938,7 +10955,11 @@ header_Random() {
 	WGET_CURL_FAKE_HEADER[55]='curl/7.84.0'
 	WGET_CURL_FAKE_HEADER[56]='curl/7.85.0'
 
+	fi
+
 	#--------------------------------------------------------------------- Selection process
+	if [[ $TOR_BROWSER_MIMIC != true ]]; then
+
 	# [ONLY_USER_AGENT]
 	if [[ $ONLY_USER_AGENT = true ]]; then
 		# Only wget/curl
@@ -10949,73 +10970,74 @@ header_Random() {
 		fi
 	else
 
-	# [ACCEPT] Random 0-1999
-	ACCEPT=${ACCEPT[$(shuf -i 0-1999 -n 1)]}
+		# [ACCEPT] Random 0-1999
+		ACCEPT=${ACCEPT[$(shuf -i 0-1999 -n 1)]}
 
-	# [ENCODING] Favored towards 0-8 rather than 0-14
-	if [[ $RANDOM -gt 10000 ]]; then
-		ENCODING=${ENCODING[$(shuf -i 0-8 -n 1)]}
-	else
-		ENCODING=${ENCODING[$(shuf -i 0-14 -n 1)]}
+		# [ENCODING] Favored towards 0-8 rather than 0-14
+		if [[ $RANDOM -gt 10000 ]]; then
+			ENCODING=${ENCODING[$(shuf -i 0-8 -n 1)]}
+		else
+			ENCODING=${ENCODING[$(shuf -i 0-14 -n 1)]}
+		fi
+
+		# [LANGUAGE]
+		# 60%~ Just English (en, en-US, en-CA)
+		# 20%~ Single Non-English (es, zh, ko)
+		# 10%~ Double language (en,zh;q=0.6)
+		# 10%~ Triple language (de,es;q=0.5,en-US;q=0.5)
+		LANGUAGE=$(shuf -i 5-9 -n 1)
+		if [[ $RANDOM -gt 20000 ]]; then
+			LANGUAGE="en"
+		elif [[ $RANDOM -gt 15000 ]]; then
+			LANGUAGE='en-US'
+		elif [[ $RANDOM -gt 10000 ]]; then
+			LANGUAGE='en-CA'
+		elif [[ $RANDOM -gt 6400 ]]; then
+			case $(shuf -i 0-5 -n 1) in
+				0) LANGUAGE=fr;;
+				1) LANGUAGE=de;;
+				2) LANGUAGE=es;;
+				3) LANGUAGE=zh;;
+				4) LANGUAGE=ko;;
+				5) LANGUAGE=ja;;
+			esac
+		else
+			LANGUAGE=${LANGUAGE[$(shuf -i 0-4104 -n 1)]}
+		fi
+
+		# [CONNECTION] Always set 'Connection: keep-alive'
+		CONNECTION='keep-alive'
+
+		# [REFERER] 50%~ chance to not have or random 0-8
+		[[ $RANDOM -gt 16000 ]] && REFERER=${REFERER[$(shuf -i 0-8 -n 1)]} || REFERER=
+
+		# [DNT] 75%~ chance to be turned on
+		[[ $RANDOM -gt 10000 ]] && DNT=1 || DNT=0
+
+		# [UPGRADE_INSECURE_REQUESTS] Always on
+		UPGRADE_INSECURE_REQUESTS=1
+
+		# [SEC_FETCH_XXXX] Random
+		SEC_FETCH_DEST=${SEC_FETCH_DEST[$(shuf -i 0-2 -n 1)]}
+		SEC_FETCH_MODE=${SEC_FETCH_MODE[$(shuf -i 0-3 -n 1)]}
+		SEC_FETCH_SIDE=${SEC_FETCH_SIDE[$(shuf -i 0-3 -n 1)]}
+
+		# [USER_AGENT] Random 0-4655
+		if [[ $ONLY_WGET_CURL = true ]]; then
+			# only wget/curl
+			USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+		else
+			USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
+		fi
 	fi
-
-	# [LANGUAGE]
-	# 60%~ Just English (en, en-US, en-CA)
-	# 20%~ Single Non-English (es, zh, ko)
-	# 10%~ Double language (en,zh;q=0.6)
-	# 10%~ Triple language (de,es;q=0.5,en-US;q=0.5)
-	LANGUAGE=$(shuf -i 5-9 -n 1)
-	if [[ $RANDOM -gt 20000 ]]; then
-		LANGUAGE="en"
-	elif [[ $RANDOM -gt 15000 ]]; then
-		LANGUAGE='en-US'
-	elif [[ $RANDOM -gt 10000 ]]; then
-		LANGUAGE='en-CA'
-	elif [[ $RANDOM -gt 6400 ]]; then
-		case $(shuf -i 0-5 -n 1) in
-			0) LANGUAGE=fr;;
-			1) LANGUAGE=de;;
-			2) LANGUAGE=es;;
-			3) LANGUAGE=zh;;
-			4) LANGUAGE=ko;;
-			5) LANGUAGE=ja;;
-		esac
-	else
-		LANGUAGE=${LANGUAGE[$(shuf -i 0-4104 -n 1)]}
-	fi
-
-	# [CONNECTION] Always set 'Connection: keep-alive'
-	CONNECTION='keep-alive'
-
-	# [REFERER] 50%~ chance to not have or random 0-8
-	[[ $RANDOM -gt 16000 ]] && REFERER=${REFERER[$(shuf -i 0-8 -n 1)]} || REFERER=
-
-	# [DNT] 75%~ chance to be turned on
-	[[ $RANDOM -gt 10000 ]] && DNT=1 || DNT=0
-
-	# [UPGRADE_INSECURE_REQUESTS] Always on
-	UPGRADE_INSECURE_REQUESTS=1
-
-	# [SEC_FETCH_XXXX] Random
-	SEC_FETCH_DEST=${SEC_FETCH_DEST[$(shuf -i 0-2 -n 1)]}
-	SEC_FETCH_MODE=${SEC_FETCH_MODE[$(shuf -i 0-3 -n 1)]}
-	SEC_FETCH_SIDE=${SEC_FETCH_SIDE[$(shuf -i 0-3 -n 1)]}
-
-	# [USER_AGENT] Random 0-4655
-	if [[ $ONLY_WGET_CURL = true ]]; then
-		# only wget/curl
-		USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
-	else
-		USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
-	fi
-
-	fi
-
 	fi
 
 	# Print headers if [HTTP_HEADERS_VERBOSE] is on
 	if [[ $HTTP_HEADERS_VERBOSE = true ]]; then
-		if [[ $TOR_BROWSER_MIMIC = true ]]; then
+		if [[ $RPC_CALL = true ]]; then
+			printf "${BYELLOW}${UYELLOW}%s${BBLUE}%s${OFF}\n" "HTTP Headers " " RPC Mode"
+			printf "%s\n\n" "USER_AGENT | $USER_AGENT"
+		elif [[ $TOR_BROWSER_MIMIC = true ]]; then
 			printf "${BYELLOW}${UYELLOW}%s${BPURPLE}%s${OFF}\n" "HTTP Headers " " Tor Browser Mode"
 			 printf "%s\n" \
 				"ACCEPT                    | $ACCEPT"         \
@@ -11023,16 +11045,16 @@ header_Random() {
 				"LANGUAGE                  | $LANGUAGE"       \
 				"CACHE_CONTROL             | $CACHE_CONTROL"  \
 				"CONNECTION                | $CONNECTION"     \
+				"REFERER                   | $REFERER"        \
 				"SEC_FETCH_DEST            | $SEC_FETCH_DEST" \
 				"SEC_FETCH_MODE            | $SEC_FETCH_MODE" \
 				"SEC_FETCH_SITE            | $SEC_FETCH_SITE" \
 				"SEC_FETCH_USER            | $SEC_FETCH_USER" \
-				"TE                        | $TE"             \
 				"UPGRADE_INSECURE_REQUESTS | $UPGRADE_INSECURE_REQUESTS" \
 				"USER_AGENT                | $USER_AGENT"     \
 				""
 		elif [[ $ONLY_USER_AGENT = true ]]; then
-			printf "${BYELLOW}${UYELLOW}%s${BRED}%s${OFF}\n" "HTTP Headers "" User-Agent Mode"
+			printf "${BYELLOW}${UYELLOW}%s${BRED}%s${OFF}\n" "HTTP Headers " " User-Agent Mode"
 			printf "%s\n\n" "USER_AGENT | $USER_AGENT"
 		else
 			printf "${BYELLOW}${UYELLOW}%s${OFF}\n" "HTTP Headers"
@@ -11052,17 +11074,17 @@ header_Random() {
 		fi
 	fi
 
-	if [[ $TOR_BROWSER_MIMIC ]]; then
+	if [[ $TOR_BROWSER_MIMIC = true ]]; then
 		WGET_HTTP_HEADERS+=("--header=Accept: $ACCEPT") || exit 1
 		WGET_HTTP_HEADERS+=("--header=Accept-Encoding: $ENCODING") || exit 2
 		WGET_HTTP_HEADERS+=("--header=Accept-Language: $LANGUAGE") || exit 3
 		[[ $CACHE_CONTROL ]] && { WGET_HTTP_HEADERS+=("--header=Cache-Control: $CACHE_CONTROL") || exit 4; }
 		WGET_HTTP_HEADERS+=("--header=Connection: $CONNECTION") || exit 5
-		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Dest: $SEC_FETCH_DEST") || exit 6
-		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Site: $SEC_FETCH_SITE") || exit 7
-		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Mode: $SEC_FETCH_MODE") || exit 8
-		[[ $SEC_FETCH_USER ]] && { WGET_HTTP_HEADERS+=("--header=Sec-Fetch-User: $SEC_FETCH_USER") || exit 9; }
-		[[ $TE ]] && { WGET_HTTP_HEADERS+=("--header=TE: $TE") || exit 10; }
+		[[ $REFERER ]] && { WGET_HTTP_HEADERS+=("--header=Referer: $REFERER") || exit 6; }
+		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Dest: $SEC_FETCH_DEST") || exit 7
+		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Site: $SEC_FETCH_SITE") || exit 8
+		WGET_HTTP_HEADERS+=("--header=Sec-Fetch-Mode: $SEC_FETCH_MODE") || exit 9
+		[[ $SEC_FETCH_USER ]] && { WGET_HTTP_HEADERS+=("--header=Sec-Fetch-User: $SEC_FETCH_USER") || exit 10; }
 		WGET_HTTP_HEADERS+=("--header=Upgrade-Insecure-Requests: $UPGRADE_INSECURE_REQUESTS") || exit 11
 		WGET_HTTP_HEADERS+=("--header=User-Agent: $USER_AGENT") || exit 12
 	elif [[ $ONLY_USER_AGENT = true ]]; then
@@ -11081,5 +11103,6 @@ header_Random() {
 		WGET_HTTP_HEADERS+=("--header=User-Agent: $USER_AGENT") || exit 9
 	fi
 
+	[[ $ENCODING = *'gzip'* ]] && WGET_GZIP=true
 	declare -gr HTTP_HEADERS_SET=___SET___
 }

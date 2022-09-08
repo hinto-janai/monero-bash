@@ -40,9 +40,17 @@ check_Price()
 	BRED; echo "--- XMR fiat price ---" ;OFF
 	# use TOR if enabled
 	if [[ $USE_TOR = true ]]; then
-		local PRICE=$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
+		if [[ $WGET_GZIP = true ]]; then
+			local PRICE=$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR" | gzip -d)
+		else
+			local PRICE=$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR" | gzip -d)
+		fi
 	else
-		local PRICE=$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
+		if [[ $WGET_GZIP = true ]]; then
+			local PRICE=$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR" | gzip -d)
+		else
+			local PRICE=$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://min-api.cryptocompare.com/data/price?fsym=XMR&tsyms=USD,EUR,JPY,GBP,CHF,CAD,AUD,ZAR")
+		fi
 	fi
 	# filter
 	echo $PRICE | tr -d "{\"}" | tr "," "\n" | sed 's/:/ | /g'

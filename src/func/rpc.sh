@@ -85,8 +85,7 @@ payload="$payload}"
 
 # Set [Wget/Curl] HTTP header for RPC calls
 if [[ $FAKE_HTTP_HEADERS = true && $DAEMON_RPC_IP != localhost* && $DAEMON_RPC_IP != 127.0.0.1* && $DAEMON_RPC_IP != 192.168.* ]]; then
-	ONLY_USER_AGENT=true
-	ONLY_WGET_CURL=true
+	declare -g RPC_CALL=true ONLY_USER_AGENT=true ONLY_WGET_CURL=true
 	header_Random
 fi
 

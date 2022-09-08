@@ -45,17 +45,33 @@ download_Template()
 	HTML=false
 	# Use Tor if specified in [monero-bash.conf]
 	if [[ $USE_TOR = true ]]; then
-		DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		if [[ $WGET_GZIP = true ]]; then
+			DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" | gzip -d)"
+		else
+			DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		fi
 	else
-		DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		if [[ $WGET_GZIP = true ]]; then
+			DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest" | gzip -d)"
+		else
+			DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://api.github.com/repos/$AUTHOR/$PROJECT/releases/latest")"
+		fi
 	fi
 	if [[ $? != 0 ]]; then
 		IRED; echo "GitHub API error detected..."
 		OFF; echo "Trying GitHub HTML filter instead..."
 		if [[ $USE_TOR = true ]]; then
-			DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+			if [[ $WGET_GZIP = true ]]; then
+				DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest" | gzip -d)"
+			else
+				DUMP="$(torsocks_func wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+			fi
 		else
-			DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+			if [[ $WGET_GZIP = true ]]; then
+				DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest" | gzip -d)"
+			else
+				DUMP="$(wget -qO- "${WGET_HTTP_HEADERS[@]}" -e robots=off "https://github.com/$AUTHOR/$PROJECT/releases/latest")"
+			fi
 		fi
 		API=false
 		HTML=true

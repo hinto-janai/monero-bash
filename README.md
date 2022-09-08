@@ -315,22 +315,20 @@ TOR_QUIET              Silence Tor set-up messages
 monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with web-browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
 ```
 FAKE_HTTP_HEADERS      Send random (weighted) browser-like HTTP headers instead of [Wget/VERSION]
-TOR_BROWSER_MIMIC      Mimic the HTTP headers that [Tor browser] sends and uses
+TOR_BROWSER_MIMIC      Mimic the HTTP headers that [Tor browser] uses/sends
 ONLY_USER_AGENT        Only send a random [User-Agent] instead of all the normal HTTP headers
 ONLY_WGET_CURL         Only use random [2016-2022] versions of Wget/Curl as the User-Agent
 HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
 ```
 
 **Things to note:**
-* ***Enabling this will occasionally cause connection errors.*** Enabling [ONLY_USER_AGENT] will help but at the cost of a less browser-like HTTP header
-
-* monero-bash will not proceed if `TOR_BROWSER_MIMIC` is enabled but Tor proxying is not
-
 * Some HTTP header values are favored more instead of being purely randomly selected, e.g. English is weighted more than other languages
 
 * The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/header.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/header.sh)
 
-* `ONLY_USER_AGENT` & `ONLY_WGET_CURL` will always be enabled when sending a (non-local) RPC call
+* Tor proxying must be enabled for `TOR_BROWSER_MIMIC` to work
+
+* `ONLY_USER_AGENT` & `ONLY_WGET_CURL` will always be enabled when sending a non-local RPC call
 
 * Fake HTTP headers will not used for RPC calls to `localhost/127.0.0.1/192.168.x.x`
 

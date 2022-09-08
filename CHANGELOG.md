@@ -2,15 +2,15 @@
 ## Updates
 * **HTTP Spoofing:** Added `TOR_BROWSER_MIMIC` option that mimics the HTTP headers sent/used by [Tor browser.](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/tor_browser) Tor proxying must be enabled for this option to work
 * **HTTP Spoofing:** Added `ONLY_WGET_CURL` option to only use randomly selected 2016-2022 versions of `wget/curl` as the [User-Agent.](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/wget_curl) This option and `ONLY_USER_AGENT` will always enabled when sending a non-local RPC call
-* **HTTP Spoofing:** [More referers [5] -> [9]](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/referer)
-* **HTTP Spoofing:** [More language permutations [230] -> [4105]](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/language)
+* **HTTP Spoofing:** More language permutations [[230] -> [4105],](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/language) more referers [[5] -> [10]](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/referer)
+* **Watch:** Spacing is auto-adjusted on terminal size changes
 * **Status:** P2Pool stat calculation is slightly faster
 
 ## Fixes
 * **Package manager:** The GitHub API returns 1-line JSON (sometimes) which causes parsing errors. This long standing issue was the cause of most update/upgrade failures, it is now fixed
+* **HTTP Spoofing:** If `Accept-Encoding: gzip` is set, the data is now decompressed properly. This was also the cause of many update/upgrade errors when using fake headers
 * **HTTP Spoofing:** Only set once when upgrading multiple packages
 * **Status:** Fixed P2Pool `x/hour, x/day` math
-* **Watch:** Spacing is auto-adjusted on terminal size changes
 
 ---
 

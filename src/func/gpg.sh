@@ -133,9 +133,17 @@ gpg_Overwrite()
 	BWHITE; echo "Overwriting LOCAL keys..." ;OFF
 	trap "trap_Hash" 1 2 3 6 15
 	if [[ $USE_TOR = true ]]; then
-		torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+		if [[ $WGET_GZIP = true ]]; then
+			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+		else
+			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+		fi
 	else
-		wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+		if [[ $WGET_GZIP = true ]]; then
+			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+		else
+			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+		fi
 	fi
 	code_Wget
 	PRODUCE_HASH_LIST
