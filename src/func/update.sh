@@ -85,8 +85,8 @@ update_All()
 {
 	prompt_Sudo
 	error_Sudo
-	[[ $USE_TOR = true ]] && torsocks_init
 	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
+	[[ $USE_TOR = true ]] && torsocks_init && echo
 	printf "${BBLUE}${UBLUE}%s\n${OFF}" "<###> Fetching package metadata <###>"
 	update_MoneroBash
 	[[ $MONERO_VER != "" ]]&& update_Monero

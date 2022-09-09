@@ -38,7 +38,7 @@
 # See the very end of this function to see the selection process.
 header_Random() {
 	[[ $HTTP_HEADERS_SET = ___SET___ ]] && return 0
-	declare -ag WGET_HTTP_HEADERS || exit 99
+	declare -ag WGET_HTTP_HEADER || exit 99
 	# If encoding is [gzip] then I have to
 	# know so I can decompress it later
 	declare -g WGET_GZIP || exit 100
@@ -10895,7 +10895,7 @@ header_Random() {
 	USER_AGENT[4654]='Mozilla/5.0 (X11; U; Linux x86_64; en-GB; rv:1.9.2.13) Gecko/20101206 Red Hat/3.6-2.el5 Firefox/3.6.13'
 	USER_AGENT[4655]='Mozilla/5.0 (X11; U; Linux x86_64; en-US) AppleWebKit/537.36 (KHTML, like Gecko)  Chrome/30.0.1599.114 Safari/537.36 Puffin/4.5.0IT'
 
-	elif [[ $RPC_CALL = true ]]; then
+	fi
 
 	WGET_CURL_FAKE_HEADER[0]='Wget/1.15'
 	WGET_CURL_FAKE_HEADER[1]='Wget/1.16'
@@ -10955,81 +10955,82 @@ header_Random() {
 	WGET_CURL_FAKE_HEADER[55]='curl/7.84.0'
 	WGET_CURL_FAKE_HEADER[56]='curl/7.85.0'
 
-	fi
-
 	#--------------------------------------------------------------------- Selection process
-	if [[ $TOR_BROWSER_MIMIC != true ]]; then
+	if [[ $RPC_CALL = true ]]; then
+		local USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
 
-	# [ONLY_USER_AGENT]
-	if [[ $ONLY_USER_AGENT = true ]]; then
-		# Only wget/curl
-		if [[ $ONLY_WGET_CURL = true ]]; then
-			USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+	elif [[ $TOR_BROWSER_MIMIC != true ]]; then
+
+		# [ONLY_USER_AGENT]
+		if [[ $ONLY_USER_AGENT = true ]]; then
+			# Only wget/curl
+			if [[ $ONLY_WGET_CURL = true ]]; then
+				USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+			else
+				USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
+			fi
 		else
-			USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
+
+			# [ACCEPT] Random 0-1999
+			ACCEPT=${ACCEPT[$(shuf -i 0-1999 -n 1)]}
+
+			# [ENCODING] Favored towards 0-8 rather than 0-14
+			if [[ $RANDOM -gt 10000 ]]; then
+				ENCODING=${ENCODING[$(shuf -i 0-8 -n 1)]}
+			else
+				ENCODING=${ENCODING[$(shuf -i 0-14 -n 1)]}
+			fi
+
+			# [LANGUAGE]
+			# 60%~ Just English (en, en-US, en-CA)
+			# 20%~ Single Non-English (es, zh, ko)
+			# 10%~ Double language (en,zh;q=0.6)
+			# 10%~ Triple language (de,es;q=0.5,en-US;q=0.5)
+			LANGUAGE=$(shuf -i 5-9 -n 1)
+			if [[ $RANDOM -gt 20000 ]]; then
+				LANGUAGE="en"
+			elif [[ $RANDOM -gt 15000 ]]; then
+				LANGUAGE='en-US'
+			elif [[ $RANDOM -gt 10000 ]]; then
+				LANGUAGE='en-CA'
+			elif [[ $RANDOM -gt 6400 ]]; then
+				case $(shuf -i 0-5 -n 1) in
+					0) LANGUAGE=fr;;
+					1) LANGUAGE=de;;
+					2) LANGUAGE=es;;
+					3) LANGUAGE=zh;;
+					4) LANGUAGE=ko;;
+					5) LANGUAGE=ja;;
+				esac
+			else
+				LANGUAGE=${LANGUAGE[$(shuf -i 0-4104 -n 1)]}
+			fi
+
+			# [CONNECTION] Always set 'Connection: keep-alive'
+			CONNECTION='keep-alive'
+
+			# [REFERER] 50%~ chance to not have or random 0-8
+			[[ $RANDOM -gt 16000 ]] && REFERER=${REFERER[$(shuf -i 0-8 -n 1)]} || REFERER=
+
+			# [DNT] 75%~ chance to be turned on
+			[[ $RANDOM -gt 10000 ]] && DNT=1 || DNT=0
+
+			# [UPGRADE_INSECURE_REQUESTS] Always on
+			UPGRADE_INSECURE_REQUESTS=1
+
+			# [SEC_FETCH_XXXX] Random
+			SEC_FETCH_DEST=${SEC_FETCH_DEST[$(shuf -i 0-2 -n 1)]}
+			SEC_FETCH_MODE=${SEC_FETCH_MODE[$(shuf -i 0-3 -n 1)]}
+			SEC_FETCH_SIDE=${SEC_FETCH_SIDE[$(shuf -i 0-3 -n 1)]}
+
+			# [USER_AGENT] Random 0-4655
+			if [[ $ONLY_WGET_CURL = true ]]; then
+				# only wget/curl
+				USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+			else
+				USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
+			fi
 		fi
-	else
-
-		# [ACCEPT] Random 0-1999
-		ACCEPT=${ACCEPT[$(shuf -i 0-1999 -n 1)]}
-
-		# [ENCODING] Favored towards 0-8 rather than 0-14
-		if [[ $RANDOM -gt 10000 ]]; then
-			ENCODING=${ENCODING[$(shuf -i 0-8 -n 1)]}
-		else
-			ENCODING=${ENCODING[$(shuf -i 0-14 -n 1)]}
-		fi
-
-		# [LANGUAGE]
-		# 60%~ Just English (en, en-US, en-CA)
-		# 20%~ Single Non-English (es, zh, ko)
-		# 10%~ Double language (en,zh;q=0.6)
-		# 10%~ Triple language (de,es;q=0.5,en-US;q=0.5)
-		LANGUAGE=$(shuf -i 5-9 -n 1)
-		if [[ $RANDOM -gt 20000 ]]; then
-			LANGUAGE="en"
-		elif [[ $RANDOM -gt 15000 ]]; then
-			LANGUAGE='en-US'
-		elif [[ $RANDOM -gt 10000 ]]; then
-			LANGUAGE='en-CA'
-		elif [[ $RANDOM -gt 6400 ]]; then
-			case $(shuf -i 0-5 -n 1) in
-				0) LANGUAGE=fr;;
-				1) LANGUAGE=de;;
-				2) LANGUAGE=es;;
-				3) LANGUAGE=zh;;
-				4) LANGUAGE=ko;;
-				5) LANGUAGE=ja;;
-			esac
-		else
-			LANGUAGE=${LANGUAGE[$(shuf -i 0-4104 -n 1)]}
-		fi
-
-		# [CONNECTION] Always set 'Connection: keep-alive'
-		CONNECTION='keep-alive'
-
-		# [REFERER] 50%~ chance to not have or random 0-8
-		[[ $RANDOM -gt 16000 ]] && REFERER=${REFERER[$(shuf -i 0-8 -n 1)]} || REFERER=
-
-		# [DNT] 75%~ chance to be turned on
-		[[ $RANDOM -gt 10000 ]] && DNT=1 || DNT=0
-
-		# [UPGRADE_INSECURE_REQUESTS] Always on
-		UPGRADE_INSECURE_REQUESTS=1
-
-		# [SEC_FETCH_XXXX] Random
-		SEC_FETCH_DEST=${SEC_FETCH_DEST[$(shuf -i 0-2 -n 1)]}
-		SEC_FETCH_MODE=${SEC_FETCH_MODE[$(shuf -i 0-3 -n 1)]}
-		SEC_FETCH_SIDE=${SEC_FETCH_SIDE[$(shuf -i 0-3 -n 1)]}
-
-		# [USER_AGENT] Random 0-4655
-		if [[ $ONLY_WGET_CURL = true ]]; then
-			# only wget/curl
-			USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
-		else
-			USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
-		fi
-	fi
 	fi
 
 	# Print headers if [HTTP_HEADERS_VERBOSE] is on
@@ -11087,7 +11088,7 @@ header_Random() {
 		[[ $SEC_FETCH_USER ]] && { WGET_HTTP_HEADERS+=("--header=Sec-Fetch-User: $SEC_FETCH_USER") || exit 10; }
 		WGET_HTTP_HEADERS+=("--header=Upgrade-Insecure-Requests: $UPGRADE_INSECURE_REQUESTS") || exit 11
 		WGET_HTTP_HEADERS+=("--header=User-Agent: $USER_AGENT") || exit 12
-	elif [[ $ONLY_USER_AGENT = true ]]; then
+	elif [[ $ONLY_USER_AGENT = true || $RPC_CALL = true ]]; then
 		WGET_HTTP_HEADERS=("--header=User-Agent: $USER_AGENT") || exit 10
 	else
 		WGET_HTTP_HEADERS+=("--header=Accept: $ACCEPT") || exit 1
@@ -11103,6 +11104,6 @@ header_Random() {
 		WGET_HTTP_HEADERS+=("--header=User-Agent: $USER_AGENT") || exit 9
 	fi
 
-	[[ $ENCODING = *'gzip'* ]] && WGET_GZIP=true
+	[[ ${WGET_HTTP_HEADERS[@]} = *'gzip'* ]] && WGET_GZIP=true
 	declare -gr HTTP_HEADERS_SET=___SET___
 }

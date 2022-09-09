@@ -72,10 +72,10 @@ upgrade_Pre()
 
 upgrade_Template()
 {
-	# Show if using Tor
-	[[ $USE_TOR = true ]] && torsocks_init
 	# HTTP headers
 	[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
+	# Show if using Tor
+	[[ $USE_TOR = true ]] && torsocks_init
 
 	echo
 	# DOWNLOAD

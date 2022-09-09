@@ -70,8 +70,8 @@ status_Template()
 		BGREEN; echo "ONLINE" ;OFF
 
 		# ps stats
-		ps -o "| %C | %t |" -p $PROCESS_ID
-		echo "----------------------"
+		ps -o "| %C | %t | %p |" -p $PROCESS_ID
+		echo "--------------------------------"
 		# process specific stats
 		EXTRA_STATS
 		printf "\n"

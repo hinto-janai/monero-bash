@@ -210,6 +210,7 @@ if [[ $options = "true" ]]; then
 		tor)
 			USE_TOR=true TEST_TOR=true TOR_QUIET=false
 			[[ $TOR_PROXY ]] || { print_Warn "[TOR_PROXY] not found in [monero-bash], falling back to [localhost:9050]"; TOR_IP=localhost TOR_PORT=9050; }
+			[[ $FAKE_HTTP_HEADERS = true ]] && header_Random
 			torsocks_init
 			exit
 			;;
