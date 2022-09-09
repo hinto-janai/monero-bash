@@ -40,11 +40,20 @@ gpg_import_Template()
 {
 	local LOCAL="$(cat "$installDirectory/gpg/${GPG_OWNER}.asc")"
 	if [[ $USE_TOR = true ]]; then
-		local ONLINE="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY")"
+		if [[ $WGET_GZIP = true ]]; then
+			local ONLINE="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY" | gzip -d)"
+		else
+			local ONLINE="$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY")"
+		fi
 	else
-		local ONLINE="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY")"
+		if [[ $WGET_GZIP = true ]]; then
+			local ONLINE="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY" | gzip -d)"
+		else
+			local ONLINE="$(wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- "$GPG_PUB_KEY")"
+		fi
 	fi
-	if [[ "$LOCAL" = "$ONLINE" ]]; then
+	code_Wget
+	if [[ $LOCAL = "$ONLINE" ]]; then
 		gpg --import "$installDirectory/gpg/${GPG_OWNER}.asc"
 	else
 		gpg_Diff
@@ -134,13 +143,13 @@ gpg_Overwrite()
 	trap "trap_Hash" 1 2 3 6 15
 	if [[ $USE_TOR = true ]]; then
 		if [[ $WGET_GZIP = true ]]; then
-			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY" | gzip -d
 		else
 			torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
 		fi
 	else
 		if [[ $WGET_GZIP = true ]]; then
-			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
+			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY" | gzip -d
 		else
 			wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -q -O "$installDirectory/gpg/${GPG_OWNER}.asc" "$GPG_PUB_KEY"
 		fi

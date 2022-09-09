@@ -132,74 +132,74 @@ torsocks_init() {
 	[[ $TOR_QUIET = true ]] || printf "${BWHITE}${UWHITE}%s${BPURPLE}%s${OFF}\n" "Routing through " "Tor [${TOR_PROXY}]"
 
 	# Check if [libtorsocks.so] exists (Arch Linux)
-	[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::prog "[1/6] libtorsocks.so" || log::prog "libtorsocks.so"; }
+	[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::prog "(1/6) libtorsocks.so ..." || log::prog "libtorsocks.so ..."; }
 	if [[ -e /usr/lib/torsocks/libtorsocks.so ]]; then
 		declare -g SHLIB="/usr/lib/torsocks/libtorsocks.so" || { print_Error "Torsocks error 12"; exit 12; }
-		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "[1/6] libtorsocks.so -> system" || log::ok "libtorsocks.so -> system"; }
+		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "(1/6) libtorsocks.so ... using system" || log::ok "libtorsocks.so ... using system"; }
 	# For Debian
 	elif [[ -e /usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so ]]; then
 		declare -g SHLIB="/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so" || { print_Error "Torsocks error 13"; exit 13; }
-		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "[1/6] libtorsocks.so -> system" || log::ok "libtorsocks.so -> system"; }
+		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "(1/6) libtorsocks.so ... using system" || log::ok "libtorsocks.so ... using system"; }
 	# [monero-bash] builtin version
 	elif [[ -e /usr/local/share/monero-bash/src/libtorsocks.so ]]; then
 		declare -g SHLIB="/usr/local/share/monero-bash/src/libtorsocks.so" || { print_Error "Torsocks error 14"; exit 14; }
-		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "[1/6] libtorsocks.so -> system" || log::ok "libtorsocks.so -> system"; }
+		[[ $TOR_QUIET = true ]] || { [[ $TEST_TOR = true ]] && log::ok "(1/6) libtorsocks.so ... using builtin" || log::ok "libtorsocks.so ... using builtin"; }
 	else
-		log::fail "[1/6] libtorsocks.so -> no system or builtin found" || log::fail "libtorsocks.so -> no system or builtin found"
+		[[ $TEST_TOR = true ]] && log::fail "(1/6) libtorsocks.so ... no system or builtin version found!" || log::fail "libtorsocks.so ... no system or builtin version found!"
 		exit 15
 	fi
 
 	# Test Tor (if enabled)
 	if [[ $TEST_TOR = true ]]; then
 		# check systemd service
-		[[ $TOR_QUIET = true ]] || log::prog "[2/6] <tor.service>"
+		[[ $TOR_QUIET = true ]] || log::prog "(2/6) systemd tor.service ..."
 		if [[ $TOR_IP = 127.0.0.1 || $TOR_IP = localhost ]]; then
 			if systemctl status tor.service &>/dev/null; then
-				[[ $TOR_QUIET = true ]] || log::ok "[2/6] <tor.service>"
+				[[ $TOR_QUIET = true ]] || log::ok "(2/6) systemd tor.service ... online"
 			else
-				log::fail "[2/6] <tor.service> not online"
+				log::fail "(2/6) systemd tor.service ... not online!"
 				exit 16
 			fi
 		else
-			[[ $TOR_QUIET = true ]] || log::warn "[2/6] Non-local Tor detected, skipping systemd check"
+			[[ $TOR_QUIET = true ]] || log::warn "(2/6) Non-local Tor detected, skipping systemd check"
 		fi
 		# check wget response (Tor is not an HTTP Proxy)
-		[[ $TOR_QUIET = true ]] || log::prog "[3/6] SOCKS Proxy"
+		[[ $TOR_QUIET = true ]] || log::prog "(3/6) Proxy protocol ..."
 		case "$TOR_IP" in
 			localhost|127.0.0.1|192.168.*) local TOR_WGET_TEST="$(wget -O- "$TOR_PROXY" 2>&1)";;
 			*) local TOR_WGET_TEST="$(torsocks_func wget -O- "$TOR_PROXY" 2>&1)";;
 		esac
 		# test tor proxy reponse
 		case "$TOR_WGET_TEST" in
-			*"Tor is not an HTTP Proxy"*|*"SOCKS Proxy"*|*"SOCKs proxy"*) [[ $TOR_QUIET = true ]] || log::ok "[3/6] SOCKS Proxy";;
-			*) log::fail "[3/6] SOCKS Proxy not detected"; exit 17;;
+			*"Tor is not an HTTP Proxy"*|*"SOCKS Proxy"*|*"SOCKs proxy"*) [[ $TOR_QUIET = true ]] || log::ok "(3/6) Proxy protocol ... SOCKS detected";;
+			*) log::fail "(3/6) Proxy protocol ... SOCKS not detected!"; exit 17;;
 		esac
 		# check [https://check.torproject.org]
-		[[ $TOR_QUIET = true ]] || log::prog "[4/6] <check.torproject.org>"
+		[[ $TOR_QUIET = true ]] || log::prog "(4/6) check.torproject.org ..."
 		local CHECK_TORPROJECT || exit 18
 		if CHECK_TORPROJECT=$(torsocks_func wget "${WGET_HTTP_HEADERS[@]}" -e robots=off -qO- https://check.torproject.org); then
-			[[ $TOR_QUIET = true ]] || log::ok "[4/6] <check.torproject.org>"
+			[[ $TOR_QUIET = true ]] || log::ok "(4/6) check.torproject.org ... connected"
 		else
-			log::fail "[4/6] Could not connect to <https://check.torproject.org>"
+			log::fail "(4/6) check.torproject.org ... could not connect!"
 			exit 19
 		fi
 		# Grep for success message
-		[[ $TOR_QUIET = true ]] || log::prog "[5/6] Tor external check"
+		[[ $TOR_QUIET = true ]] || log::prog "(5/6) External appearance ..."
 		if echo "$CHECK_TORPROJECT" | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
-			[[ $TOR_QUIET = true ]] || log::ok "[5/6] Tor external check"
+			[[ $TOR_QUIET = true ]] || log::ok "(5/6) External appearance ... seen as Tor"
 		else
-			log::fail "[5/6] Tor external check failed!"
-			log::fail "[5/6] <check.torproject.org> indicated Tor is not properly configured"
+			log::fail "(5/6) External appearance ... not seen as Tor externally!"
+			log::fail "(5/6) <https://check.torproject.org> indicated Tor is not properly configured"
 			exit 20
 		fi
 		# Grep for IP
-		[[ $TOR_QUIET = true ]] || log::prog "[6/6] Exit IP"
+		[[ $TOR_QUIET = true ]] || log::prog "(6/6) <Tor exit IP>"
 		local IP_TORPROJECT=$(echo "$CHECK_TORPROJECT" | grep "Your IP address appears to be:")
 		IP_TORPROJECT=${IP_TORPROJECT//[!0-9.]}
 		if [[ $IP_TORPROJECT =~ [0-9.]+ ]]; then
-			[[ $TOR_QUIET = true ]] || log::ok "[6/6] Exit IP <${IP_TORPROJECT}>"
+			[[ $TOR_QUIET = true ]] || log::ok "(6/6) Tor exit IP ... ${IP_TORPROJECT}"
 		else
-			log::warn "[6/6] <${IP_TORPROJECT}> Exit IP could not be found, continuing anyway"
+			[[ $TOR_QUIET = true ]] || log::warn "(6/6) Tor exit IP ... not found, continuing anyway"
 		fi
 	fi
 

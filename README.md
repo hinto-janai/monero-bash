@@ -316,7 +316,7 @@ TOR_QUIET              Silence Tor set-up messages
 monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with web-browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
 ```
 FAKE_HTTP_HEADERS      Send random (weighted) browser-like HTTP headers instead of [Wget/VERSION]
-TOR_BROWSER_MIMIC      Mimic the HTTP headers that [Tor browser] uses/sends
+TOR_BROWSER_MIMIC      Mimic the HTTP headers that [Tor browser] uses
 ONLY_USER_AGENT        Only send a random [User-Agent] instead of all the normal HTTP headers
 ONLY_WGET_CURL         Only use random [2016-2022] versions of Wget/Curl as the User-Agent
 HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connection
@@ -341,11 +341,11 @@ For transparency and ease-of-mind, here's all the connections `monero-bash` make
 | Domain                   | Why                                                                                       | When | Where |
 |--------------------------|-------------------------------------------------------------------------------------------|------|-------|
 | https://github.com       | Fetching metadata information on packages + Tar/hash/signature/key download | `monero-bash update`, `monero-bash upgrade` | [`download.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download.sh) [`eol.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/eol.sh) [`gpg.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg.sh) [`verify.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify.sh) [`version.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version.sh)
-| https://getmonero.org  | Tar/hash/signature/key download specifically for Monero (not hosted on GitHub) | When `upgrading` Monero | Same as above
-| https://cryptocompare.com | XMR fiat price data | `monero-bash price` | [`price.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/price.sh)
+| https://getmonero.org  | Tar/hash/signature/key download specifically for Monero (not hosted on GitHub) | When upgrading Monero | Same as above
+| https://cryptocompare.com | XMR price data | `monero-bash price` | [`price.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/price.sh)
 | https://torproject.com | Test Tor connection + Get exit IP | `monero-bash tor` or when using any internet-related command with `TEST_TOR` enabled | [`torsocks.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/torsocks.sh)
 | RPC | Monero RPC calls, the IP given in `DAEMON_RPC_IP` will be contacted | `monero-bash rpc` | [`rpc.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/rpc.sh)
-| DNS | DNS connections will usually be handled by your OS (or whatever custom DNS setup you have). If using Tor, the `torsocks` wrapper will route all DNS requests through the Tor network automatically | Any internet-related command when DNS isn't already cached | All of the above files
+| DNS | DNS connections will usually be handled by your OS (or whatever custom DNS setup you have). If using Tor, the `torsocks` wrapper will route all DNS requests through the Tor network automatically | Any internet-related command when DNS isn't already cached | All of the above
 
 ## FAQ
 <details>
@@ -546,7 +546,7 @@ The full list monero-bash uses (including more than just User-Agents) can be fou
 </details>
 
 <details>
-<summary>Where are the 'monero-bash seed' mnemonics sourced from?</summary>
+<summary>Where are the [monero-bash seed] mnemonics sourced from?</summary>
 
 ---
 
