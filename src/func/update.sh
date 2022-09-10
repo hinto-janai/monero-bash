@@ -43,10 +43,10 @@ update_Template()
 		BWHITE; echo -n "-> "
 		BGREEN; echo "$NewVer"
 		updateFound="true"
-		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state"
+		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"true\"@" "$state" || panic
 		PRODUCE_HASH_LIST &>/dev/null
 	else
-		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+		sudo sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state" || panic
 		PRODUCE_HASH_LIST &>/dev/null
 		BWHITE; echo -n "$NAME_SPACED"
 		BGREEN; echo "$NAME_VER"

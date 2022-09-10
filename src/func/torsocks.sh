@@ -194,7 +194,7 @@ torsocks_init() {
 		fi
 		# Grep for success message
 		[[ $TOR_QUIET = true ]] || log::prog "(5/6) External appearance ..."
-		if echo "$CHECK_TORPROJECT" | grep "Congratulations. This browser is configured to use Tor." &>/dev/null && echo "${CHECK_TORPROJECT}" | grep "However, it does not appear to be Tor Browser" &>/dev/null; then
+		if echo "$CHECK_TORPROJECT" | grep "Congratulations. This browser is configured to use Tor" &>/dev/null && echo "${CHECK_TORPROJECT}" | grep "However, it does not appear to be Tor Browser" &>/dev/null; then
 			[[ $TOR_QUIET = true ]] || log::ok "(5/6) External appearance ... seen as Tor"
 		elif echo "$CHECK_TORPROJECT" | grep "Congratulations. This browser is configured to use Tor." &>/dev/null; then
 			[[ $TOR_QUIET = true ]] || log::ok "(5/6) External appearance ... seen as Tor browser!"
@@ -204,7 +204,7 @@ torsocks_init() {
 			exit 21
 		fi
 		# Grep for IP
-		[[ $TOR_QUIET = true ]] || log::prog "(6/6) <Tor exit IP>"
+		[[ $TOR_QUIET = true ]] || log::prog "(6/6) Tor exit IP ..."
 		local IP_TORPROJECT=$(echo "$CHECK_TORPROJECT" | grep "Your IP address appears to be:")
 		IP_TORPROJECT=${IP_TORPROJECT//[!0-9.]}
 		if [[ $IP_TORPROJECT =~ [0-9.]+ ]]; then

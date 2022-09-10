@@ -1,3 +1,12 @@
+# v1.9.2
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.1
 ## Updates
 * **HTTP Spoofing:** Added `TOR_BROWSER_MIMIC` option that mimics the HTTP headers used by [Tor browser](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/tor_browser)

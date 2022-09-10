@@ -98,30 +98,28 @@ upgrade_Template()
 	code_Tar
 	OFF; echo -n "[Extract] "
 	IGREEN; echo "OK" ;OFF
-	rm -f "$tmp/$tarFile"
-	error_Exit "rm - error"
+	rm -f "$tmp/$tarFile" || panic
 	OFF; echo -n "[Cleanup] "
 	IGREEN; echo "OK" ;OFF
 
 	# TEMP FOLDER FOR OLD PACKAGE
 	folderName="$(ls $tmp)"
 	if [[ -d $old ]]; then
-		sudo -u "$USER" rm -rf "$old"
-		error_Exit "Could not remove old folder"
+		sudo -u "$USER" rm -rf "$old" || panic
 	fi
 
 	# SAFETY CHECKS
-	[[ -z $folderName || -z $tmp ]] && echo "EMPTY TMP VARIABLE, EXITING FOR SAFETY" && exit 1
+	[[ $folderName && $tmp ]] || panic
 	mkdir -p "$old"
 
 	# INSTALL FOR MONERO_BASH
 	if [[ $NAME_CAPS = MONERO_BASH ]]; then
-		trap "trap_Old" 1 2 3 6 15
+		trap "trap_Old" 1 2 3 6 15 || panic
 		sudo -u "$USER" cp "$installDirectory/monero-bash" "$old"
 		sudo -u "$USER" cp -fr "$installDirectory/src" "$old"
 		sudo -u "$USER" cp -fr "$installDirectory/config" "$old"
 		sudo -u "$USER" cp -fr "$installDirectory/gpg" "$old"
-		trap "trap_MoneroBash" 1 2 3 6 15
+		trap "trap_MoneroBash" 1 2 3 6 15 || panic
 		sudo -u "$USER" cp -fr "$tmp/$folderName/monero-bash" "$installDirectory"
 		sudo -u "$USER" cp -fr "$tmp/$folderName/src" "$installDirectory"
 		sudo -u "$USER" cp -fr "$tmp/$folderName/config" "$installDirectory"
@@ -132,7 +130,7 @@ upgrade_Template()
 	else
 
 	# INSTALL FOR EVERYTHING ELSE
-		trap "trap_No" 1 2 3 6 15
+		trap "trap_No" 1 2 3 6 15 || panic
 		if [[ -d $DIRECTORY ]]; then
 			sudo -u "$USER" mv -f "$DIRECTORY" "$old"
 		fi
@@ -188,13 +186,13 @@ upgrade_Template()
 
 upgrade_Post()
 {
-	trap "trap_Post" 1 2 3 6 15
+	trap "trap_Post" 1 2 3 6 15 || panic
 	sudo -u "$USER" rm -rf "$old"
 
 	# STATE UPDATE
 	print_CyanHash "Updating local state"
-	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state"
-	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state"
+	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_VER=.*@"$NAME_CAPS"_VER=\""$NewVer"\"@" "$state" || panic
+	sudo -u "$USER" sed -i "s@.*"$NAME_CAPS"_OLD=.*@"$NAME_CAPS"_OLD=\"false\"@" "$state" || panic
 	OFF; echo -n "[${NAME_PRETTY}] "
 	IGREEN; echo "$NewVer" ;OFF
 

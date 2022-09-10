@@ -35,7 +35,7 @@
 # trap that handles exits (and cleanup)
 trap_Template()
 {
-	trap "" 1 2 3 6 15
+	trap "" 1 2 3 6 15 || panic
 	[[ $VERBOSE = "true" ]]&& verbose_Upgrade
 }
 

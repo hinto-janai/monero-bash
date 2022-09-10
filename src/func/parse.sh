@@ -53,31 +53,31 @@ parse_Config() {
 		bool   DAEMON_RPC_VERBOSE   \
 		bool   AUTO_HUGEPAGES       \
 		int    HUGEPAGES
-	)
-	[[ $CONFIG_GREP ]] || printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] monero-bash.conf source failure"
-	declare -g $CONFIG_GREP
+	) || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] monero-bash.conf source failure" || panic; }
+	declare -g $CONFIG_GREP || panic
+
 	# default for empty values
-	[[ $AUTO_START_DAEMON ]]    || declare -g AUTO_START_DAEMON=false
-	[[ $AUTO_STOP_DAEMON ]]     || declare -g AUTO_STOP_DAEMON=false
-	[[ $AUTO_UPDATE ]]          || declare -g AUTO_UPDATE=false
-	[[ $PRICE_API_IP_WARNING ]] || declare -g PRICE_API_IP_WARNING=false
-	[[ $USE_TOR ]]              || declare -g USE_TOR=false
-	[[ $TOR_PROXY ]]            || declare -g TOR_PROXY=127.0.0.1:9050
-	[[ $TEST_TOR ]]             || declare -g TEST_TOR=false
-	[[ $TOR_QUIET ]]            || declare -g TOR_QUIET=false
-	[[ $FAKE_HTTP_HEADERS ]]    || declare -g FAKE_HTTP_HEADERS=false
-	[[ $TOR_BROWSER_MIMIC ]]    || declare -g TOR_BROWSER_MIMIC=false
-	[[ $ONLY_USER_AGENT ]]      || declare -g ONLY_USER_AGENT=false
-	[[ $ONLY_WGET_CURL ]]       || declare -g ONLY_WGET_CURL=false
-	[[ $HTTP_HEADERS_VERBOSE ]] || declare -g HTTP_HEADERS_VERBOSE=false
-	[[ $DAEMON_RPC_IP ]]        || declare -g DAEMON_RPC_IP=127.0.0.1:18081
-	[[ $DAEMON_RPC_VERBOSE ]]   || declare -g DAEMON_RPC_VERBOSE=false
-	[[ $AUTO_HUGEPAGES ]]       || declare -g AUTO_HUGEPAGES=false
-	[[ $HUGEPAGES ]]            || declare -g HUGEPAGES=3072
+	[[ $AUTO_START_DAEMON ]]    || { declare -g AUTO_START_DAEMON=false || panic; }
+	[[ $AUTO_STOP_DAEMON ]]     || { declare -g AUTO_STOP_DAEMON=false || panic; }
+	[[ $AUTO_UPDATE ]]          || { declare -g AUTO_UPDATE=false || panic; }
+	[[ $PRICE_API_IP_WARNING ]] || { declare -g PRICE_API_IP_WARNING=false || panic; }
+	[[ $USE_TOR ]]              || { declare -g USE_TOR=false || panic; }
+	[[ $TOR_PROXY ]]            || { declare -g TOR_PROXY=127.0.0.1:9050 || panic; }
+	[[ $TEST_TOR ]]             || { declare -g TEST_TOR=false || panic; }
+	[[ $TOR_QUIET ]]            || { declare -g TOR_QUIET=false || panic; }
+	[[ $FAKE_HTTP_HEADERS ]]    || { declare -g FAKE_HTTP_HEADERS=false || panic; }
+	[[ $TOR_BROWSER_MIMIC ]]    || { declare -g TOR_BROWSER_MIMIC=false || panic; }
+	[[ $ONLY_USER_AGENT ]]      || { declare -g ONLY_USER_AGENT=false || panic; }
+	[[ $ONLY_WGET_CURL ]]       || { declare -g ONLY_WGET_CURL=false || panic; }
+	[[ $HTTP_HEADERS_VERBOSE ]] || { declare -g HTTP_HEADERS_VERBOSE=false || panic; }
+	[[ $DAEMON_RPC_IP ]]        || { declare -g DAEMON_RPC_IP=127.0.0.1:18081 || panic; }
+	[[ $DAEMON_RPC_VERBOSE ]]   || { declare -g DAEMON_RPC_VERBOSE=false || panic; }
+	[[ $AUTO_HUGEPAGES ]]       || { declare -g AUTO_HUGEPAGES=false || panic; }
+	[[ $HUGEPAGES ]]            || { declare -g HUGEPAGES=3072 || panic; }
 	# range [1-60]
-	[[ $WATCH_REFRESH_RATE -ge 1 && $WATCH_REFRESH_RATE -le 60 ]] || declare -g WATCH_REFRESH_RATE=1
+	[[ $WATCH_REFRESH_RATE -ge 1 && $WATCH_REFRESH_RATE -le 60 ]] || { declare -g WATCH_REFRESH_RATE=1 || panic; }
 	# split tor ip/port
-	[[ $TOR_PROXY ]] && declare -g TOR_IP=${TOR_PROXY/:*} TOR_PORT=${TOR_PROXY/*:}
+	[[ $TOR_PROXY ]] && { declare -g TOR_IP=${TOR_PROXY/:*} TOR_PORT=${TOR_PROXY/*:} || panic; }
 
 	# [p2pool.conf]
 	[[ $P2POOL_VER ]] || return 0
@@ -90,15 +90,14 @@ parse_Config() {
 		pos   OUT_PEERS  \
 		pos   IN_PEERS   \
 		[0-6] LOG_LEVEL
-	)
-	[[ $CONFIG_GREP ]] || printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] p2pool.conf source failure"
-	declare -g $CONFIG_GREP
+	) || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] p2pool.conf source failure" || panic; }
+	declare -g $CONFIG_GREP || panic
 	# range [10-1000]
 	if [[ $OUT_PEERS ]]; then
-		[[ $OUT_PEERS -ge 10 && $OUT_PEERS -le 1000 ]] || declare -g OUT_PEERS=10
+		[[ $OUT_PEERS -ge 10 && $OUT_PEERS -le 1000 ]] || { declare -g OUT_PEERS=10 || panic; }
 	fi
 	if [[ $IN_PEERS ]]; then
-		[[ $IN_PEERS -ge 10 && $IN_PEERS -le 1000 ]] || declare -g IN_PEERS=10
+		[[ $IN_PEERS -ge 10 && $IN_PEERS -le 1000 ]] || { declare -g IN_PEERS=10 || panic; }
 	fi
 	# default for empty values
 	# covered by [process.sh] & [systemd.sh]

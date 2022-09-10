@@ -131,10 +131,7 @@ if [[ $FIRST_TIME = "true" ]]; then
 fi
 
 # Parse/source config files
-if ! parse_Config; then
-	printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] Config source failure"
-	exit 1
-fi
+parse_Config || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] Config source failure"; panic; }
 
 safety::env
 safety_User

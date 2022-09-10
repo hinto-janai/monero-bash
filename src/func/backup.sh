@@ -43,7 +43,7 @@ backup_Wallets()
 
 	# PASSWORD-BASED AES256 ENCRYPTION (output file: backup.tar.gpg)
 	BBLUE; echo "Backing up wallets..." ;OFF
-	cd "$dotMoneroBash"
+	cd "$dotMoneroBash" || panic
 	tar -cf "backup.tar" "wallets" --transform 's/wallets/backup/'
 	gpg --no-symkey-cache --cipher-algo AES256 -c "backup.tar"
 	if [[ $? != 0 ]]; then
@@ -64,7 +64,7 @@ backup_Decrypt()
 	[[ -f "$dotMoneroBash/backup.tar" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar already exists!"
 	[[ ! -f "$dotMoneroBash/backup.tar.gpg" ]]&& print_Error_Exit "$dotMoneroBash/backup.tar.gpg was not found!"
 	BBLUE; echo "Decrypting backup..." ;OFF
-	cd "$dotMoneroBash"
+	cd "$dotMoneroBash" || panic
 	gpg --no-symkey-cache "backup.tar.gpg"
 	error_Exit "Decrypt failed"
 	tar -xf "backup.tar"
