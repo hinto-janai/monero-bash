@@ -13,3 +13,6 @@
 [submodule "external/libjson"]
 	path = external/libjson
 	url = https://github.com/hinto-janaiyo/libjson
+[submodule "external/stdlib"]
+	path = external/stdlib
+	url = https://github.com/hinto-janaiyo/stdlib
