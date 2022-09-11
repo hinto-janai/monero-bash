@@ -240,8 +240,8 @@ if [[ $options = "true" ]]; then
 				edit_Config
 			else
 				case $3 in
-					config) edit_Config;;
-					systemd)
+					conf*|config) edit_Config;;
+					sys*|systemd|service)
 						if [[ $2 = *bash* ]]; then
 							print_Error_Exit "monero-bash does not have a systemd file"
 						else
@@ -265,8 +265,8 @@ if [[ $options = "true" ]]; then
 				reset_Config
 			else
 				case $3 in
-					config) reset_Config;;
-					systemd)
+					conf*|config) reset_Config;;
+					sys*|systemd|service)
 						if [[ $2 = *bash* ]]; then
 							print_Error_Exit "monero-bash does not have a systemd file"
 						else
