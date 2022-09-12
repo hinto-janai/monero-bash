@@ -44,7 +44,13 @@ edit_Config()
 
 	case $NAME_PRETTY in
 		monero-bash) $EDITOR "$config/monero-bash.conf";;
-		Monero) $EDITOR "$config/monerod.conf"; $EDITOR "$config/monero-wallet-cli.conf";;
+		Monero)
+			case $EDIT_CONFIG in
+				daemon) $EDITOR "$config/monerod.conf";;
+				wallet) $EDITOR "$config/monero-wallet-cli.conf";;
+				*) $EDITOR "$config/monerod.conf" "$config/monero-wallet-cli.conf";;
+			esac
+			;;
 		XMRig) $EDITOR "$xmrigConf";;
 		P2Pool) $EDITOR "$config/p2pool.conf";;
 	esac

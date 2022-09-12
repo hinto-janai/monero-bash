@@ -230,6 +230,8 @@ if [[ $options = "true" ]]; then
 		edit)
 			case $2 in
 				*bash*) define_MoneroBash;;
+				*"wallet"*) define_Monero;EDIT_CONFIG=wallet;;
+				*"monerod"*) define_Monero;EDIT_CONFIG=daemon;;
 				*"daemon"*|*"monero"*) define_Monero;;
 				*"xmr"*) define_XMRig;;
 				*"p2p"*) define_P2Pool;;
