@@ -66,12 +66,12 @@ process_Start_Template()
 	# START PROCESS IF NOT ALREADY ALIVE
 	if [[ $SYSD_START = true ]]; then
 		if sudo systemctl status $SERVICE &>/dev/null; then
-			BRED; echo "[${PROCESS}] already detected!" ;OFF
+			log::fail "Already detected [${PROCESS}]!"
 			return 1
 		fi
 	elif [[ $SYSD_RESTART != true ]]; then
 		if pgrep $PROCESS &>/dev/null; then
-	        BRED; echo "[${PROCESS}] already detected!" ;OFF
+			log::fail "Already detected [${PROCESS}]!"
 			return 1
 		fi
 	fi
@@ -122,9 +122,14 @@ process_Start()
 {
 	COMMANDS() {
 		prompt_Sudo;error_Sudo
-		BBLUE; echo "Starting [${PROCESS}]..." ;OFF
+		log::prog "$(printf "${BBLUE}%s${OFF}%s\n" "Starting " "[${PROCESS}]...")"
 		missing_systemd_"$NAME_FUNC"
-		sudo systemctl start "$SERVICE"
+		if sudo systemctl start "$SERVICE"; then
+			log::ok "$(printf "${BBLUE}%s${OFF}%s\n" "Started " "[${PROCESS}]")"
+		else
+			log::fail "$(printf "${BBLUE}%s${OFF}%s\n" "Failed to start " "[${PROCESS}]!")"
+			return 1
+		fi
 	}
 	local SYSD_START=true
 	process_Start_Template
@@ -134,12 +139,12 @@ process_Restart()
 {
 	COMMANDS() {
 		prompt_Sudo;error_Sudo
-		BYELLOW; echo "Restarting [${PROCESS}]..." ;OFF
+		log::prog "$(printf "${BYELLOW}%s${OFF}%s\n" "Restarting " "[${PROCESS}]...")"
 		if sudo systemctl restart "$SERVICE"; then
-			BBLUE; echo "Restarted [${PROCESS}]!" ;OFF
+			log::ok "$(printf "${BYELLOW}%s${OFF}%s\n" "Restarted " "[${PROCESS}]")"
 			return 0
 		else
-			BRED; printf "%s\n" "[${PROCESS}] restart failed!"; OFF
+			log::fail "$(printf "${BYELLOW}%s${OFF}%s\n" "Failed to restart " "[${PROCESS}]!")"
 			return 1
 		fi
 	}
@@ -150,22 +155,23 @@ process_Restart()
 process_Stop()
 {
 	prompt_Sudo;error_Sudo
-	local i=1
-	BRED; echo "Stopping [${PROCESS}] gracefully..." ;OFF
+	local i=60
+	log::prog "$(printf "${BRED}%s${OFF}%s\n" "Stopping " "[${PROCESS}] | ${i} seconds before SIGKILL")"
 	sudo systemctl stop "$SERVICE" &
 	local SYSD_STATE=$(sudo systemctl status $SERVICE | grep -m1 "Active:")
 	while [[ $SYSD_STATE != *"Active: inactive (dead)"* ]]; do
-		if [[ $i = 35 ]]; then
+		if [[ $i = 0 ]]; then
 			echo
-			print_Warn "[${PROCESS}] not responding, sending SIGTERM..."
-			break
+			log::warn "$(printf "${BRED}%s${OFF}%s\n" "Stopping " "[${PROCESS}] failed, sending SIGKILL!")"
+			sudo systemctl kill "$SERVICE"
+			return 1
 		fi
-		printf "%s" "."
+		log::prog "$(printf "${BRED}%s${OFF}%s\n" "Stopping " "[${PROCESS}] | ${i} seconds before SIGKILL")"
 		read -s -r -t 1
-		((i++))
+		((i--))
 		local SYSD_STATE=$(sudo systemctl status $SERVICE | grep -m1 "Active:")
 	done
-	echo
+	log::ok "$(printf "${BRED}%s${OFF}%s\n" "Stopped " "[${PROCESS}]")"
 	return 0
 }
 

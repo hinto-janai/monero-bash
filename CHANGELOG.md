@@ -1,9 +1,9 @@
 # v1.9.2
-## Updates
-*
-
 ## Fixes
-*
+* **Status:** Fixed P2Pool stat errors on empty API file
+* **Safety:** Added debug screen on fatal errors (dangerous file operation, config error, etc)
+* **systemd:** Wait `60` seconds instead of `35` before sending `SIGKILL` to processes
+* **systemd:** Default signal for stopping processes is now softer `SIGINT` instead of `SIGTERM`
 
 ---
 

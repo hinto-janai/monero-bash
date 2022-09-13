@@ -207,7 +207,7 @@ status_P2Pool()
 
 		if [[ $SYNC_STATUS = *"SYNCHRONIZED"* ]]; then
 			# Get time of sync (read wall of text below for reason)
-			local SYNC_DAY="$(echo "$SYNC_STATUS" | grep -o "..-..-..-")"
+			local SYNC_DAY="$(echo "$SYNC_STATUS" | grep -o "..-..-..")"
 			local SYNC_TIME="$(echo "$SYNC_STATUS" | grep -o "..:..:..")"
 			local SYNC_1ST="$SYNC_DAY ${SYNC_TIME}"
 			LOG="$(sed -n "/${SYNC_STATUS}/,/*/p" $DIRECTORY/p2pool.log)"
@@ -381,7 +381,15 @@ status_P2Pool()
 		else
 			# turn 'stats' p2pool JSON values into variables.
 			# this uses: https://github.com/hinto-janaiyo/libjson
-			local $(json::var < ${p2poolApi})
+			# redirect error to /dev/null because sometimes
+			# the stat file is empty
+			local P2POOL_API_DATA=$(json::var < $p2poolApi 2>/dev/null)
+			# [2022-09-13]
+			# variable must be checked because sometimes the p2pool
+			# API file is empty which leads to the bottom evaluating
+			# into [local ] which will list variables interactively
+			# to the user instead of doing anything
+			[[ $P2POOL_API_DATA ]] && local $P2POOL_API_DATA
 		fi
 
 		local sharesFound sharesFoundApi sharesFoundLog latestPayout latestShare IFS=' '
@@ -427,7 +435,7 @@ status_P2Pool()
 			awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, $3/($2/60/60), ($3/($2/60/60))*24, $4, $4/($2/60/60), ($4/($2/60/60))*24}'))
 			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] payoutPerHour=awkList[2] payoutPerDay=awkList[3] xmrTotal=awkList[4] xmrPerHour=awkList[5] xmrPerDay=awkList[6]
 		else
-			awkList=($(echo "$sharesFound" "$processSeconds" | awk 'printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24'))
+			awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24}'))
 			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1]
 			payoutTotal=0
 			payoutPerHour=0.0000000

@@ -67,20 +67,20 @@ Type=simple
 $ENV_FILE
 $ENV_LINE
 
-## Command
+## Start
 ExecStart=$COMMAND
 WorkingDirectory=$DIRECTORY
 
-## Restart
+## Stop/Restart
+KillSignal=SIGINT
 Restart=on-failure
 RestartSec=5s
 
 ## Open file limit
 $FILE_LIMIT
 
-## Wait 35 seconds before sending SIGTERM
-KillSignal=SIGTERM
-TimeoutStopSec=35s
+## Wait 1 minute before sending SIGKILL
+TimeoutStopSec=60s
 SendSIGKILL=true
 
 ## Security Hardening
