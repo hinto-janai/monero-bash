@@ -88,9 +88,9 @@ set_ld_preload()
 
 torify_app()
 {
-	local app_path="$(command -v "$1")" || { print_Error "Torsocks error 1"; exit 1; }
-	local getcap="$(PATH="$PATH:/usr/sbin:/sbin" command -v getcap)" || { print_Error "Torsocks error 2"; exit 2; }
-	local caps= || { print_Error "Torsocks error 3"; exit 3; }
+	local app_path="$(command -v "$1")" || { print_Error "Torsocks error 1 | [app_path] variable could not be set"; exit 1; }
+	local getcap="$(PATH="$PATH:/usr/sbin:/sbin" command -v getcap)" || { print_Error "Torsocks error 2 | [getcap] variable could not be set"; exit 2; }
+	local caps= || { print_Error "Torsocks error 3 | [caps] variable could not be set"; exit 3; }
 
 	if [ -z "$1" ]; then
 		echo "Please provide an application to torify."
@@ -103,11 +103,11 @@ torify_app()
 	# This must be before torifying because getcap uses cap_get_file(3)
 	# via syscall(2) which breaks torsocks.
 	if [ -n "$getcap" ]; then
-		caps="$("$getcap" "$app_path" 2>/dev/null)" || { print_Error "Torsocks error 6"; exit 6; }
+		caps="$("$getcap" "$app_path" 2>/dev/null)" || { print_Error "Torsocks error 6 | [getcap|cap_get_file] syscall failed"; exit 6; }
 	fi
 
 	# NEVER remove that line or else nothing it torified.
-	set_ld_preload
+	set_ld_preload || { print_Error "Torsocks error 99 | [LD_PRELOAD] variable could not be exported"; exit 99; }
 
 	if [ -u "$app_path" ]; then
 		echo "ERROR: $1 is setuid. torsocks will not work on a setuid executable."
@@ -120,8 +120,8 @@ torify_app()
 		{ print_Error "Torsocks error 9"; exit 9; }
 	fi
 
-	"$@" || { print_Error "Torsocks error 10"; exit 10; }
-	unset -v LD_PRELOAD || { print_Error "Torsocks error 11"; exit 11; }
+	"$@" || { print_Error "Torsocks error 10 | Try restarting Tor: <sudo systemctl restart tor.service>"; exit 10; }
+	unset -v LD_PRELOAD || { print_Error "Torsocks error 11 | [LD_PRELOAD] variable could not be unset"; exit 11; }
 }
 
 #-------------------------------------------------------------------------------- BEGIN [MONERO-BASH] MODIFICATIONS
@@ -214,17 +214,17 @@ torsocks_init() {
 		fi
 	fi
 
-	[[ $TORSOCKS_INIT = ___SET___ ]] || declare -gr TORSOCKS_INIT=___SET___
+	[[ $TORSOCKS_INIT = ___SET___ ]] || { declare -gr TORSOCKS_INIT=___SET___ || print_Error "Torsocks Init Error | [TORSOCKS_INIT] variable could not be set"; }
 }
 
 torsocks_func() {
 	# Export [monero-bash.conf] variables
 	# Tor IP
-	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || { print_Error "Torsocks error 20"; exit 20; }
+	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || { print_Error "Torsocks error 20 | [TORSOCKS_TOR_ADDRESS] variable could not exported"; exit 20; }
 	# Tor Port
-	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 21"; exit 21; }
+	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 21| [TORSOCKS_TOR_PORT] variable could not exported"; exit 21; }
 	# Silence messages
-	export TORSOCKS_LOG_LEVEL=1 || { print_Error "Torsocks error 22"; exit 22; }
+	export TORSOCKS_LOG_LEVEL=1 || { print_Error "Torsocks error 22 | [TORSOCKS_LOG_LEVEL] variable could not exported"; exit 22; }
 
 	# Torify
 	torify_app "$@"
