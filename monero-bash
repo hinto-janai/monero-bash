@@ -85,11 +85,11 @@ installDirectory="$(dirname "$scriptPath")"
 if [[ $installDirectory != *"/monero-bash" ]]; then
 	printf "\033[1;31mExecuting monero-bash while it isn't in the /monero-bash/ folder is DANGEROUS\n"
 	printf "\033[0;31mExiting for safety...\n"
-	exit
+	exit 1
 fi
 
 # Make the root reference folder [/usr/local/share/monero-bash]
-cd "$installDirectory"
+cd "$installDirectory" || exit 99
 
 # Source files, exit on failure
 if ! source "$installDirectory/src/source.sh"; then
@@ -120,9 +120,10 @@ safety_Root
 safety::gnu_linux
 safety::bash
 
-# No stdin support
+# Warn against stdin
 if [[ -p /dev/stdin ]]; then
-	print_Error_Exit "no stdin/pipe support!"
+	print_Warn "monero-bash does not actively support stdin!"
+	print_Warn "Be careful, things will probably break."
 fi
 
 # Installation
@@ -154,13 +155,12 @@ if [[ $interactive = "true" ]]; then
 	fi
 
 	# SHOW WALLETS, SELECT
-	WHITE; wallet_Count ; wallet_List
-	while true ;do
+	WHITE; wallet_Count; wallet_List
+	while true; do
 		BYELLOW; printf "Select wallet "
 		WHITE; printf "or "
-		BPURPLE; printf "[new / view / recover]"
-		WHITE; printf ": "
-		read walletSelection
+		BPURPLE; printf "[new / view / recover] "; OFF
+		read -r walletSelection
 
 		for i in ${walletList[*]}; do
 			# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
@@ -171,10 +171,19 @@ if [[ $interactive = "true" ]]; then
 			# ELSE, START WALLET NORMALLY IF IT EXISTS
 			elif [[ $walletSelection = $i ]]; then
 				WHITE; printf "Password: "
-				read -s walletPassword
+				read -s -r walletPassword
 				printf "\n\n"
 				printf "\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletSelection]";OFF
 				wallet_Start
+			# EXIT ON [exit|exit()|exit();]
+			elif [[ $walletSelection = 'exit' ]]; then
+				exit
+			elif [[ $walletSelection = 'exit()' ]]; then
+				printf "%s\n" "This isn't Python, but ok..."
+				exit
+			elif [[ $walletSelection = 'exit();' ]]; then
+				printf "%s\n" "This isn't C, but ok..."
+				exit
 			fi
 		done
 
@@ -191,7 +200,7 @@ if [[ $interactive = "true" ]]; then
 fi
 
 # Option Flags
-if [[ $options = "true" ]]; then
+if [[ $options = true ]]; then
 	case $1 in
 		backup) backup_Wallets ;;
 		decrypt) backup_Decrypt ;;
