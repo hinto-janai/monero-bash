@@ -1,3 +1,12 @@
+# v1.9.3
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.2
 ## Fixes
 * **Status:** Fixed P2Pool stat errors on empty API file
