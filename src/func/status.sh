@@ -536,7 +536,7 @@ status_P2Pool()
 
 		# print LATEST SHARE
 		BBLUE; printf "Latest share  | "; OFF
-		declare -a latestShare=($(echo "$LOG" | grep -m1 "SHARE FOUND" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
+		declare -a latestShare=($(echo "$LOG" | grep "SHARE FOUND" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
 		# [0] = day
 		# [1] = time
 		# [2] = height
