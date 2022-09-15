@@ -104,6 +104,7 @@ else
 fi
 if [[ $? != 0 ]]; then
 	print_Error "Monero RPC connection failed"
+	exit 1
 else
 	echo
 fi

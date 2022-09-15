@@ -245,15 +245,23 @@ wallet_List()
 	walletList=($(ls "$wallets" | grep -v ".keys"))
 	wallet_list_pretty()
 	{
+		local walletAmount=0
+		local walletChar=0
 		for i in ${walletList[*]}; do
-			printf "[${i}]  "
+			# wrap line after wallet names
+			# are > 4 or if exceeds 40
+			walletAmount=$((walletAmount + 1))
+			walletChar=$((walletChar + ${#i} + 4)) #+4 accounts for '[]  '
+			if [[ $walletAmount -gt 4 || $walletChar -ge 40 ]]; then
+				walletAmount=0
+				walletChar=0
+				printf "${OFF}[${BWHITE}%s${OFF}]  \n\n" "${i}"
+			else
+				printf "${OFF}[${BWHITE}%s${OFF}]  " "${i}"
+			fi
 		done
 	}
 	# print nice spacing regardless if wallets exist or not
-	if [[ $walletList = "" ]]; then
-		echo
-	else
-		BWHITE; echo "$(wallet_list_pretty)"
-		echo
-	fi
+	[[ $walletList ]] && echo "$(wallet_list_pretty)"
+	echo
 }

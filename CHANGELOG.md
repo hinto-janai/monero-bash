@@ -1,9 +1,8 @@
 # v1.9.3
-## Updates
-*
-
 ## Fixes
-*
+* **Wallet:** List will wrap to stay within `5` wallets or `40` characters per line
+* **Status:** Fixed P2Pool `Latest share` showing 1st share found
+* **Tor:** Errors are more detailed and fixes are suggested
 
 ---
 

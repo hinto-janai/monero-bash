@@ -32,12 +32,11 @@
 # Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 # Error handling
-error_Continue(){ [[ $? != "0" ]] && printf "\e[1;31m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "$1"; }
+error_Continue(){ [[ $? != 0 ]] && printf "\e[1;31m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "$1"; }
 
 error_Exit() {
-	if [[ $? != "0" ]]; then
+	if [[ $? != 0 ]]; then
 		printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "$1"
-		printf "\e[1;91m%s\e[0m\n" "Exiting..."
 		exit 1
 	fi
 }
@@ -45,8 +44,7 @@ error_Exit() {
 error_Sudo()
 {
 	if [[ $? != "0" ]]; then
-		printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "[sudo] is needed"
-		echo "Exiting..."
+		printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "[monero-bash error] " "<sudo> is needed"
 		exit 1
 	fi
 }
@@ -61,5 +59,5 @@ error_Unknown()
 error_Trap()
 {
 	echo
-	printf "\e[1;91m%s\e[1;97m%s\e[0m\n" "[MONERO-BASH] " "EXIT SIGNAL CAUGHT - $1"
+	printf "\e[1;91m%s\e[1;97m%s\e[0m\n" "[monero-bash] " "Exit signal caught - $1"
 }
