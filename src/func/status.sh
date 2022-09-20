@@ -57,27 +57,24 @@ status_Watch() {
 
 status_System()
 {
-	BBLUE; printf "System      | "
-	IWHITE; echo "$(uptime -p)"
-	echo
+	printf "${BBLUE}%s${IWHITE}%s${OFF}%s\n\n" "System      | " "$(uptime -p)"
 }
 
 status_Template()
 {
-	BWHITE; printf "[${NAME_PRETTY}] " ;OFF
+	printf "${OFF}%s${BWHITE}%s" "[" "${NAME_PRETTY} "
 	declare -g PROCESS_ID
 	if PROCESS_ID=$(pgrep -f $DIRECTORY/$PROCESS);then
-		BGREEN; echo "ONLINE" ;OFF
+		printf "${BGREEN}%s${OFF}%s\n" "ONLINE" "]"
 
 		# ps stats
 		ps -o "| %C | %t | %p |" -p $PROCESS_ID
 		echo "--------------------------------"
 		# process specific stats
 		EXTRA_STATS
-		printf "\n"
+		echo
 	else
-		BRED; echo "OFFLINE" ;OFF
-		printf "\n"
+		printf "${BRED}%s${OFF}%s\n\n" "OFFLINE" "]"
 	fi
 }
 
@@ -143,54 +140,54 @@ status_Monero()
 
 		# turn 'get_info' rpc JSON values into variables.
 		# this uses: https://github.com/hinto-janaiyo/libjson
-		declare $(echo "$GET_INFO" | json::var)
+		local $(echo "$GET_INFO" | json::var)
 
-		# cleanup 'get_info' variables
-		local height height_percent height_percent_int percent_color incoming outgoing rpc synchronized nettype synchronized target_height tx_pool_size net_hash database_size
-		height=${result_height//[!0-9]}
-		target_height=${result_target_height//[!0-9]}
-		incoming=${result_incoming_connections_count//[!0-9]}
-		outgoing=${result_outgoing_connections_count//[!0-9]}
-		rpc=${result_rpc_connections_count//[!0-9]}
+		local height_percent percent_color
+		local -n height=result_height target_height=result_target_height incoming=result_incoming_connections_count outgoing=result_outgoing_connections_count rpc=result_rpc_connections_count synchronized=result_synchronized nettype=result_nettype target_height=result_target_height tx_pool_size=result_tx_pool_size net_hash=result_difficulty database_size=result_database_size free_space=result_free_space
 		if [[ $result_synchronized = *true* ]]; then
-			target_height=$height
+			local -n target_height=height
 			height_percent="100"
+			percent_color="\e[92m"
 		else
 			# prevent dividing by 0
 			# $height gets found first
 			# before $target_height
-			if [[ $target_height -lt 2694035 ]]; then
-				height_percent=???
-			else
-				height_percent=$(echo "$height" "$target_height" | awk '{print $1 / $2 * 100}')
-				height_percent=${height_percent:0:5}
-			fi
+			[[ $target_height -lt 2694035 ]] && height_percent=???
 		fi
-		height_percent_int=${height_percent//.*}
+
+		# do all awk calculations
+		# in one invocation for speed
+		# awkList[0] = height_percent
+		# awkList[1] = net_hash
+		# awkList[2] = database_size
+		# awkList[3] = free_space
+		local -a awkList
 		if [[ $height_percent = '???' ]]; then
 			percent_color="\e[93m"
-		elif [[ $height_percent = 100 ]]; then
-			percent_color="\e[92m"
-		elif [[ $height_percent_int -le 30 ]]; then
-			percent_color="\e[91m"
+			awkList=($(echo "$net_hash" "$database_size" "$free_space" \
+				| awk '{printf "%.3f %.3f %.3f", $1 / 120000000000, $2 / 1000000000, $3 / 1000000000}'))
+			declare -n net_hash=awkList[0] database_size=awkList[1] free_space=awkList[2]
 		else
-			percent_color="\e[93m"
+			awkList=($(echo "$height" "$target_height" "$net_hash" "$database_size"	"$free_space" \
+				| awk '{printf "%.2f %.3f %.3f %.3f", $1 / $2 * 100, $3 / 120000000000, $4 / 1000000000, $5 / 1000000000}'))
+			declare -n height_percent=awkList[0] net_hash=awkList[1] database_size=awkList[2] free_space=awkList[3]
 		fi
-		nettype=${result_nettype//*:}
-		nettype=${nettype//[![:alnum:]]}
-		tx_pool_size=${result_tx_pool_size//[!0-9]}
-		net_hash=${result_difficulty//[!0-9]}
-		net_hash=$(echo "$net_hash" | awk '{print $1 / 120000000000}')
-		database_size=${result_database_size//[!0-9]}
-		database_size=$(echo "$database_size" | awk '{print $1 / 1000000000}')
+		if [[ -z $percent_color ]]; then
+			if [[ ${height_percent//.*} -le 30 ]]; then
+				percent_color="\e[91m"
+			else
+				percent_color="\e[93m"
+			fi
+		fi
 
 		# print
-		BWHITE; printf "Size        | "; printf "\e[0m%s\e[97m%s\e[0m%s\n" "[" "$database_size GB" "]"
-		BWHITE; printf "Height      | "; printf "\e[0m%s${percent_color}%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
+		printf "${BWHITE}%s" "Size       | "; printf "\e[0m%s\e[97m%s\e[0m%s\e[97m%s\e[0m%s\n" "[blockchain: " "${database_size}GB" "] [disk: " "${free_space}GB" "]"
+		printf "${BWHITE}%s" "Height     | "; printf "\e[0m%s${percent_color}%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
 			"[" "$height" "/" "$target_height" "] (" "${height_percent}%" ") on [" "$nettype" "]"
-		BWHITE; printf "TX Pool     | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
-		BWHITE; printf "Net Hash    | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
-		BWHITE; printf "Connections | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "]"
+		printf "${BWHITE}%s" "TX Pool    | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
+		printf "${BWHITE}%s" "Net Hash   | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
+		printf "${BWHITE}%s" "Peer list  | "; printf "${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[white: " "$result_white_peerlist_size" "] [grey: " "$result_grey_peerlist_size" "]"
+		printf "${BWHITE}%s" "Connection | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "] [untrusted: " "$result_untrusted" "] [restricted: " "$result_restricted" "]"
 	}
 	status_Template
 }
@@ -471,13 +468,12 @@ status_P2Pool()
 			fi
 		fi
 		BWHITE; printf "Wallet        | "
-		OFF; echo "[${WALLET:0:6}...${WALLET: -6}]"
+		printf "${OFF}%s${IRED}%s${OFF}%s${IRED}%s${OFF}%s\n" "[" "${WALLET:0:6}" "..." "${WALLET: -6}" "]"
 
 
 		# print EFFORT
-		BWHITE; printf "Effort        | "; OFF
-		OFF; echo -n "[average ${average_effort}%] "
-		OFF; echo "[current ${current_effort}%]"
+		BWHITE; printf "Effort        | "
+		printf "${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[average: " "${average_effort}%" "] [current: " "${current_effort}%" "]"
 
 		# print HASHRATE
 		BWHITE; printf "Hashrate      | "; OFF

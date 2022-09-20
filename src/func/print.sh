@@ -68,78 +68,80 @@ print_PurpleHash()
 
 print_MoneroBashTitle()
 {
-	BRED; echo "#-------------------------#"
-	BRED; echo "#       monero-bash       #"
-	BRED; echo "#-------------------------#"
-	OFF
+	printf "${BRED}%s\n%s\n%s\n${OFF}" \
+		"#-------------------------#" \
+		"#       monero-bash       #" \
+		"#-------------------------#"
 }
 
 print_Version()
 {
 	local VERSION_OLD
-	BWHITE; echo -n "monero-bash | "
+	printf "${BWHITE}%s" "monero-bash | "
 	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
-		BRED; echo "$MONERO_BASH_VER"
+		printf "${BRED}%s\n" "$MONERO_BASH_VER"
 		VERSION_OLD=true
 	else
-		BGREEN; echo "$MONERO_BASH_VER"
+		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
 	fi
-	BWHITE; echo -n "Monero      | "
+	printf "${BWHITE}%s" "Monero      | "
 	if [[ $MONERO_VER && "$MONERO_OLD" = "true" ]]; then
-		BRED; echo "$MONERO_VER"
+		printf "${BRED}%s\n" "$MONERO_VER"
 		VERSION_OLD=true
 	else
 		BGREEN; echo "$MONERO_VER"
 	fi
-	BWHITE; echo -n "XMRig       | "
+	printf "${BWHITE}%s" "XMRig       | "
 	if [[ $XMRIG_VER && "$XMRIG_OLD" = "true" ]]; then
-		BRED; echo "$XMRIG_VER"
+		printf "${BRED}%s\n" "$XMRIG_VER"
 		VERSION_OLD=true
 	else
-		BGREEN; echo "$XMRIG_VER"
+		printf "${BGREEN}%s\n" "$XMRIG_VER"
 	fi
-	BWHITE; echo -n "P2Pool      | "
+	printf "${BWHITE}%s" "P2Pool      | "
 	if [[ $P2POOL_VER && "$P2POOL_OLD" = "true" ]]; then
-		BRED; echo "$P2POOL_VER"
+		printf "${BRED}%s\n" "$P2POOL_VER"
 		VERSION_OLD=true
 	else
-		BGREEN; echo "$P2POOL_VER"
+		printf "${BGREEN}%s\n" "$P2POOL_VER"
 	fi
+	printf "${OFF}"
 	[[ $VERSION_OLD = true ]] && return 1 || return 0
 }
 
 print_Installed_Version()
 {
-	BWHITE; echo -n "monero-bash | "
+	printf "${BWHITE}%s" "monero-bash | "
 	if [[ "$MONERO_BASH_OLD" = "true" ]]; then
-		BRED; echo "$MONERO_BASH_VER"
+		printf "${BRED}%s\n" "$MONERO_BASH_VER"
 	else
-		BGREEN; echo "$MONERO_BASH_VER"
+		printf "${BGREEN}%s\n" "$MONERO_BASH_VER"
 	fi
 	if [[ $MONERO_VER ]]; then
-		BWHITE; echo -n "Monero      | "
+		printf "${BWHITE}%s" "Monero      | "
 		if [[ $MONERO_OLD = "true" ]]; then
-			BRED; echo "$MONERO_VER"
+			printf "${BRED}%s\n" "$MONERO_VER"
 		else
-			BGREEN; echo "$MONERO_VER"
+			printf "${BGREEN}%s\n" "$MONERO_VER"
 		fi
 	fi
 	if [[ $XMRIG_VER ]]; then
-		BWHITE; echo -n "XMRig       | "
+		printf "${BWHITE}%s" "XMRig       | "
 		if [[ $XMRIG_OLD = "true" ]]; then
-			BRED; echo "$XMRIG_VER"
+			printf "${BRED}%s\n" "$XMRIG_VER"
 		else
-			BGREEN; echo "$XMRIG_VER"
+			printf "${BGREEN}%s\n" "$XMRIG_VER"
 		fi
 	fi
 	if [[ $P2POOL_VER ]]; then
-		BWHITE; echo -n "P2Pool      | "
+		printf "${BWHITE}%s" "P2Pool      | "
 		if [[ $P2POOL_OLD = "true" ]]; then
-			BRED; echo "$P2POOL_VER"
+			printf "${BRED}%s\n" "$P2POOL_VER"
 		else
-			BGREEN; echo "$P2POOL_VER"
+			printf "${BGREEN}%s\n" "$P2POOL_VER"
 		fi
 	fi
+	printf "${OFF}"
 }
 
 print_Size()
@@ -168,20 +170,17 @@ print_Size()
 
 print_Error()
 {
-	BRED; printf "[monero-bash error] "
-	IWHITE; echo "$1"; OFF
+	printf "${BRED}%s${IWHITE}%s${OFF}\n" "[monero-bash error] " "$1"
 }
 
 print_Warn()
 {
-	BYELLOW; printf "[monero-bash warning] "
-	IWHITE; echo "$1"; OFF
+	printf "${BYELLOW}%s${IWHITE}%s${OFF}%s\n" "[monero-bash warning] " "$1"
 }
 
 print_Error_Exit()
 {
-	BRED; printf "[monero-bash error] "
-	IWHITE; echo "$1"; OFF
+	printf "${BRED}%s${IWHITE}%s${OFF}%s\n" "[monero-bash error] " "$1"
 	exit 1
 }
 

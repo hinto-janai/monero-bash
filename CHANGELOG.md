@@ -1,6 +1,7 @@
 # v1.9.3
 ## Updates
-* **Status:** Added `x/month` & `x/year` to P2Pool stats
+* **Status:** Added `x/month`, `x/year` to P2Pool stats
+* **Status:** Added `disk left`, `peer list`, `untrusted`, `restricted` to Monero stats
 * **Config:** Added more options to `monerod.conf` & `monero-wallet-cli.conf`
 * **Wallet:** List will wrap to stay within `5` wallets or `40` characters per line
 
