@@ -1,9 +1,11 @@
 # v1.9.3
 ## Updates
 * **Status:** Added `x/month` & `x/year` to P2Pool stats
+* **Config:** Added more options to `monerod.conf` & `monero-wallet-cli.conf`
+* **Wallet:** List will wrap to stay within `5` wallets or `40` characters per line
 
 ## Fixes
-* **Wallet:** List will wrap to stay within `5` wallets or `40` characters per line
+* **Watch:** `WATCH_REFRESH_RATE` default is now `5` seconds, `1` is too fast for slow computers
 * **Status:** Fixed P2Pool `Latest share` showing 1st share found
 * **Tor:** Errors are more detailed and fixes are suggested
 

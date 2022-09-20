@@ -75,7 +75,7 @@ parse_Config() {
 	[[ $AUTO_HUGEPAGES ]]       || { declare -g AUTO_HUGEPAGES=false || panic; }
 	[[ $HUGEPAGES ]]            || { declare -g HUGEPAGES=3072 || panic; }
 	# range [1-60]
-	[[ $WATCH_REFRESH_RATE -ge 1 && $WATCH_REFRESH_RATE -le 60 ]] || { declare -g WATCH_REFRESH_RATE=1 || panic; }
+	[[ $WATCH_REFRESH_RATE -ge 1 && $WATCH_REFRESH_RATE -le 60 ]] || { declare -g WATCH_REFRESH_RATE=5 || panic; }
 	# split tor ip/port
 	[[ $TOR_PROXY ]] && { declare -g TOR_IP=${TOR_PROXY/:*} TOR_PORT=${TOR_PROXY/*:} || panic; }
 
