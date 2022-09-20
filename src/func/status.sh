@@ -426,24 +426,34 @@ status_P2Pool()
 			# create awk list of shares, xmr column
 			# [0] sharesPerHour
 			# [1] sharesPerDay
-			# [2] payoutPerHour
-			# [3] payoutPerDay
-			# [4] xmrTotal
-			# [5] xmrPerHour
-			# [6] xmrPerDay
+			# [2] sharesPerMonth
+			# [3] sharesPerYear
+			# [4] payoutPerHour
+			# [5] payoutPerDay
+			# [6] payoutPerMonth
+			# [7] payoutPerYear
+			# [8] xmrTotal
+			# [9] xmrPerHour
+			# [10] xmrPerDay
+			# [11] xmrPerMonth
+			# [12] xmrPerYear
 			xmrColumn=$(echo "$xmrColumn" | awk '{SUM+=$1}END{printf "%.7f", SUM}')
-			awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, $3/($2/60/60), ($3/($2/60/60))*24, $4, $4/($2/60/60), ($4/($2/60/60))*24}'))
-			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] payoutPerHour=awkList[2] payoutPerDay=awkList[3] xmrTotal=awkList[4] xmrPerHour=awkList[5] xmrPerDay=awkList[6]
+			awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, (($1/($2/60/60))*24)*31, (($1/($2/60/60))*24)*365, $3/($2/60/60), ($3/($2/60/60))*24, (($3/($2/60/60))*24)*31, (($3/($2/60/60))*24)*365, $4, $4/($2/60/60), ($4/($2/60/60))*24, (($4/($2/60/60))*24)*31, (($4/($2/60/60))*24)*365}'))
+			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awkList[3] payoutPerHour=awkList[4] payoutPerDay=awkList[5] payoutPerMonth=awkList[6] payoutPerYear=awkList[7]  xmrTotal=awkList[8] xmrPerHour=awkList[9] xmrPerDay=awkList[10] xmrPerMonth=awkList[11] xmrPerYear=awkList[12]
 		else
 			awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24}'))
-			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1]
+			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awklist[3] 
 			payoutTotal=0
-			payoutPerHour=0.0000000
-			payoutPerDay=0.0000000
+			payoutPerHour=0
+			payoutPerDay=0
+			payoutPerMonth=0
+			payoutPerYear=0
 			xmrColumn=0
 			xmrTotal=0
-			xmrPerHour=0.0000000
-			xmrPerDay=0.0000000
+			xmrPerHour=0
+			xmrPerDay=0
+			xmrPerMonth=0
+			xmrPerYear=0
 		fi
 
 		# print WALLET
@@ -491,47 +501,71 @@ status_P2Pool()
 
 		# print SHARES FOUND
 		BPURPLE; printf "Shares found  | "
-		printf "\e[0m%s\e[0;95m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;95m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
 			"[" \
 			"$sharesFound shares" \
 			"] [" \
-			"${sharesPerHour}" \
+			"${sharesPerHour:0:9}" \
 			"/" \
 			"hour" \
 			"] [" \
-			"${sharesPerDay}" \
+			"${sharesPerDay:0:9}" \
 			"/" \
 			"day" \
+			"] [" \
+			"${sharesPerMonth:0:9}" \
+			"/" \
+			"month" \
+			"] [" \
+			"${sharesPerYear:0:9}" \
+			"/" \
+			"year" \
 			"]"
 
-		# print PAYOUTS FOUND
+		# print PAYOUTS FOUND 
 		BCYAN; printf "Total payouts | "
-		printf "\e[0m%s\e[0;96m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;96m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
 			"[" \
 			"$payoutTotal payouts" \
 			"] [" \
-			"${payoutPerHour}" \
+			"${payoutPerHour:0}" \
 			"/" \
 			"hour" \
 			"] [" \
-			"${payoutPerDay}" \
+			"${payoutPerDay:0:9}" \
 			"/" \
 			"day" \
+			"] [" \
+			"${payoutPerMonth:0:9}" \
+			"/" \
+			"month" \
+			"] [" \
+			"${payoutPerYear:0:9}" \
+			"/" \
+			"year" \
 			"]"
 
 		# print XMR
 		BGREEN; printf "XMR received  | "
-		printf "\e[0m%s\e[0;92m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s\n" \
+		printf "\e[0m%s\e[0;92m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
 			"[" \
 			"$xmrTotal XMR" \
 			"] [" \
-			"${xmrPerHour}" \
+			"${xmrPerHour:0:9}" \
 			"/" \
 			"hour" \
 			"] [" \
-			"${xmrPerDay}" \
+			"${xmrPerDay:0:9}" \
 			"/" \
 			"day" \
+			"] [" \
+			"${xmrPerMonth:0:9}" \
+			"/" \
+			"month" \
+			"] [" \
+			"${xmrPerYear:0:9}" \
+			"/" \
+			"year" \
 			"]"
 
 		# print LATEST SHARE
