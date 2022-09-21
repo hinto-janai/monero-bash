@@ -1,9 +1,10 @@
 # v1.9.3
 ## Updates
-* **Status:** Added `x/month`, `x/year` to P2Pool stats
-* **Status:** Added `disk left`, `peer list`, `untrusted`, `restricted` to Monero stats
-* **Config:** Added more options to `monerod.conf` & `monero-wallet-cli.conf`
+* **Status:** Added `x/month`, `x/year`, `user` to P2Pool stats
+* **Status:** Added `disk left`, `synced`, `white/grey peers` to Monero stats
 * **Wallet:** List will wrap to stay within `5` wallets or `40` characters per line
+* **Wallet:** Typing `exit` will exit wallet (only if 'exit' wallet doesn't exist)
+* **Config:** Added more options to `monerod.conf` & `monero-wallet-cli.conf`
 
 ## Fixes
 * **Watch:** `WATCH_REFRESH_RATE` default is now `5` seconds, `1` is too fast for slow computers

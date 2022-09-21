@@ -183,7 +183,7 @@ if [[ $interactive = "true" ]]; then
 			new|New|NEW|"[new]"|"[New]") wallet_Create ; break ;;
 			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
 			recover|Recover|RECOVER|"[recover]"|"[Recover]") wallet_Recover ; break ;;
-			'exit') exit 0;;
+			'exit'|'Exit'|'EXIT') exit 0;;
 			'exit()') printf "%s\n" "This isn't Python, but ok >_>"; exit 0;;
 			'exit(0);') printf "%s\n" "This isn't C, but ok >_>"; exit 0;;
 			"") print_Error "Empty input" ;;

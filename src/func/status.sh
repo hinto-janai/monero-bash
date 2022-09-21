@@ -132,13 +132,13 @@ status_Monero()
 			print_Warn "[rpc-bind-ip] and/or [rpc-bind-port] not found in [monerod.conf]"
 			print_Warn "Falling back to [localhost:18081]"
 		fi
-		GET_INFO=$(wget -qO- "localhost:18081/json_rpc" --header='Content-Type:application/json' --post-data='{"jsonrpc":"2.0","id":"0","method":"get_info"}')
+		GET_INFO=$(wget -qO- "$DAEMON_RPC_IP/json_rpc" --header='Content-Type:application/json' --post-data='{"jsonrpc":"2.0","id":"0","method":"get_info"}')
 		if [[ $? != 0 || -z $GET_INFO || $GET_INFO = *error* ]]; then
 			printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "Could not connect to [$DAEMON_RPC_IP] to get Monero stats!"
 			return 1
 		fi
 
-		# turn 'get_info' rpc JSON values into variables.
+		# turn RPC JSON values into variables.
 		# this uses: https://github.com/hinto-janaiyo/libjson
 		local $(echo "$GET_INFO" | json::var)
 
@@ -164,7 +164,7 @@ status_Monero()
 		local -a awkList
 		if [[ $height_percent = '???' ]]; then
 			percent_color="\e[93m"
-			awkList=($(echo "$net_hash" "$database_size" "$free_space" \
+			awkList=($(echo "$net_hash" "$database_size" "$free_space" "$GET_CONNECTIONS" \
 				| awk '{printf "%.3f %.3f %.3f", $1 / 120000000000, $2 / 1000000000, $3 / 1000000000}'))
 			declare -n net_hash=awkList[0] database_size=awkList[1] free_space=awkList[2]
 		else
@@ -184,10 +184,8 @@ status_Monero()
 		printf "${BWHITE}%s" "Size       | "; printf "\e[0m%s\e[97m%s\e[0m%s\e[97m%s\e[0m%s\n" "[blockchain: " "${database_size}GB" "] [disk: " "${free_space}GB" "]"
 		printf "${BWHITE}%s" "Height     | "; printf "\e[0m%s${percent_color}%s\e[0m%s\e[92m%s\e[0m%s${percent_color}%s\e[0m%s\e[96m%s\e[0m%s\n" \
 			"[" "$height" "/" "$target_height" "] (" "${height_percent}%" ") on [" "$nettype" "]"
-		printf "${BWHITE}%s" "TX Pool    | "; printf "\e[0m%s\e[95m%s\e[0m%s\n" "[" "$tx_pool_size" "]"
-		printf "${BWHITE}%s" "Net Hash   | "; printf "\e[0m%s\e[94m%s\e[0m%s\n" "[" "$net_hash GH/s" "]"
-		printf "${BWHITE}%s" "Peer list  | "; printf "${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[white: " "$result_white_peerlist_size" "] [grey: " "$result_grey_peerlist_size" "]"
-		printf "${BWHITE}%s" "Connection | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "] [untrusted: " "$result_untrusted" "] [restricted: " "$result_restricted" "]"
+		printf "${BWHITE}%s" "Network    | "; printf "\e[0m%s\e[95m%s\e[0m%s\e[94m%s\e[0m%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[" "tx: $tx_pool_size" "] [" "hash: ${net_hash}GH/s" "] [synced: " "$result_synchronized" "]"
+		printf "${BWHITE}%s" "Connection | "; printf "\e[0m%s\e[93m%s\e[0m%s\e[92m%s\e[0m%s\e[91m%s\e[0m%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[" "$incoming in" "] [" "$outgoing out" "] [" "$rpc rpc" "] [white: " "$result_white_peerlist_size" "] [grey: " "$result_grey_peerlist_size" "]"
 	}
 	status_Template
 }
@@ -467,37 +465,24 @@ status_P2Pool()
 				print_Warn "[WALLET] not found in [monero-bash.conf]"
 			fi
 		fi
-		BWHITE; printf "Wallet        | "
-		printf "${OFF}%s${IRED}%s${OFF}%s${IRED}%s${OFF}%s\n" "[" "${WALLET:0:6}" "..." "${WALLET: -6}" "]"
-
+		printf "${BWHITE}%s${OFF}%s${IRED}%s${OFF}%s${IRED}%s${OFF}%s\n" "Wallet        | " "[" "${WALLET:0:6}" "..." "${WALLET: -6}" "]"
 
 		# print EFFORT
-		BWHITE; printf "Effort        | "
-		printf "${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "[average: " "${average_effort}%" "] [current: " "${current_effort}%" "]"
+		printf "${BWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "Effort        | " "[average: " "${average_effort}%" "] [current: " "${current_effort}%" "]"
 
 		# print HASHRATE
-		BWHITE; printf "Hashrate      | "; OFF
-		printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "15s" "/" "1h" "/" "24h"
-		printf "\e[0m[\e[0;93m%s\e[0m] " "$hashrate_15m H/s"
-		printf "\e[0m[\e[0;94m%s\e[0m] " "$hashrate_1h H/s"
-		printf "\e[0m[\e[0;95m%s\e[0m]\n" "$hashrate_24h H/s"
+		printf "${BWHITE}%s\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] \e[0m[\e[0;93m%s\e[0m] \e[0m[\e[0;94m%s\e[0m] \e[0m[\e[0;95m%s\e[0m]\n" \
+			"Hashrate      | " "15s" "/" "1h" "/" "24h" "$hashrate_15m H/s" "$hashrate_1h H/s" "$hashrate_24h H/s"
 
-		# print SIDECHAIN
-		BWHITE; printf "Side-Chain    | "
-		if [[ -e $MB_API/mini_now ]]; then
-			OFF; echo "[P2Pool Mini]"
-		else
-			OFF; echo "[P2Pool Main] (default)"
-		fi
 
 		# print CONNECTIONS
-		BWHITE; printf "Connections   | "; OFF
-		OFF; echo "[${connections}] "
-		BWHITE; echo "--------------| "
+		[[ -e $MB_API/mini_now ]] && local SIDECHAIN="P2Pool Mini" || local SIDECHAIN="P2Pool Main"
+		printf "${BWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n${BWHITE}%s\n" \
+		"Connection    | " "[miners: " "${connections}" "] [sidechain: " "${SIDECHAIN}" "]" "--------------| "
 
 		# print SHARES FOUND
-		BPURPLE; printf "Shares found  | "
-		printf "\e[0m%s\e[0;95m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
+		printf "${BPURPLE}%s\e[0m%s\e[0;95m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
+			"Shares found  | " \
 			"[" \
 			"$sharesFound shares" \
 			"] [" \
@@ -518,9 +503,9 @@ status_P2Pool()
 			"year" \
 			"]"
 
-		# print PAYOUTS FOUND 
-		BCYAN; printf "Total payouts | "
-		printf "\e[0m%s\e[0;96m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
+		# print PAYOUTS FOUND
+		printf "${BCYAN}%s\e[0m%s\e[0;96m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
+			"Total payouts | " \
 			"[" \
 			"$payoutTotal payouts" \
 			"] [" \
@@ -542,8 +527,8 @@ status_P2Pool()
 			"]"
 
 		# print XMR
-		BGREEN; printf "XMR received  | "
-		printf "\e[0m%s\e[0;92m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
+		printf "${BGREEN}%s\e[0m%s\e[0;92m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;93m%s\e[0m%s\e[0;97m%s\e[0m%s\e[0;94m%s\e[0m%s${IWHITE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IWHITE}%s${OFF}%s${IRED}%s${OFF}%s\n" \
+			"XMR received  | " \
 			"[" \
 			"$xmrTotal XMR" \
 			"] [" \
@@ -565,38 +550,48 @@ status_P2Pool()
 			"]"
 
 		# print LATEST SHARE
-		BBLUE; printf "Latest share  | "; OFF
-		declare -a latestShare=($(echo "$LOG" | grep "SHARE FOUND" | tail -1 | sed 's/mainchain //g; s/NOTICE .\|Stratum.*: //g; s/, diff .*, c/ c/; s/user.*, //'))
-		# [0] = day
-		# [1] = time
-		# [2] = height
-		# [3] = #
-		# [4] = client
-		# [5] = ip:port
-		# [6] = effort
-		# [7] = %
+		declare -a latestShare=($(echo "$LOG" | tac | grep -m1 "SHARE FOUND"))
+		# [0] = NOTICE
+		# [1] = 20xx-xx-xx
+		# [2] = xx:xx:xx.xxxx
+		# [3] = StratumServer
+		# [4] = SHARE
+		# [5] = FOUND:
+		# [6] = mainchain
+		# [7] = height
+		# [8] = (int),
+		# [9] = diff
+		# [10] = (int),
+		# [11] = client
+		# [12] = (ip:port) (with no comma...!???)
+		# [13] = user
+		# [14] = (user),
+		# [15] = effort
+		# [16] = xx.xxx%
+		[[ ${latestShare[14]} = ',' || "" ]] && latestShare[14]=???
 		if [[ $latestShare ]]; then
-			latestShare[1]=${latestShare[1]//.*}
-			echo "[${latestShare[0]} ${latestShare[1]}] [block ${latestShare[3]}] [${latestShare[4]} ${latestShare[5]}] [${latestShare[6]} ${latestShare[7]}]"
+			printf "${BBLUE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" \
+				"Latest share  | " "[" "${latestShare[1]} ${latestShare[2]//.*}" "] [block: " "${latestShare[8]:0:-1}" "] [user: " "${latestShare[14]:0:-1}" "/" "${latestShare[12]}" "] [effort: " "${latestShare[16]}" "]"
 		else
-			echo
+			printf "${BBLUE}%s\n" "Latest share  | "
 		fi
 
 		# print LATEST PAYOUT
-		BYELLOW; printf "Latest payout | "; OFF
-		declare -a latestPayout=($(echo "$LOG" | grep "You received a payout of" | tail -1 | sed 's/NOTICE  //; s/P2Pool //'))
-		# [0] = day
-		# [1] = time
-		# [2,3,4,5,6] = You received a payout of
-		# [7] = #
-		# [8] = XMR
-		# [9,10] = in block
-		# [11] = #
+		declare -a latestPayout=($(echo "$LOG" | tac | grep -m1 "You received a payout"))
+		# [0] = NOTICE
+		# [1] = 20xx-xx-xx
+		# [2] = xx:xx:xx.xxxx
+		# [3] = P2Pool
+		# [4,5,6,7,8] = You received a payout of
+		# [9] = x.xxxxxxxxxxxx
+		# [10,11,12] = XMR in block
+		# [13] = (int)
 		if [[ $latestPayout ]]; then
-			latestPayout[1]=${latestPayout[1]//.*}
-			echo -n "[${latestPayout[0]} ${latestPayout[1]}] [block ${latestPayout[11]}] [${latestPayout[7]} XMR]"
+			printf "${BYELLOW}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" \
+				"Latest payout | " "[" "${latestPayout[1]} ${latestPayout[2]//.*}" "] [block: " "${latestPayout[13]}" "] [" "${latestPayout[9]} XMR" "]"
+		else
+			printf "${BYELLOW}%s${OFF}\n" "Latest payout | "
 		fi
-		echo
 	}
 	status_Template
 }
