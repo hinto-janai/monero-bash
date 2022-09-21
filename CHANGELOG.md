@@ -1,3 +1,12 @@
+# v1.9.4
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.3
 ## Updates
 * **Status:** Added `x/month`, `x/year`, `user` to P2Pool stats
