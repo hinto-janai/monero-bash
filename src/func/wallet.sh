@@ -45,184 +45,142 @@ wallet_Start()
 	# CD INTO .monero-bash SO FILES/LOGS GET CREATED THERE
 	cd "$dotMoneroBash"
 
-	# NORMAL WALLET CREATION
-	if [[ $createWallet = "true" ]]; then
-		"$binMonero/monero-wallet-cli" \
-			--generate-new-wallet "$wallets/$walletName" \
-			--password "$walletPassword" \
-			--mnemonic-language "$seedLanguage" \
-			--config-file "$config/monero-wallet-cli.conf"
-			error_Exit "Could not start monero-wallet-cli"
-
-	# VIEW WALLET CREATION
-	elif [[ $createView = "true" ]]; then
-		"$binMonero/monero-wallet-cli" \
-			--generate-from-view-key "$wallets/$walletName" \
-			--password "$walletPassword" \
-			--config-file "$config/monero-wallet-cli.conf"
-			error_Exit "Could not start monero-wallet-cli"
-
-	# WALLET RECOVERY WITH STANDARD SEED
-	elif [[ $recoverWallet = "true" ]]; then
-		"$binMonero/monero-wallet-cli" \
-			--generate-new-wallet "$wallets/$walletName" \
-			--password "$walletPassword" \
-			--restore-from-seed \
-			--electrum-seed "$walletSeed" \
-			--config-file "$config/monero-wallet-cli.conf"
-			error_Exit "Could not start monero-wallet-cli"
-	else
-
-	# IF NOT CREATING, START NORMALLY
-		"$binMonero/monero-wallet-cli" \
-			--wallet-file "$wallets/$walletSelection" \
-			--password "$walletPassword" \
-			--config-file "$config/monero-wallet-cli.conf"
-			error_Exit "Could not start monero-wallet-cli"
-	fi
+	# START NORMALLY
+	"$binMonero/monero-wallet-cli" \
+		--wallet-file "$wallets/$walletSelection" \
+		--password "$walletPassword" \
+		--config-file "$config/monero-wallet-cli.conf"
+		error_Exit "Could not start monero-wallet-cli"
 
 	# AUTO MONEROD STOP
 	[[ $AUTO_STOP_DAEMON = "true" ]]&& define_Monero&&process_Stop
 	exit 0
 }
 
-wallet_Template()
-{
-	# WALLET NAME
-	while true ;do
-		OFF; echo -n "New wallet name: " ;IWHITE
-		read walletName
-		if [[ "$walletName" = *" "* || "$walletName" = "" ]]; then
-			print_Error "Wallet name cannot be empty or have spaces"
-		else
-			break
-		fi
-	done
+# this much better wallet::create() function was
+# stolen from [monero-bash v2.0.0] and slightly
+# modified to work with the crusty old code
+# that is [monero-bash v1.x.x] :D
+# it allows for creation of all wallet types.
+wallet::create() {
+	# CHECK IF MISSING BINARY
+	missing_MoneroCLI
 
-	# WALLET PASS
-	while true; do
-		OFF; echo -n "Wallet password: "
-		read -s walletPassword
-		echo
-		OFF; echo -n "Enter password again: "
-		read -s walletPasswordAgain
-		echo
-		if [[ "$walletPassword" = "$walletPasswordAgain" ]]; then
-			break
-		else
-			print_Error "Password was not the same!"
-		fi
-	done
-}
-wallet_Create()
-{
-	wallet_Template
+	# CD INTO .monero-bash SO FILES/LOGS GET CREATED THERE
+	cd "$dotMoneroBash"
 
-	# WALLET SEED LANGUAGE
-	while true ;do
-		IRED; echo "Monero seed languages:" ;IWHITE
-		print_SeedLanguageList
-		OFF; echo -n "Pick seed language: " ;IWHITE
-		read seedLanguage
-			case "$seedLanguage" in
-				"0"|deutsch|Deutsch|german|German) seedLanguage="Deutsch" ;break ;;
-				"1"|english|English) seedLanguage="English" ;break ;;
-				"2"|español|Español|spanish|Spanish) seedLanguage="Español" ;break ;;
-				"3"|français|Français|french|French) seedLanguage="Français" ;break ;;
-				"4"|italiano|Italiano|italian|Italian) seedLanguage="Italiano" ;break ;;
-				"5"|nederlands|Nederlands|dutch|Dutch) seedLanguage="Nederlands" ;break ;;
-				"6"|português|Português|portuguese|Portuguese) seedLanguage="Português" ;break ;;
-				"7"|"русский язык"|russian|Russian) seedLanguage="русский язык" ;break ;;
-				"8"|日本語|にほんご|japanese|Japanese) seedLanguage="日本語" ;break ;;
-				"9"|"简体中文(中国)"|"简体中文"|"简体中文 (中国)"|chinese|Chinese) seedLanguage="简体中文 (中国)" ;break ;;
-				"10"|esperanto|Esperanto) seedLanguage="Esperanto" ;break ;;
-				"11"|lojban|Lojban) seedLanguage="Lojban" ;break ;;
-				*) print_Error "invalid input" ;;
+	# WALLET TYPES
+	while :; do
+		while :; do
+			echo
+			printf "${BPURPLE}%s${OFF}%s${BRED}%s${OFF}\n" \
+				"--generate-new-wallet         " "| " "[new]" \
+				"--generate-from-view-key      " "| " "[view]" \
+				"--restore-from-seed           " "| " "[seed]" \
+				"--generate-from-json          " "| " "[json]" \
+				"--generate-from-spend-key     " "| " "[spend]" \
+				"--generate-from-device        " "| " "[device]" \
+				"--generate-from-keys          " "| " "[private]" \
+				"--generate-from-multisig-keys " "| " "[multisig]" \
+				""
+			printf "${BWHITE}%s${OFF}" "Which wallet type? "
+
+			read -r WALLET_TYPE
+			case "$WALLET_TYPE" in
+				--generate-new-wallet|*new*)           WALLET_TYPE=new;break;;
+				--generate-from-view-key|*view*)       WALLET_TYPE=view;break;;
+				--restore-from-seed|*seed*)            WALLET_TYPE=seed;break;;
+				--generate-from-json|*json*)           WALLET_TYPE=json;break;;
+				--generate-from-spend-key|*spend*)     WALLET_TYPE=spend;break;;
+				--generate-from-device|*device*)       WALLET_TYPE=device;break;;
+				--generate-from-keys|*private*)        WALLET_TYPE=private;break;;
+				--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;break;;
+				*) print_Error "Invalid wallet type!"
 			esac
 		done
-
-	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";OFF
-	createWallet="true"
-	wallet_Start
-}
-
-# creation of view-only wallet
-wallet_View()
-{
-	BRED; echo "Creating [view] wallet..." ;OFF
-	wallet_Template
-
-	# START monero-wallet-cli WITH CREATION VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";OFF
-	createView="true"
-	wallet_Start
-}
-
-# recovery of wallet
-wallet_Recover()
-{
-	BRED; echo "Recovering wallet..." ;OFF
-	wallet_Template
-
-	# SEED INPUT
-	while true ;do
-		OFF; echo -n "Seed (24/25 words): "
-		read -r walletSeed ; echo
-		case $walletSeed in
-			"") print_Error "Empty input" ;;
-			*)
-				clear
-				n=1
-				for i in $walletSeed; do
-					if [[ $n -lt 10 ]]; then
-						printf "${n}  | %s\n" "${i} "
-					else
-						printf "${n} | %s\n" "${i} "
-					fi
-					((n++))
-				done
-				BWHITE; echo -n "Is this correct? (Y/n) "
-				local YES_NO
-				read -r YES_NO
-				case $YES_NO in
-					y|Y|yes|Yes|YES|"") clear; break;;
-					*) echo;;
-				esac
+		printf "${BWHITE}%s${BRED}%s${BWHITE}%s${OFF}" \
+			"Create wallet type " \
+			"[${WALLET_TYPE}]" \
+			"? (Y/n) "
+		read yn
+		case $yn in
+			y|Y|yes|Yes|YES|""|" ") break;;
+			*) :;;
 		esac
 	done
 
-	# CONFIRM SEED
-
-	# START monero-wallet-cli WITH RECOVERY VARIABLES SET
-	printf "\n\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletName]";OFF
-	recoverWallet="true"
-	wallet_Start
-}
-
-# if wallet name happens to be "new/view/recover"
-wallet_Collision()
-{
-	OFF; echo "Wallet name is similar to option..."
-	while true ;do
-	IBLUE; printf "SELECT "
-	OFF; printf "or "
-	IRED; printf "CREATE? " ;OFF
-	read selectCreate
-		case $selectCreate in
-			select|Select|SELECT)
-				OFF; echo "Selecting $walletSelection..."
-				echo -n "Password: "
-				read -s walletPassword && echo
-				wallet_Start
-				exit
-				;;
-			create|Create|CREATE)
-				break
-				;;
-			*) print_Error "Invalid option" ;;
-		esac
+	# Wallet name
+	while :; do
+		if [[ $WALLET_TYPE = json ]]; then
+			printf "${BWHITE}%s${OFF}" "JSON file path: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print_Error "Empty input";;
+				*)     break;;
+			esac
+		else
+			printf "${BWHITE}%s${OFF}" "Wallet name: "
+			read -r WALLET_NAME
+			case "$WALLET_NAME" in
+				"")    print_Error "Empty input";;
+				*" "*) print_Error "Wallet name cannot have spaces";;
+				*)     break;;
+			esac
+		fi
 	done
+
+	# Spacing
+	printf "\n${BPURPLE}%s${BWHITE}%s${OFF}\n" "Creating wallet " "[$WALLET_NAME]"
+
+	# Case wallet type
+	if case "$WALLET_TYPE" in
+	new)
+			"$binMonero/monero-wallet-cli" \
+			--generate-new-wallet "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	view)
+			"$binMonero/monero-wallet-cli" \
+			--generate-from-view-key "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	seed)
+			"$binMonero/monero-wallet-cli" \
+			--generate-new-wallet "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf" \
+			--restore-from-seed
+			;;
+	json)
+			"$binMonero/monero-wallet-cli" \
+			--generate-from-json "$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	spend)
+			"$binMonero/monero-wallet-cli" \
+			--generate-from-spend-key "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	device)
+			"$binMonero/monero-wallet-cli" \
+			--generate-from-device "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	private)
+			"$binMonero/monero-wallet-cli" \
+			--generate-from-keys "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	multisig)
+			"$binMonero/monero-wallet-cli" \
+			--generate-from-multisig-keys "$wallets/$WALLET_NAME" \
+			--config-file "$config/monero-wallet-cli.conf"
+			;;
+	esac; then
+		exit 0
+	else
+		print_Error "monero-wallet-cli error has occurred"
+		exit 1
+	fi
 }
 
 wallet_Count()

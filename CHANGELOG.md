@@ -2,6 +2,7 @@
 ## Updates
 * **Status:** Added `x/month`, `x/year`, `user` to P2Pool stats
 * **Status:** Added `disk left`, `synced`, `white/grey peers` to Monero stats
+* **Wallet:** All wallet types can now be created: `new, view, seed, json, spend, device, private, multisig`
 * **Wallet:** Wallet names will wrap to stay within `5` wallets or `40` characters per line
 * **Wallet:** Typing `exit` will exit wallet menu (only if 'exit' wallet doesn't exist)
 * **Config:** Added more options to `monerod.conf` & `monero-wallet-cli.conf`

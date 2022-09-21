@@ -157,19 +157,36 @@ if [[ $interactive = "true" ]]; then
 	# SHOW WALLETS, SELECT
 	wallet_Count; wallet_List
 	while true; do
-		printf "${BYELLOW}%s${OFF}${BPURPLE}%s${OFF}%s" \
-			"[Select wallet] " "or " "[new|view|recover|exit] "
+		printf "${BYELLOW}%s${OFF}%s${BPURPLE}%s${OFF}%s${BRED}%s${OFF}" \
+			"[Select wallet]" " or " "[new]" " or " "[exit] "
 		read -r walletSelection
 
 		for i in ${walletList[*]}; do
 			# IF WALLET NAME COLLIDES WITH OPTION, ASK FOR CLARIFICATION
-			if [[ $walletSelection = $i && $walletSelection = "new" \
-				|| $walletSelection = $i && $walletSelection = "view" \
-				|| $walletSelection = $i && $walletSelection = "recover" ]]; then
-					wallet_Collision
+			if [[ $walletSelection = $i && $walletSelection = "new" ]]; then
+				echo "Wallet name is similar to option..."
+				while :; do
+				printf "${BYELLOW}%s${OFF}%s${BPURPLE}%s${OFF}" "SELECT " "or " "NEW? "
+				read selectNew
+					case $selectNew in
+						select|Select|SELECT)
+							printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "Selecting " "[$walletSelection]"
+							printf "%s" "Password: "
+							read -s -r walletPassword
+							printf "\n\n"
+							printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "Starting wallet " "[$walletSelection]"
+							wallet_Start
+							;;
+						new|New|NEW)
+							printf "\n${OFF}%s\n" "Creating new wallet..."
+							wallet::create
+							;;
+						*) print_Error "Invalid option" ;;
+					esac
+				done
 			# START WALLET IF MATCH
 			elif [[ $walletSelection = $i ]]; then
-				printf "%s\n" "Password: "
+				printf "%s" "Password: "
 				read -s -r walletPassword
 				printf "\n\n"
 				printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "Starting wallet " "[$walletSelection]"
@@ -179,9 +196,7 @@ if [[ $interactive = "true" ]]; then
 
 		# OR CATCH WALLET CREATION & ERROR INPUT
 		case $walletSelection in
-			new|New|NEW|"[new]"|"[New]") wallet_Create ; break ;;
-			view|View|VIEW|view-only|View-only|View-Only) wallet_View ; break ;;
-			recover|Recover|RECOVER|"[recover]"|"[Recover]") wallet_Recover ; break ;;
+			new|New|NEW) wallet::create; break;;
 			'exit'|'Exit'|'EXIT') exit 0;;
 			'exit()') printf "%s\n" "This isn't Python, but ok >_>"; exit 0;;
 			'exit(0);') printf "%s\n" "This isn't C, but ok >_>"; exit 0;;
