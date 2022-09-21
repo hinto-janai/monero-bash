@@ -2,12 +2,13 @@
 ## Updates
 * **Status:** Added `x/month`, `x/year`, `user` to P2Pool stats
 * **Status:** Added `disk left`, `synced`, `white/grey peers` to Monero stats
-* **Wallet:** List will wrap to stay within `5` wallets or `40` characters per line
-* **Wallet:** Typing `exit` will exit wallet (only if 'exit' wallet doesn't exist)
+* **Wallet:** Wallet names will wrap to stay within `5` wallets or `40` characters per line
+* **Wallet:** Typing `exit` will exit wallet menu (only if 'exit' wallet doesn't exist)
 * **Config:** Added more options to `monerod.conf` & `monero-wallet-cli.conf`
 
 ## Fixes
 * **Watch:** `WATCH_REFRESH_RATE` default is now `5` seconds, `1` is too fast for slow computers
+* **Watch:** Less screen stutter between stat refreshes
 * **Status:** Fixed P2Pool `Latest share` showing 1st share found
 * **Tor:** Errors are more detailed and fixes are suggested
 

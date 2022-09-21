@@ -103,10 +103,7 @@ watch_Template()
 				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY}";;
 			esac
-			printf "\e[2J\e[H"
-			echo -e "$STATS"
-			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
-				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
+			echo -en "\e[2J\e[H${STATS}\n\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m${STAT_DATE}\e[1;97m] [\e[1;94m${STAT_UPTIME}\e[1;97m] [${WATCH_REFRESH_RATE} sec] [\e[0;97m${STAT_AMOUNT}\e[1;97m]\e[0m "
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
@@ -132,10 +129,7 @@ watch_Template()
 				*"Active: failed"*) [[ $STAT_UPTIME = ... ]] && DOT_COLOR="\e[1;91mFAILED: ${NAME_PRETTY} $NAME_VER" || DOT_COLOR="\e[1;92mONLINE \e[1;93m(non-systemd): ${NAME_PRETTY} $NAME_VER";;
 				*) DOT_COLOR="\e[1;93m???: ${NAME_PRETTY} $NAME_VER";;
 			esac
-			printf "\e[2J\e[H"
-			echo -e "$STATS"
-			printf "\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
-				"$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
+			echo -en "\e[2J\e[H${STATS}\n\n\e[${WATCH_LINES};0H\e[1;97m[${DOT_COLOR}\e[1;97m] [\e[1;95m${STAT_DATE}\e[1;97m] [\e[1;94m${STAT_UPTIME}\e[1;97m] [${WATCH_REFRESH_RATE} sec] [\e[0;97m${STAT_AMOUNT}\e[1;97m]\e[0m "
 			# exit on any input unless [left] or [right] escape codes
 			read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 			if [[ $VAR_1 = $'\e' ]]; then
@@ -179,10 +173,7 @@ watch_Status() {
 		# use status_Watch() instead of re-invoking and
 		# loading [monero-bash status] into memory every loop
 		local STATS=$(status_Watch) STAT_UPTIME=$(uptime -p) STAT_DATE=$(printf "%(%F %X %Z)T")
-		printf "\e[2J\e[H"
-		echo -e "$STATS"
-		printf "\e[${WATCH_LINES};0H\e[1;97m%s${COL}%s\e[1;97m%s\e[1;95m%s\e[1;97m%s\e[1;94m%s\e[1;97m%s\e[0;97m%s\e[1;97m%s\e[0m " \
-			"[" "monero-bash ${MONERO_BASH_VER}" "] [" "$STAT_DATE" "] [" "$STAT_UPTIME" "] [${WATCH_REFRESH_RATE} sec] [" "$STAT_AMOUNT" "]"
+		echo -en "\e[2J\e[H${STATS}\n\e[${WATCH_LINES};0H\e[1;97m[${COL}monero-bash ${MONERO_BASH_VER}\e[1;97m] [\e[1;95m${STAT_DATE}\e[1;97m] [\e[1;94m${STAT_UPTIME}\e[1;97m] [${WATCH_REFRESH_RATE} sec] [\e[0;97m${STAT_AMOUNT}\e[1;97m]\e[0m "
 		# exit on any input unless [left] or [right] escape codes
 		read -r -s -N 1 -t $WATCH_REFRESH_RATE VAR_1
 		if [[ $VAR_1 = $'\e' ]]; then

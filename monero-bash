@@ -155,11 +155,10 @@ if [[ $interactive = "true" ]]; then
 	fi
 
 	# SHOW WALLETS, SELECT
-	WHITE; wallet_Count; wallet_List
+	wallet_Count; wallet_List
 	while true; do
-		BYELLOW; printf "Select wallet "
-		WHITE; printf "or "
-		BPURPLE; printf "[new / view / recover] "; OFF
+		printf "${BYELLOW}%s${OFF}${BPURPLE}%s${OFF}%s" \
+			"[Select wallet] " "or " "[new|view|recover|exit] "
 		read -r walletSelection
 
 		for i in ${walletList[*]}; do
@@ -170,10 +169,10 @@ if [[ $interactive = "true" ]]; then
 					wallet_Collision
 			# START WALLET IF MATCH
 			elif [[ $walletSelection = $i ]]; then
-				WHITE; printf "Password: "
+				printf "%s\n" "Password: "
 				read -s -r walletPassword
 				printf "\n\n"
-				printf "\e[1;93m%s\e[1;97m%s\n" "Starting wallet " "[$walletSelection]";OFF
+				printf "${BYELLOW}%s${BWHITE}%s${OFF}\n" "Starting wallet " "[$walletSelection]"
 				wallet_Start
 			fi
 		done
