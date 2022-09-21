@@ -161,16 +161,15 @@ status_Monero()
 		# awkList[1] = net_hash
 		# awkList[2] = database_size
 		# awkList[3] = free_space
-		local -a awkList
 		if [[ $height_percent = '???' ]]; then
 			percent_color="\e[93m"
-			awkList=($(echo "$net_hash" "$database_size" "$free_space" "$GET_CONNECTIONS" \
-				| awk '{printf "%.3f %.3f %.3f", $1 / 120000000000, $2 / 1000000000, $3 / 1000000000}'))
-			declare -n net_hash=awkList[0] database_size=awkList[1] free_space=awkList[2]
+			local -a awkList=($(echo "$net_hash" "$database_size" "$free_space" "$GET_CONNECTIONS" \
+				| awk '{printf "%.3f\n%.3f\n%.3f", $1 / 120000000000, $2 / 1000000000, $3 / 1000000000}'))
+			local -n net_hash=awkList[0] database_size=awkList[1] free_space=awkList[2]
 		else
-			awkList=($(echo "$height" "$target_height" "$net_hash" "$database_size"	"$free_space" \
-				| awk '{printf "%.2f %.3f %.3f %.3f", $1 / $2 * 100, $3 / 120000000000, $4 / 1000000000, $5 / 1000000000}'))
-			declare -n height_percent=awkList[0] net_hash=awkList[1] database_size=awkList[2] free_space=awkList[3]
+			local -a awkList=($(echo "$height" "$target_height" "$net_hash" "$database_size"	"$free_space" \
+				| awk '{printf "%.2f\n%.3f\n%.3f\n%.3f", $1 / $2 * 100, $3 / 120000000000, $4 / 1000000000, $5 / 1000000000}'))
+			local -n height_percent=awkList[0] net_hash=awkList[1] database_size=awkList[2] free_space=awkList[3]
 		fi
 		if [[ -z $percent_color ]]; then
 			if [[ ${height_percent//.*} -le 30 ]]; then
@@ -408,7 +407,6 @@ status_P2Pool()
 		[[ $current_effort ]] || current_effort=0
 		[[ $connections ]]    || connections=0
 
-		local -a awkList
 		local xmrColumn processSeconds sharesPerHour sharesPerDay payoutTotal payoutPerHour payoutPerDay xmrTotal xmrPerHour xmrPerDay
 		# process second calculation (reuses PROCESS_ID from status_Template())
 		processSeconds=$(ps -p $PROCESS_ID -o etimes=)
@@ -433,10 +431,10 @@ status_P2Pool()
 			# [11] xmrPerMonth
 			# [12] xmrPerYear
 			xmrColumn=$(echo "$xmrColumn" | awk '{SUM+=$1}END{printf "%.7f", SUM}')
-			awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, (($1/($2/60/60))*24)*31, (($1/($2/60/60))*24)*365, $3/($2/60/60), ($3/($2/60/60))*24, (($3/($2/60/60))*24)*31, (($3/($2/60/60))*24)*365, $4, $4/($2/60/60), ($4/($2/60/60))*24, (($4/($2/60/60))*24)*31, (($4/($2/60/60))*24)*365}'))
+			local -a awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, (($1/($2/60/60))*24)*31, (($1/($2/60/60))*24)*365, $3/($2/60/60), ($3/($2/60/60))*24, (($3/($2/60/60))*24)*31, (($3/($2/60/60))*24)*365, $4, $4/($2/60/60), ($4/($2/60/60))*24, (($4/($2/60/60))*24)*31, (($4/($2/60/60))*24)*365}'))
 			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awkList[3] payoutPerHour=awkList[4] payoutPerDay=awkList[5] payoutPerMonth=awkList[6] payoutPerYear=awkList[7]  xmrTotal=awkList[8] xmrPerHour=awkList[9] xmrPerDay=awkList[10] xmrPerMonth=awkList[11] xmrPerYear=awkList[12]
 		else
-			awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24}'))
+			local -a awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24}'))
 			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awklist[3] 
 			payoutTotal=0
 			payoutPerHour=0
