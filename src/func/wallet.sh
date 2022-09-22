@@ -116,7 +116,7 @@ wallet::create() {
 			read -r WALLET_NAME
 			case "$WALLET_NAME" in
 				"")    print_Error "Empty input";;
-				*)     break;;
+				*)     printf "\n${BPURPLE}%s${BWHITE}%s${OFF}\n" "Using file " "[$WALLET_NAME]"; break;;
 			esac
 		else
 			printf "${BWHITE}%s${OFF}" "Wallet name: "
@@ -124,13 +124,10 @@ wallet::create() {
 			case "$WALLET_NAME" in
 				"")    print_Error "Empty input";;
 				*" "*) print_Error "Wallet name cannot have spaces";;
-				*)     break;;
+				*)     printf "\n${BPURPLE}%s${BWHITE}%s${OFF}\n" "Creating wallet " "[$WALLET_NAME]"; break;;
 			esac
 		fi
 	done
-
-	# Spacing
-	printf "\n${BPURPLE}%s${BWHITE}%s${OFF}\n" "Creating wallet " "[$WALLET_NAME]"
 
 	# Case wallet type
 	if case "$WALLET_TYPE" in
