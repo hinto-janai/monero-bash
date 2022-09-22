@@ -2,7 +2,7 @@
 ## Updates
 *
 ## Fixes
-*
+* **Status:** Disallow remote `DAEMON_RPC_IP` + Tor (initialization time + Tor speed causes hanging)
 
 ---
 

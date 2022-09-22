@@ -93,39 +93,6 @@ status_Monero()
 				print_Warn "Falling back to [monerod.conf]'s [${DAEMON_RPC_IP//*=}:${DAEMON_RPC_PORT//*=}]"
 				DAEMON_RPC_IP=${DAEMON_RPC_IP//*=}:${DAEMON_RPC_PORT//*=}
 			fi
-
-		# 2022-08-17
-		# ----------
-		# [monerod status] doesn't work if the
-		# ip:port isn't localhost:18081 anyway,
-		# so just don't even try using it.
-
-#		elif ! GET_INFO=$(wget -qO- "localhost:18081/json_rpc" --header='Content-Type:application/json' --post-data='{"jsonrpc":"2.0","id":"0","method":"get_info"}'); then
-#			if [[ -z $GET_INFO || $GET_INFO = *error* ]]; then
-#				print_Warn "[DAEMON_RPC_IP] not found in [monero-bash.conf]"
-#				print_Warn "[rpc-bind-ip] and/or [rpc-bind-port] not found in [monerod.conf]"
-#				print_Warn "Local fallback [localhost:18081] did not work!"
-#				print_Warn "Falling back to (slow) local invoking of [monerod status]"
-#				# [monerod status fallback]
-#				# Get into memory so we can split it
-#				# (the regular output is ugly long)
-#				local STATUS="$($binMonero/monerod status)"
-#				# Split per newline
-#				local IFS=$'\n' LINE l=0
-#				for i in $STATUS; do
-#					LINE[$l]="$i"
-#					((l++))
-#				done
-#				# This removes the ANSI color codes in monerod output
-#				LINE[0]="$(echo "${LINE[0]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g')"
-#				printf "\e[0;96m%s\e[0m\n" "${LINE[0]}"
-#
-#				# Split this line into 2
-#				LINE[1]="$(echo "${LINE[1]}" | sed 's/\x1B\[[0-9;]\{1,\}[A-Za-z]//g; s/[^[:print:]]//g; s/, net hash/\nnet hash/')"
-#				# Replace ',' with '|' and add color
-#				echo -e "\e[0;92m${LINE[1]//, /\\e[0;97m | \\e[0;92m}\e[0m"
-#				return
-
 		# [localhost:18081] fallback
 		else
 			DAEMON_RPC_IP=localhost:18081
@@ -133,6 +100,16 @@ status_Monero()
 			print_Warn "[rpc-bind-ip] and/or [rpc-bind-port] not found in [monerod.conf]"
 			print_Warn "Falling back to [localhost:18081]"
 		fi
+		# Warn against Tor on non-local host
+		case $DAEMON_RPC_IP in
+			localhost*|127.0.0.1*|192.168*) :;;
+			*)
+				if [[ $USE_TOR = true ]]; then
+					print_Error "Getting Monero stats via a non-local [DAEMON_RPC_IP] over Tor is not supported!"
+					print_Error_Exit "Please run your own node to get stats!"
+				fi
+		;;
+		esac
 		GET_INFO=$(wget -qO- "$DAEMON_RPC_IP/json_rpc" --header='Content-Type:application/json' --post-data='{"jsonrpc":"2.0","id":"0","method":"get_info"}')
 		if [[ $? != 0 || -z $GET_INFO || $GET_INFO = *error* ]]; then
 			printf "\e[1;91m%s\e[0;97m%s\e[0m\n" "Warning | " "Could not connect to [$DAEMON_RPC_IP] to get Monero stats!"

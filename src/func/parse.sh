@@ -34,7 +34,7 @@
 # Parse config files safely.
 parse_Config() {
 	# [monero-bash.conf]
-	declare -g CONFIG_GREP=$(config::grep "$config/monero-bash.conf" \
+	local CONFIG_GREP=$(config::grep "$config/monero-bash.conf" \
 		bool   AUTO_START_DAEMON    \
 		bool   AUTO_STOP_DAEMON     \
 		bool   AUTO_UPDATE          \
@@ -53,7 +53,8 @@ parse_Config() {
 		bool   DAEMON_RPC_VERBOSE   \
 		bool   AUTO_HUGEPAGES       \
 		int    HUGEPAGES
-	) || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] monero-bash.conf source failure" || panic; }
+	)
+	declare -g $CONFIG_GREP || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] monero-bash.conf source failure"; panic; }
 
 	# default for empty values
 	[[ $AUTO_START_DAEMON ]]    || { declare -g AUTO_START_DAEMON=false || panic; }
@@ -80,7 +81,7 @@ parse_Config() {
 
 	# [p2pool.conf]
 	[[ $P2POOL_VER ]] || return 0
-	declare -g CONFIG_GREP=$(config::grep "$p2poolConf" \
+	local CONFIG_GREP=$(config::grep "$p2poolConf" \
 		char  WALLET     \
 		bool  MINI       \
 		ip    DAEMON_IP  \
@@ -89,7 +90,8 @@ parse_Config() {
 		pos   OUT_PEERS  \
 		pos   IN_PEERS   \
 		[0-6] LOG_LEVEL
-	) || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] p2pool.conf source failure" || panic; }
+	)
+	declare -g $CONFIG_GREP || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] p2pool.conf source failure"; panic; }
 	# range [10-1000]
 	if [[ $OUT_PEERS ]]; then
 		[[ $OUT_PEERS -ge 10 && $OUT_PEERS -le 1000 ]] || { declare -g OUT_PEERS=10 || panic; }
