@@ -95,6 +95,9 @@ wallet::create() {
 				--generate-from-device|*device*)       WALLET_TYPE=device;break;;
 				--generate-from-keys|*private*)        WALLET_TYPE=private;break;;
 				--generate-from-multisig-keys|*multi*) WALLET_TYPE=multisig;break;;
+				exit|Exit|EXIT)                        exit 0;;
+				'exit()') printf "%s\n" "This isn't Python but ok >_>"; exit 0;;
+				'exit(0);') printf "%s\n" "This isn't C but ok >_>"; exit 0;;
 				*) print_Error "Invalid wallet type!"
 			esac
 		done

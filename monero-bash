@@ -198,8 +198,8 @@ if [[ $interactive = "true" ]]; then
 		case $walletSelection in
 			new|New|NEW) wallet::create; break;;
 			'exit'|'Exit'|'EXIT') exit 0;;
-			'exit()') printf "%s\n" "This isn't Python, but ok >_>"; exit 0;;
-			'exit(0);') printf "%s\n" "This isn't C, but ok >_>"; exit 0;;
+			'exit()') printf "%s\n" "This isn't Python but ok >_>"; exit 0;;
+			'exit(0);') printf "%s\n" "This isn't C but ok >_>"; exit 0;;
 			"") print_Error "Empty input" ;;
 			*) IRED; print_Error "Wallet <${walletSelection}> not found" ;;
 		esac
