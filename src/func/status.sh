@@ -36,6 +36,7 @@
 
 status_All()
 {
+	[[ $XMRIG_VER ]] && { prompt_Sudo;error_Sudo; }
 	print_MoneroBashTitle
 	print_Installed_Version
 	status_System
@@ -436,10 +437,10 @@ status_P2Pool()
 		else
 			local -a awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24}'))
 			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awklist[3]
-			sharesPerHour=0
-			sharesPerDay=0
-			sharesPerMonth=0
-			sharesPerYear=0
+			[[ $sharesPerHour = 0* ]]  && sharesPerHour=0
+			[[ $sharesPerDay = 0* ]]   && sharesPerDay=0
+			[[ $sharesPerMonth = 0* ]] && sharesPerMonth=0
+			[[ $sharesPerYear = 0* ]]  && sharesPerYear=0
 			payoutTotal=0
 			payoutPerHour=0
 			payoutPerDay=0
@@ -511,7 +512,7 @@ status_P2Pool()
 			"[" \
 			"$payoutTotal payouts" \
 			"] [" \
-			"${payoutPerHour:0}" \
+			"${payoutPerHour:0:9}" \
 			"/" \
 			"hour" \
 			"] [" \
@@ -603,61 +604,69 @@ status_XMRig()
 	define_XMRig
 	EXTRA_STATS()
 	{
-		# WALLET (in xmrig.json)
-		BWHITE; printf "Wallet       | " ;OFF
-		local wallet="$(grep -m1 "\"user\":" "$xmrigConf" | awk '{print $2}' | tr -d '", ')"
-		[[ -z $wallet ]] && echo || echo "[${wallet:0:6}...${wallet: -6}]"
+		if [[ -e $binXMRig/xmrig-log ]]; then
+			local LOG=$(tac $binXMRig/xmrig-log)
+			local CONF=$(<${xmrigConf})
+			# this is for getting runtime settings of
+			# [xmrig.conf] but its a little too slow and
+			# it doesn't get very interesting stats.
+			# [status] goes from [0.6sec] -> [1sec]
+			# so probably not worth it.
+#			local $(json::var < $xmrigConf | grep "url\|user\|randomx\|cpu_huge-pages\|cpu_huge-pages-jit" | tr '-' '_') 2>/dev/null
+		else
+			print_Warn "[$binXMRig/xmrig-log] was not found, can't get XMRig stats!"
+		fi
 
 		# POOL
-		BPURPLE; printf "Pool         | " ;OFF
-		local xmrigPool=$(grep -m1 "\"url\":" "$xmrigConf" | awk '{print $2}' | tr -d '","')
-		echo "[${xmrigPool}]"
+		local pool=$(echo "$CONF" | grep -m1 "url")
+		pool=${pool/*: }
+		pool=${pool//\"}
+		pool=${pool//,}
+		printf "${BPURPLE}%s${OFF}%s${IPURPLE}%s${OFF}%s\n" "Pool         | " "[" "${pool}" "]"
 
-		# SHARES
-		declare -a shares=($(tac "$binXMRig/xmrig-log" | grep -m1 "accepted" | sed 's/[[:blank:]]\+cpu[[:blank:]]\+/ /'))
-		# [0] = [day
-		# [1] = time]
-		# [2] = accepted
-		# [3] = (#/#)
-		# [4] = diff
-		# [5] = #
-		# [6] = (#
-		# [7] = ms)
-		BBLUE; printf "Latest share | "
-		if [[ $shares ]]; then
-			shares[1]=${shares[1]//.*/]}
-			shares[3]=${shares[3]//(}
-			shares[3]=${shares[3]//)}
-			shares[6]=${shares[6]//(}
-			shares[7]=${shares[7]//)}
-			OFF; echo -n "${shares[0]} ${shares[1]} [${shares[2]} ${shares[3]}] [${shares[4]} ${shares[5]}] [${shares[6]} ${shares[7]}]"
-		fi
-		echo
+		# WALLET (in xmrig.json)
+		local wallet=$(echo "$CONF" | grep -m1 "user")
+		wallet=${wallet/*: }
+		wallet=${wallet//\"}
+		wallet=${wallet//,}
+		printf "${BWHITE}%s${OFF}%s${IRED}%s${OFF}%s${IRED}%s${OFF}%s\n" "Wallet       | " "[" "${wallet:0:6}" "..." "${wallet: -6}" "]"
+
+#		# RANDOMX SETTINGS
+#		printf "${BGREEN}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" "RandomX      | " \
+#			"[1gb-pages: " "$randomx_1gb_pages" "] [hugepages: " "$cpu_huge_pages" "] [jit: " "$cpu_huge_pages_jit" \
+#			"] [rdmsr: " "$randomx_rdmsr" "] [wrmsr: " "$randomx_wrmsr" "]"
 
 		# HASHRATE
-		declare -a hashrate=($(tac "$binXMRig/xmrig-log" | grep -m1 "speed" | sed 's|].*miner.*10s/60s/15m|]|'))
+		declare -a hashrate=($(echo "$LOG" | grep -m1 "speed"))
 		# [0] = [day
 		# [1] = time]
-		# [2] = # or n/a
-		# [3] = # or n/a
-		# [4] = # or n/a
-		# [5] = H/s
-		# [6] = max
-		# [7] = #
-		# [8] = H/s
-		BYELLOW; printf "Hashrate     | "
+		# [2, 3] = miner speed
+		# [4] = 10s/60s/15m
+		# [5,6,7] = #.# #.# #.# (or n/a)
 		if [[ $hashrate ]]; then
-			hashrate[1]=${hashrate[1]//.*/]}
-			OFF; echo -n "${hashrate[0]} ${hashrate[1]} "
-			[[ ${hashrate[2]} != 'n/a' ]] && hashrate[2]="${hashrate[2]} H/s"
-			[[ ${hashrate[3]} != 'n/a' ]] && hashrate[3]="${hashrate[3]} H/s"
-			[[ ${hashrate[4]} != 'n/a' ]] && hashrate[4]="${hashrate[4]} H/s"
-			printf "\e[0m[\e[0;93m%s\e[0m%s\e[0;94m%s\e[0m%s\e[0;95m%s\e[0m] " "10s" "/" "60s" "/" "15m"
-			printf "\e[0m[\e[0;93m%s\e[0m] " "${hashrate[2]}"
-			printf "\e[0m[\e[0;94m%s\e[0m] " "${hashrate[3]}"
-			printf "\e[0m[\e[0;95m%s\e[0m] " "${hashrate[4]}"
+			printf "${BYELLOW}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${BPURPLE}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${IPURPLE}%s${OFF}%s\n" \
+				"Hashrate     | " "${hashrate[0]} ${hashrate[1]} [" "10s" "/" "60s" "/" "15m" "] [" "${hashrate[5]} H/s" "] [" "${hashrate[6]} H/s" "] [" "${hashrate[7]} H/s" "]"
+		else
+			printf "${BYELLOW}%s${OFF}\n" "Hashrate     | "
 		fi
-		echo
+
+		# ACCEPTED SHARES
+		declare -a shares=($(echo "$LOG" | grep -m1 "accepted"))
+		# [0] = [day
+		# [1] = time]
+		# [2] = cpu
+		# [3] = accepted
+		# [4] = (#/#)
+		# [5] = diff
+		# [6] = #
+		# [7] = (#
+		# [8] = ms)
+		if [[ $shares ]]; then
+			printf "${BBLUE}%s${OFF}%s${IGREEN}%s${OFF}%s${IRED}%s${OFF}%s\n" "Latest share | " \
+				"${shares[0]} ${shares[1]} [" "accepted: ${shares[4]}" "] [" "diff: ${shares[6]}" "] ${shares[7]} ${shares[8]}"
+		else
+			printf "${BBLUE}%s${OFF}\n" "Latest share | "
+		fi
 	}
 	status_Template
 }

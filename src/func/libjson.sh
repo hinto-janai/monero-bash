@@ -20,16 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 #
-# Parts of this project are originally:
-# Copyright (c) 2019-2022, jtgrassie
-# Copyright (c) 2014-2022, The Monero Project
+# Parts of this library are orignally:
 # Copyright (c) 2011-2022, Dominic Tarr
-#
-# Parts of this project are licensed under GPLv2:
-# Copyright (c) ????-2022, Tamas Szerb <toma@rulez.org>
-# Copyright (c) 2008-2022, Robert Hogan <robert@roberthogan.net>
-# Copyright (c) 2008-2022, David Goulet <dgoulet@ev0ke.net>
-# Copyright (c) 2008-2022, Alex Xu (Hello71) <alex_y_xu@yahoo.ca>
 
 #git <libjson/libjson.sh/29d1cf2>
 
@@ -267,9 +259,18 @@ json::sh() {
 #
 # This is now in a form where
 # Bash can easily source it.
-json::var() { json::sh -l | sed "s/\[\"//g; s/\"\]\t\"/=/g; s/\"$//g; s/\"\]\t/=/g; s/\",\"/_/g; s/={/='{/g; s/}$/}'/g"; }
+json::var() { json::sh -l | sed "s/\[\"//g; s/\"\]\t\"/=/g; s/\"$//g; s/\"\]\t/=/g; s/\",\"/_/g; s/\",/_/g; s/,\"/_/g; s/={/='{/g; s/}$/}'/g"; }
 
-# This skips printing to STDOUT and
-# directly sources the variables created
-# from above. This create GLOBAL variables.
-json::src() { source <(json::var); }
+# This turns json::var()
+# output into a single line
+# which allows you to do this:
+#
+# local $(json::line < file.json)
+#
+# Now all the JSON values will be
+# declared as local variables all
+# at once, no looping.
+json::line() { local -a LIBJSON_LINE=($(json::var)); echo ${LIBJSON_LINE[@]}; }
+
+# This creates GLOBAL variables.
+json::source() { source <(json::var); }

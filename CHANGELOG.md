@@ -1,7 +1,6 @@
 # v1.9.4
 ## Updates
 *
-
 ## Fixes
 *
 

@@ -103,9 +103,9 @@ process_Start_Template()
 			print_Warn "Consider regenerating the [${NAME_PRETTY}] systemd file: [monero-bash reset ${PROJECT} systemd]"
 		fi
 	elif [[ $NAME_PRETTY = XMRig && -e "$binXMRig/xmrig-log" ]]; then
-		rm -rf "$binXMRig/xmrig-log"
+		sudo rm -rf "$binXMRig/xmrig-log"
 		touch "$binXMRig/xmrig-log"
-		chmod 700 "$binXMRig/xmrig-log"
+		chmod 744 "$binXMRig/xmrig-log"
 	fi
 
 	# warn against old service without security

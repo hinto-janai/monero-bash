@@ -222,7 +222,7 @@ torsocks_func() {
 	# Tor IP
 	export TORSOCKS_TOR_ADDRESS="$TOR_IP" || { print_Error "Torsocks error 20 | [TORSOCKS_TOR_ADDRESS] variable could not exported"; exit 20; }
 	# Tor Port
-	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 21| [TORSOCKS_TOR_PORT] variable could not exported"; exit 21; }
+	export TORSOCKS_TOR_PORT="$TOR_PORT" || { print_Error "Torsocks error 21 | [TORSOCKS_TOR_PORT] variable could not exported"; exit 21; }
 	# Silence messages
 	export TORSOCKS_LOG_LEVEL=1 || { print_Error "Torsocks error 22 | [TORSOCKS_LOG_LEVEL] variable could not exported"; exit 22; }
 
