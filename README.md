@@ -61,12 +61,12 @@
 | Linux Distribution                   | Version            | Status | Info |
 |--------------------------------------|--------------------|--------|------|
 | [Debian](https://www.debian.org)     | 11, 10             | 🟢     |
-| [Ubuntu](https://ubuntu.com)         | LTS 22.04, 20.04   | 🟢     |
+| [Ubuntu](https://ubuntu.com)         | LTS 22.04, 20.05   | 🟢     |
 | [Pop!\_OS](https://pop.system76.com) | LTS 22.04, 20.04   | 🟢     |
 | [Linux Mint](https://linuxmint.com)  | 21, 20.03          | 🟢     |
 | [Fedora](https://getfedora.org)      | Workstation 36, 35 | 🔴     | SELinux disables `systemd` functionality
 | [Arch Linux](https://archlinux.org)  |                    | 🟡     | `wget` must be installed
-| [Manjaro](https://manjaro.org)       | 21.3.6             | 🟢     |
+| [Manjaro](https://manjaro.org)       | 21.3.7             | 🟢     |
 | [Gentoo](https://www.gentoo.org)     |                    | 🔴     | `wget` & `systemd` must be installed
 
 ## Install
@@ -155,14 +155,13 @@ help                                                  Show this help message
 ### Wallet
 Wallet files are found in: `~/.monero-bash/wallets`
 
-To open the wallet menu, type: `monero-bash`. You will have 4 options:
+To open the wallet menu, type: `monero-bash`. You will have 3 options:
 * `Select` Type a wallets name to open it
 * `New` Create a new wallet
-* `View` Create a new VIEW-ONLY wallet
-* `Recover` Recover a wallet with a standard 24/25 word Monero seed
+* `Exit` Exit the wallet menu
 
-For safety reasons, there is no built-in way to **delete** a wallet.  
-You'll have to manually remove the files inside the wallet folder, for example:
+There is no built-in way to **delete** a wallet.  
+You'll have to manually remove the files inside the wallet folder:
 ```bash
 rm ~/.monero-bash/wallets/MY_WALLET
 rm ~/.monero-bash/wallets/MY_WALLET.keys
@@ -173,7 +172,7 @@ rm ~/.monero-bash/wallets/MY_WALLET.keys
 ### Config
 Config files for all packages are in: `~/.monero-bash/config`
 
-monero-bash comes with pre-configured/optimized configuration files:
+monero-bash comes with pre-configured configuration files:
 * [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)
 * [`monerod.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf)
 * [`monero-wallet-cli.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf)
@@ -336,7 +335,7 @@ HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connectio
 ---
 
 ### Connections
-For transparency and ease-of-mind, here's all the connections `monero-bash` makes:
+For transparency, here's all the connections `monero-bash` makes:
 
 | Domain                   | Why                                                                                       | When | Where |
 |--------------------------|-------------------------------------------------------------------------------------------|------|-------|
@@ -349,7 +348,7 @@ For transparency and ease-of-mind, here's all the connections `monero-bash` make
 
 ## FAQ
 <details>
-<summary>Where does monero-bash download packages from?</summary>
+<summary>Where are packages downloaded from?</summary>
 
 ---
 
@@ -381,22 +380,6 @@ Keys are pre-downloaded in: `gpg/` [**HOWEVER, they are checked against the onli
 * Monero `81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92` -> [binaryFate](https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)
 * P2Pool `1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF` -> [SChernykh](https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc)
 * XMRig `9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409` -> [XMRig](https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc)
-
----
-
-</details>
-
-<details>
-<summary>How does monero-bash upgrade packages?</summary>
-
----
-
-[Click here for an explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
-
-To see detailed output when installing/upgrading, type:
-```
-monero-bash install/upgrade <package> verbose
-```
 
 ---
 
@@ -448,6 +431,22 @@ If you cancel ***after*** software is installed, but before the local state is u
 </details>
 
 <details>
+<summary>How are packages upgraded?</summary>
+
+---
+
+[Click here for an explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
+
+To see detailed output when installing/upgrading, type:
+```
+monero-bash install/upgrade <package> verbose
+```
+
+---
+
+</details>
+
+<details>
 <summary>Where is monero-bash installed?</summary>
 
 ---
@@ -456,76 +455,32 @@ Installation path:
 ```
 /usr/local/share/monero-bash
 ```
+Packages:
+```
+/usr/local/share/monero-bash/bin
+```
+
 PATH symlink:
 ```
 /usr/local/bin/monero-bash
 ```
 User folder:
 ```
-/home/user/.monero-bash
+~/.monero-bash
 ```
-`systemd` files:
-```bash
-/etc/systemd/systemd/monero-bash-$PACKAGE_NAME.service
-/etc/systemd/system/multi-user.target.wants/monero-bash-$PACKAGE_NAME.service
-```
-
----
-</details>
-
-<details>
-<summary>Where are packages installed?</summary>
-
----
-
-```
-/usr/local/share/monero-bash/bin/
-```
-
----
-</details>
-
-<details>
-<summary>Where are the config files?</summary>
-
----
-
+Config files:
 ```
 ~/.monero-bash/config
 ```
-
----
-
-</details>
-
-<details>
-<summary>Where are the wallets?</summary>
-
----
-
+Wallets:
 ```
 ~/.monero-bash/wallets
 ```
 
----
-
-</details>
-
-<details>
-<summary>Where are the systemd files?</summary>
-
----
-
-```
-/etc/systemd/system/
-├─ monero-bash-monerod.service
-├─ monero-bash-p2pool.service
-├─ monero-bash-xmrig.service
-
-/etc/systemd/system/multi-user.target.wants/
-├─ monero-bash-monerod.service
-├─ monero-bash-p2pool.service
-├─ monero-bash-xmrig.service
+`systemd` files:
+```bash
+/etc/systemd/systemd/monero-bash-$PACKAGE_NAME.service
+/etc/systemd/system/multi-user.target.wants/monero-bash-$PACKAGE_NAME.service
 ```
 
 ---
