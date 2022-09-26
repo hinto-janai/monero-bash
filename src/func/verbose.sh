@@ -37,39 +37,43 @@
 #
 verbose_Upgrade()
 {
-	BWHITE; echo -n "NAME_VER: " ;OFF; echo "$NAME_VER"
-	BWHITE; echo -n "NAME_OLD: " ;OFF; echo "$NAME_OLD"
-	BWHITE; echo -n "NAME_PRETTY: " ;OFF; echo "$NAME_PRETTY"
-	BWHITE; echo -n "NAME_FUNC: " ;OFF; echo "$NAME_FUNC"
-	BWHITE; echo -n "NAME_CAPS: " ;OFF; echo "$NAME_CAPS"
-	BWHITE; echo -n "SERVICE: " ;OFF; echo "$SERVICE"
-	BWHITE; echo -n "DIRECTORY: " ;OFF; echo "$DIRECTORY"
-	BWHITE; echo -n "API: " ;OFF; echo "$API"
- 	BWHITE; echo -n "HTML: " ;OFF; echo "$HTML"
-	BWHITE; echo -n "AUTHOR: " ;OFF; echo "$AUTHOR"
-	BWHITE; echo -n "PROJECT: " ;OFF; echo "$PROJECT"
-	BWHITE; echo -n "STAR_PKG: " ;OFF; echo "$STAR_PKG"
-	BWHITE; echo -n "DOT_PKG: " ;OFF; echo "$DOT_PKG"
-	BWHITE; echo -n "SHA: " ;OFF; echo "$SHA"
-	BWHITE; echo -n "SIG: " ;OFF; echo "$SIG"
-    BWHITE; echo -n "FINGERPRINT: " ;OFF; echo "$FINGERPRINT"
-	BWHITE; echo -n "VERIFY_GPG: " ;OFF; echo "$VERIFY_GPG"
-	BWHITE; echo -n "NewVer: " ;OFF; echo "$NewVer"
-	BWHITE; echo -n "LINK: " ;OFF; echo "$LINK"
-	BWHITE; echo -n "GPG_PUB_KEY: " ;OFF; echo "$GPG_PUB_KEY"
-	BWHITE; echo -n "hashLink: " ;OFF; echo "$hashLink"
-	BWHITE; echo -n "sigLink: " ;OFF; echo "$sigLink"
-	BWHITE; echo -n "tmp: " ;OFF; echo "$tmp"
-	BWHITE; echo -n "tmpHash: " ;OFF; echo "$tmpHash"
-	BWHITE; echo -n "tmpSig: " ;OFF; echo "$tmpSig"
-	BWHITE; echo -n "hashFile: " ;OFF; echo "$hashFile"
-	BWHITE; echo -n "sigFile: " ;OFF; echo "$sigFile"
-	BWHITE; echo -n "folderName: " ;OFF; echo "$folderName"
-	BWHITE; echo -n "tarFile: " ;BBLUE; echo "$tarFile"
-	BWHITE; echo -n "HASH: " ;BBLUE; echo "$HASH"
-	BWHITE; echo -n "LOCAL_HASH: " ;BRED; echo "$LOCAL_HASH"
-	BWHITE; echo "hashSTDOUT: " ;OFF
-	export GREP_COLOR="1;34"
-	echo "$hashSTDOUT" | grep --color -z "$HASH\|$tarFile"
-	BWHITE; echo "gpgSTDOUT: " ;OFF; echo "$gpgSTDOUT"
+	printf "${BYELLOW}%s${OFF}%s\n" \
+		"NAME_VER    | " "$NAME_VER" \
+		"NAME_OLD    | " "$NAME_OLD" \
+		"NAME_PRETTY | " "$NAME_PRETTY" \
+		"NAME_FUNC   | " "$NAME_FUNC" \
+		"NAME_CAPS   | " "$NAME_CAPS" \
+		"SERVICE     | " "$SERVICE" \
+		"DIRECTORY   | " "$DIRECTORY" \
+		"API         | " "$API" \
+	 	"HTML        | " "$HTML" \
+		"AUTHOR      | " "$AUTHOR" \
+		"PROJECT     | " "$PROJECT" \
+		"STAR_PKG    | " "$STAR_PKG" \
+		"DOT_PKG     | " "$DOT_PKG" \
+		"SHA         | " "$SHA" \
+		"SIG         | " "$SIG" \
+	    "FINGERPRINT | " "$FINGERPRINT" \
+		"VERIFY_GPG  | " "$VERIFY_GPG" \
+		"NewVer      | " "$NewVer" \
+		"LINK        | " "$LINK" \
+		"GPG_PUB_KEY | " "$GPG_PUB_KEY" \
+		"hashLink    | " "$hashLink" \
+		"sigLink     | " "$sigLink" \
+		"tmp         | " "$tmp" \
+		"tmpHash     | " "$tmpHash" \
+		"tmpSig      | " "$tmpSig" \
+		"hashFile    | " "$hashFile" \
+		"sigFile     | " "$sigFile" \
+		"folderName  | " "$folderName" \
+		"tarFile     | " "$tarFile" \
+		"HASH        | " "$HASH" \
+		"LOCAL_HASH  | " "$LOCAL_HASH"
+	local IFS=$'\n'
+	for i in $hashSTDOUT; do
+		printf "${BPURPLE}%s${OFF}%s\n" "hashSTDOUT  | " "$i"
+	done
+	for i in $gpgSTDOUT; do
+		printf "${BBLUE}%s${OFF}%s\n" "gpgSTDOUT   | " "$i"
+	done
 }
