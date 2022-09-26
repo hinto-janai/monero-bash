@@ -56,6 +56,20 @@ price_Check()
 			code_Wget
 		fi
 	fi
+	# check for API errors
+	case "$PRICE" in
+		*"rate limit"*)
+			print_Error "<cryptocompare.com> API rate-limit error"
+			[[ $USE_TOR = true ]] && print_Error "Restarting Tor may help: <sudo systemctl restart tor.service>"
+			exit 1
+			;;
+		""|" ")
+			print_Error_Exit "Could not get data from <cryptocompare.com> API"
+			[[ $USE_TOR = true ]] && print_Error "Restarting Tor may help: <sudo systemctl restart tor.service>"
+			exit 1
+			;;
+	esac
+
 	# declare JSON values into variables
 	local $(echo "$PRICE" | json::var | grep "RAW.*PRICE\|RAW.*HIGHDAY\|RAW.*LOWDAY\|RAW.*CHANGEPCTDAY\|RAW_XMR_USD_LASTUPDATE\|RAW_XMR_BTC_LASTUPDATE")
 	# timestamp conversion
@@ -75,7 +89,7 @@ price_Check()
 		"| Australian Dollar    | AUD    | ${RAW_XMR_AUD_PRICE:0:7} | ${RAW_XMR_AUD_HIGHDAY:0:7} | ${RAW_XMR_AUD_LOWDAY:0:7} | ${RAW_XMR_AUD_CHANGEPCTDAY:0:5}% |" \
 		"| South African Rand   | ZAR    | ${RAW_XMR_ZAR_PRICE:0:7} | ${RAW_XMR_ZAR_HIGHDAY:0:7} | ${RAW_XMR_ZAR_LOWDAY:0:7} | ${RAW_XMR_ZAR_CHANGEPCTDAY:0:5}% |")
 	# cryptocurrency
-	CRYPTO=$(\
+	local CRYPTO=$(\
 	printf "%s${BWHITE}${UWHITE}%s${OFF}%s\n" \
 		"| " "Cryptocurrency | Symbol | Price | Day High | Day Low | Day Change %" " |"
 	printf "%s\n" \
