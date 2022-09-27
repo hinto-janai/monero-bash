@@ -200,7 +200,7 @@ wallet_Count()
 
 wallet_List()
 {
-	walletList=($(ls "$wallets" | grep -v ".keys"))
+	walletList=($(ls "$wallets" | grep -v ".keys\|.unportable\|.old_cache"))
 	wallet_list_pretty()
 	{
 		local walletAmount=0

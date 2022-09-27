@@ -1,8 +1,11 @@
 # v1.9.4
 ## Updates
-*
+* **Status:** XMRig stats improved
+
 ## Fixes
 * **Status:** Disallow remote `DAEMON_RPC_IP` + Tor (initialization time + Tor speed causes hanging)
+* **Price:** Handle API rate-limiting errors
+* **Wallet:** Allow 'exit' on wallet creation screen
 
 ---
 
