@@ -1,11 +1,14 @@
 # v1.9.4
 ## Updates
+* **Upgrade:** `verbose` text is prettier
 * **Status:** XMRig stats are more colorful
 
 ## Fixes
 * **Upgrade:** Fixed verification data not being decompressed properly
 * **Status:** Disallow remote `DAEMON_RPC_IP` + Tor (initialization time + Tor speed causes hanging)
+* **Status:** Fixed `0` P2Pool stats looking different (0 vs 0.000000) 
 * **Wallet:** Allow 'exit' on wallet creation screen
+* **Wallet:** Monero GUI files are ignored (.unportable, .old_cache)
 * **Price:** Handle API rate-limiting errors
 
 ---

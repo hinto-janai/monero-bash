@@ -412,8 +412,8 @@ status_P2Pool()
 			local -a awkList=($(echo "$sharesFound" "$processSeconds" "$payoutTotal" "$xmrColumn" | awk '{printf "%.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, (($1/($2/60/60))*24)*31, (($1/($2/60/60))*24)*365, $3/($2/60/60), ($3/($2/60/60))*24, (($3/($2/60/60))*24)*31, (($3/($2/60/60))*24)*365, $4, $4/($2/60/60), ($4/($2/60/60))*24, (($4/($2/60/60))*24)*31, (($4/($2/60/60))*24)*365}'))
 			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awkList[3] payoutPerHour=awkList[4] payoutPerDay=awkList[5] payoutPerMonth=awkList[6] payoutPerYear=awkList[7]  xmrTotal=awkList[8] xmrPerHour=awkList[9] xmrPerDay=awkList[10] xmrPerMonth=awkList[11] xmrPerYear=awkList[12]
 		else
-			local -a awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24}'))
-			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awklist[3]
+			local -a awkList=($(echo "$sharesFound" "$processSeconds" | awk '{printf "%.7f %.7f %.7f %.7f", $1/($2/60/60), ($1/($2/60/60))*24, (($1/($2/60/60))*24)*31, (($1/($2/60/60))*24)*365}'))
+			local -n sharesPerHour=awkList[0] sharesPerDay=awkList[1] sharesPerMonth=awkList[2] sharesPerYear=awkList[3]
 			[[ $sharesPerHour = 0* ]]  && sharesPerHour=0
 			[[ $sharesPerDay = 0* ]]   && sharesPerDay=0
 			[[ $sharesPerMonth = 0* ]] && sharesPerMonth=0
