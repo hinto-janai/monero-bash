@@ -92,12 +92,12 @@ parse_Config() {
 		[0-6] LOG_LEVEL
 	)
 	declare -g $CONFIG_GREP || { printf "\e[1;31m%s\n" "[MONERO BASH FATAL ERROR] p2pool.conf source failure"; panic; }
-	# range [10-1000]
+	# range [10-450]
 	if [[ $OUT_PEERS ]]; then
-		[[ $OUT_PEERS -ge 10 && $OUT_PEERS -le 1000 ]] || { declare -g OUT_PEERS=10 || panic; }
+		[[ $OUT_PEERS -ge 10 && $OUT_PEERS -le 450 ]] || { declare -g OUT_PEERS=10 || panic; }
 	fi
 	if [[ $IN_PEERS ]]; then
-		[[ $IN_PEERS -ge 10 && $IN_PEERS -le 1000 ]] || { declare -g IN_PEERS=10 || panic; }
+		[[ $IN_PEERS -ge 10 && $IN_PEERS -le 450 ]] || { declare -g IN_PEERS=10 || panic; }
 	fi
 	# default for empty values
 	# covered by [process.sh] & [systemd.sh]

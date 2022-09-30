@@ -102,9 +102,9 @@ mine_Config()
 	read -r DAEMON_RPC
 	IWHITE; printf "Monero ZMQ port [default: 18083]         | " ;OFF
 	read -r DAEMON_ZMQ
-	IWHITE; printf "P2Pool OUT peers (10-1000) [default: 10] | " ;OFF
+	IWHITE; printf "P2Pool OUT peers (10-450) [default: 10] | " ;OFF
 	read -r OUT_PEERS
-	IWHITE; printf "P2Pool IN peers (10-1000) [default: 10]  | " ;OFF
+	IWHITE; printf "P2Pool IN peers (10-450) [default: 10]  | " ;OFF
 	read -r IN_PEERS
 	IWHITE; printf "P2Pool Log Level (0-6) [default: 3]      | " ;OFF
 	read -r LOG_LEVEL

@@ -2,6 +2,7 @@
 ## Updates
 * **Upgrade:** `verbose` text is prettier
 * **Status:** XMRig stats are more colorful
+* **Config:** Update `p2pool.conf` max peers, 1000 -> 450
 
 ## Fixes
 * **Upgrade:** Fixed verification data not being decompressed properly
