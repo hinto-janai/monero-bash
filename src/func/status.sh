@@ -614,7 +614,8 @@ status_XMRig()
 #			"] [rdmsr: " "$randomx_rdmsr" "] [wrmsr: " "$randomx_wrmsr" "]"
 
 		# HASHRATE
-		declare -a hashrate=($(echo "$LOG" | grep -m1 "speed"))
+		local -a hashrate=($(echo "$LOG" | grep -m1 "speed"))
+		local -n day=hashrate[0] time=hashrate[1] hash_10=hashrate[5] hash_60=hashrate[6] hash_15=hashrate[7]
 		# [0] = [day
 		# [1] = time]
 		# [2, 3] = miner speed
@@ -622,13 +623,14 @@ status_XMRig()
 		# [5,6,7] = #.# #.# #.# (or n/a)
 		if [[ $hashrate ]]; then
 			printf "${BYELLOW}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${BPURPLE}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${IPURPLE}%s${OFF}%s\n" \
-				"Hashrate     | " "${hashrate[0]} ${hashrate[1]} [" "10s" "/" "60s" "/" "15m" "] [" "${hashrate[5]} H/s" "] [" "${hashrate[6]} H/s" "] [" "${hashrate[7]} H/s" "]"
+				"Hashrate     | " "$day $time [" "10s" "/" "60s" "/" "15m" "] [" "$hash_10 H/s" "] [" "$hash_60 H/s" "] [" "$hash_15 H/s" "]"
 		else
 			printf "${BYELLOW}%s${OFF}\n" "Hashrate     | "
 		fi
 
 		# ACCEPTED SHARES
-		declare -a shares=($(echo "$LOG" | grep -m1 "accepted"))
+		local -a shares=($(echo "$LOG" | grep -m1 "accepted"))
+		local -n day=shares[0] time=shares[1] accepted=shares[4] diff=shares[6] lag_1=shares[7] lag_2=shares[8]
 		# [0] = [day
 		# [1] = time]
 		# [2] = cpu
@@ -640,7 +642,7 @@ status_XMRig()
 		# [8] = ms)
 		if [[ $shares ]]; then
 			printf "${BBLUE}%s${OFF}%s${IGREEN}%s${OFF}%s${IRED}%s${OFF}%s\n" "Latest share | " \
-				"${shares[0]} ${shares[1]} [" "accepted: ${shares[4]}" "] [" "diff: ${shares[6]}" "] ${shares[7]} ${shares[8]}"
+				"$day $time [" "accepted: $accepted" "] [" "diff: $diff" "] $lag_1 $lag_2"
 		else
 			printf "${BBLUE}%s${OFF}\n" "Latest share | "
 		fi
