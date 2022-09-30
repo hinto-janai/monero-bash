@@ -71,6 +71,9 @@ verify_Template()
 	code_Wget
 	hashFile="$(ls "$tmpHash")"
 	sigFile="$hashFile"
+	if [[ $WGET_GZIP = true ]]; then
+		mv "$tmpHash/$hashFile" "$tmpHash/${hashFile}.gz" && gzip -d "$tmpHash/$hashFile" &>/dev/null || mv "$tmpHash/${hashFile}.gz" "$tmpHash/$hashFile"
+	fi
 	hashSTDOUT="$(<"$tmpHash/$hashFile")"
 
     # check if gpg key is imported
@@ -101,6 +104,9 @@ verify_Template()
 		fi
 		code_Wget
 		sigFile="$(ls "$tmpSig")"
+		if [[ $WGET_ZIP = true ]]; then
+			mv "$tmpSig/$sigFile" "$tmpSig/${sigFile}.gz" && gzip -d "$tmpSig/$sigFile" &>/dev/null || mv "$tmpSig/${sigFile}.gz" "$tmpSig/$sigFile"
+		fi
 	fi
 
 	# comparison of hashes (and are we downloading p2pool?)
