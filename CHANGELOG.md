@@ -1,3 +1,12 @@
+# v1.9.5
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.4
 ## Updates
 * **Upgrade:** `verbose` text is prettier
