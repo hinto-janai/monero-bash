@@ -1,9 +1,9 @@
 # v1.9.5
 ## Updates
-*
+* **Status:** Specific processes can now be specified: `monero-bash status [monero|p2pool|xmrig]`
 
 ## Fixes
-*
+* **Watch::** Fixed XMRig stats not being formatted properly when switching back from other stats
 
 ---
 

@@ -359,6 +359,7 @@ print_Usage() {
 		"reset   " "<bash/monero/p2pool/xmrig> " "[config|systemd]" "   Reset your configs/systemd to default" \
 		"edit    " "<bash/monero/p2pool/xmrig> " "[config|systemd]" "   Edit config/systemd service file"
 	printf "${OFF}%s${BPURPLE}%s${OFF}%s\n" \
+		"status  " "[monero|p2pool|xmrig]" "                         Print status of all installed packages" \
 		"watch   " "[monero|p2pool|xmrig]" "                         Watch live status or a specific process"
 	echo;printf "${OFF}%s\n" \
 		"tor                                                   Test Tor connection"
@@ -369,7 +370,6 @@ print_Usage() {
 		"list                                                  List wallets" \
 		"size                                                  Show size of monero-bash folders" \
 		"price                                                 Fetch price data from cryptocompare.com API" \
-		"status                                                Print status of all installed packages" \
 		"version                                               Print versions of installed packages"
 	echo;printf "${OFF}%s\n" \
 		"backup                                                Encrypt & backup [wallets] -> [backup.tar.gpg]" \

@@ -76,6 +76,7 @@ status_Template()
 		echo
 	else
 		printf "${BRED}%s${OFF}%s\n\n" "OFFLINE" "]"
+		return 1
 	fi
 }
 
@@ -613,8 +614,14 @@ status_XMRig()
 #			"[1gb-pages: " "$randomx_1gb_pages" "] [hugepages: " "$cpu_huge_pages" "] [jit: " "$cpu_huge_pages_jit" \
 #			"] [rdmsr: " "$randomx_rdmsr" "] [wrmsr: " "$randomx_wrmsr" "]"
 
+		# Same as commit [bcced23195f4fb1168769cb73eb1a43fdefea684].
+		# Switching back in [mb watch] converts all splitable strings
+		# into 1 single strings, so spaces must be converted into [\n]
+		# to be properly split.
+
 		# HASHRATE
-		local -a hashrate=($(echo "$LOG" | grep -m1 "speed"))
+		local hashrate_raw=$(echo "$LOG" | grep -m1 "speed")
+		local -a hashrate=(${hashrate_raw[@]// /$'\n'})
 		local -n day=hashrate[0] time=hashrate[1] hash_10=hashrate[5] hash_60=hashrate[6] hash_15=hashrate[7]
 		# [0] = [day
 		# [1] = time]
@@ -622,14 +629,15 @@ status_XMRig()
 		# [4] = 10s/60s/15m
 		# [5,6,7] = #.# #.# #.# (or n/a)
 		if [[ $hashrate ]]; then
-			printf "${BYELLOW}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${BPURPLE}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${IPURPLE}%s${OFF}%s\n" \
+			printf "${BYELLOW}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${IPURPLE}%s${OFF}%s${IYELLOW}%s${OFF}%s${IBLUE}%s${OFF}%s${IPURPLE}%s${OFF}%s\n" \
 				"Hashrate     | " "$day $time [" "10s" "/" "60s" "/" "15m" "] [" "$hash_10 H/s" "] [" "$hash_60 H/s" "] [" "$hash_15 H/s" "]"
 		else
 			printf "${BYELLOW}%s${OFF}\n" "Hashrate     | "
 		fi
 
 		# ACCEPTED SHARES
-		local -a shares=($(echo "$LOG" | grep -m1 "accepted"))
+		local shares_raw=$(echo "$LOG" | grep -m1 "accepted")
+		local -a shares=(${shares_raw[@]// /$'\n'})
 		local -n day=shares[0] time=shares[1] accepted=shares[4] diff=shares[6] lag_1=shares[7] lag_2=shares[8]
 		# [0] = [day
 		# [1] = time]

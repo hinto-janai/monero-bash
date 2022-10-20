@@ -16,6 +16,7 @@ enable  <all/monero/p2pool/xmrig>                     Enable the process to auto
 disable <all/monero/p2pool/xmrig>                     Disable the process from auto-starting on boot
 reset   <bash/monero/p2pool/xmrig> [config|systemd]   Reset your configs/systemd to default
 edit    <bash/monero/p2pool/xmrig> [config|systemd]   Edit config/systemd service file
+status  [monero|p2pool|xmrig]                         Print status of all installed packages
 watch   [monero|p2pool|xmrig]                         Watch live status or a specific process
 
 tor                                                   Test Tor connection
@@ -24,7 +25,6 @@ seed    [language]                                    Generate random 25-word Mo
 list                                                  List wallets
 size                                                  Show size of monero-bash folders
 price                                                 Fetch price data from cryptocompare.com API
-status                                                Print status of all installed packages
 version                                               Print versions of installed packages
 
 backup                                                Encrypt & backup [wallets] -> [backup.tar.gpg]

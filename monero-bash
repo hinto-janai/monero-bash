@@ -218,7 +218,14 @@ if [[ $options = true ]]; then
 		list) print_MoneroBashTitle && wallet_Count && wallet_List ;;
 		size) print_Size ;;
 		price) price_Check ;;
-		status) status_All ;;
+		status)
+			case $2 in
+				*"daemon"*|*"monero"*) status_Monero && journalctl --no-pager -n 5 -u monero-bash-monerod --output cat;;
+				*"xmr"*) prompt_Sudo;error_Sudo; status_XMRig && sudo journalctl --no-pager -n 5 -u monero-bash-xmrig --output cat;;
+				*"p2p"*) status_P2Pool && journalctl --no-pager -n 5 -u monero-bash-p2pool --output cat;;
+				*) status_All;;
+			esac
+			;;
 		integrity) CHECK_HASH_LIST ;;
 		help) print_Usage ;;
 		config) mine_Config ;;
