@@ -185,7 +185,7 @@ wallet::create() {
 
 wallet_Count()
 {
-	walletCount="$(ls "$wallets" | grep -v ".keys" | wc -l)"
+	walletCount="$(ls "$wallets" | grep ".keys" | wc -l)"
 	BYELLOW; echo -n "$walletCount " ;BWHITE
 	if [[ $walletCount = 1 ]]; then
 		echo "wallet found:"
@@ -200,7 +200,7 @@ wallet_Count()
 
 wallet_List()
 {
-	walletList=($(ls "$wallets" | grep -v ".keys\|.unportable\|.old_cache"))
+	walletList=($(ls "$wallets" | grep ".keys" | sed "s/\.keys//g"))
 	wallet_list_pretty()
 	{
 		local walletAmount=0

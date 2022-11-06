@@ -3,7 +3,8 @@
 * **Status:** Specific processes can now be specified: `monero-bash status [monero|p2pool|xmrig]`
 
 ## Fixes
-* **Watch::** Fixed XMRig stats not being formatted properly when switching back from other stats
+* **Wallet:** All non-wallet files (files without matching `.keys`) will be ignored
+* **Watch:** Fixed XMRig stats not being formatted correctly when switching back from other stats
 
 ---
 

@@ -63,10 +63,10 @@ status_System()
 
 status_Template()
 {
-	printf "${OFF}%s${BWHITE}%s" "[" "${NAME_PRETTY} "
+	printf "${OFF}%s${BWHITE}%s${OFF}%s" "[" "${NAME_PRETTY}" "] "
 	declare -g PROCESS_ID
 	if PROCESS_ID=$(pgrep -f $DIRECTORY/$PROCESS);then
-		printf "${BGREEN}%s${OFF}%s\n" "ONLINE" "]"
+		printf "${BGREEN}%s${OFF}\n" "ONLINE"
 
 		# ps stats
 		ps -o "| %C | %t | %p |" -p $PROCESS_ID
@@ -75,7 +75,7 @@ status_Template()
 		EXTRA_STATS
 		echo
 	else
-		printf "${BRED}%s${OFF}%s\n\n" "OFFLINE" "]"
+		printf "${BRED}%s${OFF}\n\n" "OFFLINE"
 		return 1
 	fi
 }
