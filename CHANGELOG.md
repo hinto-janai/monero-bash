@@ -1,3 +1,12 @@
+# v1.9.6
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.5
 ## Updates
 * **Status:** Specific processes can now be specified: `monero-bash status [monero|p2pool|xmrig]`
