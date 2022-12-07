@@ -541,18 +541,21 @@ status_P2Pool()
 		# [6] = mainchain
 		# [7] = height
 		# [8] = (int),
-		# [9] = diff
-		# [10] = (int),
-		# [11] = client
-		# [12] = (ip:port) (with no comma...!???)
-		# [13] = user
-		# [14] = (user),
-		# [15] = effort
-		# [16] = xx.xxx%
+		# [9] = sidechain
+		# [10] = height
+		# [11] = (int),
+		# [12] = diff
+		# [13] = (int),
+		# [14] = client
+		# [15] = (ip:port) (with no comma...!???)
+		# [16] = user
+		# [17] = (user),
+		# [18] = effort
+		# [19] = xx.xxx%
 		[[ ${latestShare[14]} = ',' || "" ]] && latestShare[14]=???
 		if [[ $latestShare ]]; then
 			printf "${BBLUE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" \
-				"Latest share  | " "[" "${latestShare[1]} ${latestShare[2]//.*}" "] [block: " "${latestShare[8]:0:-1}" "] [user: " "${latestShare[14]:0:-1}" "/" "${latestShare[12]}" "] [effort: " "${latestShare[16]}" "]"
+				"Latest share  | " "[" "${latestShare[1]} ${latestShare[2]//.*}" "] [block: " "${latestShare[8]:0:-1}" "] [user: " "${latestShare[17]:0:-1}" "/" "${latestShare[15]}" "] [effort: " "${latestShare[19]}" "]"
 		else
 			printf "${BBLUE}%s\n" "Latest share  | "
 		fi

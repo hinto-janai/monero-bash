@@ -49,7 +49,7 @@ rm -rf monero-bash
 
 # hash + sign
 sha256sum "$v" > SHA256SUM
-gpg --clearsign --faked-system-time=${rand} SHA256SUM
+gpg --local-user "21958EE945980282FCB849C8D7483F6CA27D1B1D" --clearsign --faked-system-time=${rand} SHA256SUM
 rm SHA256SUM
 mv SHA256SUM.asc SHA256SUM
 
