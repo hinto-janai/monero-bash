@@ -391,7 +391,7 @@ status_P2Pool()
 		processSeconds=$(ps -p $PROCESS_ID -o etimes=)
 
 		# AWK LIST
-		xmrColumn=$(echo "$LOG" | grep -o "You received a payout of [0-9]\+.[0-9]\+ XMR")
+		xmrColumn=$(echo "$LOG" | grep -o "payout of [0-9]\+.[0-9]\+ XMR")
 		xmrColumn=${xmrColumn//[!0-9.$'\n']}
 		if [[ $xmrColumn ]]; then
 			payoutTotal=$(echo "$xmrColumn" | wc -l)
@@ -561,18 +561,18 @@ status_P2Pool()
 		fi
 
 		# print LATEST PAYOUT
-		declare -a latestPayout=($(echo "$LOG" | tac | grep -m1 "You received a payout"))
+		declare -a latestPayout=($(echo "$LOG" | tac | grep -m1 "payout of"))
 		# [0] = NOTICE
 		# [1] = 20xx-xx-xx
 		# [2] = xx:xx:xx.xxxx
 		# [3] = P2Pool
-		# [4,5,6,7,8] = You received a payout of
-		# [9] = x.xxxxxxxxxxxx
-		# [10,11,12] = XMR in block
-		# [13] = (int)
+		# [4,5,6,7,8,9,10] = Your wallet <WALLET> got a payout of
+		# [11] = x.xxxxxxxxxxxx
+		# [12,13,14] = XMR in block
+		# [15] = (int)
 		if [[ $latestPayout ]]; then
 			printf "${BYELLOW}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s${IWHITE}%s${OFF}%s\n" \
-				"Latest payout | " "[" "${latestPayout[1]} ${latestPayout[2]//.*}" "] [block: " "${latestPayout[13]}" "] [" "${latestPayout[9]} XMR" "]"
+				"Latest payout | " "[" "${latestPayout[1]} ${latestPayout[2]//.*}" "] [block: " "${latestPayout[15]}" "] [" "${latestPayout[11]} XMR" "]"
 		else
 			printf "${BYELLOW}%s${OFF}\n" "Latest payout | "
 		fi
@@ -660,3 +660,4 @@ status_XMRig()
 	}
 	status_Template
 }
+

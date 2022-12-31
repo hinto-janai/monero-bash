@@ -1,3 +1,12 @@
+# v1.9.7
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.6
 ## Fixes
 * **Status:** Fixed parsing of "Latest share" stat to match P2Pool v2.6
