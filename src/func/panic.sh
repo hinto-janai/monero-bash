@@ -35,7 +35,7 @@
 # -------
 # a panic function for when things get bad
 # and we really should just exit or loop forever.
-# taken from <https://github.com/hinto-janaiyo/stdlib>
+# taken from <https://github.com/hinto-janai/stdlib>
 # modified to add cowsay :)
 
 panic() {
@@ -110,7 +110,7 @@ panic() {
 	"| It would be very helpful if you reported this bug with |  " \
 	"| the information above to the GitHub issues page at:    |  "
 	printf "%s${BYELLOW}%s${OFF}%s\n" \
-	"\\ " "<https://github.com/hinto-janaiyo/monero-bash/issues>" "  / "
+	"\\ " "<https://github.com/hinto-janai/monero-bash/issues>" "  / "
 	printf "%s\n" \
 	" --------------------------------------------------------   " \
 	"        \   ^__^                           " \

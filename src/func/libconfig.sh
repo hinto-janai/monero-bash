@@ -1,6 +1,6 @@
 # libconfig.sh
 #
-# Copyright (c) 2022 hinto.janaiyo <https://github.com/hinto-janaiyo>
+# Copyright (c) 2022 hinto.janaiyo <https://github.com/hinto-janai>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

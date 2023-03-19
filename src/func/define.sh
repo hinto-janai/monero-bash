@@ -64,15 +64,15 @@ define_MoneroBash()
 	PROCESS=""
 	DIRECTORY="$installDirectory"
 	NAME_CAPS="MONERO_BASH"
-	AUTHOR="hinto-janaiyo"
+	AUTHOR="hinto-janai"
 	PROJECT="monero-bash"
 	STAR_PKG="monero-bash-v*"
 	DOT_PKG="monero-bash-v.*"
 	SHA="SHA256SUM"
 	SIG="$SHA"
-	GPG_OWNER="hinto-janaiyo"
-	GPG_PUB_KEY="https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/master/gpg/hinto-janaiyo.asc"
-	FINGERPRINT="21958EE945980282FCB849C8D7483F6CA27D1B1D"
+	GPG_OWNER="hinto-janai"
+	GPG_PUB_KEY="https://raw.githubusercontent.com/hinto-janai/monero-bash/master/gpg/hinto-janai.asc"
+	FINGERPRINT="31C5145AAFA5A8DF1C1DB2A6D47CE05FA175A499"
 }
 
 define_XMRig()

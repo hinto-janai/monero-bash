@@ -54,7 +54,7 @@ If the verification goes well, `monero-bash`:
 3. Edits the local `state` file with new info
 
 If the verification **fails,** `monero-bash`:
-1. Spits out a [scary looking message](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/compromised.sh)
+1. Spits out a [scary looking message](https://github.com/hinto-janai/monero-bash/blob/main/src/func/compromised.sh)
 2. Exits immediately
 
 Since monero-bash gets installed in `/usr/local/share/monero-bash/`, sudo is required to edit the `state` file when upgrading/installing
@@ -62,9 +62,9 @@ Since monero-bash gets installed in `/usr/local/share/monero-bash/`, sudo is req
 ## Details
 For the sake of being simple and easy to read, the functions presented in the examples above were ***heavily*** reduced.
 
-[I encourage you to click here to see the actual upgrade function](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/upgrade.sh)
+[I encourage you to click here to see the actual upgrade function](https://github.com/hinto-janai/monero-bash/blob/main/src/func/upgrade.sh)
 
-And here for some of the important functions it's made out of:  [Define](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/define.sh)  -  [Download](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download.sh) -  [Verify](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify.sh) - [Version](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version.sh)
+And here for some of the important functions it's made out of:  [Define](https://github.com/hinto-janai/monero-bash/blob/main/src/func/define.sh)  -  [Download](https://github.com/hinto-janai/monero-bash/blob/main/src/func/download.sh) -  [Verify](https://github.com/hinto-janai/monero-bash/blob/main/src/func/verify.sh) - [Version](https://github.com/hinto-janai/monero-bash/blob/main/src/func/version.sh)
 
 What you'll find is a bunch of grep/awk/sed, error handling, cleanup, and safety checks.
 
@@ -86,4 +86,4 @@ gpg_import_Template() {
 ```
 Before any key is imported, it's checked against the official version found ONLINE. If the key monero-bash comes with DOES NOT match the key found online, you will be prompted for a decision on what to do.
 
-[To see all GPG-related functions, click here](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg.sh)
+[To see all GPG-related functions, click here](https://github.com/hinto-janai/monero-bash/blob/main/src/func/gpg.sh)

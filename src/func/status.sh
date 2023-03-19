@@ -118,7 +118,7 @@ status_Monero()
 		fi
 
 		# turn RPC JSON values into variables.
-		# this uses: https://github.com/hinto-janaiyo/libjson
+		# this uses: https://github.com/hinto-janai/libjson
 		local $(echo "$GET_INFO" | json::var)
 
 		local height_percent percent_color
@@ -353,7 +353,7 @@ status_P2Pool()
 			print_Warn "Consider restarting P2Pool. It will regenerate necessary files."
 		else
 			# turn 'stats' p2pool JSON values into variables.
-			# this uses: https://github.com/hinto-janaiyo/libjson
+			# this uses: https://github.com/hinto-janai/libjson
 			# redirect error to /dev/null because sometimes
 			# the stat file is empty
 			local P2POOL_API_DATA=$(json::var < $p2poolApi 2>/dev/null)

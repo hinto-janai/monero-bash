@@ -55,6 +55,10 @@ curl/7.83.0
 curl/7.83.1
 curl/7.84.0
 curl/7.85.0
+curl/7.86.0
+curl/7.87.1
+curl/7.88.0
+curl/7.88.1
 
 ARRAY[0]='Wget/1.15'
 ARRAY[1]='Wget/1.16'
@@ -113,3 +117,7 @@ ARRAY[53]='curl/7.83.0'
 ARRAY[54]='curl/7.83.1'
 ARRAY[55]='curl/7.84.0'
 ARRAY[56]='curl/7.85.0'
+ARRAY[57]='curl/7.86.0'
+ARRAY[58]='curl/7.87.1'
+ARRAY[59]='curl/7.88.0'
+ARRAY[60]='curl/7.88.1'

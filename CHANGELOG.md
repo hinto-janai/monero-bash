@@ -64,9 +64,9 @@
 
 # v1.9.1
 ## Updates
-* **HTTP Spoofing:** Added `TOR_BROWSER_MIMIC` option that mimics the HTTP headers used by [Tor browser](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/tor_browser)
-* **HTTP Spoofing:** Added `ONLY_WGET_CURL` option to only use random [`wget/curl` versions](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/wget_curl) as the User-Agent
-* **HTTP Spoofing:** More language permutations [[230] -> [4105],](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/language) more referers [[5] -> [10]](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers/referer)
+* **HTTP Spoofing:** Added `TOR_BROWSER_MIMIC` option that mimics the HTTP headers used by [Tor browser](https://github.com/hinto-janai/monero-bash/blob/main/docs/fake_http_headers/tor_browser)
+* **HTTP Spoofing:** Added `ONLY_WGET_CURL` option to only use random [`wget/curl` versions](https://github.com/hinto-janai/monero-bash/blob/main/docs/fake_http_headers/wget_curl) as the User-Agent
+* **HTTP Spoofing:** More language permutations [[230] -> [4105],](https://github.com/hinto-janai/monero-bash/blob/main/docs/fake_http_headers/language) more referers [[5] -> [10]](https://github.com/hinto-janai/monero-bash/blob/main/docs/fake_http_headers/referer)
 * **Price:** Added `XMR<->Cryptocurrency`, `Day High`, `Day Low`, and `Day Change %` to `monero-bash price`
 * **Watch:** Spacing is auto-adjusted on terminal size changes
 * **Status:** P2Pool stat calculation is slightly faster
@@ -82,8 +82,8 @@
 
 # v1.9.0
 ## Updates
-* **Tor Integration:** [All monero-bash connections can now be routed through Tor](https://github.com/hinto-janaiyo/monero-bash#Tor)
-* **HTTP Spoofing:** [Fake HTTP headers can now be set to blend in with browsers](https://github.com/hinto-janaiyo/monero-bash#http-spoofing)
+* **Tor Integration:** [All monero-bash connections can now be routed through Tor](https://github.com/hinto-janai/monero-bash#Tor)
+* **HTTP Spoofing:** [Fake HTTP headers can now be set to blend in with browsers](https://github.com/hinto-janai/monero-bash#http-spoofing)
 * **Config:** `monero-bash.conf/p2pool.conf` are now automatically upgraded (merged with old config)
 * **Watch:** A new screen buffer is used, exiting will now return to your original terminal instead of clearing
 * **Tor:** New command to test Tor connection: `monero-bash tor`
@@ -106,12 +106,12 @@
 ---
 
 # v1.8.2
-[**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)  
+[**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janai/monero-bash/blob/main/config)  
 **You can also use `monero-bash reset <process>` to reset your configs to the new default.**
 ## Updates
 * **Watch:** More efficient, runs smoother on slower computers
-* **Watch:** Added `WATCH_REFRESH_RATE` in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf) which changes second interval of `monero-bash watch`
-* **systemd:** [Services are now hardened & sandboxed, see more info here](https://github.com/hinto-janaiyo/monero-bash#Security)
+* **Watch:** Added `WATCH_REFRESH_RATE` in [`monero-bash.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-bash.conf) which changes second interval of `monero-bash watch`
+* **systemd:** [Services are now hardened & sandboxed, see more info here](https://github.com/hinto-janai/monero-bash#Security)
 
 ## Fixes
 * **Status:** Only installed package versions will be listed
@@ -142,7 +142,7 @@
 # v1.8.0
 **REMINDER: `monero-bash v2.0.0` in progress, `v1.x.x` versions will not be compatible.**
 ## Updates
-[**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/config)  
+[**Config file upgrades are not automatic, click here to see the new versions.**](https://github.com/hinto-janai/monero-bash/blob/main/config)  
 **You can also use `monero-bash reset <process>` to reset your configs to the new default.**
 * **Config:** New config file: `p2pool.conf`, old options found in `monero-bash.conf` will be used as a fallback, new options are:
 	- `Mini` Use P2Pool mini or not, fallback is `false`
@@ -164,7 +164,7 @@
 * **Status:** P2Pool shares found before being fully synced will be excluded
 * **systemd:** `monero-bash restart <process>` uses systemd's `restart` instead of `stop` -> `start`
 * **Seed:** Non-english seeds will be `24` words instead of `25` to prevent incorrect CRC issue
-* **Git:** Branches have been cleaned & squashed: `709` -> `348` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janaiyo/monero-bash/tree/v1.7.0-pre-rebase)
+* **Git:** Branches have been cleaned & squashed: `709` -> `348` total commits. [The original v1.7.0 branch can be found here.](https://github.com/hinto-janai/monero-bash/tree/v1.7.0-pre-rebase)
 
 ---
 
@@ -233,7 +233,7 @@
 # v1.5.1
 ## Updates
 * **Process**
-	- Edit `AUTO_HUGEPAGES` to toggle auto hugepage allocation and `HUGEPAGES` to set custom hugepage size in [monero-bash.conf.](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf) Hugepage is only set on `monero-bash start all` command.
+	- Edit `AUTO_HUGEPAGES` to toggle auto hugepage allocation and `HUGEPAGES` to set custom hugepage size in [monero-bash.conf.](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-bash.conf) Hugepage is only set on `monero-bash start all` command.
 
 ## Fixes
 * **RPC**
@@ -252,7 +252,7 @@
 		- `monero-bash rpc 127.0.0.1:18081 get_block height:123456`  
 	- Configuration  
 		- Default IP+Port: `localhost:18081`  
-		- You can specify a different IP+Port or configure a permanent default in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)  
+		- You can specify a different IP+Port or configure a permanent default in [`monero-bash.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-bash.conf)  
 		- To list all methods: `monero-bash rpc` or see [`https://www.getmonero.org/resources/developer-guides/daemon-rpc.html`](https://www.getmonero.org/resources/developer-guides/daemon-rpc.html)  
 	- Credit  
 		- Original code was taken and modified from [jtgrassie's xmrpc](https://github.com/jtgrassie/xmrpc)  
@@ -383,7 +383,7 @@
 
 # v1.0.0
 ## Official Release
-* See the [main repo](https://github.com/hinto-janaiyo/monero-bash) for all information on monero-bash
+* See the [main repo](https://github.com/hinto-janai/monero-bash) for all information on monero-bash
 
 ---
 
@@ -401,7 +401,7 @@
 	- `monero-bash gpg` toggle on/off GPG verification when upgrading/installing
 	- `monero-bash gpg import` compare local/online keys, import if OK
 		- Monero - [binaryfate](https://github.com/monero-project/monero/blob/master/utils/gpg_keys/binaryfate.asc)
-		- monero-bash - [hinto-janaiyo](https://github.com/hinto-janaiyo/monero-bash/blob/master/gpg/hinto-janaiyo.asc)
+		- monero-bash - [hinto-janai](https://github.com/hinto-janai/monero-bash/blob/master/gpg/hinto-janai.asc)
 		- XMRig - [xmrig](https://github.com/xmrig/xmrig/blob/master/doc/gpg_keys/xmrig.asc)
 		- P2Pool - [SChernykh](https://p2pool.io/SChernykh.asc)
 

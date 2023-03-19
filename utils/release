@@ -60,7 +60,7 @@ sha256sum -c SHA256SUM &>/dev/null && echo "hash OK" || echo "hash FAIL"
 # copy changelog/sign to clipboard
 CLIP() {
 	grep -B999 -m1 "^---$" CHANGELOG.md | sed '/^# v1.*$/d; /^---$/d'
-	echo "## SHA256SUM & [PGP Signature](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc)"
+	echo "## SHA256SUM & [PGP Signature](https://github.com/hinto-janai/monero-bash/blob/main/gpg/hinto-janai.asc)"
 	echo '```'
 	cat SHA256SUM
 	echo '```'

@@ -70,7 +70,7 @@
 | [Gentoo](https://www.gentoo.org)     |                    | 🔴     | `wget` & `systemd` must be installed
 
 ## Install
-[**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janaiyo/monero-bash/releases/latest)
+[**To install: download the latest release here, extract and run monero-bash**](https://github.com/hinto-janai/monero-bash/releases/latest)
 ```bash
 tar -xf monero-bash-v1.9.7.tar
 cd monero-bash
@@ -79,10 +79,10 @@ cd monero-bash
 This will start the interactive install process into `/usr/local/share/monero-bash`
 
 It is recommended to verify the hash and PGP signature before installation.  
-Download the [`SHA256SUM`](https://github.com/hinto-janaiyo/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janaiyo/monero-bash/blob/main/gpg/hinto-janaiyo.asc), and verify:
+Download the [`SHA256SUM`](https://github.com/hinto-janai/monero-bash/releases/latest) file, download and import my [`PGP key`](https://github.com/hinto-janai/monero-bash/blob/main/gpg/hinto-janai.asc), and verify:
 ```bash
 sha256sum -c SHA256SUM
-gpg --import hinto-janaiyo.asc
+gpg --import hinto-janai.asc
 gpg --verify SHA256SUM
 ```
 
@@ -90,7 +90,7 @@ gpg --verify SHA256SUM
 
 **To install with git:**
 ```bash
-git clone https://github.com/hinto-janaiyo/monero-bash
+git clone https://github.com/hinto-janai/monero-bash
 cd monero-bash
 ./monero-bash
 ```
@@ -173,11 +173,11 @@ rm ~/.monero-bash/wallets/MY_WALLET.keys
 Config files for all packages are in: `~/.monero-bash/config`
 
 monero-bash comes with pre-configured configuration files:
-* [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf)
-* [`monerod.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf)
-* [`monero-wallet-cli.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf)
-* [`p2pool.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/p2pool.conf)
-* [`xmrig.json`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/xmrig.json)
+* [`monero-bash.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-bash.conf)
+* [`monerod.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monerod.conf)
+* [`monero-wallet-cli.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-wallet-cli.conf)
+* [`p2pool.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/p2pool.conf)
+* [`xmrig.json`](https://github.com/hinto-janai/monero-bash/blob/main/config/xmrig.json)
 
 P2Pool does not have native support for a config file, so monero-bash uses its self-created `p2pool.conf`.
 
@@ -254,7 +254,7 @@ In the event of fatal process bugs like remote code execution, these settings wi
 
 ## Privacy
 ### Tor
-monero-bash supports routing all of its traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
+monero-bash supports routing all of its traffic through the [Tor network.](https://en.wikipedia.org/wiki/Tor_(network)) Options in [`monero-bash.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-bash.conf):
 ```
 USE_TOR                Enable connections via Tor
 TEST_TOR               Run tests to make sure Tor works before making any connections
@@ -299,20 +299,20 @@ TOR_QUIET              Silence Tor set-up messages
 	</details>
 
 **Things to note:**
-* ***This ONLY affects monero-bash.*** This will not make your Monero node run through Tor, see [monerod.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monerod.conf) & [monero-wallet-cli.conf](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-wallet-cli.conf) if you'd like to run Monero through Tor
+* ***This ONLY affects monero-bash.*** This will not make your Monero node run through Tor, see [monerod.conf](https://github.com/hinto-janai/monero-bash/blob/main/config/monerod.conf) & [monero-wallet-cli.conf](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-wallet-cli.conf) if you'd like to run Monero through Tor
 
-* If the torsocks shared object file is already detected on your computer: `/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`, it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/libtorsocks.so)
+* If the torsocks shared object file is already detected on your computer: `/usr/lib/x86_64-linux-gnu/torsocks/libtorsocks.so` or `/usr/lib/torsocks/libtorsocks.so`, it will be used. If it isn't found (or even installed), [monero-bash will use the one it comes with](https://github.com/hinto-janai/monero-bash/blob/main/src/libtorsocks.so)
 
 * The built-in shared object file is from `torsocks v2.3.0` with a SHA256 hash of `91464358f1358e3dfbf3968fad81a4fff95d6f3ce0961a1ba1ae7054b6998159`, this should match against Debian's APT version. You are free to replace it with your own (or just install torsocks), just make sure it is placed in the correct path: `/usr/local/share/monero-bash/src/libtorsocks.so`
 
-* The actual wrapper script `/usr/bin/torsocks` has been [rewritten and modified to reflect monero-bash's use-case (remove macOS code, Tor shell, etc)](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/torsocks.sh) and it will always be used over any system versions found
+* The actual wrapper script `/usr/bin/torsocks` has been [rewritten and modified to reflect monero-bash's use-case (remove macOS code, Tor shell, etc)](https://github.com/hinto-janai/monero-bash/blob/main/src/func/torsocks.sh) and it will always be used over any system versions found
 
 * Tor will not be used for RPC calls to `localhost/127.0.0.1/192.168.x.x`
 
 ---
 
 ### HTTP Spoofing
-monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with web-browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janaiyo/monero-bash/blob/main/config/monero-bash.conf):
+monero-bash has options to spoof the HTTP headers sent during connections such that you blend in with web-browsers. Options in [`monero-bash.conf`](https://github.com/hinto-janai/monero-bash/blob/main/config/monero-bash.conf):
 ```
 FAKE_HTTP_HEADERS      Send random (weighted) browser-like HTTP headers instead of [Wget/VERSION]
 TOR_BROWSER_MIMIC      Mimic the HTTP headers that [Tor browser] uses
@@ -324,7 +324,7 @@ HTTP_HEADERS_VERBOSE   Print the HTTP headers selected before making a connectio
 **Things to note:**
 * Some HTTP header values are favored more instead of being purely randomly selected, e.g. English is weighted more than other languages
 
-* The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/header.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/header.sh)
+* The list of fake HTTP headers can be found in plain-text at [`docs/fake_http_headers`](https://github.com/hinto-janai/monero-bash/blob/main/docs/fake_http_headers) and the selection process in the source code at [`src/func/header.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/header.sh)
 
 * Tor proxying must be enabled for `TOR_BROWSER_MIMIC` to work
 
@@ -339,11 +339,11 @@ For transparency, here's all the connections `monero-bash` makes:
 
 | Domain                   | Why                                                                                       | When | Where |
 |--------------------------|-------------------------------------------------------------------------------------------|------|-------|
-| https://github.com       | Fetching metadata information on packages + Tar/hash/signature/key download | `monero-bash update`, `monero-bash upgrade` | [`download.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download.sh) [`eol.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/eol.sh) [`gpg.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg.sh) [`verify.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify.sh) [`version.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/version.sh)
+| https://github.com       | Fetching metadata information on packages + Tar/hash/signature/key download | `monero-bash update`, `monero-bash upgrade` | [`download.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/download.sh) [`eol.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/eol.sh) [`gpg.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/gpg.sh) [`verify.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/verify.sh) [`version.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/version.sh)
 | https://getmonero.org  | Tar/hash/signature/key download specifically for Monero (not hosted on GitHub) | When upgrading Monero | Same as above
-| https://cryptocompare.com | XMR price data | `monero-bash price` | [`price.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/price.sh)
-| https://torproject.com | Test Tor connection + Get exit IP | `monero-bash tor` or when using any internet-related command with `TEST_TOR` enabled | [`torsocks.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/torsocks.sh)
-| RPC | Monero RPC calls, the IP given in `DAEMON_RPC_IP` will be contacted | `monero-bash rpc` | [`rpc.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/rpc.sh)
+| https://cryptocompare.com | XMR price data | `monero-bash price` | [`price.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/price.sh)
+| https://torproject.com | Test Tor connection + Get exit IP | `monero-bash tor` or when using any internet-related command with `TEST_TOR` enabled | [`torsocks.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/torsocks.sh)
+| RPC | Monero RPC calls, the IP given in `DAEMON_RPC_IP` will be contacted | `monero-bash rpc` | [`rpc.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/rpc.sh)
 | DNS | DNS connections will usually be handled by your OS (or whatever custom DNS setup you have). If using Tor, the `torsocks` wrapper will route all DNS requests through the Tor network automatically | Any internet-related command when DNS isn't already cached | All of the above
 
 ## FAQ
@@ -352,10 +352,10 @@ For transparency, here's all the connections `monero-bash` makes:
 
 ---
 
-[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/download.sh)
+[The latest versions are downloaded using the GitHub API.](https://github.com/hinto-janai/monero-bash/blob/main/src/func/download.sh)
 
 * Monero [`https://downloads.getmonero.org/cli/linux64`](https://downloads.getmonero.org/cli/linux64)
-* monero-bash [`https://github.com/hinto-janaiyo/monero-bash`](https://github.com/hinto-janaiyo/monero-bash)
+* monero-bash [`https://github.com/hinto-janai/monero-bash`](https://github.com/hinto-janai/monero-bash)
 * XMRig [`https://github.com/xmrig/xmrig`](https://github.com/xmrig/xmrig)
 * P2Pool [`https://github.com/SChernykh/p2pool`](https://github.com/SChernykh/p2pool)
 
@@ -363,7 +363,7 @@ VPN/Tor connections are often rate-limited by the API, if so, monero-bash will f
 
 Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.txt`](https://www.getmonero.org/downloads/hashes.txt)
 
-[Every other package hash is found on its GitHub page.](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/verify.sh)
+[Every other package hash is found on its GitHub page.](https://github.com/hinto-janai/monero-bash/blob/main/src/func/verify.sh)
 
 ---
 
@@ -374,9 +374,9 @@ Hashes for Monero are found here: [`https://www.getmonero.org/downloads/hashes.t
 
 ---
 
-Keys are pre-downloaded in: `gpg/` [**HOWEVER, they are checked against the online versions before getting imported.**](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/gpg.sh) If a difference is found, you'll be dropped into a selection menu to pick which key to trust. If this happens, please search around to see what caused the difference.
+Keys are pre-downloaded in: `gpg/` [**HOWEVER, they are checked against the online versions before getting imported.**](https://github.com/hinto-janai/monero-bash/blob/main/src/func/gpg.sh) If a difference is found, you'll be dropped into a selection menu to pick which key to trust. If this happens, please search around to see what caused the difference.
 
-* monero-bash `21958EE945980282FCB849C8D7483F6CA27D1B1D` -> [hinto-janaiyo](https://raw.githubusercontent.com/hinto-janaiyo/monero-bash/main/pgp/hinto-janaiyo.asc)
+* monero-bash `21958EE945980282FCB849C8D7483F6CA27D1B1D` -> [hinto-janai](https://raw.githubusercontent.com/hinto-janai/monero-bash/main/pgp/hinto-janai.asc)
 * Monero `81AC591FE9C4B65C5806AFC3F0AF4D462A0BDF92` -> [binaryFate](https://raw.githubusercontent.com/monero-project/monero/master/utils/gpg_keys/binaryfate.asc)
 * P2Pool `1FCAAB4D3DC3310D16CBD508C47F82B54DA87ADF` -> [SChernykh](https://raw.githubusercontent.com/monero-project/gitian.sigs/master/gitian-pubkeys/SChernykh.asc)
 * XMRig `9AC4CEA8E66E35A5C7CDDC1B446A53638BE94409` -> [XMRig](https://raw.githubusercontent.com/xmrig/xmrig/master/doc/gpg_keys/xmrig.asc)
@@ -435,7 +435,7 @@ If you cancel ***after*** software is installed, but before the local state is u
 
 ---
 
-[Click here for an explanation on how monero-bash upgrades packages](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/upgrade_explanation.md)
+[Click here for an explanation on how monero-bash upgrades packages](https://github.com/hinto-janai/monero-bash/blob/main/docs/upgrade_explanation.md)
 
 To see detailed output when installing/upgrading, type:
 ```
@@ -494,7 +494,7 @@ Wallets:
 
 [A combination of this recent list on Github](https://gist.github.com/pzb/b4b6f57144aea7827ae4) and the free listings on [whatismybrowser.com.](https://developers.whatismybrowser.com/useragents/explore) Their full list is behind a 50$ paywall...! Their free lists have 1000s of common User-Agents, but they do not provide an API or an easy way to scrape it cleanly, probably on purpose. If you know how to use `grep/sed` (or Python) though, then it's easy :)
 
-The full list monero-bash uses (including more than just User-Agents) can be found in plain-text and Bash array form at [`docs/fake_http_headers`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/fake_http_headers) and the selection process can be found in the source code at [`src/func/header.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/header.sh)
+The full list monero-bash uses (including more than just User-Agents) can be found in plain-text and Bash array form at [`docs/fake_http_headers`](https://github.com/hinto-janai/monero-bash/blob/main/docs/fake_http_headers) and the selection process can be found in the source code at [`src/func/header.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/header.sh)
 
 ---
 
@@ -507,7 +507,7 @@ The full list monero-bash uses (including more than just User-Agents) can be fou
 
 [The Monero GitHub repo.](https://github.com/monero-project/monero/tree/master/src/mnemonics)
 
-Plain-text and Bash array versions of the seed mnemonics for all languages can be found in this repo at [`docs/seed`](https://github.com/hinto-janaiyo/monero-bash/blob/main/docs/seed) or directly in the code at [`src/func/seed.sh`](https://github.com/hinto-janaiyo/monero-bash/blob/main/src/func/seed.sh)
+Plain-text and Bash array versions of the seed mnemonics for all languages can be found in this repo at [`docs/seed`](https://github.com/hinto-janai/monero-bash/blob/main/docs/seed) or directly in the code at [`src/func/seed.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/seed.sh)
 
 ---
 

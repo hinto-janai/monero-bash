@@ -74,7 +74,7 @@ ___END___OF___LIFE___() {
 		    "@ \"monero-bash uninstall\"             @"\
 		    "@ then, you can reinstall the         @"\
 		    "@ latest version from:                @@@@@@@@@@"\
-		    "@ https://github.com/hinto-janaiyo/monero-bash @"\
+		    "@ https://github.com/hinto-janai/monero-bash @"\
 		    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 		exit 1
 	fi

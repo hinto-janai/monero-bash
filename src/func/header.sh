@@ -62,7 +62,7 @@ header_Random() {
 		[[ $RANDOM -gt 16000 ]] && SEC_FETCH_SITE='none' || SEC_FETCH_SITE='cross-site'
 		[[ $RANDOM -gt 16000 ]] && SEC_FETCH_USER='?1'
 		UPGRADE_INSECURE_REQUESTS='1'
-		USER_AGENT='Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101 Firefox/91.0'
+		USER_AGENT='Mozilla/5.0 (Windows NT 10.0; rv:102.0) Gecko/20100101 Firefox/102.0'
 
 		# Referer 25% chance
 		if [[ $RANDOM -lt 8000 ]]; then
@@ -10954,10 +10954,14 @@ header_Random() {
 	WGET_CURL_FAKE_HEADER[54]='curl/7.83.1'
 	WGET_CURL_FAKE_HEADER[55]='curl/7.84.0'
 	WGET_CURL_FAKE_HEADER[56]='curl/7.85.0'
+	WGET_CURL_FAKE_HEADER[57]='curl/7.86.0'
+	WGET_CURL_FAKE_HEADER[58]='curl/7.87.0'
+	WGET_CURL_FAKE_HEADER[59]='curl/7.88.0'
+	WGET_CURL_FAKE_HEADER[60]='curl/7.88.1'
 
 	#--------------------------------------------------------------------- Selection process
 	if [[ $RPC_CALL = true ]]; then
-		local USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+		local USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-60 -n 1)]}
 
 	elif [[ $TOR_BROWSER_MIMIC != true ]]; then
 
@@ -10965,7 +10969,7 @@ header_Random() {
 		if [[ $ONLY_USER_AGENT = true ]]; then
 			# Only wget/curl
 			if [[ $ONLY_WGET_CURL = true ]]; then
-				USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+				USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-60 -n 1)]}
 			else
 				USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
 			fi
@@ -11026,7 +11030,7 @@ header_Random() {
 			# [USER_AGENT] Random 0-4655
 			if [[ $ONLY_WGET_CURL = true ]]; then
 				# only wget/curl
-				USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-56 -n 1)]}
+				USER_AGENT=${WGET_CURL_FAKE_HEADER[$(shuf -i 0-60 -n 1)]}
 			else
 				USER_AGENT=${USER_AGENT[$(shuf -i 0-4655 -n 1)]}
 			fi

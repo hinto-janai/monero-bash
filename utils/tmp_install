@@ -13,7 +13,7 @@ if [[ -d /tmp/monero-bash_04e3be9 ]]; then
 	git pull -f
 else
 	cd /tmp
-	git clone https://github.com/hinto-janaiyo/monero-bash
+	git clone https://github.com/hinto-janai/monero-bash
 	mv monero-bash monero-bash_04e3be9
 fi
 
