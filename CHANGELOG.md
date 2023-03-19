@@ -1,3 +1,12 @@
+# v1.9.8
+## Updates
+*
+
+## Fixes
+*
+
+---
+
 # v1.9.7
 ## Fixes
 * **Status:** Fixed parsing of "You received a payout" stat to match P2Pool v2.7
