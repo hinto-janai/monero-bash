@@ -1,9 +1,9 @@
 # v1.9.8
 ## Updates
-*
+* **HTTP:** Updated fake `Tor Browser`, `curl`, and `wget` headers
 
-## Fixes
-*
+## PGP Key Change
+Please use the [new key](https://github.com/hinto-janai/monero-bash/blob/main/pgp/hinto-janai.asc) to verify _future_ releases.
 
 ---
 
