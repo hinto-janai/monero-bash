@@ -1,3 +1,17 @@
+# Archived on `2023-04-25`
+Update functionality is broken.
+
+`v2.0.0` will fix this (which will come... eventually...)
+
+Until then, **this project is no longer actively maintained.**
+
+For a GUI alternative to running `P2Pool/XMRig`, see [`Gupax`](https://github.com/hinto-janai/gupax).
+
+---
+
+<details>
+<summary>README</summary>
+
 # monero-bash
 
 ![monero-bash](https://user-images.githubusercontent.com/101352116/183257273-6224fa0d-cb10-4a3f-bb5d-057df7c0e18e.jpg)
@@ -510,5 +524,7 @@ The full list monero-bash uses (including more than just User-Agents) can be fou
 Plain-text and Bash array versions of the seed mnemonics for all languages can be found in this repo at [`docs/seed`](https://github.com/hinto-janai/monero-bash/blob/main/docs/seed) or directly in the code at [`src/func/seed.sh`](https://github.com/hinto-janai/monero-bash/blob/main/src/func/seed.sh)
 
 ---
+
+</details>
 
 </details>
